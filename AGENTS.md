@@ -7,9 +7,15 @@
 
 ## 1. Panoramica del Progetto
 
-- **Nome Progetto:** `Basilico` — Offerte e Volantini Supermercati Rapallo (GE)
+- **Nome Progetto:** `Basilico` — Sistema Domestico, Nutrizionale (CREA), Gastronomico e Catalogo Offerte di Rapallo (GE)
 - **Repository:** `Noobucodonosor/basilico`
-- **Descrizione Sintetica:** Web application responsive (mobile-first 375px e desktop 1280px) per la consultazione in tempo reale e resiliente offline di volantini promozionali e offerte dei 14 punti vendita reali di Rapallo (Basko, Coop, Gulliver, Carrefour Market, Carrefour Express, Ekom, Penny, Eurospin, Despar, DPiù, Tigotà, PiùMe, Unieuro, Arcaplanet).
+- **Descrizione Sintetica:** Web application responsive (mobile-first 375px e desktop 1280px) organizzata in **6 Stanze Principali** (costruite bottom-up secondo [ADR-0001..0012](./docs/adr/README.md)):
+  1. **Negozi & Offerte Rapallo** (14+ insegne e botteghe reali di Rapallo, 5 Domini Chiusi, prezzi `€/kg` sgocciolato, storico *"È un vero sconto?"*, Lente Qualità);
+  2. **Scienza & CREA** (832 alimenti ufficiali × 26.622 valori in 7 sezioni complete, switch Crudo↔Cotto, confronto e classifica live *Nutrienti per Euro Edibili*);
+  3. **Ricette, Ristoranti & Fornelli** (Scuola base single, 32 ristoranti del Tigullio + stellati, BOM, Arbitraggio live, analisi 80/20, guida Fornelli *Science & Cooking* e Quaderno Lab);
+  4. **Cucina, Pentole & Pulizia** (Piano cottura Gas/Induzione, dotazione pentole con ROI piatti sbloccati, sottolavello e protocollo chimico *Kitchen Reset* abbinato a Tigotà/PiùMe);
+  5. **Dispensa & Scontrini** (Scontrini riconciliati al centesimo -> prezzi fuori offerta, e dispensa a 3 luoghi: Secca, Frigo/Freezer, Dotazione Barca/Borsa Termica con finestra $T_{\text{open}}$ sui freschi aperti);
+  6. **Pianificatore & Lista Spesa** (6 modelli *Neo-Dieta*, giorni Barca/Terra, concatenazione confezioni intere zero-spreco, simulatore 1/2/3 negozi a Rapallo e modalità *In Corsia*).
 - **Stack Tecnologico:**
   - **Backend:** Node.js (ESM) + Express 4 (`server/index.js`, `server.js`)
   - **Frontend:** React 19 + Vite 6 + Tailwind CSS 3 (`src/App.jsx`, `src/components/`)
