@@ -13,6 +13,7 @@ import OfflineNotice from './components/OfflineNotice.jsx';
 import CreaExplorerView from './components/crea/CreaExplorerView.jsx';
 import PantryAndReceiptsView from './components/pantry/PantryAndReceiptsView.jsx';
 import KitchenCareView from './components/kitchen/KitchenCareView.jsx';
+import RecipesAndRestaurantsView from './components/recipes/RecipesAndRestaurantsView.jsx';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
 const DOMAIN_PILLS = [
@@ -513,6 +514,16 @@ export function App() {
               setSelectedStoreId(storeId || null);
               setSearchQuery(productTitle || '');
               setActiveRoom('room-1-negozi');
+            }}
+          />
+        </main>
+      ) : activeRoom === 'room-3-ricette' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <RecipesAndRestaurantsView
+            activeProfileId={activeProfileId}
+            onOpenCreaFood={(creaId) => {
+              setSelectedCreaFoodId(creaId);
+              setActiveRoom('room-2-crea');
             }}
           />
         </main>
