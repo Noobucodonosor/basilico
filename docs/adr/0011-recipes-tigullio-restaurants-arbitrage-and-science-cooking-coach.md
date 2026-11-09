@@ -48,7 +48,7 @@ Nelle conversazioni storiche, la visione gastronomica poggiava su tre pilastri m
 
 ## 3. Task Operativi Collegati
 
-- [ ] **TASK-M5-01**: **Importazione Seed Certificato (Ricette Base Single + 32 Ristoranti Tigullio con 1.134 righe BOM + Stellati), Motore Doppio Costo / Arbitraggio Live, Varianti Automatiche Profilo e Solver 80/20 Max-Coverage**
+- [x] **TASK-M5-01**: **Importazione Seed Certificato (Ricette Base Single + 32 Ristoranti Tigullio con 1.134 righe BOM + Stellati), Motore Doppio Costo / Arbitraggio Live, Varianti Automatiche Profilo e Solver 80/20 Max-Coverage**
   - *File coinvolti*: `data/seed/recipes_and_dishes.json`, `data/seed/restaurants_tigullio.json`, `server/services/recipeAndArbitrageService.js`, `server/routes/recipes.js`, `tests/unit/recipe_arbitrage_8020.test.js`, `tests/api/recipes_api.test.js`
   - *Verification Step*: `npm test`
 - [ ] **TASK-M5-02**: **Interfaccia Completa Stanza 3 ("Ricette, Ristoranti & Fornelli"): Catalogo con Arbitraggio & Vista 80/20, Modalità Fornelli a Schermo Intero (*Science & Cooking* + Timer + Kitchen Reset) e Quaderno di Laboratorio**
