@@ -86,17 +86,47 @@ export function getSortComparator(sortBy) {
   }
 }
 
+const _enrichedOfferMemo = new WeakMap();
+const _enrichedOfferByIdMemo = new Map();
+
 /**
  * Enriches an offer record with domain taxonomy, normalized €/kg pricing, and quality lens metadata.
+ * Uses both a WeakMap and an ID/title signature Map so repeated disk cache reads are O(1) instant.
  */
 export function enrichOfferRecord(offer = {}, profileId = null) {
   if (!offer || typeof offer !== 'object') return offer;
+
+  const obsCount = priceHistoryService._state?.observations?.length || 0;
+  const cacheKey = `${profileId || '__default__'}:${obsCount}`;
+
+  let cachedByProfile = _enrichedOfferMemo.get(offer);
+  if (cachedByProfile && cachedByProfile.has(cacheKey)) {
+    return cachedByProfile.get(cacheKey);
+  }
+
+  const sigKey = offer.id
+    ? `${offer.id}:${offer.promoPrice ?? offer.discountPrice ?? offer.price ?? ''}:${offer.title || ''}:${cacheKey}`
+    : null;
+  if (sigKey && _enrichedOfferByIdMemo.has(sigKey)) {
+    const hit = _enrichedOfferByIdMemo.get(sigKey);
+    if (!cachedByProfile) {
+      cachedByProfile = new Map();
+      _enrichedOfferMemo.set(offer, cachedByProfile);
+    }
+    cachedByProfile.set(cacheKey, hit);
+    return hit;
+  }
+
   const domain = classifyProductDomain(offer);
   const pricing = normalizeUnitPricing(offer);
   const quality = evaluateQualityLens({ ...offer, domain });
+  const _searchNorm = normalizeSearchToken(
+    `${offer.title} ${offer.brand || ''} ${offer.category || ''} ${offer.description || ''}`
+  );
 
   const enrichedBase = {
     ...offer,
+    _searchNorm,
     domain,
     checkoutPackPrice: pricing.checkoutPackPrice,
     packWeightGrams: pricing.packWeightGrams,
@@ -119,12 +149,24 @@ export function enrichOfferRecord(offer = {}, profileId = null) {
     ? creaOfferMatcher.computeOfferNutrientsPerEuro(enrichedBase)
     : null;
 
-  return {
+  const fullResult = {
     ...enrichedBase,
     realDiscountCheck: realDiscount,
     profileCompatibility,
     creaMatch
   };
+
+  if (!cachedByProfile) {
+    cachedByProfile = new Map();
+    _enrichedOfferMemo.set(offer, cachedByProfile);
+  }
+  cachedByProfile.set(cacheKey, fullResult);
+  if (sigKey) {
+    if (_enrichedOfferByIdMemo.size > 5000) _enrichedOfferByIdMemo.clear();
+    _enrichedOfferByIdMemo.set(sigKey, fullResult);
+  }
+
+  return fullResult;
 }
 
 /**
@@ -174,16 +216,19 @@ export class OfferService {
   constructor(options = {}) {
     this.ingestionService = options.ingestionService || ingestionService;
     this.seedOffersPath = options.seedOffersPath || SEED_OFFERS_PATH;
+    this._cachedSeedOffers = null;
   }
 
   /**
    * Synchronous seed data loader fallback
    */
   getSeedOffersSync() {
+    if (this._cachedSeedOffers) return this._cachedSeedOffers;
     try {
       if (fs.existsSync(this.seedOffersPath)) {
         const raw = fs.readFileSync(this.seedOffersPath, 'utf8');
-        return JSON.parse(raw);
+        this._cachedSeedOffers = JSON.parse(raw);
+        return this._cachedSeedOffers;
       }
     } catch (err) {
       console.error(`[OfferService] Failed to read seed offers: ${err.message}`);
@@ -261,7 +306,7 @@ export class OfferService {
       const normalizedQ = normalizeSearchToken(rawQ);
       if (normalizedQ.length > 0) {
         filtered = filtered.filter((o) => {
-          const itemText = normalizeSearchToken(
+          const itemText = o._searchNorm || normalizeSearchToken(
             `${o.title} ${o.brand || ''} ${o.category || ''} ${o.description || ''}`
           );
           return itemText.includes(normalizedQ);

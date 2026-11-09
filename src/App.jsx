@@ -14,6 +14,7 @@ import CreaExplorerView from './components/crea/CreaExplorerView.jsx';
 import PantryAndReceiptsView from './components/pantry/PantryAndReceiptsView.jsx';
 import KitchenCareView from './components/kitchen/KitchenCareView.jsx';
 import RecipesAndRestaurantsView from './components/recipes/RecipesAndRestaurantsView.jsx';
+import PlannerAndShoppingView from './components/planner/PlannerAndShoppingView.jsx';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
 const DOMAIN_PILLS = [
@@ -540,6 +541,10 @@ export function App() {
       ) : activeRoom === 'room-5-dispensa' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <PantryAndReceiptsView stores={stores} />
+        </main>
+      ) : activeRoom === 'room-6-pianificatore' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <PlannerAndShoppingView activeProfileId={activeProfileId} />
         </main>
       ) : (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
