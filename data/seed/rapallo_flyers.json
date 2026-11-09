@@ -5,11 +5,11 @@
     "chainId": "basko",
     "storeName": "Basko",
     "title": "Speciale Frutta esotica",
-    "validFrom": "2026-11-04T00:00:00.000Z",
-    "validTo": "2026-11-16T00:00:00.000Z",
-    "startDate": "2026-11-04T00:00:00.000Z",
-    "endDate": "2026-11-16T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-03T23:00:00.000Z",
+    "validTo": "2026-11-16T22:59:00.000Z",
+    "startDate": "2026-11-03T23:00:00.000Z",
+    "endDate": "2026-11-16T22:59:00.000Z",
+    "pageCount": 4,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1739197.jpg?modified=1793780152",
     "pages": [
       {
@@ -17,39 +17,53 @@
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970281/1/page_1_level_2_828522936.webp",
         "offerIds": [
           "6aeb0b89-631c-4a89-be20-00330ad300ae",
-          "6aeb0b8b-6658-4a68-8f1a-00820ad300e1",
-          "6aeb0b8b-edb8-419d-9a4c-005c0ad30082",
-          "6aeb0b8d-0b64-4307-a582-00450ad30278",
-          "6aeb0b8d-4c38-41df-887d-00de0ad30278",
-          "6aeb0b8e-bc5c-4e0c-97d3-00be0ad301ea",
-          "6aeb0b8f-95b0-478c-be86-00180ad3021d",
-          "6aeb0b8f-a624-411b-9ce3-00890ad3006b",
-          "6aeb0b90-96b8-41fe-91ee-00990ad300db",
-          "6aeb0b90-f4f4-47a2-81e5-008e0ad30066"
+          "6aeb0b8b-6658-4a68-8f1a-00820ad300e1"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970281/2/page_2_level_2_1757310626.webp",
         "offerIds": [
+          "6aeb0b8b-edb8-419d-9a4c-005c0ad30082",
+          "6aeb0b8d-0b64-4307-a582-00450ad30278",
+          "6aeb0b8d-4c38-41df-887d-00de0ad30278",
+          "6aeb0b8f-a624-411b-9ce3-00890ad3006b",
+          "6aeb0b90-96b8-41fe-91ee-00990ad300db",
+          "6aeb0b91-f58c-4424-91f2-003c0ad302b4"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b8e-bc5c-4e0c-97d3-00be0ad301ea_20261104121314.png",
+        "offerIds": [
+          "6aeb0b8e-bc5c-4e0c-97d3-00be0ad301ea",
+          "6aeb0b90-f4f4-47a2-81e5-008e0ad30066",
           "6aeb0b91-6c90-43a1-9387-00530ad302d0",
-          "6aeb0b91-f58c-4424-91f2-003c0ad302b4",
           "6aeb0b92-d724-4308-a891-00690ad302fa",
           "6aeb0b94-93f4-43db-b0ab-00cb0ad300b6",
           "6aeb0b95-1944-45b6-bf84-00b70ad30066",
           "6aeb0b96-9ff4-4b22-9b2b-00810ad300b4",
           "6aeb0b98-fc38-4670-b779-00560ad3021d"
         ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b8f-95b0-478c-be86-00180ad3021d_20261104121258.png",
+        "offerIds": [
+          "6aeb0b8f-95b0-478c-be86-00180ad3021d"
+        ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970281/1/page_1_level_2_828522936.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970281/2/page_2_level_2_1757310626.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970281/2/page_2_level_2_1757310626.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b8e-bc5c-4e0c-97d3-00be0ad301ea_20261104121314.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b8f-95b0-478c-be86-00180ad3021d_20261104121258.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_970281",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1735837",
@@ -57,54 +71,216 @@
     "chainId": "basko",
     "storeName": "Basko",
     "title": "Prima di tutto",
-    "validFrom": "2026-11-02T00:00:00.000Z",
-    "validTo": "2026-11-20T23:59:59.000Z",
-    "startDate": "2026-11-02T00:00:00.000Z",
-    "endDate": "2026-11-20T23:59:59.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-01T23:00:00.000Z",
+    "validTo": "2026-11-09T22:59:00.000Z",
+    "startDate": "2026-11-01T23:00:00.000Z",
+    "endDate": "2026-11-09T22:59:00.000Z",
+    "pageCount": 4,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8abfd-c404-4d29-a49c-00970ad30222_20261102194942.png",
         "offerIds": [
           "6ae8abfd-c404-4d29-a49c-00970ad30222",
           "6ae8abfe-ee7c-423c-adf5-008a0ad302d2",
           "6ae8ac00-30d8-45cd-ad6d-00880ad300c4",
           "6ae8ac01-623c-4659-a1a9-009c0ad3025b",
           "6ae8ac03-02e0-47fa-8d7d-00ce0ad30275",
-          "6ae8ac04-8640-439d-be4e-00860ad3008d",
           "6ae8ac04-bcc8-42eb-ac97-00740ad30186",
-          "6ae8ac05-8ffc-44f9-ae44-00ba0ad302d7",
           "6ae8ac05-b728-44ee-8ef3-00b40ad302dd",
-          "6ae8ac07-a320-4136-ac1c-00e90ad300a7"
+          "6ae8ac07-e40c-48ba-a9c4-00c30ad30222",
+          "6ae8ac10-a358-48f0-99ab-00dc0ad30283",
+          "6ae8ac11-f9f8-4a42-a5f4-00800ad30027",
+          "6ae8ac12-96e4-42b9-be13-00400ad30222",
+          "6ae8ac14-1ba8-4fc4-8fed-00850ad302b2",
+          "6ae8ac15-9c60-4e46-9c8c-008a0ad300cb",
+          "6ae8ac16-3968-4ba9-9ce3-00270ad300a7",
+          "6ae8ac18-8df0-49de-8694-009a0ad300a7",
+          "6ae8ac19-f26c-4f36-9ade-00c20ad30174",
+          "6ae8ac1b-2cc0-481c-a735-00810ad30005"
         ]
       },
       {
-        "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137",
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac04-8640-439d-be4e-00860ad3008d_20261102194923.png",
         "offerIds": [
-          "6ae8ac07-e40c-48ba-a9c4-00c30ad30222",
+          "6ae8ac04-8640-439d-be4e-00860ad3008d",
+          "6ae8ac05-8ffc-44f9-ae44-00ba0ad302d7",
+          "6ae8ac07-a320-4136-ac1c-00e90ad300a7",
           "6ae8ac09-d8a0-4264-a655-008d0ad30016",
           "6ae8ac0a-bc7c-4bf2-967d-00be0ad30150",
+          "6ae8ac13-5be8-41bc-afef-00dd0ad300a7",
+          "6ae8ac15-e174-4987-9605-00c60ad30164",
+          "6ae8ac16-f4e4-4d1a-9ba6-00230ad301f9",
+          "6ae8ac18-9a74-401c-9af8-00db0ad30186",
+          "6ae8ac1b-5c74-41b3-a75c-00ad0ad30275",
+          "6ae8ac1c-f178-44dc-b385-00a80ad301b8",
+          "6ae8ac1e-91f8-453d-b6de-006a0ad300f6",
+          "6ae8ac20-bc9c-4e33-b709-00b20ad302dd",
+          "6ae8ac22-f408-441a-9e33-00900ad300f8",
+          "6ae8ac23-0564-4cfe-9dab-001d0ad30222",
+          "6ae8ac25-91d0-4a21-9872-00cc0ad30204",
+          "6ae8ac26-7b00-4e57-b0e1-00c10ad301d3",
+          "6ae8ac28-30d8-4e83-b6c3-00760ad30027"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac0b-f3a8-4885-9f27-00760ad30005_20261102195114.png",
+        "offerIds": [
           "6ae8ac0b-f3a8-4885-9f27-00760ad30005",
           "6ae8ac0c-3e88-488b-9c18-00a10ad3002a",
           "6ae8ac0e-fb00-4738-bb11-00960ad3008a",
           "6ae8ac0f-8a64-4b5f-8171-00860ad302dd",
           "6ae8ac10-6db8-4b73-bccf-00420ad30027",
-          "6ae8ac10-a358-48f0-99ab-00dc0ad30283",
-          "6ae8ac11-f9f8-4a42-a5f4-00800ad30027"
+          "6ae8ac12-4b8c-4b2b-8647-00500ad30033",
+          "6ae8ac13-dbb0-46b8-a82c-002b0ad30027",
+          "6ae8ac14-ccf8-4934-a843-00d00ad302d7",
+          "6ae8ac16-8e5c-450b-a171-00840ad30273",
+          "6ae8ac17-5d7c-459e-a23a-00a80ad300cb",
+          "6ae8ac18-53a4-46a0-909b-24450ad30273",
+          "6ae8ac19-8e5c-446b-87c0-00b90ad30112",
+          "6ae8ac1b-2914-47fe-9c2a-00150ad300cb",
+          "6ae8ac1c-becc-420a-a7bd-00570ad30196"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137",
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137"
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8abfd-c404-4d29-a49c-00970ad30222_20261102194942.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac04-8640-439d-be4e-00860ad3008d_20261102194923.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac0b-f3a8-4885-9f27-00760ad30005_20261102195114.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_968308",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
+  },
+  {
+    "id": "1731575",
+    "storeId": "rapallo-basko-colombo",
+    "chainId": "basko",
+    "storeName": "Basko",
+    "title": "Black Week",
+    "validFrom": "2026-10-26T23:00:00.000Z",
+    "validTo": "2026-11-09T22:59:00.000Z",
+    "startDate": "2026-10-26T23:00:00.000Z",
+    "endDate": "2026-11-09T22:59:00.000Z",
+    "pageCount": 7,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1731575.jpg?modified=1793090151",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1731575.jpg?modified=1793090151",
+        "offerIds": [
+          "6ae0663a-bd9c-4f18-a152-00b80ad302e6",
+          "6ae0663b-8590-4699-930c-00bb0ad302da",
+          "6ae0663c-167c-41c0-9edc-9ea90ad302da"
+        ]
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0663d-9940-4901-a96a-005c0ad30174_20261027100258.png",
+        "offerIds": [
+          "6ae0663d-9940-4901-a96a-005c0ad30174",
+          "6ae0663f-f508-4557-bcc1-00290ad30217",
+          "6ae0663f-f988-4329-9d3e-00be0ad30032",
+          "6ae06640-3e6c-4dd1-9c8b-006b0ad3013f",
+          "6ae06642-dc1c-471b-91a1-00360ad30213",
+          "6ae06644-e1fc-4390-989a-008f0ad30263",
+          "6ae06646-258c-48a1-a6aa-009f0ad3013f",
+          "6ae06646-99b8-4edd-a3de-002f0ad302da",
+          "6ae06647-9b24-4b34-af15-00240ad30277",
+          "6ae06648-d0f8-462a-8cd7-006a0ad301a3"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06645-1ce8-46c4-a2fa-00870ad30273_20261027100240.png",
+        "offerIds": [
+          "6ae06645-1ce8-46c4-a2fa-00870ad30273",
+          "6ae06645-8e58-4985-94ab-00c20ad301a3",
+          "6ae06647-2274-4dba-8d3f-00410ad301d6",
+          "6ae06648-61e4-4f99-ad5b-00310ad30121",
+          "6ae06649-5d8c-49b5-9d51-00800ad30197",
+          "6ae0664b-ec5c-4ec7-a250-00b70ad30235",
+          "6ae0664d-49c0-4e85-a2d6-004e0ad300e9",
+          "6ae0664d-a264-4fbe-a8c6-00170ad301d6",
+          "6ae0664f-3ddc-4cfe-8ba5-005f0ad30212",
+          "6ae06652-63f0-4c44-b198-15100ad3012a"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06646-7ef4-466c-b3ce-00330ad3012a_20261027100306.png",
+        "offerIds": [
+          "6ae06646-7ef4-466c-b3ce-00330ad3012a",
+          "6ae06648-2668-4830-8f20-00b20ad30273",
+          "6ae0664b-4efc-4f3a-ae76-006a0ad30022",
+          "6ae0664b-6b7c-41e9-8605-008f0ad30273",
+          "6ae0664e-0450-4ea1-a7c4-00440ad301d0",
+          "6ae0664f-93e8-4d2d-8fa5-00bc0ad3016b",
+          "6ae06650-214c-4dd1-97d4-00790ad30277",
+          "6ae06651-0b00-4e19-bbf4-00830ad302b3",
+          "6ae06656-0174-4005-82a6-009c0ad30053"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06649-8450-47e7-8bd0-41740ad30182_20261027100228.png",
+        "offerIds": [
+          "6ae06649-8450-47e7-8bd0-41740ad30182",
+          "6ae0664a-a734-4db9-bb9f-004f0ad30174",
+          "6ae0664c-b2e0-4ee2-852b-00980ad302b3",
+          "6ae0664d-eaac-4f3c-8dd6-40c60ad30182",
+          "6ae06650-0c28-48ad-a653-00250ad30141",
+          "6ae06650-a4b8-4c62-9cc1-00ab0ad302b3",
+          "6ae06652-ad68-4fe5-8fb5-008d0ad300e9"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0664d-155c-431f-9e98-00b50ad30053_20261027100236.png",
+        "offerIds": [
+          "6ae0664d-155c-431f-9e98-00b50ad30053",
+          "6ae0664f-30c0-48eb-9e4f-00c90ad3017b",
+          "6ae0664f-8698-48fb-baa6-47ef0ad300e9",
+          "6ae06653-2a28-4fcf-b43c-007e0ad300b0",
+          "6ae06655-7ac8-4521-a831-00cf0ad30197",
+          "6ae06656-2c40-4c5c-b5a6-00620ad30042",
+          "6ae06656-3560-45f4-b3ea-00d50ad302c6"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06653-6f1c-4942-b938-00c00ad30176_20261027100255.png",
+        "offerIds": [
+          "6ae06653-6f1c-4942-b938-00c00ad30176",
+          "6ae06654-2100-45fd-9c0f-007b0ad302c6",
+          "6ae06654-48e0-4a1e-a9b9-00d50ad30204",
+          "6ae06655-f070-4229-8ec9-00e00ad30114"
+        ]
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1731575.jpg?modified=1793090151",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0663d-9940-4901-a96a-005c0ad30174_20261027100258.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06645-1ce8-46c4-a2fa-00870ad30273_20261027100240.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06646-7ef4-466c-b3ce-00330ad3012a_20261027100306.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06649-8450-47e7-8bd0-41740ad30182_20261027100228.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0664d-155c-431f-9e98-00b50ad30053_20261027100236.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06653-6f1c-4942-b938-00c00ad30176_20261027100255.png"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_963421",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
   },
   {
     "id": "1733933",
@@ -112,54 +288,132 @@
     "chainId": "coop",
     "storeName": "Coop",
     "title": "Offerte Top",
-    "validFrom": "2026-10-29T00:00:00.000Z",
-    "validTo": "2026-11-20T23:59:59.000Z",
-    "startDate": "2026-10-29T00:00:00.000Z",
-    "endDate": "2026-11-20T23:59:59.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-10-28T23:00:00.000Z",
+    "validTo": "2026-11-11T22:59:00.000Z",
+    "startDate": "2026-10-28T23:00:00.000Z",
+    "endDate": "2026-11-11T22:59:00.000Z",
+    "pageCount": 9,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1733933.jpg?modified=1793261026",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/1/page_1_level_2_400554091.webp",
         "offerIds": [
-          "6ae2fe5f-d0e8-4bc5-bd23-00950ad30121",
           "6ae302bd-3018-412c-a86c-001e0ad3019f",
           "6ae302be-e788-4f07-a613-00240ad30056",
-          "6ae302bf-8ca0-42e4-9d3a-00350ad300c1",
-          "6ae302c2-8f4c-4962-9588-00a20ad302ee",
-          "6ae302c4-15a0-4b7b-b1c4-402f0ad302ee",
-          "6ae302c4-59ec-46c1-b4d0-00ad0ad301f7",
-          "6ae302c5-4388-4b31-9d31-001e0ad30260",
-          "6ae302c5-abdc-4388-9d8a-00550ad301c2",
-          "6ae302c6-9ce4-4249-ba82-44780ad30275"
+          "6ae302bf-8ca0-42e4-9d3a-00350ad300c1"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/2/page_2_level_2_914831274.webp",
         "offerIds": [
+          "6ae2fe5f-d0e8-4bc5-bd23-00950ad30121"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c2-8f4c-4962-9588-00a20ad302ee_20261029092437.png",
+        "offerIds": [
+          "6ae302c2-8f4c-4962-9588-00a20ad302ee",
+          "6ae302c4-15a0-4b7b-b1c4-402f0ad302ee",
+          "6ae302c4-59ec-46c1-b4d0-00ad0ad301f7",
+          "6ae302c5-abdc-4388-9d8a-00550ad301c2",
           "6ae302c7-c6dc-4028-8f3f-003e0ad30121",
-          "6ae302c7-d8e4-45a6-83fe-00d20ad301c4",
-          "6ae302c8-b7b4-4a6b-84aa-002d0ad3006c",
           "6ae302c8-c5b4-4493-9f28-00ad0ad300e2",
           "6ae302c9-e220-41bc-9a93-00d30ad302bb",
-          "6ae302c9-f030-421a-9244-4a140ad30216",
           "6ae302ca-8b30-4e97-9642-00720ad3006f",
-          "6ae302ca-e230-432d-9d37-007d0ad302f9",
           "6ae302cb-9b84-49bf-9f2a-00be0ad30230",
-          "6ae302cb-b900-4fc8-bfd7-00cf0ad30160"
+          "6ae302ce-ec80-422d-a735-00cb0ad30064"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c5-4388-4b31-9d31-001e0ad30260_20261029092442.png",
+        "offerIds": [
+          "6ae302c5-4388-4b31-9d31-001e0ad30260",
+          "6ae302c6-9ce4-4249-ba82-44780ad30275",
+          "6ae302c7-d8e4-45a6-83fe-00d20ad301c4",
+          "6ae302c8-b7b4-4a6b-84aa-002d0ad3006c",
+          "6ae302c9-f030-421a-9244-4a140ad30216",
+          "6ae302cb-b900-4fc8-bfd7-00cf0ad30160",
+          "6ae302cd-d4c8-4bde-97be-009f0ad30082",
+          "6ae302cf-97d8-4e39-8026-00650ad30064",
+          "6ae302d0-e8ac-4b9a-8973-00140ad301d0",
+          "6ae302d2-07c8-4d09-a527-bdd20ad30213"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302ca-e230-432d-9d37-007d0ad302f9_20261029092445.png",
+        "offerIds": [
+          "6ae302ca-e230-432d-9d37-007d0ad302f9",
+          "6ae302cd-7380-402e-a0a6-00480ad30257",
+          "6ae302ce-be04-4930-a80a-43c10ad30143",
+          "6ae302d0-ae10-40bd-9997-002f0ad30121",
+          "6ae302d1-cc04-4bf6-9bf1-00d40ad300b3",
+          "6ae302d3-f604-4cf5-a4ee-00ae0ad3006c",
+          "6ae302d4-2638-4c0e-81ac-00a50ad30113",
+          "6ae302d5-d464-4812-b493-00390ad302cb",
+          "6ae302d7-be5c-4817-b823-00aa0ad30282",
+          "6ae302d9-5ab8-49d8-ae9d-00560ad30138"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302cf-b18c-49e3-b8bb-00980ad30099_20261029092450.png",
+        "offerIds": [
+          "6ae302cf-b18c-49e3-b8bb-00980ad30099",
+          "6ae302d7-0e44-4360-8000-00560ad302f9"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d4-71e8-4e47-a8a5-00db0ad30248_20261029092455.png",
+        "offerIds": [
+          "6ae302d4-71e8-4e47-a8a5-00db0ad30248",
+          "6ae302d6-9304-4350-a5bf-436b0ad300b5",
+          "6ae302d7-d97c-4402-a700-00730ad30248",
+          "6ae302d9-d55c-441b-ae33-00b10ad30112",
+          "6ae302da-c92c-4cd1-90ce-00c00ad30143",
+          "6ae302dc-0ef0-4f39-bc44-44870ad300b6"
+        ]
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d7-bf3c-4ead-ae17-001d0ad3006f_20261029092458.png",
+        "offerIds": [
+          "6ae302d7-bf3c-4ead-ae17-001d0ad3006f",
+          "6ae302d8-2cac-4738-b652-00d00ad30177",
+          "6ae302da-dc78-409d-b97b-003d0ad301a5",
+          "6ae302db-2ac4-4f8c-b7ef-005e0ad30143",
+          "6ae302dc-92e0-4f74-a062-00600ad3012b"
+        ]
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302da-180c-4842-b8e8-008c0ad30175_20261029092502.png",
+        "offerIds": [
+          "6ae302da-180c-4842-b8e8-008c0ad30175",
+          "6ae302db-0140-4966-b392-45f60ad30177"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/1/page_1_level_2_400554091.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/2/page_2_level_2_914831274.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/2/page_2_level_2_914831274.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c2-8f4c-4962-9588-00a20ad302ee_20261029092437.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c5-4388-4b31-9d31-001e0ad30260_20261029092442.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302ca-e230-432d-9d37-007d0ad302f9_20261029092445.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302cf-b18c-49e3-b8bb-00980ad30099_20261029092450.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d4-71e8-4e47-a8a5-00db0ad30248_20261029092455.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d7-bf3c-4ead-ae17-001d0ad3006f_20261029092458.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302da-180c-4842-b8e8-008c0ad30175_20261029092502.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_965332",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1689209",
@@ -167,54 +421,104 @@
     "chainId": "coop",
     "storeName": "Coop",
     "title": "Al costo",
-    "validFrom": "2026-09-11T00:00:00.000Z",
-    "validTo": "2027-01-03T00:00:00.000Z",
-    "startDate": "2026-09-11T00:00:00.000Z",
-    "endDate": "2027-01-03T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-09-10T11:40:09.000Z",
+    "validTo": "2027-01-03T22:59:59.000Z",
+    "startDate": "2026-09-10T11:40:09.000Z",
+    "endDate": "2027-01-03T22:59:59.000Z",
+    "pageCount": 5,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e57-0508-47a9-8ed0-00690ad3001e_20260910141222.png",
         "offerIds": [
           "6aa29e57-0508-47a9-8ed0-00690ad3001e",
           "6aa29e57-daf8-4136-9983-4ff50ad30043",
           "6aa29e58-17cc-4bb5-9dc9-41c20ad30085",
           "6aa29e58-8e4c-46fc-b560-00aa0ad30156",
           "6aa29e59-4788-4980-8bbb-00300ad3001e",
-          "6aa29e59-7b0c-4459-9877-00920ad30023",
-          "6aa29e59-8bd8-47a5-bb04-00180ad302bf",
           "6aa29e5a-02a8-4c8d-b9c1-00400ad301b6",
-          "6aa29e5a-66a0-4f4f-bac1-00c50ad302c0",
-          "6aa29e5a-eca4-4b81-b4ed-00f10ad30007"
+          "6aa29e5a-eca4-4b81-b4ed-00f10ad30007",
+          "6aa29e5b-1520-4476-b1dc-007c0ad3001e",
+          "6aa29e5c-3230-41b6-9b90-85ae0ad30256",
+          "6aa29e5c-3e58-4ddf-a0d9-00650ad30157",
+          "6aa29e5c-7000-44c4-a05a-00460ad30099",
+          "6aa29e5d-6b08-496e-8f4d-00c30ad30043",
+          "6aa29e5d-e7cc-4946-b7c9-4def0ad30212"
         ]
       },
       {
-        "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415",
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e59-7b0c-4459-9877-00920ad30023_20260910141228.png",
         "offerIds": [
-          "6aa29e5b-1520-4476-b1dc-007c0ad3001e",
+          "6aa29e59-7b0c-4459-9877-00920ad30023",
+          "6aa29e59-8bd8-47a5-bb04-00180ad302bf",
+          "6aa29e5a-66a0-4f4f-bac1-00c50ad302c0",
           "6aa29e5b-a1b0-498e-947b-00830ad30146",
           "6aa29e5b-eb48-42c4-b8d8-006e0ad30170",
           "6aa29e5b-ec18-4ff3-9b40-003b0ad301f5",
-          "6aa29e5c-3230-41b6-9b90-85ae0ad30256",
-          "6aa29e5c-3e58-4ddf-a0d9-00650ad30157",
           "6aa29e5c-4acc-4f14-9e58-00900ad302ab",
           "6aa29e5c-5a44-496f-bddc-4b460ad30157",
-          "6aa29e5c-7000-44c4-a05a-00460ad30099",
-          "6aa29e5d-6b08-496e-8f4d-00c30ad30043"
+          "6aa29e5d-ceb8-4579-801b-002c0ad30170",
+          "6aa29e5e-3250-4032-bbd6-004a0ad30099",
+          "6aa29e5f-c0e0-4403-88ca-45c90ad30157",
+          "6aa29e60-ddf0-466f-a196-00bb0ad3029c"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e64-a838-49f0-917a-002f0ad3023f_20260910141303.png",
+        "offerIds": [
+          "6aa29e64-a838-49f0-917a-002f0ad3023f",
+          "6aa29e65-279c-4ba0-ad77-00780ad30157",
+          "6aa29e65-33e0-493d-82bf-00560ad302ab",
+          "6aa29e65-7ca4-44f0-b69f-00dc0ad30007",
+          "6aa29e65-b4a8-4210-b89b-42270ad30099",
+          "6aa29e66-5534-4e82-87a6-005e0ad300fb",
+          "6aa29e66-a114-480d-b081-00dc0ad302c6",
+          "6aa29e67-4b2c-4b0f-a882-1b4e0ad302e6",
+          "6aa29e68-0444-4bb1-91f8-00460ad30051",
+          "6aa29e68-9174-4d8b-a944-00360ad301e0",
+          "6aa29e69-2640-4fcf-adea-00640ad302f4",
+          "6aa29e69-54a0-4a7f-9ec2-00560ad30170",
+          "6aa29e69-66ac-45a3-be3e-00490ad30094",
+          "6aa29e6b-05c4-4f3b-9967-00ba0ad30183",
+          "6aa29e6b-7a5c-4d3b-a454-49610ad302c0"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e6c-a51c-4eb7-9815-00460ad301b6_20260910141307.png",
+        "offerIds": [
+          "6aa29e6c-a51c-4eb7-9815-00460ad301b6",
+          "6aa29e6d-2ac4-45e3-9bb2-47a80ad30170",
+          "6aa29e6d-5454-4805-92f5-005a0ad3023f",
+          "6aa29e6f-4098-4b51-9dcf-00680ad30050",
+          "6aa29e6f-6730-4f55-b514-00970ad300df",
+          "6aa29e70-2b9c-4666-a7cc-44960ad302ab",
+          "6aa29e70-c738-4db3-9e70-00d70ad30254",
+          "6aa29e70-cc2c-4b32-8d7c-00d90ad30085",
+          "6aa29e71-0c1c-4c2d-bf45-40270ad30043",
+          "6aa29e71-e804-4539-84ba-00590ad302c7"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415",
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415"
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e57-0508-47a9-8ed0-00690ad3001e_20260910141222.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e59-7b0c-4459-9877-00920ad30023_20260910141228.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e64-a838-49f0-917a-002f0ad3023f_20260910141303.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e6c-a51c-4eb7-9815-00460ad301b6_20260910141307.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_925320",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1735021",
@@ -222,54 +526,126 @@
     "chainId": "gulliver",
     "storeName": "Gulliver",
     "title": "Sconti d'autunno",
-    "validFrom": "2026-10-30T00:00:00.000Z",
-    "validTo": "2026-11-20T23:59:59.000Z",
-    "startDate": "2026-10-30T00:00:00.000Z",
-    "endDate": "2026-11-20T23:59:59.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-10-29T23:00:00.000Z",
+    "validTo": "2026-11-09T22:59:00.000Z",
+    "startDate": "2026-10-29T23:00:00.000Z",
+    "endDate": "2026-11-09T22:59:00.000Z",
+    "pageCount": 8,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735021.jpg?modified=1793347092",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966358/1/page_1_level_2_1755033961.webp",
         "offerIds": [
-          "6ae44ff5-0ad8-47a8-846a-00300ad30184",
-          "6ae44ffa-db0c-422b-8e29-00cc0ad30070",
-          "6ae44ffc-d760-4a2c-ac2e-00670ad301ab",
-          "6ae44ffd-b0a8-4748-90ba-00370ad30035",
-          "6ae44fff-2c18-4400-93e2-00a60ad302ba",
-          "6ae44fff-e95c-4855-b7c5-00570ad30143",
-          "6ae45001-16e8-4403-bbf2-00970ad301b1",
-          "6ae45001-81f8-40eb-aa8c-00910ad30279",
-          "6ae45002-dcc8-49b8-aa0a-00970ad30207",
-          "6ae45002-f5d4-49bc-b6cb-00a10ad301e5"
+          "6ae44ff5-0ad8-47a8-846a-00300ad30184"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966358/2/page_2_level_2_410332758.webp",
         "offerIds": [
-          "6ae45003-9f74-4a61-acbc-00b10ad301e5",
+          "6ae44ffa-db0c-422b-8e29-00cc0ad30070",
+          "6ae44ffc-d760-4a2c-ac2e-00670ad301ab",
+          "6ae44ffd-b0a8-4748-90ba-00370ad30035",
+          "6ae44fff-2c18-4400-93e2-00a60ad302ba",
+          "6ae45001-16e8-4403-bbf2-00970ad301b1",
+          "6ae45002-f5d4-49bc-b6cb-00a10ad301e5",
           "6ae45003-ccdc-4f49-8e2d-00830ad30005",
+          "6ae45005-a154-4ef7-b763-003b0ad30218",
+          "6ae45007-0ac8-4cd5-96f9-008a0ad30160",
+          "6ae45009-36fc-4c89-a719-455d0ad300fe",
+          "6ae4500a-736c-4f44-a777-009d0ad302eb",
+          "6ae4500e-c76c-4560-b5e2-48c20ad30056"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae44fff-e95c-4855-b7c5-00570ad30143_20261030095456.png",
+        "offerIds": [
+          "6ae44fff-e95c-4855-b7c5-00570ad30143",
+          "6ae45001-81f8-40eb-aa8c-00910ad30279",
+          "6ae45002-dcc8-49b8-aa0a-00970ad30207",
           "6ae45004-1ecc-412c-b394-00d80ad30005",
+          "6ae45005-7eb0-455a-9876-00db0ad30262",
+          "6ae45006-8ee8-43e8-9b45-4e130ad30005",
+          "6ae45008-62f8-4699-b425-42930ad30175",
+          "6ae45009-77a4-44ec-adcf-00ad0ad301a6",
+          "6ae4500a-23ac-418c-8848-000e0ad300f7",
+          "6ae4500d-3af8-4c00-8c2e-006f0ad30233",
+          "6ae45016-9abc-41e6-b156-007e0ad3025a"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45003-9f74-4a61-acbc-00b10ad301e5_20261030095439.png",
+        "offerIds": [
+          "6ae45003-9f74-4a61-acbc-00b10ad301e5",
           "6ae45004-ea14-4fc4-a2cc-46c50ad30271",
           "6ae45005-6284-4505-9770-008d0ad3007a",
-          "6ae45005-7eb0-455a-9876-00db0ad30262",
-          "6ae45005-a154-4ef7-b763-003b0ad30218",
-          "6ae45006-8ee8-43e8-9b45-4e130ad30005",
-          "6ae45007-0ac8-4cd5-96f9-008a0ad30160",
-          "6ae45007-47cc-4828-a194-00530ad30233"
+          "6ae45007-47cc-4828-a194-00530ad30233",
+          "6ae45008-dcb4-4284-bc01-00330ad30063",
+          "6ae4500a-697c-41d8-975d-4eeb0ad30271",
+          "6ae45017-0e54-467f-ab9c-00c30ad3018a"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45008-d21c-4d13-938e-00cc0ad302eb_20261030095336.png",
+        "offerIds": [
+          "6ae45008-d21c-4d13-938e-00cc0ad302eb",
+          "6ae4500a-c004-4122-be4e-41110ad30177",
+          "6ae4500e-290c-43d5-a3c1-006c0ad30262",
+          "6ae45011-17f0-42ca-b6ba-007c0ad30019",
+          "6ae45015-bcd4-4166-a02b-00850ad30279",
+          "6ae45016-0710-4e89-abff-000f0ad302f1",
+          "6ae45016-4d7c-4118-b47a-004c0ad300c9",
+          "6ae45016-b840-429b-ae6f-00d40ad30005",
+          "6ae45017-0aa0-41e4-be6e-00870ad302f1",
+          "6ae45017-1ccc-49d8-9b4d-00730ad30035"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45016-9d88-4d6e-a7d1-47af0ad302fb_20261030095356.png",
+        "offerIds": [
+          "6ae45016-9d88-4d6e-a7d1-47af0ad302fb",
+          "6ae45016-bfd8-4af2-8a07-00630ad300a8",
+          "6ae45016-c52c-4fbc-93d2-1cbb0ad3025a",
+          "6ae45017-4dd8-41a9-a540-001b0ad30197",
+          "6ae45017-a438-428d-9687-00940ad300a8"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45017-a238-437c-8553-00780ad302c0_20261030095315.png",
+        "offerIds": [
+          "6ae45017-a238-437c-8553-00780ad302c0",
+          "6ae45017-c7c4-4ceb-a6e1-00600ad3027a",
+          "6ae45017-ddd4-40e9-a747-002e0ad30248"
+        ]
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45017-de0c-4a20-82ef-006b0ad301b3_20261030095352.png",
+        "offerIds": [
+          "6ae45017-de0c-4a20-82ef-006b0ad301b3"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966358/1/page_1_level_2_1755033961.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966358/2/page_2_level_2_410332758.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966358/2/page_2_level_2_410332758.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae44fff-e95c-4855-b7c5-00570ad30143_20261030095456.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45003-9f74-4a61-acbc-00b10ad301e5_20261030095439.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45008-d21c-4d13-938e-00cc0ad302eb_20261030095336.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45016-9d88-4d6e-a7d1-47af0ad302fb_20261030095356.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45017-a238-437c-8553-00780ad302c0_20261030095315.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45017-de0c-4a20-82ef-006b0ad301b3_20261030095352.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_966358",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1738505",
@@ -277,40 +653,20 @@
     "chainId": "carrefour",
     "storeName": "Carrefour",
     "title": "Sottocosto.",
-    "validFrom": "2026-11-06T00:00:00.000Z",
-    "validTo": "2026-11-15T00:00:00.000Z",
-    "startDate": "2026-11-06T00:00:00.000Z",
-    "endDate": "2026-11-15T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-05T23:00:00.000Z",
+    "validTo": "2026-11-15T22:59:00.000Z",
+    "startDate": "2026-11-05T23:00:00.000Z",
+    "endDate": "2026-11-15T22:59:00.000Z",
+    "pageCount": 1,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1738505.jpg?modified=1793699862",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1738505.jpg?modified=1793699862",
-        "offerIds": [
-          "6ad732f3-fd04-4a83-b796-002e0ad3027b",
-          "6ad732f4-fbf4-4a4c-8e09-008c0ad3019b",
-          "6ad732f6-5f90-4925-b05d-002a0ad30022",
-          "6ad732f6-c1a8-4871-b0d3-00190ad302f6",
-          "6ad732f6-d094-4cdc-bfca-00620ad302a3",
-          "6ad732f6-e4e0-43ec-a7c5-00760ad301b9",
-          "6ad732f7-5b60-4f19-9da8-004f0ad302e8",
-          "6ad732f7-7ddc-4f78-9cfc-00e70ad30022",
-          "6ad732f8-46dc-451a-9451-00890ad30265",
-          "6ad732f8-4db8-442c-b28b-00f10ad30124"
-        ]
-      },
-      {
-        "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1738505.jpg?modified=1793699862",
-        "offerIds": [
-          "6ad732f9-bbb4-4f9b-80ee-00c30ad30025",
-          "6ad732fa-d8c4-481f-a69d-00900ad302a5"
-        ]
+        "offerIds": []
       }
     ],
     "pageImages": [
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1738505.jpg?modified=1793699862",
       "https://it-it-media.shopfully.cloud/images/volantini/big_1738505.jpg?modified=1793699862"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_86555",
@@ -324,11 +680,11 @@
     "chainId": "carrefour",
     "storeName": "Carrefour",
     "title": "Sottocosto",
-    "validFrom": "2026-11-06T00:00:00.000Z",
-    "validTo": "2026-11-15T00:00:00.000Z",
-    "startDate": "2026-11-06T00:00:00.000Z",
-    "endDate": "2026-11-15T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-02T11:07:38.000Z",
+    "validTo": "2026-11-15T22:59:59.000Z",
+    "startDate": "2026-11-02T11:07:38.000Z",
+    "endDate": "2026-11-15T22:59:59.000Z",
+    "pageCount": 11,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736963.jpg?modified=1793617655",
     "pages": [
       {
@@ -336,42 +692,456 @@
         "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736963.jpg?modified=1793617655",
         "offerIds": [
           "6ae8c018-ffac-4533-a297-000a0ad302e7",
-          "6ae8c019-7178-4e1b-b2f5-00800ad3016a",
           "6ae8c01a-5634-48e7-a568-005c0ad30223",
-          "6ae8c01b-da8c-4946-a141-005c0ad30264",
-          "6ae8c01c-7760-4fa9-8e39-002a0ad30122",
-          "6ae8c01d-8964-4f29-b5fd-00ae0ad3029b",
-          "6ae8c01d-bd94-489f-a2ac-00500ad30236",
-          "6ae8c01e-e444-4156-8e62-00620ad30036",
-          "6ae8c020-4024-46f9-bfbd-00d60ad301eb",
-          "6ae8c020-8c90-4ff5-b2e7-004c0ad300b0"
+          "6ae8c01d-8964-4f29-b5fd-00ae0ad3029b"
         ]
       },
       {
         "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736963.jpg?modified=1793617655",
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c019-7178-4e1b-b2f5-00800ad3016a_20261102201151.png",
         "offerIds": [
+          "6ae8c019-7178-4e1b-b2f5-00800ad3016a",
+          "6ae8c01b-da8c-4946-a141-005c0ad30264",
+          "6ae8c01d-bd94-489f-a2ac-00500ad30236",
           "6ae8c020-f158-425e-8edd-00e20ad302e7",
           "6ae8c021-0cd0-41e4-baf4-00ae0ad30130",
-          "6ae8c021-9720-471f-a22c-008a0ad302c6",
+          "6ae8c023-a840-4351-a4b8-00ca0ad302a2"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c01c-7760-4fa9-8e39-002a0ad30122_20261102201319.png",
+        "offerIds": [
+          "6ae8c01c-7760-4fa9-8e39-002a0ad30122",
+          "6ae8c01e-e444-4156-8e62-00620ad30036",
+          "6ae8c020-4024-46f9-bfbd-00d60ad301eb",
           "6ae8c022-7c5c-4990-837e-00a30ad30097",
-          "6ae8c023-15e4-4470-a532-00b70ad30270",
-          "6ae8c023-4b9c-4eea-a595-00790ad301e5",
-          "6ae8c023-a840-4351-a4b8-00ca0ad302a2",
-          "6ae8c024-62c4-45f2-8fc5-00700ad300bf",
           "6ae8c024-687c-4dd1-8afd-00450ad300d3",
-          "6ae8c024-9fa8-4d27-abf6-005c0ad30054"
+          "6ae8c026-da48-4cbd-b0c5-00ca0ad302e0"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c021-9720-471f-a22c-008a0ad302c6_20261102201323.png",
+        "offerIds": [
+          "6ae8c021-9720-471f-a22c-008a0ad302c6",
+          "6ae8c024-9fa8-4d27-abf6-005c0ad30054",
+          "6ae8c025-7d50-4496-8be0-005a0ad30257",
+          "6ae8c027-b2ac-40b4-925e-002e0ad300d3",
+          "6ae8c029-f770-4f29-8166-00240ad3011a"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c020-8c90-4ff5-b2e7-004c0ad300b0_20261102201524.png",
+        "offerIds": [
+          "6ae8c020-8c90-4ff5-b2e7-004c0ad300b0",
+          "6ae8c023-15e4-4470-a532-00b70ad30270",
+          "6ae8c024-62c4-45f2-8fc5-00700ad300bf",
+          "6ae8c026-11b4-447b-b235-005d0ad300f2",
+          "6ae8c028-dc04-44e3-8fff-00a00ad302c6",
+          "6ae8c02b-4f04-4483-8c7a-00950ad30224",
+          "6ae8c02e-88d8-4670-abe7-00a50ad30263"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c023-4b9c-4eea-a595-00790ad301e5_20261102201153.png",
+        "offerIds": [
+          "6ae8c023-4b9c-4eea-a595-00790ad301e5",
+          "6ae8c026-2dec-4e2e-a29d-00710ad30264",
+          "6ae8c027-9488-45b5-8954-00dd0ad30097",
+          "6ae8c029-a6ec-4366-ae76-00960ad3001b",
+          "6ae8c02b-9464-46a2-84b0-008c0ad300f2"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c025-d690-46ea-b602-006a0ad30224_20261102201527.png",
+        "offerIds": [
+          "6ae8c025-d690-46ea-b602-006a0ad30224",
+          "6ae8c026-1588-4175-90f0-00490ad302aa",
+          "6ae8c028-9600-4369-9c02-006f0ad30040",
+          "6ae8c02a-a708-4c3e-a82f-00bb0ad30277",
+          "6ae8c02c-167c-4f7a-beab-00f00ad301e5",
+          "6ae8c02e-b914-451c-8655-006a0ad30255"
+        ]
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c027-c218-476e-9830-00500ad30037_20261102201409.png",
+        "offerIds": [
+          "6ae8c027-c218-476e-9830-00500ad30037",
+          "6ae8c029-e418-4f04-8aac-009c0ad301e3",
+          "6ae8c02a-27a4-4a22-a94b-00f00ad30211",
+          "6ae8c02c-91e8-4b98-9b0f-00350ad300d3",
+          "6ae8c02e-e63c-4d45-9a25-00b20ad30054",
+          "6ae8c02f-2664-42b4-a8cb-00560ad300f3"
+        ]
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c02a-016c-4acc-b565-00420ad302b6_20261102201157.png",
+        "offerIds": [
+          "6ae8c02a-016c-4acc-b565-00420ad302b6",
+          "6ae8c02c-7598-404f-9279-009d0ad30082",
+          "6ae8c02d-197c-4e7f-97c0-00350ad300b6",
+          "6ae8c02f-dcf0-44c9-b3d0-006c0ad3029b"
+        ]
+      },
+      {
+        "pageNumber": 10,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c02f-c734-41b7-9d83-00e30ad30257_20261102201334.png",
+        "offerIds": [
+          "6ae8c02f-c734-41b7-9d83-00e30ad30257"
+        ]
+      },
+      {
+        "pageNumber": 11,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c031-3ed4-4802-b550-00160ad301e3_20261102201316.png",
+        "offerIds": [
+          "6ae8c031-3ed4-4802-b550-00160ad301e3"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media.shopfully.cloud/images/volantini/big_1736963.jpg?modified=1793617655",
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1736963.jpg?modified=1793617655"
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c019-7178-4e1b-b2f5-00800ad3016a_20261102201151.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c01c-7760-4fa9-8e39-002a0ad30122_20261102201319.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c021-9720-471f-a22c-008a0ad302c6_20261102201323.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c020-8c90-4ff5-b2e7-004c0ad300b0_20261102201524.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c023-4b9c-4eea-a595-00790ad301e5_20261102201153.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c025-d690-46ea-b602-006a0ad30224_20261102201527.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c027-c218-476e-9830-00500ad30037_20261102201409.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c02a-016c-4acc-b565-00420ad302b6_20261102201157.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c02f-c734-41b7-9d83-00e30ad30257_20261102201334.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8c031-3ed4-4802-b550-00160ad301e3_20261102201316.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_968402",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
+  },
+  {
+    "id": "1736960",
+    "storeId": "rapallo-carrefour-assereto",
+    "chainId": "carrefour",
+    "storeName": "Carrefour",
+    "title": "Speciale detersivi",
+    "validFrom": "2026-11-02T11:04:07.000Z",
+    "validTo": "2026-11-15T22:59:59.000Z",
+    "startDate": "2026-11-02T11:04:07.000Z",
+    "endDate": "2026-11-15T22:59:59.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736960.jpg?modified=1793617444",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736960.jpg?modified=1793617444",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bb8c-8c40-4d4d-880f-00600ad30152_20261102200806.png",
+        "offerIds": [
+          "6ae8bb8c-8c40-4d4d-880f-00600ad30152",
+          "6ae8bb8e-c5f0-4017-a633-00ac0ad302d7",
+          "6ae8bb8f-b61c-49f5-a6ce-004c0ad301b9",
+          "6ae8bb91-c3e0-4219-a54c-00c10ad30129"
+        ]
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736960.jpg?modified=1793617444",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bb8c-8c40-4d4d-880f-00600ad30152_20261102200806.png"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_968392",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1736959",
+    "storeId": "rapallo-carrefour-assereto",
+    "chainId": "carrefour",
+    "storeName": "Carrefour",
+    "title": "Punti Sprint Payback",
+    "validFrom": "2026-11-02T11:05:02.000Z",
+    "validTo": "2026-11-15T22:59:59.000Z",
+    "startDate": "2026-11-02T11:05:02.000Z",
+    "endDate": "2026-11-15T22:59:59.000Z",
+    "pageCount": 12,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736959.jpg?modified=1793617499",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736959.jpg?modified=1793617499",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf93-ea3c-46d6-87c8-00170ad301b1_20261102201333.png",
+        "offerIds": [
+          "6ae8bf93-ea3c-46d6-87c8-00170ad301b1",
+          "6ae8bf95-89f8-476c-8e25-001b0ad30036",
+          "6ae8bf97-9a74-4a5b-943d-00ce0ad300f2",
+          "6ae8bf98-18a0-4936-ba47-00de0ad30054",
+          "6ae8bf9a-80d8-4654-b828-00c10ad3001b",
+          "6ae8bf9b-f138-4e2d-b2ae-00150ad30022",
+          "6ae8bf9d-77c4-4032-9b86-001a0ad30177"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736959.jpg?modified=1793617499",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf94-50b4-4c1f-a221-001b0ad300b1_20261102201448.png",
+        "offerIds": [
+          "6ae8bf94-50b4-4c1f-a221-001b0ad300b1",
+          "6ae8bf96-7e84-43eb-b487-00db0ad30130",
+          "6ae8bf97-fee0-440f-923b-005a0ad301b1"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf99-a0a8-4d23-8808-00e80ad301a1_20261102201250.png",
+        "offerIds": [
+          "6ae8bf99-a0a8-4d23-8808-00e80ad301a1",
+          "6ae8bf9b-9200-4b77-92d5-00c80ad30236"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf99-4f34-4fce-82f1-00e40ad30224_20261102201452.png",
+        "offerIds": [
+          "6ae8bf99-4f34-4fce-82f1-00e40ad30224",
+          "6ae8bf9a-21c4-473e-ad85-00500ad30105",
+          "6ae8bf9b-ef54-4f67-86a6-007f0ad301a1",
+          "6ae8bf9d-69fc-4093-a77f-00a40ad300f3"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf9d-51b8-473b-88b5-00710ad301b1_20261102201320.png",
+        "offerIds": [
+          "6ae8bf9d-51b8-473b-88b5-00710ad301b1",
+          "6ae8bf9d-c75c-452d-b7e1-001f0ad301b4",
+          "6ae8bf9e-a074-4c7d-8589-005a0ad300b6",
+          "6ae8bfa0-60fc-4823-8aa7-00990ad30236",
+          "6ae8bfa1-4ac8-4c7a-8485-00d70ad301c1",
+          "6ae8bfa2-ad10-4c2d-a263-00a30ad301fd",
+          "6ae8bfa3-4de4-435c-a681-00c00ad302e7"
+        ]
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa0-4ff8-4c8e-b9ad-00b60ad300f2_20261102201239.png",
+        "offerIds": [
+          "6ae8bfa0-4ff8-4c8e-b9ad-00b60ad300f2",
+          "6ae8bfa2-fff0-4e47-9aa8-00300ad30211",
+          "6ae8bfa3-f754-44bc-935e-00450ad300f1",
+          "6ae8bfa5-78fc-47ff-9861-001b0ad300bf",
+          "6ae8bfa7-584c-4c26-8280-00ce0ad300f1",
+          "6ae8bfa8-bbf0-4a2c-8cd2-00470ad30122",
+          "6ae8bfa9-9c80-4366-8d4d-008b0ad300f2"
+        ]
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa3-3710-4c08-8f3a-00570ad302b6_20261102201458.png",
+        "offerIds": [
+          "6ae8bfa3-3710-4c08-8f3a-00570ad302b6",
+          "6ae8bfa5-1758-4036-8c6b-00140ad3005b",
+          "6ae8bfa6-b710-4276-a8fb-00c70ad30155",
+          "6ae8bfa7-1704-4e3f-958f-00ce0ad300a4",
+          "6ae8bfa9-5784-488c-b0bd-001b0ad30022"
+        ]
+      },
+      {
+        "pageNumber": 10,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa5-3d54-422c-baa0-00560ad300c0_20261102201124.png",
+        "offerIds": [
+          "6ae8bfa5-3d54-422c-baa0-00560ad300c0",
+          "6ae8bfa7-4ef8-4b5d-98a1-00580ad301fb",
+          "6ae8bfa8-1b70-4172-9aa5-00270ad30236"
+        ]
+      },
+      {
+        "pageNumber": 11,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa9-7060-4ce1-9582-005d0ad301c1_20261102201126.png",
+        "offerIds": [
+          "6ae8bfa9-7060-4ce1-9582-005d0ad301c1",
+          "6ae8bfaa-cd3c-42b5-a602-00110ad300c8",
+          "6ae8bfab-0368-40de-8836-00c90ad30122",
+          "6ae8bfac-f278-4929-b375-00dd0ad30211",
+          "6ae8bfad-0628-448a-bf6d-000f0ad30211",
+          "6ae8bfb0-5144-4193-ab59-00240ad30223"
+        ]
+      },
+      {
+        "pageNumber": 12,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfaf-554c-4369-a934-00380ad3029a_20261102201342.png",
+        "offerIds": [
+          "6ae8bfaf-554c-4369-a934-00380ad3029a",
+          "6ae8bfb0-a330-49dc-be74-00500ad3005b",
+          "6ae8bfb2-5044-4ff1-8f31-007d0ad301e3"
+        ]
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736959.jpg?modified=1793617499",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf93-ea3c-46d6-87c8-00170ad301b1_20261102201333.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736959.jpg?modified=1793617499",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf94-50b4-4c1f-a221-001b0ad300b1_20261102201448.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf99-a0a8-4d23-8808-00e80ad301a1_20261102201250.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf99-4f34-4fce-82f1-00e40ad30224_20261102201452.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf9d-51b8-473b-88b5-00710ad301b1_20261102201320.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa0-4ff8-4c8e-b9ad-00b60ad300f2_20261102201239.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa3-3710-4c08-8f3a-00570ad302b6_20261102201458.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa5-3d54-422c-baa0-00560ad300c0_20261102201124.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfa9-7060-4ce1-9582-005d0ad301c1_20261102201126.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfaf-554c-4369-a934-00380ad3029a_20261102201342.png"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_968395",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1725295",
+    "storeId": "rapallo-carrefour-assereto",
+    "chainId": "carrefour",
+    "storeName": "Carrefour",
+    "title": "Catalogo Giocattolo",
+    "validFrom": "2026-10-20T07:43:00.000Z",
+    "validTo": "2026-12-24T22:59:00.000Z",
+    "startDate": "2026-10-20T07:43:00.000Z",
+    "endDate": "2026-12-24T22:59:00.000Z",
+    "pageCount": 9,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1725295.jpg?modified=1792482234",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1725295.jpg?modified=1792482234",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732f3-fd04-4a83-b796-002e0ad3027b_20261020112620.png",
+        "offerIds": [
+          "6ad732f3-fd04-4a83-b796-002e0ad3027b",
+          "6ad732f4-fbf4-4a4c-8e09-008c0ad3019b",
+          "6ad732f6-5f90-4925-b05d-002a0ad30022",
+          "6ad732f6-d094-4cdc-bfca-00620ad302a3",
+          "6ad732f7-7ddc-4f78-9cfc-00e70ad30022",
+          "6ad732f8-4db8-442c-b28b-00f10ad30124",
+          "6ad732f9-bbb4-4f9b-80ee-00c30ad30025",
+          "6ad732fb-aaac-47ed-9a73-00b60ad30040"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732f6-c1a8-4871-b0d3-00190ad302f6_20261020112552.png",
+        "offerIds": [
+          "6ad732f6-c1a8-4871-b0d3-00190ad302f6",
+          "6ad732f6-e4e0-43ec-a7c5-00760ad301b9",
+          "6ad732f7-5b60-4f19-9da8-004f0ad302e8",
+          "6ad732f8-46dc-451a-9451-00890ad30265",
+          "6ad732fa-d8c4-481f-a69d-00900ad302a5",
+          "6ad732fb-b820-4df5-8b4a-00400ad300dd"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732fb-12b4-4986-9c1e-00340ad30167_20261020112533.png",
+        "offerIds": [
+          "6ad732fb-12b4-4986-9c1e-00340ad30167",
+          "6ad732fd-2370-40d2-ae5f-00af0ad300b1",
+          "6ad732fe-12f0-4bff-a314-00840ad302a6",
+          "6ad732ff-25a8-44bd-8dc6-00c20ad300cc",
+          "6ad73300-a674-4ca4-90e6-00b10ad30121",
+          "6ad73301-3e80-4244-83c3-00910ad30212",
+          "6ad73302-76d4-48a4-b736-00810ad302d2",
+          "6ad73303-e508-4e25-a1c2-00740ad301b3",
+          "6ad73305-f90c-4eed-8366-00cb0ad30260"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732fd-e0ec-453b-8dfb-00c70ad302f3_20261020112609.png",
+        "offerIds": [
+          "6ad732fd-e0ec-453b-8dfb-00c70ad302f3",
+          "6ad732fe-ab88-4750-b576-00420ad30251",
+          "6ad732ff-9fa0-424a-8b4c-00950ad302f3",
+          "6ad73301-cbcc-4d8f-8ab5-00150ad301d5",
+          "6ad73302-6490-4fa0-875e-00760ad30082",
+          "6ad73304-d754-4f47-9841-00520ad30040",
+          "6ad73305-0620-4e1d-8e5f-00af0ad302f6",
+          "6ad73306-00c8-4a9e-b4e9-00340ad30119",
+          "6ad73307-b1e8-4f9c-b059-005e0ad3023a",
+          "6ad73309-acfc-4f25-acf4-00350ad302a3",
+          "6ad7330a-831c-4d07-b7c4-00e40ad30124"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad73302-f768-426c-b1b4-00db0ad301b9_20261020112603.png",
+        "offerIds": [
+          "6ad73302-f768-426c-b1b4-00db0ad301b9",
+          "6ad73303-0c00-4639-a5fd-00b30ad30265",
+          "6ad73304-5cbc-4f6a-a213-00d00ad30034",
+          "6ad7330c-e288-421c-a690-00140ad300e3"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad73305-8d08-4f80-9151-00bf0ad300f3_20261020112537.png",
+        "offerIds": [
+          "6ad73305-8d08-4f80-9151-00bf0ad300f3",
+          "6ad73307-e598-4d5f-b00e-002a0ad30022",
+          "6ad73308-14fc-45e8-828e-00310ad3019b",
+          "6ad73309-4514-4b66-8a0e-00c10ad301b8",
+          "6ad7330b-4fa8-4737-815d-00e20ad3009c",
+          "6ad7330c-ea80-4665-8452-002f0ad301b9"
+        ]
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad73307-4adc-427e-9e26-00430ad302f6_20261020112549.png",
+        "offerIds": [
+          "6ad73307-4adc-427e-9e26-00430ad302f6",
+          "6ad73309-0b08-467c-9e2f-00860ad3023a",
+          "6ad73309-9080-48d9-9b72-00b40ad300cc",
+          "6ad7330b-5fcc-45fa-9e22-00d40ad30177",
+          "6ad7330c-b0d8-4305-9aaf-00c70ad301d5"
+        ]
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad7330c-98cc-42ea-8a5b-00a30ad30094_20261020112708.png",
+        "offerIds": [
+          "6ad7330c-98cc-42ea-8a5b-00a30ad30094"
+        ]
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1725295.jpg?modified=1792482234",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732f3-fd04-4a83-b796-002e0ad3027b_20261020112620.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732f6-c1a8-4871-b0d3-00190ad302f6_20261020112552.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732fb-12b4-4986-9c1e-00340ad30167_20261020112533.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad732fd-e0ec-453b-8dfb-00c70ad302f3_20261020112609.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad73302-f768-426c-b1b4-00db0ad301b9_20261020112603.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad73305-8d08-4f80-9151-00bf0ad300f3_20261020112537.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad73307-4adc-427e-9e26-00430ad302f6_20261020112549.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ad7330c-98cc-42ea-8a5b-00a30ad30094_20261020112708.png"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_957379",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
   },
   {
     "id": "1739259",
@@ -379,11 +1149,11 @@
     "chainId": "carrefour-express",
     "storeName": "Carrefour Express",
     "title": "Super Offerte",
-    "validFrom": "2026-11-05T00:00:00.000Z",
-    "validTo": "2026-11-16T00:00:00.000Z",
-    "startDate": "2026-11-05T00:00:00.000Z",
-    "endDate": "2026-11-16T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-04T08:11:57.000Z",
+    "validTo": "2026-11-16T22:59:59.000Z",
+    "startDate": "2026-11-04T08:11:57.000Z",
+    "endDate": "2026-11-16T22:59:59.000Z",
+    "pageCount": 6,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1739259.jpg?modified=1793779914",
     "pages": [
       {
@@ -391,42 +1161,100 @@
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970273/1/page_1_level_2_1701201119.webp",
         "offerIds": [
           "6aeb0616-6100-4f26-ae00-00de0ad30293",
-          "6aeb0618-f654-4199-8481-00920ad30108",
-          "6aeb08cd-2cf4-48b9-8997-004c0ad30093",
-          "6aeb08ce-cd04-44d2-8f6f-004e0ad30063",
-          "6aeb08d1-7f20-4c0d-b4cd-004a0ad300b7",
-          "6aeb08d2-eb5c-46c4-ba3b-009e0ad30189",
-          "6aeb08d4-a5dc-4a60-bb71-00940ad30093",
-          "6aeb08d4-eaa8-44dd-96ed-002f0ad300ae",
-          "6aeb08d5-2898-445c-b6c2-002d0ad300f3",
-          "6aeb08d6-be48-47fa-a5ac-00760ad30082"
+          "6aeb0618-f654-4199-8481-00920ad30108"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970273/2/page_2_level_2_1588574242.webp",
         "offerIds": [
-          "6aeb08d7-1ad0-4155-bb27-00120ad300dc",
+          "6aeb08cd-2cf4-48b9-8997-004c0ad30093",
+          "6aeb08ce-cd04-44d2-8f6f-004e0ad30063",
+          "6aeb08d1-7f20-4c0d-b4cd-004a0ad300b7",
+          "6aeb08d2-eb5c-46c4-ba3b-009e0ad30189",
+          "6aeb08d4-eaa8-44dd-96ed-002f0ad300ae",
+          "6aeb08d5-2898-445c-b6c2-002d0ad300f3",
           "6aeb08d7-2974-40e6-a528-00850ad30258",
-          "6aeb08d7-8f68-493a-9060-00240ad302a3",
           "6aeb08d7-c1c8-4668-9a9d-00990ad30113",
-          "6aeb08d8-18d4-4948-a0cc-00ce0ad30044",
-          "6aeb08d9-2700-44b9-8ecc-00480ad30066",
           "6aeb08d9-28ec-40d6-9735-00d10ad3005d",
           "6aeb08d9-5048-4a52-881e-00720ad3010a",
+          "6aeb08db-f0d8-48c8-ae0d-00b90ad302b2",
+          "6aeb08de-def4-4870-9663-001d0ad30207",
+          "6aeb08de-f5fc-4da2-89b4-00d20ad300d2"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d4-a5dc-4a60-bb71-00940ad30093_20261104115743.png",
+        "offerIds": [
+          "6aeb08d4-a5dc-4a60-bb71-00940ad30093",
+          "6aeb08d6-be48-47fa-a5ac-00760ad30082",
+          "6aeb08d7-1ad0-4155-bb27-00120ad300dc",
+          "6aeb08d8-18d4-4948-a0cc-00ce0ad30044",
           "6aeb08d9-6f84-4a0e-b304-00400ad300d5",
-          "6aeb08da-b3c8-406f-a84f-00820ad300f3"
+          "6aeb08da-b3c8-406f-a84f-00820ad300f3",
+          "6aeb08db-2b0c-4d32-8501-00950ad3021d",
+          "6aeb08dc-9720-4f94-a28b-00d30ad30066",
+          "6aeb08de-2440-4ca4-909e-00d90ad300b4",
+          "6aeb08e5-8d6c-4202-a7c2-001f0ad300f3",
+          "6aeb08e6-f60c-4c18-b6f9-00b60ad30207"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d7-8f68-493a-9060-00240ad302a3_20261104115748.png",
+        "offerIds": [
+          "6aeb08d7-8f68-493a-9060-00240ad302a3",
+          "6aeb08d9-2700-44b9-8ecc-00480ad30066",
+          "6aeb08db-cb98-40f7-82a9-00a80ad301ea",
+          "6aeb08dc-3f88-44af-8211-00e50ad302fa",
+          "6aeb08de-17b4-4a8b-bad5-00a60ad30233",
+          "6aeb08e0-b1e4-4ba2-a21f-006d0ad302b6",
+          "6aeb08e1-7220-4202-b88a-006d0ad3008b",
+          "6aeb08e3-28d8-450f-b5c1-00b00ad30293",
+          "6aeb08e5-fa28-49cc-90dc-00910ad30189",
+          "6aeb08e6-8db8-43a5-bd78-00750ad301ea"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08dd-fad8-4d1b-b825-00560ad30217_20261104115909.png",
+        "offerIds": [
+          "6aeb08dd-fad8-4d1b-b825-00560ad30217",
+          "6aeb08df-5284-4b65-8f6b-001e0ad30164",
+          "6aeb08e0-5b80-4c5c-a4d3-00c20ad300b0",
+          "6aeb08e1-1acc-49f0-92f8-00d10ad302d0",
+          "6aeb08e3-ed70-4e53-b638-00150ad302be",
+          "6aeb08e4-d300-470f-acbd-00550ad30035",
+          "6aeb08e6-85c0-4b3f-937d-00630ad300fb",
+          "6aeb08e8-265c-4992-b0f6-008e0ad3006b",
+          "6aeb08e8-29dc-4737-b75d-00de0ad3021d"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08e4-89e4-4040-84e6-00a00ad300b0_20261104115853.png",
+        "offerIds": [
+          "6aeb08e4-89e4-4040-84e6-00a00ad300b0",
+          "6aeb08e5-ba70-46ca-945f-00890ad30035",
+          "6aeb08e6-4f48-4efa-a395-007d0ad30220",
+          "6aeb08e7-c5f0-48a5-b753-006e0ad30060",
+          "6aeb08e8-4494-4d8d-9053-00e40ad301ea"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970273/1/page_1_level_2_1701201119.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970273/2/page_2_level_2_1588574242.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/970273/2/page_2_level_2_1588574242.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d4-a5dc-4a60-bb71-00940ad30093_20261104115743.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d7-8f68-493a-9060-00240ad302a3_20261104115748.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08dd-fad8-4d1b-b825-00560ad30217_20261104115909.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08e4-89e4-4040-84e6-00a00ad300b0_20261104115853.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_970273",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1737926",
@@ -434,11 +1262,11 @@
     "chainId": "ekom",
     "storeName": "Ekom",
     "title": "Black Week",
-    "validFrom": "2026-11-03T00:00:00.000Z",
-    "validTo": "2026-11-16T00:00:00.000Z",
-    "startDate": "2026-11-03T00:00:00.000Z",
-    "endDate": "2026-11-16T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-02T23:00:00.000Z",
+    "validTo": "2026-11-16T22:59:00.000Z",
+    "startDate": "2026-11-02T23:00:00.000Z",
+    "endDate": "2026-11-16T22:59:00.000Z",
+    "pageCount": 6,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1737926.jpg?modified=1793695674",
     "pages": [
       {
@@ -448,40 +1276,98 @@
           "6ae9b5dc-8a50-43d2-8e7f-00420ad301e5",
           "6ae9b5df-9e8c-4642-b7cb-000e0ad30237",
           "6ae9b5e1-f65c-4286-b7d9-002e0ad30218",
-          "6ae9b5e2-2724-4dcb-a521-00600ad301b0",
-          "6ae9b5e3-d368-486b-a546-009b0ad30146",
-          "6ae9b5e4-1a5c-41eb-9130-00b10ad301f9",
-          "6ae9b5e5-600c-4798-9311-00560ad30290",
-          "6ae9b5e8-7a08-424e-8362-00250ad3013a",
-          "6ae9b5e9-7158-4041-a9b8-00db0ad301d4",
-          "6ae9b5eb-4264-4f1a-8902-00760ad3022f"
+          "6ae9b5e2-2724-4dcb-a521-00600ad301b0"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/2/page_2_level_2_1043237712.webp",
         "offerIds": [
+          "6ae9b5e3-d368-486b-a546-009b0ad30146",
+          "6ae9b5e4-1a5c-41eb-9130-00b10ad301f9",
+          "6ae9b5e5-600c-4798-9311-00560ad30290",
+          "6ae9b5e8-7a08-424e-8362-00250ad3013a",
+          "6ae9b5e9-7158-4041-a9b8-00db0ad301d4",
+          "6ae9b5eb-4264-4f1a-8902-00760ad3022f",
           "6ae9b5ed-4a7c-4c5e-94b6-004a0ad30263",
           "6ae9b5f0-3898-4718-9356-00650ad301d0",
-          "6ae9b5f0-687c-4961-95d0-00100ad30090",
-          "6ae9b5f0-a09c-43f0-aedb-00780ad300b1",
           "6ae9b5f1-5d90-46ab-96bd-005b0ad30071",
           "6ae9b5f2-60c8-4f05-8ec5-008a0ad300b1",
-          "6ae9b5f2-d74c-4df7-9b9b-004f0ad30090",
+          "6ae9b5f4-7d20-4853-9c32-009b0ad302ea",
+          "6ae9b5f6-89dc-41e7-8a6b-00c50ad300c1",
+          "6ae9b5f8-d2b4-49de-83ae-004e0ad30071",
+          "6ae9b5fa-aee4-4b53-baf5-005a0ad30021",
+          "6ae9b5fc-83f0-4b69-a16b-00640ad30199"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f0-687c-4961-95d0-00100ad30090_20261103141447.png",
+        "offerIds": [
+          "6ae9b5f0-687c-4961-95d0-00100ad30090",
           "6ae9b5f2-e89c-4676-81fc-009e0ad301a7",
+          "6ae9b5f3-add4-43fc-b31a-00140ad301d4",
+          "6ae9b5f5-dc44-40bc-8c45-003e0ad3028b",
+          "6ae9b5f7-2424-4f20-8dda-00e10ad30199",
+          "6ae9b5f9-6af0-4521-8192-006b0ad300b1",
+          "6ae9b5fb-2038-4b6c-b9a2-00ed0ad300c1",
+          "6ae9b5fb-3848-4101-a5e3-00ce0ad30268",
+          "6ae9b5fd-63b0-480c-b22b-004a0ad301ac",
+          "6ae9b5fe-ec94-439f-b064-27ee0ad301a0",
+          "6ae9b600-3f30-4511-8b6b-00c30ad30192"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f0-a09c-43f0-aedb-00780ad300b1_20261103141448.png",
+        "offerIds": [
+          "6ae9b5f0-a09c-43f0-aedb-00780ad300b1",
+          "6ae9b5f2-d74c-4df7-9b9b-004f0ad30090",
           "6ae9b5f3-a68c-4c60-a1fe-00670ad30036",
-          "6ae9b5f3-add4-43fc-b31a-00140ad301d4"
+          "6ae9b5f6-6e44-4f75-84a4-006c0ad30040",
+          "6ae9b5f9-4034-4d91-ae2e-002c0ad30292",
+          "6ae9b5fa-f078-4cff-95a1-009f0ad302eb",
+          "6ae9b5fc-6ebc-4da5-8bd7-004e0ad301b0",
+          "6ae9b5fd-07e4-4308-9316-009d0ad3023e",
+          "6ae9b5fe-e2ec-4394-8bcb-00660ad30055",
+          "6ae9b600-0cf8-4b1a-b0ce-00ad0ad30220"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f4-15f0-4531-9997-005b0ad30040_20261103141453.png",
+        "offerIds": [
+          "6ae9b5f4-15f0-4531-9997-005b0ad30040",
+          "6ae9b5f6-82cc-4a43-910a-00cf0ad302f1",
+          "6ae9b5f8-af00-419e-8bd5-006f0ad30036",
+          "6ae9b5f9-5730-46b0-8dd3-00a30ad30290",
+          "6ae9b5fb-4f80-408e-a04b-002c0ad302b3",
+          "6ae9b5fd-04e4-435d-b536-00610ad30199"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5fa-b6bc-45ba-a179-005c0ad300ba_20261103141331.png",
+        "offerIds": [
+          "6ae9b5fa-b6bc-45ba-a179-005c0ad300ba",
+          "6ae9b5fc-75b8-4a47-b26a-000d0ad302a0",
+          "6ae9b5fd-d998-4b41-8fc8-008a0ad30220",
+          "6ae9b5ff-1e78-4930-a556-00430ad301d0"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/1/page_1_level_2_194646542.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/2/page_2_level_2_1043237712.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/2/page_2_level_2_1043237712.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f0-687c-4961-95d0-00100ad30090_20261103141447.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f0-a09c-43f0-aedb-00780ad300b1_20261103141448.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f4-15f0-4531-9997-005b0ad30040_20261103141453.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5fa-b6bc-45ba-a179-005c0ad300ba_20261103141331.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_969177",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1733212",
@@ -489,11 +1375,11 @@
     "chainId": "penny",
     "storeName": "Penny",
     "title": "Maxi formato",
-    "validFrom": "2026-11-05T00:00:00.000Z",
-    "validTo": "2026-11-15T00:00:00.000Z",
-    "startDate": "2026-11-05T00:00:00.000Z",
-    "endDate": "2026-11-15T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-04T23:00:00.000Z",
+    "validTo": "2026-11-15T22:59:00.000Z",
+    "startDate": "2026-11-04T23:00:00.000Z",
+    "endDate": "2026-11-15T22:59:00.000Z",
+    "pageCount": 1,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1733212.jpg?modified=1793193618",
     "pages": [
       {
@@ -509,20 +1395,13 @@
           "6ae88cd0-bdec-4061-9078-47300ad3006c",
           "6ae88cd0-cf6c-4b94-9038-00c70ad30121",
           "6ae88cd0-d27c-4821-a480-00330ad300a9",
-          "6ae88cd0-ee9c-407b-9684-00ef0ad30121"
-        ]
-      },
-      {
-        "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1733212.jpg?modified=1793193618",
-        "offerIds": [
+          "6ae88cd0-ee9c-407b-9684-00ef0ad30121",
           "6ae88cd0-f018-490f-afe6-008f0ad30156",
           "6ae88cd0-f378-469d-bb5e-00830ad3018a"
         ]
       }
     ],
     "pageImages": [
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1733212.jpg?modified=1793193618",
       "https://it-it-media.shopfully.cloud/images/volantini/big_1733212.jpg?modified=1793193618"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_86555",
@@ -536,26 +1415,20 @@
     "chainId": "penny",
     "storeName": "Penny",
     "title": "Catalogo di natale",
-    "validFrom": "2026-11-02T00:00:00.000Z",
-    "validTo": "2026-12-31T00:00:00.000Z",
-    "startDate": "2026-11-02T00:00:00.000Z",
-    "endDate": "2026-12-31T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-01T23:00:00.000Z",
+    "validTo": "2026-11-29T22:59:00.000Z",
+    "startDate": "2026-11-01T23:00:00.000Z",
+    "endDate": "2026-11-29T22:59:00.000Z",
+    "pageCount": 1,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964",
         "offerIds": []
-      },
-      {
-        "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964",
-        "offerIds": []
       }
     ],
     "pageImages": [
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964",
       "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_86555",
@@ -569,11 +1442,11 @@
     "chainId": "eurospin",
     "storeName": "Eurospin",
     "title": "SAPORI IN FESTA E SPECIALE CIOCCOLATO",
-    "validFrom": "2026-11-05T00:00:00.000Z",
-    "validTo": "2026-11-15T00:00:00.000Z",
-    "startDate": "2026-11-05T00:00:00.000Z",
-    "endDate": "2026-11-15T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-01T23:00:00.000Z",
+    "validTo": "2026-11-15T22:59:00.000Z",
+    "startDate": "2026-11-01T23:00:00.000Z",
+    "endDate": "2026-11-15T22:59:00.000Z",
+    "pageCount": 22,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
     "pages": [
       {
@@ -582,36 +1455,190 @@
         "offerIds": [
           "6ae8a68d-329c-47eb-b938-00c00ad3013b",
           "6ae8a68f-0520-437a-bc98-007a0ad300f6",
-          "6ae8a691-2c78-4b05-934f-00120ad302d0",
-          "6ae8a691-7e0c-4973-9661-00b10ad30299",
-          "6ae8a692-e968-4c2f-b2d0-00c70ad302f0",
-          "6ae8a694-9684-4f05-b6ec-005b0ad30033",
-          "6ae8a695-803c-4d1c-8ce5-00a30ad3005f",
-          "6ae8a696-3ec4-472f-b99e-00760ad3002a",
-          "6ae8a696-ac70-4b98-89a9-00760ad301d3",
-          "6ae8a697-05f8-4560-8725-00240ad30283"
+          "6ae8a691-2c78-4b05-934f-00120ad302d0"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/2/page_2_level_2_1227669926.webp",
         "offerIds": [
+          "6ae8a72d-2138-40a2-a213-00d60ad300f8",
+          "6ae8a72d-ad3c-460e-891b-00560ad301f9",
+          "6ae8a72e-1d48-4d5f-be3d-006f0ad3022c",
+          "6ae8a72e-9020-409f-9ec0-005a0ad300c4",
+          "6ae8a72f-3558-464f-a138-00d60ad30164",
+          "6ae8a72f-3a48-4147-bd9c-004b0ad30005",
+          "6ae8a730-0dc8-47d7-bd48-00b30ad302b2",
+          "6ae8a730-8e84-4055-802a-00830ad300f9",
+          "6ae8a730-96cc-487a-8445-00170ad30222"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a733-a05c-492f-8f83-007b0ad30283_20261105160609.png",
+        "offerIds": [
+          "6ae8a733-a05c-492f-8f83-007b0ad30283",
+          "6ae8a733-ee78-465a-9378-00550ad301b8",
+          "6ae8a734-9334-4df5-85b6-00120ad302d7",
+          "6ae8a734-c6c0-475d-9889-00210ad301b9",
+          "6ae8a735-9934-45ab-9ebe-007e0ad3025b",
+          "6ae8a735-c574-43ec-b8e2-00900ad3025b",
+          "6ae8a736-84f4-4dc5-8b67-00610ad300c4"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 10,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a691-7e0c-4973-9661-00b10ad30299_20261105161758.png",
+        "offerIds": [
+          "6ae8a691-7e0c-4973-9661-00b10ad30299",
+          "6ae8a692-e968-4c2f-b2d0-00c70ad302f0",
+          "6ae8a694-9684-4f05-b6ec-005b0ad30033",
+          "6ae8a695-803c-4d1c-8ce5-00a30ad3005f",
+          "6ae8a696-ac70-4b98-89a9-00760ad301d3",
           "6ae8a697-a8e0-4d3d-88d0-00730ad30273",
           "6ae8a699-6a28-41ad-93ce-004f0ad302d2",
           "6ae8a699-b654-46e6-8464-00550ad30273",
+          "6ae8a69b-e0f4-4410-83cd-00500ad3008a",
+          "6ae8a69d-3cb8-43b8-b279-00240ad30285",
+          "6ae8a69d-9a94-481a-aa3f-00860ad300c1",
+          "6ae8a69e-fbe8-46b0-b33b-00a50ad30196"
+        ]
+      },
+      {
+        "pageNumber": 11,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a696-3ec4-472f-b99e-00760ad3002a_20261105161916.png",
+        "offerIds": [
+          "6ae8a696-3ec4-472f-b99e-00760ad3002a",
+          "6ae8a697-05f8-4560-8725-00240ad30283",
           "6ae8a699-e2ec-40e3-bc6e-002a0ad300c1",
           "6ae8a69a-5610-42e9-82b8-00c70ad302b2",
-          "6ae8a69a-6fd8-4408-b299-006e0ad30150",
           "6ae8a69b-051c-41e0-b8b1-00b30ad300d8",
+          "6ae8a69c-fff0-406b-b6d0-003f0ad30016",
+          "6ae8a69d-f244-46d2-9d3b-00350ad300cb",
+          "6ae8a69e-7fac-4b56-91c0-001e0ad3027c",
+          "6ae8a69f-a080-4847-8f81-00240ad302d0",
+          "6ae8a6a1-23d0-4e9a-8b39-00900ad300f8",
+          "6ae8a6a2-81ac-4401-a7f5-00cf0ad30033",
+          "6ae8a6a3-2114-41bd-811f-008d0ad3025b"
+        ]
+      },
+      {
+        "pageNumber": 12,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 13,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 14,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 15,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 16,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 17,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 18,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 19,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 20,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 21,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 22,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a69a-6fd8-4408-b299-006e0ad30150_20261105170634.png",
+        "offerIds": [
+          "6ae8a69a-6fd8-4408-b299-006e0ad30150",
           "6ae8a69b-6fd8-4314-88b3-00560ad30273",
-          "6ae8a69b-e0f4-4410-83cd-00500ad3008a",
-          "6ae8a69c-c370-4ac0-9a7a-006f0ad30150"
+          "6ae8a69c-c370-4ac0-9a7a-006f0ad30150",
+          "6ae8a69d-3054-4445-8011-00870ad301f6",
+          "6ae8a69f-93f4-45dd-89c6-007d0ad300c1",
+          "6ae8a6a1-2638-4236-9bac-00270ad302d0",
+          "6ae8a6a2-f110-4e68-88cb-00c20ad30164"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/1/page_1_level_2_1774686337.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/2/page_2_level_2_1227669926.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/2/page_2_level_2_1227669926.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a733-a05c-492f-8f83-007b0ad30283_20261105160609.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a691-7e0c-4973-9661-00b10ad30299_20261105161758.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a696-3ec4-472f-b99e-00760ad3002a_20261105161916.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a69a-6fd8-4408-b299-006e0ad30150_20261105170634.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_968285",
     "isCurrent": true,
@@ -624,54 +1651,100 @@
     "chainId": "despar",
     "storeName": "Despar",
     "title": "Super sconti",
-    "validFrom": "2026-10-29T00:00:00.000Z",
-    "validTo": "2026-11-20T23:59:59.000Z",
-    "startDate": "2026-10-29T00:00:00.000Z",
-    "endDate": "2026-11-20T23:59:59.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-10-29T09:21:10.000Z",
+    "validTo": "2026-11-11T22:59:59.000Z",
+    "startDate": "2026-10-29T09:21:10.000Z",
+    "endDate": "2026-11-11T22:59:59.000Z",
+    "pageCount": 7,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1733867.jpg?modified=1793265667",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/1/page_1_level_2_1659322805.webp",
         "offerIds": [
-          "6ae32f78-14c8-4413-9add-00c40ad300ce",
-          "6ae32f78-2918-4453-9a4a-002f0ad30291",
-          "6ae32f78-3ef4-416b-a00d-00120ad3012b",
-          "6ae32f78-6100-46a9-ac1f-00c90ad30298",
-          "6ae32f78-b4f8-449a-9e2c-00650ad300b3",
-          "6ae32f79-1d30-4fdf-b2d5-00440ad301c2",
-          "6ae32f79-4d14-4859-9553-001a0ad30124",
-          "6ae32f79-60d8-45ae-b053-00330ad302bb",
-          "6ae32f79-8448-4c65-92c7-00120ad300fe",
-          "6ae32f79-aa48-4656-b8cc-005e0ad30216"
+          "6ae33cd3-9410-4bf8-95ce-00a80ad30248",
+          "6ae33cd4-8e50-404a-8a3e-00180ad302a8",
+          "6ae33cd6-dfdc-4433-91b6-003e0ad30068"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/2/page_2_level_2_1632405268.webp",
         "offerIds": [
+          "6ae32f78-14c8-4413-9add-00c40ad300ce",
+          "6ae32f78-2918-4453-9a4a-002f0ad30291",
+          "6ae32f78-3ef4-416b-a00d-00120ad3012b",
+          "6ae32f78-b4f8-449a-9e2c-00650ad300b3",
+          "6ae32f79-4d14-4859-9553-001a0ad30124",
+          "6ae32f79-60d8-45ae-b053-00330ad302bb",
+          "6ae32f79-aa48-4656-b8cc-005e0ad30216",
+          "6ae32f79-de0c-463d-bef4-003e0ad302a8"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f78-6100-46a9-ac1f-00c90ad30298_20261029123554.png",
+        "offerIds": [
+          "6ae32f78-6100-46a9-ac1f-00c90ad30298",
+          "6ae32f79-8448-4c65-92c7-00120ad300fe",
           "6ae32f79-c404-4f7b-8329-00910ad302c9",
-          "6ae32f79-cda4-44e2-8043-00640ad30213",
-          "6ae32f79-de0c-463d-bef4-003e0ad302a8",
+          "6ae32f79-cda4-44e2-8043-00640ad30213"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1733867.jpg?modified=1793265667",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f79-1d30-4fdf-b2d5-00440ad301c2_20261029123607.png",
+        "offerIds": [
+          "6ae32f79-1d30-4fdf-b2d5-00440ad301c2",
           "6ae32f7a-3ca4-469c-8d82-43380ad302fb",
-          "6ae32f7a-a54c-4ed5-95d6-005c0ad30281",
           "6ae32f7a-bac4-40e5-8282-4e350ad30160",
           "6ae32f7b-6030-41fe-8ff0-00ed0ad30081",
+          "6ae32f7b-c658-40ec-b122-00230ad302a8"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f7a-a54c-4ed5-95d6-005c0ad30281_20261029123610.png",
+        "offerIds": [
+          "6ae32f7a-a54c-4ed5-95d6-005c0ad30281",
           "6ae32f7b-6fc8-4115-8cda-44990ad30143",
           "6ae32f7b-a400-43c6-8d78-00950ad302bb",
-          "6ae32f7b-c658-40ec-b122-00230ad302a8"
+          "6ae32f7c-0f54-414d-a0ab-00220ad3025a",
+          "6ae32f7c-6bdc-4770-88d0-008f0ad30082",
+          "6ae32f7d-2d8c-453f-8cba-00870ad30281",
+          "6ae32f7d-8834-4c12-b72a-00d10ad3028c",
+          "6ae32f7e-6b04-41d4-be3f-00720ad300b5"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f7c-1918-4b8e-bc55-4d390ad301f7_20261029123606.png",
+        "offerIds": [
+          "6ae32f7c-1918-4b8e-bc55-4d390ad301f7",
+          "6ae32f7c-2fc0-480c-bff1-00bc0ad30213",
+          "6ae32f7d-7630-4184-a334-49980ad30143",
+          "6ae32f7d-c500-4088-aff3-00a90ad30073"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/1/page_1_level_2_1659322805.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/2/page_2_level_2_1632405268.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/2/page_2_level_2_1632405268.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f78-6100-46a9-ac1f-00c90ad30298_20261029123554.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1733867.jpg?modified=1793265667",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f79-1d30-4fdf-b2d5-00440ad301c2_20261029123607.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f7a-a54c-4ed5-95d6-005c0ad30281_20261029123610.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f7c-1918-4b8e-bc55-4d390ad301f7_20261029123606.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_965705",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1732735",
@@ -679,11 +1752,11 @@
     "chainId": "despar",
     "storeName": "Despar",
     "title": "Sconti di qualita",
-    "validFrom": "2026-10-26T00:00:00.000Z",
-    "validTo": "2026-11-20T23:59:59.000Z",
-    "startDate": "2026-10-26T00:00:00.000Z",
-    "endDate": "2026-11-20T23:59:59.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-10-28T08:46:32.000Z",
+    "validTo": "2026-11-11T22:59:59.000Z",
+    "startDate": "2026-10-28T08:46:32.000Z",
+    "endDate": "2026-11-11T22:59:59.000Z",
+    "pageCount": 7,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189",
     "pages": [
       {
@@ -692,41 +1765,87 @@
         "offerIds": [
           "6ae1c51d-a890-404e-90f1-007a0ad30195",
           "6ae1c51e-d0c4-43f1-8027-00140ad300a3",
-          "6ae1c520-38f4-4a53-8915-00650ad3005b",
-          "6ae1c546-d624-4c73-90e7-008e0ad30260",
-          "6ae1c547-63cc-4db8-a526-006e0ad30124",
-          "6ae1c548-3160-4fa2-8e26-00820ad302ed",
-          "6ae1c548-3d80-4ff8-88b7-00290ad302c4",
-          "6ae1c549-3d84-48ed-85fb-00ce0ad30046",
-          "6ae1c549-608c-4bae-a558-48ef0ad30174",
-          "6ae1c549-8374-4086-ae34-49ab0ad300e9"
+          "6ae1c520-38f4-4a53-8915-00650ad3005b"
         ]
       },
       {
         "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189",
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c548-3160-4fa2-8e26-00820ad302ed_20261028131255.png",
         "offerIds": [
+          "6ae1c548-3160-4fa2-8e26-00820ad302ed",
+          "6ae1c549-608c-4bae-a558-48ef0ad30174",
+          "6ae1c549-8374-4086-ae34-49ab0ad300e9",
           "6ae1c549-bd74-4076-a728-00570ad30054",
-          "6ae1c549-c124-4ec0-ae82-4a420ad302c6",
           "6ae1c54a-1608-4d8f-8ad4-42060ad300e9",
-          "6ae1c54a-5954-46a8-ab3e-00ce0ad302d3",
-          "6ae1c54a-6e2c-46a8-b76c-00d30ad30216",
           "6ae1c54a-c8dc-46ab-8716-00520ad30033",
           "6ae1c54a-d540-4aea-8f34-00f20ad3023b",
-          "6ae1c54b-325c-4b3a-8893-00320ad30152",
+          "6ae1c54b-325c-4b3a-8893-00320ad30152"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c546-d624-4c73-90e7-008e0ad30260_20261028130613.png",
+        "offerIds": [
+          "6ae1c546-d624-4c73-90e7-008e0ad30260",
+          "6ae1c547-63cc-4db8-a526-006e0ad30124",
+          "6ae1c548-3d80-4ff8-88b7-00290ad302c4",
+          "6ae1c549-3d84-48ed-85fb-00ce0ad30046"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c549-c124-4ec0-ae82-4a420ad302c6_20261028130435.png",
+        "offerIds": [
+          "6ae1c549-c124-4ec0-ae82-4a420ad302c6",
+          "6ae1c54a-5954-46a8-ab3e-00ce0ad302d3",
+          "6ae1c54a-6e2c-46a8-b76c-00d30ad30216",
           "6ae1c54b-6210-42c5-9058-00430ad302f1",
           "6ae1c54b-da78-4574-b5e4-009b0ad30254"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c559-2a70-4cb6-a805-008c0ad300e2_20261028130826.png",
+        "offerIds": [
+          "6ae1c559-2a70-4cb6-a805-008c0ad300e2",
+          "6ae1c559-9b10-4721-94af-00630ad301d3",
+          "6ae1c559-de7c-4eb2-9548-00dd0ad30079",
+          "6ae1c55a-e7a8-4813-b087-00560ad30152",
+          "6ae1c55a-fe90-4c21-a765-00710ad302cd",
+          "6ae1c55b-0948-4228-8074-00890ad3005b",
+          "6ae1c55b-247c-44a5-8ff5-002d0ad30070",
+          "6ae1c55c-fcb4-45d5-9ada-00ab0ad30141"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c550-77b0-4cb0-a93d-000c0ad302c4_20261028130725.png",
+        "offerIds": [
+          "6ae1c550-77b0-4cb0-a93d-000c0ad302c4",
+          "6ae1c551-82cc-42fe-9ece-004a0ad300a5",
+          "6ae1c552-06b4-429c-8294-00980ad300a6",
+          "6ae1c552-d2e4-4404-92eb-006c0ad300a6"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189",
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189"
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c548-3160-4fa2-8e26-00820ad302ed_20261028131255.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c546-d624-4c73-90e7-008e0ad30260_20261028130613.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c549-c124-4ec0-ae82-4a420ad302c6_20261028130435.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c559-2a70-4cb6-a805-008c0ad300e2_20261028130826.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c550-77b0-4cb0-a93d-000c0ad302c4_20261028130725.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_964424",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1740804",
@@ -734,11 +1853,11 @@
     "chainId": "dpiu",
     "storeName": "DPiù",
     "title": "Sotto costo",
-    "validFrom": "2026-11-05T00:00:00.000Z",
-    "validTo": "2026-11-20T23:59:59.000Z",
-    "startDate": "2026-11-05T00:00:00.000Z",
-    "endDate": "2026-11-20T23:59:59.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-04T23:00:00.000Z",
+    "validTo": "2026-11-14T22:59:00.000Z",
+    "startDate": "2026-11-04T23:00:00.000Z",
+    "endDate": "2026-11-14T22:59:00.000Z",
+    "pageCount": 7,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1740804.jpg?modified=1793882940",
     "pages": [
       {
@@ -747,41 +1866,106 @@
         "offerIds": [
           "6aec94d7-8bb0-49f7-b74a-009c0ad302d1",
           "6aec94d8-1100-43f4-b860-00480ad302f0",
-          "6aec94d8-9a0c-4d9e-8d04-00400ad301f5",
-          "6aec94d9-e01c-4486-92d6-00190ad302ae",
-          "6aec94d9-fc3c-49e9-ad30-001c0ad30224",
-          "6aec94da-4890-490b-90da-00560ad300dd",
-          "6aec94da-5980-4080-b46d-00900ad300fa",
-          "6aec94da-6ad4-4979-923c-00d10ad302d1",
-          "6aec94da-e0f4-4a87-869d-00600ad301c3",
-          "6aec94db-1358-4952-acf9-00ef0ad300a5"
+          "6aec94d8-9a0c-4d9e-8d04-00400ad301f5"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971941/2/page_2_level_2_616094059.webp",
         "offerIds": [
+          "6aec94d9-e01c-4486-92d6-00190ad302ae",
+          "6aec94d9-fc3c-49e9-ad30-001c0ad30224",
+          "6aec94da-4890-490b-90da-00560ad300dd",
+          "6aec94da-5980-4080-b46d-00900ad300fa",
+          "6aec94da-e0f4-4a87-869d-00600ad301c3",
           "6aec94db-7888-4288-9bef-00b70ad302d1",
           "6aec94db-8230-48f7-a8ac-00970ad302a5",
-          "6aec94db-ee58-4f6c-8052-001d0ad3021f",
           "6aec94dc-f138-4b2b-8524-00700ad3029e",
-          "6aec94dd-1f40-4afb-9395-00750ad3006e",
-          "6aec94dd-3358-46cb-8830-00620ad30170",
           "6aec94dd-5120-4531-8e7d-00240ad302bb",
           "6aec94dd-6674-49db-b9c1-00720ad302bb",
+          "6aec94dd-b22c-47e3-b76e-00590ad30147"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94da-6ad4-4979-923c-00d10ad302d1_20261106142838.png",
+        "offerIds": [
+          "6aec94da-6ad4-4979-923c-00d10ad302d1",
+          "6aec94db-1358-4952-acf9-00ef0ad300a5",
+          "6aec94db-ee58-4f6c-8052-001d0ad3021f",
+          "6aec94dd-1f40-4afb-9395-00750ad3006e",
+          "6aec94dd-3358-46cb-8830-00620ad30170",
+          "6aec94dd-d94c-4e33-82d9-00310ad30140",
+          "6aec94dd-f220-4985-adce-00d10ad30094",
+          "6aec94de-3f8c-4445-93b3-00ce0ad30274",
+          "6aec94de-e118-43bc-84a9-00ad0ad30274",
+          "6aec94df-1c80-47c3-89af-008f0ad3029e",
+          "6aec94df-4c2c-4ec8-84b5-00b00ad30134"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94dd-89fc-4a9c-971e-00340ad302f6_20261106143104.png",
+        "offerIds": [
           "6aec94dd-89fc-4a9c-971e-00340ad302f6",
-          "6aec94dd-9564-488d-9774-00ac0ad30037"
+          "6aec94dd-9564-488d-9774-00ac0ad30037",
+          "6aec94dd-b0e4-43a1-a415-009e0ad3011f",
+          "6aec94dd-b1c4-4194-b61c-008e0ad301e3",
+          "6aec94de-0c48-461a-9336-00d30ad30095",
+          "6aec94df-3804-4046-88c2-00d60ad302ae",
+          "6aec94df-7844-41c9-9288-00a40ad30095",
+          "6aec94df-c11c-47a7-adb2-000d0ad301c3",
+          "6aec94df-e9cc-4e4b-91af-00400ad300d3",
+          "6aec94e0-326c-4270-b7b5-00d10ad3006e",
+          "6aec94e0-63d0-4f20-af3f-00360ad30140"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94de-4578-4cee-8dc4-00db0ad3014b_20261106143427.png",
+        "offerIds": [
+          "6aec94de-4578-4cee-8dc4-00db0ad3014b",
+          "6aec94de-65f0-496d-aa34-00670ad30095",
+          "6aec94df-2b28-41d0-98a6-00bd0ad30049",
+          "6aec94df-4204-43fd-b157-00700ad30131",
+          "6aec94df-8048-4b64-bce5-00340ad3014b",
+          "6aec94e0-2750-413e-8a6b-00d20ad30267",
+          "6aec94e0-7bcc-4401-8bc6-00740ad30182",
+          "6aec94e1-0848-42f5-9d38-00b80ad300dd"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94df-82e0-4038-8c5b-000f0ad302c1_20261106143718.png",
+        "offerIds": [
+          "6aec94df-82e0-4038-8c5b-000f0ad302c1",
+          "6aec94df-85b8-4b8c-8aa3-00800ad302f6",
+          "6aec94e0-3fe4-4118-9703-008b0ad30037",
+          "6aec94e0-c070-4a23-a05c-007c0ad30170",
+          "6aec94e1-23f4-4465-9dcf-00990ad302d1"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94e1-2dd0-4880-b3c0-00ad0ad30174_20261106143938.png",
+        "offerIds": [
+          "6aec94e1-2dd0-4880-b3c0-00ad0ad30174"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971941/1/page_1_level_2_1175908169.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971941/2/page_2_level_2_616094059.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971941/2/page_2_level_2_616094059.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94da-6ad4-4979-923c-00d10ad302d1_20261106142838.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94dd-89fc-4a9c-971e-00340ad302f6_20261106143104.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94de-4578-4cee-8dc4-00db0ad3014b_20261106143427.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94df-82e0-4038-8c5b-000f0ad302c1_20261106143718.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94e1-2dd0-4880-b3c0-00ad0ad30174_20261106143938.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_971941",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1736582",
@@ -789,54 +1973,110 @@
     "chainId": "tigota",
     "storeName": "Tigotà",
     "title": "Viaggio nel profumo",
-    "validFrom": "2026-11-01T00:00:00.000Z",
-    "validTo": "2026-11-30T00:00:00.000Z",
-    "startDate": "2026-11-01T00:00:00.000Z",
-    "endDate": "2026-11-30T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-02T07:39:02.000Z",
+    "validTo": "2026-11-30T22:59:59.000Z",
+    "startDate": "2026-11-02T07:39:02.000Z",
+    "endDate": "2026-11-30T22:59:59.000Z",
+    "pageCount": 6,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736582.jpg?modified=1793605137",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/1/page_1_level_2_836694301.webp",
-        "offerIds": [
-          "6ae83f56-0bb8-4e97-a274-00480ad301e0",
-          "6ae83f57-e9dc-42ec-ab4f-002b0ad30182",
-          "6ae83f59-dc40-4832-b611-4a010ad302e7",
-          "6ae83f5a-96fc-45b5-82b2-00b30ad301d4",
-          "6ae83f5b-6c1c-43ae-bfb3-006d0ad300f3",
-          "6ae83f5b-c664-4d45-aa6e-4d190ad3006e",
-          "6ae83f5c-49d0-4f7a-9611-00450ad301e0",
-          "6ae83f5c-e678-4082-865c-4f420ad30082",
-          "6ae83f5d-300c-49cb-a4f1-48a60ad30019",
-          "6ae83f5d-a8c4-4faf-af8f-006d0ad302e7"
-        ]
+        "offerIds": []
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/2/page_2_level_2_1890251372.webp",
         "offerIds": [
-          "6ae83f5e-b9cc-476b-b068-004b0ad302a3",
-          "6ae83f5f-6e7c-4c7d-8a08-003f0ad3008f",
+          "6ae83f56-0bb8-4e97-a274-00480ad301e0",
+          "6ae83f57-e9dc-42ec-ab4f-002b0ad30182",
+          "6ae83f59-dc40-4832-b611-4a010ad302e7",
+          "6ae83f5b-6c1c-43ae-bfb3-006d0ad300f3",
+          "6ae83f5c-e678-4082-865c-4f420ad30082",
+          "6ae83f5d-a8c4-4faf-af8f-006d0ad302e7",
           "6ae83f5f-f3c0-477c-b24d-008a0ad3008f",
-          "6ae83f60-5e38-4d50-85aa-00840ad300f5",
           "6ae83f60-8418-4a45-9ff7-008d0ad301a4",
-          "6ae83f60-ed58-40f5-9ad1-00f10ad302fa",
           "6ae83f61-9e38-4f06-89c9-00480ad3008f",
-          "6ae83f61-b4e8-4a8e-a359-00150ad30272",
+          "6ae83f63-dcc0-4709-bae2-004b0ad302b2",
+          "6ae83f64-87a4-4a28-acb3-005a0ad30161"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f5a-96fc-45b5-82b2-00b30ad301d4_20261102084429.png",
+        "offerIds": [
+          "6ae83f5a-96fc-45b5-82b2-00b30ad301d4",
+          "6ae83f5b-c664-4d45-aa6e-4d190ad3006e",
+          "6ae83f5c-49d0-4f7a-9611-00450ad301e0",
+          "6ae83f5d-300c-49cb-a4f1-48a60ad30019",
+          "6ae83f5e-b9cc-476b-b068-004b0ad302a3",
+          "6ae83f60-5e38-4d50-85aa-00840ad300f5",
           "6ae83f61-c81c-4062-ac22-41c20ad301a6",
-          "6ae83f62-ad68-4357-a665-00a00ad301aa"
+          "6ae83f62-ad68-4357-a665-00a00ad301aa",
+          "6ae83f63-4d58-4745-9264-00c20ad30182",
+          "6ae83f64-5e28-4893-804c-00a70ad300f5",
+          "6ae83f65-3564-4833-bfdb-4e9e0ad302fb",
+          "6ae83f67-9940-48b8-b674-00a60ad301c4",
+          "6ae83f68-1bd0-466e-be45-00a80ad3022b",
+          "6ae83f6a-b1b8-4f72-8718-404c0ad301a4"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f5f-6e7c-4c7d-8a08-003f0ad3008f_20261102084433.png",
+        "offerIds": [
+          "6ae83f5f-6e7c-4c7d-8a08-003f0ad3008f",
+          "6ae83f60-ed58-40f5-9ad1-00f10ad302fa",
+          "6ae83f61-b4e8-4a8e-a359-00150ad30272",
+          "6ae83f63-ff18-4433-9d70-44490ad3006c",
+          "6ae83f64-5e0c-4b87-bb02-00750ad301a4",
+          "6ae83f65-6eb4-48c2-99f0-49990ad301a4",
+          "6ae83f66-5b1c-4dd2-b2a1-00b30ad30170",
+          "6ae83f67-9394-43f5-bbe6-004d0ad30181",
+          "6ae83f68-b53c-480a-95eb-00470ad302ba",
+          "6ae83f69-fb08-4c84-9784-00550ad3006e",
+          "6ae83f6a-4800-4f1e-abb0-4ca80ad3002b",
+          "6ae83f6b-af60-482f-8a43-00330ad302a3",
+          "6ae83f6c-61f8-42b3-b44e-00af0ad302d9"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f65-d6b0-46a3-b94a-00a70ad30042_20261102084439.png",
+        "offerIds": [
+          "6ae83f65-d6b0-46a3-b94a-00a70ad30042",
+          "6ae83f67-5754-49f9-b506-969c0ad301db",
+          "6ae83f68-0a44-4154-8a02-00ca0ad302a3",
+          "6ae83f69-904c-4de3-ba71-00b60ad301aa",
+          "6ae83f6a-9754-45a0-8c1f-00330ad30132",
+          "6ae83f6b-2db8-4d77-a7e7-00660ad30076",
+          "6ae83f6c-2828-4ce0-813d-007d0ad301c4"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f69-6f80-4aab-8c1c-4e9a0ad301a6_20261102084444.png",
+        "offerIds": [
+          "6ae83f69-6f80-4aab-8c1c-4e9a0ad301a6",
+          "6ae83f6a-65e0-4b22-918c-00900ad300a5",
+          "6ae83f6b-6990-4749-b0a9-4e5e0ad30082",
+          "6ae83f6c-8ecc-4f70-a5f7-00750ad301e0"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/1/page_1_level_2_836694301.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/2/page_2_level_2_1890251372.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/2/page_2_level_2_1890251372.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f5a-96fc-45b5-82b2-00b30ad301d4_20261102084429.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f5f-6e7c-4c7d-8a08-003f0ad3008f_20261102084433.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f65-d6b0-46a3-b94a-00a70ad30042_20261102084439.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae83f69-6f80-4aab-8c1c-4e9a0ad301a6_20261102084444.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_967805",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1730471",
@@ -844,11 +2084,11 @@
     "chainId": "piume",
     "storeName": "PiùMe",
     "title": "Le occasioni bussano alla porta.",
-    "validFrom": "2026-10-26T00:00:00.000Z",
-    "validTo": "2026-11-15T00:00:00.000Z",
-    "startDate": "2026-10-26T00:00:00.000Z",
-    "endDate": "2026-11-15T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-10-25T23:00:00.000Z",
+    "validTo": "2026-11-15T22:59:00.000Z",
+    "startDate": "2026-10-25T23:00:00.000Z",
+    "endDate": "2026-11-15T22:59:00.000Z",
+    "pageCount": 7,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1730471.jpg?modified=1793004896",
     "pages": [
       {
@@ -858,19 +2098,25 @@
           "6ae05e03-12d8-413b-a598-004e0ad30245",
           "6ae05e06-bc68-4ce7-a97a-00430ad30273",
           "6ae05e07-78c8-4b26-b2ea-000d0ad302b3",
-          "6ae05e09-fe6c-48fa-b6f4-002e0ad30245",
-          "6ae05e35-1b04-4538-9271-006b0ad302f6",
-          "6ae05e41-dff8-4798-863d-007d0ad30053",
-          "6ae05e43-f38c-466a-a5f9-00100ad301d0",
-          "6ae05e45-57cc-4739-a812-00270ad3026e",
-          "6ae05e46-50a4-4122-938d-00b40ad30266",
-          "6ae05e47-bbfc-4aa8-a9e3-00640ad30070"
+          "6ae05e09-fe6c-48fa-b6f4-002e0ad30245"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/2/page_2_level_2_1187390206.webp",
         "offerIds": [
+          "6ae05e35-1b04-4538-9271-006b0ad302f6"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e41-dff8-4798-863d-007d0ad30053_20261027101708.png",
+        "offerIds": [
+          "6ae05e41-dff8-4798-863d-007d0ad30053",
+          "6ae05e43-f38c-466a-a5f9-00100ad301d0",
+          "6ae05e45-57cc-4739-a812-00270ad3026e",
+          "6ae05e46-50a4-4122-938d-00b40ad30266",
+          "6ae05e47-bbfc-4aa8-a9e3-00640ad30070",
           "6ae05e48-aa28-4745-add2-001f0ad30121",
           "6ae05e49-7c60-47b3-8b50-00af0ad302d9",
           "6ae05e4a-a150-4752-ae00-00860ad30042",
@@ -880,18 +2126,76 @@
           "6ae05e4f-ea1c-4c34-b638-00540ad302c3",
           "6ae05e50-f8b8-40da-81ec-005d0ad30213",
           "6ae05e51-496c-434c-91f7-00500ad30245",
-          "6ae05e52-4280-4999-b335-00690ad301e4"
+          "6ae05e52-4280-4999-b335-00690ad301e4",
+          "6ae05e53-0dd8-4dca-8ab1-00810ad302e8"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1730471.jpg?modified=1793004896",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e5d-2230-425c-bde1-00e60ad30063_20261027102301.png",
+        "offerIds": [
+          "6ae05e5d-2230-425c-bde1-00e60ad30063",
+          "6ae05e5e-b100-425c-8411-00db0ad3021a",
+          "6ae05e5f-aca8-45e4-ac60-00b20ad30036",
+          "6ae05e60-f8ec-4cb5-b962-00380ad3013f",
+          "6ae05e61-94b0-4664-b51c-003a0ad30096",
+          "6ae05e62-acc4-4611-adb9-00dc0ad30235",
+          "6ae05e63-d5f0-4fbb-8404-00ba0ad30042",
+          "6ae05e64-af20-48df-a2d0-00c50ad30273",
+          "6ae05e65-5998-4394-91f3-00680ad30114",
+          "6ae05e67-d0a0-43e9-8b7e-00520ad30217",
+          "6ae05e69-e478-49f2-8760-00e20ad301d0",
+          "6ae05e6b-5b48-43f8-9608-009a0ad300b0",
+          "6ae05e6c-d170-4be0-b2ad-003d0ad302e6",
+          "6ae05e6d-26f0-48ed-833c-00350ad30196"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e9e-980c-4104-a17a-00150ad300e9_20261027103432.png",
+        "offerIds": [
+          "6ae05e9e-980c-4104-a17a-00150ad300e9",
+          "6ae05e9f-e434-44e1-8ba3-002f0ad30263",
+          "6ae05ea0-e200-47cf-98f1-00d60ad300e9",
+          "6ae05ea1-a770-4627-92ef-007b0ad30070"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e94-6ac4-4b10-b9c2-00d70ad30245_20261027103446.png",
+        "offerIds": [
+          "6ae05e94-6ac4-4b10-b9c2-00d70ad30245",
+          "6ae05e95-30dc-41ba-9e1e-00720ad301d6",
+          "6ae05e96-feac-47e1-b13e-00270ad30213",
+          "6ae05e99-2588-40e9-9557-00680ad30032",
+          "6ae05e9a-90dc-4014-8e61-00820ad30082",
+          "6ae05e9b-6f9c-425a-a0cf-00610ad3021a",
+          "6ae05e9c-efd0-4da2-8add-00c70ad300b0",
+          "6ae05e9d-bf18-4113-9b57-005f0ad3017b",
+          "6ae05e9f-11ac-45cf-853f-008e0ad302da",
+          "6ae05ea0-6480-4ae0-b961-00670ad301a3",
+          "6ae05ea1-4e54-41cc-998f-00180ad30196"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/1/page_1_level_2_683992341.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/2/page_2_level_2_1187390206.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/2/page_2_level_2_1187390206.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e41-dff8-4798-863d-007d0ad30053_20261027101708.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1730471.jpg?modified=1793004896",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e5d-2230-425c-bde1-00e60ad30063_20261027102301.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e9e-980c-4104-a17a-00150ad300e9_20261027103432.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae05e94-6ac4-4b10-b9c2-00d70ad30245_20261027103446.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_962272",
     "isCurrent": true,
     "isExpired": false,
-    "featured": true
+    "featured": false
   },
   {
     "id": "1731982",
@@ -899,11 +2203,11 @@
     "chainId": "unieuro",
     "storeName": "Unieuro",
     "title": "Speciale Incasso da Unieuro!",
-    "validFrom": "2026-10-30T00:00:00.000Z",
-    "validTo": "2026-11-15T00:00:00.000Z",
-    "startDate": "2026-10-30T00:00:00.000Z",
-    "endDate": "2026-11-15T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-10-29T23:00:00.000Z",
+    "validTo": "2026-11-15T22:59:00.000Z",
+    "startDate": "2026-10-29T23:00:00.000Z",
+    "endDate": "2026-11-15T22:59:00.000Z",
+    "pageCount": 9,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1731982.jpg?modified=1793347320",
     "pages": [
       {
@@ -911,37 +2215,116 @@
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966366/1/page_1_level_2_1143207932.webp",
         "offerIds": [
           "6ae1b831-c794-4756-b40b-44470ad302da",
-          "6ae1b835-2504-4709-b0a3-00c00ad30268",
-          "6ae1b83d-9878-433a-9560-00400ad3010b",
-          "6ae1b83e-63d4-4a72-bd36-00bb0ad30054",
-          "6ae1b83f-dfec-4710-aa0c-00ac0ad30036",
-          "6ae1b841-7f88-435b-af64-00730ad301d3",
-          "6ae1b843-e234-45fa-b77c-00850ad301d6",
-          "6ae1b887-9ac4-4061-a042-00800ad302c0",
-          "6ae1b88d-95a4-4cba-a5ed-00c70ad30204",
-          "6ae1b88d-b6dc-4014-bd8d-004e0ad301c0"
+          "6ae1b835-2504-4709-b0a3-00c00ad30268"
         ]
       },
       {
         "pageNumber": 2,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966366/2/page_2_level_2_8017284.webp",
         "offerIds": [
+          "6ae1b83d-9878-433a-9560-00400ad3010b",
+          "6ae1b83e-63d4-4a72-bd36-00bb0ad30054",
+          "6ae1b83f-dfec-4710-aa0c-00ac0ad30036",
+          "6ae1b841-7f88-435b-af64-00730ad301d3",
+          "6ae1b843-e234-45fa-b77c-00850ad301d6"
+        ]
+      },
+      {
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b887-9ac4-4061-a042-00800ad302c0_20261030135435.png",
+        "offerIds": [
+          "6ae1b887-9ac4-4061-a042-00800ad302c0",
+          "6ae1b88d-95a4-4cba-a5ed-00c70ad30204",
+          "6ae1b88d-b6dc-4014-bd8d-004e0ad301c0",
           "6ae1b88e-5564-404d-8854-00e90ad30113",
           "6ae1b890-0264-4920-8ac2-46550ad30141",
           "6ae1b890-deec-4847-9bd0-00c30ad30141",
           "6ae1b893-9f54-4f90-9b45-00240ad30180",
-          "6ae1b894-60c4-4931-8b40-006e0ad3028d",
+          "6ae1b894-60c4-4931-8b40-006e0ad3028d"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b896-7524-4be8-8953-4d220ad3028d_20261030135852.png",
+        "offerIds": [
           "6ae1b896-7524-4be8-8953-4d220ad3028d",
           "6ae1b896-e83c-41d4-9f27-00ca0ad30268",
           "6ae1b89b-fc20-4a45-beec-006c0ad302c3",
           "6ae1b89c-1738-442e-ab3f-00160ad30197",
           "6ae1b89e-c0e4-4198-a035-002e0ad30204"
         ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8b8-08f8-4f71-9dea-005e0ad30236_20261030141323.png",
+        "offerIds": [
+          "6ae1b8b8-08f8-4f71-9dea-005e0ad30236",
+          "6ae1b8ba-25e8-4619-9385-00560ad300e2",
+          "6ae1b8bd-0144-4308-b7f5-443a0ad30255",
+          "6ae1b8bd-9cf8-43ab-a3d7-007c0ad3005b",
+          "6ae1b8c2-288c-4860-88d4-00620ad300a3"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8c9-bb3c-4d07-bd35-00760ad30180_20261030162439.png",
+        "offerIds": [
+          "6ae1b8c9-bb3c-4d07-bd35-00760ad30180",
+          "6ae1b8ca-29cc-413d-af75-00140ad300b7",
+          "6ae1b8cb-15a0-4a3e-859c-00bb0ad3001a",
+          "6ae1b8cc-c848-4ae3-adb8-00920ad301d1",
+          "6ae1b8cc-ddf4-4fd5-a95b-00960ad30061",
+          "6ae1b8cd-7404-4b8b-b547-00bd0ad302c0",
+          "6ae1b8cf-5bec-4dff-a838-004e0ad301c0",
+          "6ae1b8cf-8418-4cb8-9a5b-00680ad301e5"
+        ]
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8b7-a8e4-4450-be4a-00650ad30155_20261030135026.png",
+        "offerIds": [
+          "6ae1b8b7-a8e4-4450-be4a-00650ad30155",
+          "6ae1b8e8-0af4-4000-a92e-003d0ad3001a",
+          "6ae1b8e8-1dcc-421b-a0ec-00340ad302fc",
+          "6ae1b8ed-c920-4104-883a-00890ad30036",
+          "6ae1b8ee-58a8-4087-b832-00b70ad301d3",
+          "6ae1b8f0-ee8c-4f77-a7a9-00760ad302ac"
+        ]
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8f0-c538-46ef-a93a-004d0ad30157_20261030135144.png",
+        "offerIds": [
+          "6ae1b8f0-c538-46ef-a93a-004d0ad30157",
+          "6ae1b8f4-95f4-4345-80f3-00230ad301c0",
+          "6ae1b8f6-fd44-4cef-bab5-00d70ad3005b",
+          "6ae1b8f9-5d5c-419f-861a-00da0ad300a3",
+          "6ae1b8fe-a210-438f-a480-00bb0ad3021a",
+          "6ae1b900-e5f4-4cbd-a740-00b20ad302d3"
+        ]
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8f8-5638-4127-94a1-00c70ad300b7_20261030135308.png",
+        "offerIds": [
+          "6ae1b8f8-5638-4127-94a1-00c70ad300b7",
+          "6ae1b8fa-b3bc-4451-914a-00640ad301d1",
+          "6ae1b8fc-2238-4d6f-aa54-007a0ad302ac",
+          "6ae1b8fe-781c-444d-beb6-00960ad302a9",
+          "6ae1b901-62b8-419e-a17f-001c0ad3005a"
+        ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966366/1/page_1_level_2_1143207932.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966366/2/page_2_level_2_8017284.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/966366/2/page_2_level_2_8017284.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b887-9ac4-4061-a042-00800ad302c0_20261030135435.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b896-7524-4be8-8953-4d220ad3028d_20261030135852.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8b8-08f8-4f71-9dea-005e0ad30236_20261030141323.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8c9-bb3c-4d07-bd35-00760ad30180_20261030162439.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8b7-a8e4-4450-be4a-00650ad30155_20261030135026.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8f0-c538-46ef-a93a-004d0ad30157_20261030135144.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1b8f8-5638-4127-94a1-00c70ad300b7_20261030135308.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_966366",
     "isCurrent": true,
@@ -954,51 +2337,184 @@
     "chainId": "unieuro",
     "storeName": "Unieuro",
     "title": "Speciale Casalinghi Natale da Unieuro!",
-    "validFrom": "2026-11-04T00:00:00.000Z",
-    "validTo": "2026-12-24T00:00:00.000Z",
-    "startDate": "2026-11-04T00:00:00.000Z",
-    "endDate": "2026-12-24T00:00:00.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-03T23:00:00.000Z",
+    "validTo": "2026-12-24T22:59:00.000Z",
+    "startDate": "2026-11-03T23:00:00.000Z",
+    "endDate": "2026-12-24T22:59:00.000Z",
+    "pageCount": 14,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0997-db1c-4d70-937f-00d60ad3021c_20261104120404.png",
         "offerIds": [
           "6aeb0997-db1c-4d70-937f-00d60ad3021c",
           "6aeb09c5-afbc-4178-a2cb-00ce0ad300d5",
           "6aeb09c6-7a9c-446c-b855-00bc0ad302b4",
-          "6aeb09c6-7bac-4387-87bd-00420ad301e7",
-          "6aeb0adc-4e6c-4c19-a3cd-00880ad300da",
-          "6aeb0add-31ec-46ce-afdc-00e90ad301ef",
-          "6aeb0ade-1610-434f-83a3-00220ad30207",
-          "6aeb0ae0-fe48-483f-bdb8-001d0ad300b8",
-          "6aeb0ae1-06a0-4a25-acc1-00140ad3003b",
-          "6aeb0ae2-ea6c-42d8-a397-00460ad301e3"
+          "6aeb09c6-7bac-4387-87bd-00420ad301e7"
         ]
       },
       {
-        "pageNumber": 2,
-        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b2b-465c-436c-8e0b-00c60ad302be_20261104121723.png",
         "offerIds": [
-          "6aeb0ae3-e864-491a-acec-004b0ad30293",
-          "6aeb0ae6-7abc-4f5b-b8e6-00dc0ad30133",
-          "6aeb0ae7-3cac-4030-8c3c-004b0ad3029b",
-          "6aeb0ae7-93e0-40fb-b6f2-00430ad301dd",
           "6aeb0b2b-465c-436c-8e0b-00c60ad302be",
           "6aeb0b2d-7fa8-4047-a7f7-00710ad30164",
           "6aeb0b2e-c52c-4951-a39d-000b0ad3012d",
           "6aeb0b34-0c14-458e-bcb3-00e60ad301c1",
           "6aeb0b34-de5c-4123-9b15-005a0ad301b3",
-          "6aeb0b3b-093c-4503-a3a4-00600ad3003b"
+          "6aeb0b3b-093c-4503-a3a4-00600ad3003b",
+          "6aeb0b3b-6b30-4fd6-834f-00380ad30108",
+          "6aeb0b3b-8164-45f1-82ad-00a20ad300b0",
+          "6aeb0b3b-9934-4e8e-b9bc-00c10ad300b8",
+          "6aeb0b3b-c888-4736-bd6f-00b50ad301ea",
+          "6aeb0b3b-e120-4bdc-9cc0-00870ad3029b",
+          "6aeb0b3c-6510-4906-be54-00650ad30066",
+          "6aeb0b3c-88f4-4e5f-8314-000b0ad30035"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0c02-79c4-4312-a670-00170ad3018c_20261104122013.png",
+        "offerIds": [
+          "6aeb0c02-79c4-4312-a670-00170ad3018c",
+          "6aeb0c02-ae20-4835-942e-00610ad3021c",
+          "6aeb0c03-e718-470e-8384-00c50ad300b8",
+          "6aeb0c04-af7c-479b-8ea9-00c10ad3003b",
+          "6aeb0c05-0c78-4706-ad8a-00bb0ad30146",
+          "6aeb0c06-01b8-4e1b-b733-00350ad30113",
+          "6aeb0c06-6b98-43a0-b37b-00a60ad300c3",
+          "6aeb0c07-26b4-4acb-b9be-00880ad30278",
+          "6aeb0c09-4f48-4cdd-b40c-00820ad3018c",
+          "6aeb0c0a-4e34-4150-9ad3-00820ad301ea",
+          "6aeb0c0a-b894-413b-a370-00690ad30066"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0c6d-a2a0-47d4-8fce-003c0ad30293_20261104122113.png",
+        "offerIds": [
+          "6aeb0c6d-a2a0-47d4-8fce-003c0ad30293",
+          "6aeb0c6e-1e44-494a-97a4-00290ad301ea",
+          "6aeb0c6f-4b64-4d2e-9bb2-003a0ad30252",
+          "6aeb0c70-2938-4978-a79b-00240ad30063",
+          "6aeb0c71-220c-477a-98f4-002d0ad301f1",
+          "6aeb0c73-bbb0-4c6d-830d-005b0ad301e3",
+          "6aeb0c75-01ac-48f9-bbf9-00420ad300d5",
+          "6aeb0c76-a5c4-4d99-a91b-00900ad300b0",
+          "6aeb0c79-8c00-40a6-8555-005c0ad30293",
+          "6aeb0c79-edbc-44d2-bf3e-001e0ad30112"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 10,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 11,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 12,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 13,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0adc-4e6c-4c19-a3cd-00880ad300da_20261104122011.png",
+        "offerIds": [
+          "6aeb0adc-4e6c-4c19-a3cd-00880ad300da",
+          "6aeb0add-31ec-46ce-afdc-00e90ad301ef",
+          "6aeb0ade-1610-434f-83a3-00220ad30207",
+          "6aeb0ae0-fe48-483f-bdb8-001d0ad300b8",
+          "6aeb0ae1-06a0-4a25-acc1-00140ad3003b",
+          "6aeb0ae2-ea6c-42d8-a397-00460ad301e3",
+          "6aeb0ae3-e864-491a-acec-004b0ad30293",
+          "6aeb0ae6-7abc-4f5b-b8e6-00dc0ad30133",
+          "6aeb0ae7-3cac-4030-8c3c-004b0ad3029b",
+          "6aeb0ae7-93e0-40fb-b6f2-00430ad301dd"
+        ]
+      },
+      {
+        "pageNumber": 14,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0e36-32c0-4f2c-8cbe-8d790ad3021d_20261104121953.png",
+        "offerIds": [
+          "6aeb0e36-32c0-4f2c-8cbe-8d790ad3021d",
+          "6aeb0e39-b0e0-4c18-a984-00c40ad30187"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
-      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932"
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0997-db1c-4d70-937f-00d60ad3021c_20261104120404.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b2b-465c-436c-8e0b-00c60ad302be_20261104121723.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0c02-79c4-4312-a670-00170ad3018c_20261104122013.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0c6d-a2a0-47d4-8fce-003c0ad30293_20261104122113.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1727601.jpg?modified=1793101932",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0adc-4e6c-4c19-a3cd-00880ad300da_20261104122011.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0e36-32c0-4f2c-8cbe-8d790ad3021d_20261104121953.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_963731",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": true
+  },
+  {
+    "id": "1732058",
+    "storeId": "rapallo-unieuro-matteotti",
+    "chainId": "unieuro",
+    "storeName": "Unieuro",
+    "title": "Black Friday da Unieuro!",
+    "validFrom": "2026-11-03T23:00:00.000Z",
+    "validTo": "2026-11-11T22:59:00.000Z",
+    "startDate": "2026-11-03T23:00:00.000Z",
+    "endDate": "2026-11-11T22:59:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1732058.jpg?modified=1793862695",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1732058.jpg?modified=1793862695",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1732058.jpg?modified=1793862695"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_86555",
     "isCurrent": true,
     "isExpired": false,
     "featured": true
@@ -1009,49 +2525,152 @@
     "chainId": "arcaplanet",
     "storeName": "Arcaplanet",
     "title": "La Convenienza si fa in Tre",
-    "validFrom": "2026-10-29T00:00:00.000Z",
-    "validTo": "2026-11-20T23:59:59.000Z",
-    "startDate": "2026-10-29T00:00:00.000Z",
-    "endDate": "2026-11-20T23:59:59.000Z",
-    "pageCount": 2,
+    "validFrom": "2026-11-09T07:00:00.000Z",
+    "validTo": "2026-11-11T22:59:00.000Z",
+    "startDate": "2026-11-09T07:00:00.000Z",
+    "endDate": "2026-11-11T22:59:00.000Z",
+    "pageCount": 13,
     "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1734323.jpg?modified=1793873699",
     "pages": [
       {
         "pageNumber": 1,
         "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971848/1/page_1_level_2_911132678.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971848/2/page_2_level_2_521125329.webp",
         "offerIds": [
           "6ae34419-e728-4504-a4db-00600ad30189",
           "6ae3441a-9a40-4913-a989-00530ad30175",
           "6ae3441a-c378-4257-8594-00500ad30299",
           "6ae3441a-d0e8-4a0c-b14a-00a40ad300b3",
           "6ae3441b-5f98-4752-ac4e-00750ad302c9",
-          "6ae3441b-7130-4aab-9f5d-00d20ad30230",
-          "6ae3441f-084c-44c9-b0e6-00ab0ad30271",
-          "6ae3441f-4858-49fc-bb77-00180ad30291",
-          "6ae3441f-6fc4-4421-9f65-00570ad301c4",
-          "6ae3441f-8d0c-4108-b0c0-00ae0ad301a5"
+          "6ae3441b-7130-4aab-9f5d-00d20ad30230"
         ]
       },
       {
-        "pageNumber": 2,
-        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971848/2/page_2_level_2_521125329.webp",
+        "pageNumber": 3,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3441f-084c-44c9-b0e6-00ab0ad30271_20261105131846.png",
         "offerIds": [
+          "6ae3441f-084c-44c9-b0e6-00ab0ad30271",
+          "6ae3441f-6fc4-4421-9f65-00570ad301c4",
           "6ae3441f-f9d8-48eb-8fa6-410b0ad300b5",
-          "6ae34420-8680-4d07-974f-00f20ad300d8",
           "6ae34420-944c-4ea8-bff3-00a80ad30230",
-          "6ae34420-d014-431d-b754-00d60ad3007a",
           "6ae34420-d228-4e5e-bb15-00db0ad3012b",
           "6ae34420-da88-4f64-850e-42ae0ad30143",
+          "6ae34421-d300-4adb-b04f-00400ad30121"
+        ]
+      },
+      {
+        "pageNumber": 4,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3441f-4858-49fc-bb77-00180ad30291_20261105131846.png",
+        "offerIds": [
+          "6ae3441f-4858-49fc-bb77-00180ad30291",
+          "6ae3441f-8d0c-4108-b0c0-00ae0ad301a5",
+          "6ae34420-8680-4d07-974f-00f20ad300d8",
+          "6ae34420-d014-431d-b754-00d60ad3007a",
           "6ae34421-7e20-4d4a-a7fa-00af0ad30113",
-          "6ae34421-9318-4b81-8689-002c0ad3016a",
-          "6ae34421-d300-4adb-b04f-00400ad30121",
+          "6ae34421-9318-4b81-8689-002c0ad3016a"
+        ]
+      },
+      {
+        "pageNumber": 5,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3442a-569c-4c24-a093-00930ad30230_20261105131848.png",
+        "offerIds": [
+          "6ae3442a-569c-4c24-a093-00930ad30230",
+          "6ae3442a-c4e0-40b6-9757-46740ad30271",
+          "6ae3442b-0668-4707-a784-465b0ad30271",
+          "6ae3442b-804c-44e7-b243-00530ad300c5",
+          "6ae3442c-8b1c-4888-a842-48080ad30257",
+          "6ae3442c-9bc0-4da8-9c47-00c30ad3006c",
+          "6ae3442d-9164-4e29-ac7d-009f0ad3023f",
+          "6ae3442d-c104-4bf8-8268-00300ad302a8"
+        ]
+      },
+      {
+        "pageNumber": 6,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1734323.jpg?modified=1793873699",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 7,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1734323.jpg?modified=1793873699",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 8,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae34427-8c14-4a84-8cbe-00300ad3025a_20261105131853.png",
+        "offerIds": [
+          "6ae34427-8c14-4a84-8cbe-00300ad3025a",
+          "6ae34427-c134-49b0-b574-004c0ad30298",
+          "6ae34427-f894-4293-b17a-00630ad301a5",
+          "6ae34428-74a0-484c-96c9-00f30ad30230",
+          "6ae34428-eac0-4d05-8e8a-00790ad30257",
+          "6ae34429-1498-4add-a616-00a40ad30230",
+          "6ae34429-1d6c-4c8f-ad9f-00570ad30275",
+          "6ae3442a-48c0-49bc-a610-00a50ad3012b"
+        ]
+      },
+      {
+        "pageNumber": 9,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae34429-3fb8-4044-b0e0-00bb0ad302b8_20261105131854.png",
+        "offerIds": [
+          "6ae34429-3fb8-4044-b0e0-00bb0ad302b8",
+          "6ae34429-4820-451b-a3de-42990ad30216",
+          "6ae3442a-1260-453d-9d41-00f30ad300f5",
+          "6ae3442a-7b00-4a0f-9161-00c60ad30016",
+          "6ae3442b-59c0-47df-a5b5-00700ad3025a",
+          "6ae3442b-6498-4cf0-a41a-005e0ad301a5",
+          "6ae3442c-cd14-4df5-9cea-00ef0ad302c9"
+        ]
+      },
+      {
+        "pageNumber": 10,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3442d-0fdc-4c5a-b6bf-00a90ad30114_20261105131856.png",
+        "offerIds": [
+          "6ae3442d-0fdc-4c5a-b6bf-00a90ad30114",
+          "6ae3442e-1c80-4179-965e-00aa0ad30270",
+          "6ae3442e-ab94-4981-a9dd-fe850ad30114",
+          "6ae3442f-57f8-444a-ba29-00a40ad3012b"
+        ]
+      },
+      {
+        "pageNumber": 11,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae34424-963c-443b-ac0c-002b0ad300f5_20261105131858.png",
+        "offerIds": [
           "6ae34424-963c-443b-ac0c-002b0ad300f5"
+        ]
+      },
+      {
+        "pageNumber": 12,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1734323.jpg?modified=1793873699",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 13,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3442e-0968-4f1b-b506-002a0ad3028c_20261105131901.png",
+        "offerIds": [
+          "6ae3442e-0968-4f1b-b506-002a0ad3028c",
+          "6ae3442e-943c-41a0-ae54-00670ad3023f",
+          "6ae3442f-3084-4f1d-90c5-005a0ad30068"
         ]
       }
     ],
     "pageImages": [
       "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971848/1/page_1_level_2_911132678.webp",
-      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971848/2/page_2_level_2_521125329.webp"
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/971848/2/page_2_level_2_521125329.webp",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3441f-084c-44c9-b0e6-00ab0ad30271_20261105131846.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3441f-4858-49fc-bb77-00180ad30291_20261105131846.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3442a-569c-4c24-a093-00930ad30230_20261105131848.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1734323.jpg?modified=1793873699",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1734323.jpg?modified=1793873699",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae34427-8c14-4a84-8cbe-00300ad3025a_20261105131853.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae34429-3fb8-4044-b0e0-00bb0ad302b8_20261105131854.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3442d-0fdc-4c5a-b6bf-00a90ad30114_20261105131856.png",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae34424-963c-443b-ac0c-002b0ad300f5_20261105131858.png",
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1734323.jpg?modified=1793873699",
+      "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae3442e-0968-4f1b-b506-002a0ad3028c_20261105131901.png"
     ],
     "pdfUrl": "http://viewer.zmags.com/publication/it_it_971848",
     "isCurrent": true,

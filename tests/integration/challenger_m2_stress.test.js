@@ -220,8 +220,8 @@ describe('EMPIRICAL CHALLENGER STRESS HARNESS (Milestone 2)', () => {
       assert.equal(resUndefined.totalOffers, rawOffers.length);
 
       // Excessive internal and surrounding spaces
-      const resSpaces = await offerService.getOffers({ q: '   pasta     barilla    ' });
-      const resClean = await offerService.getOffers({ q: 'pasta barilla' });
+      const resSpaces = await offerService.getOffers({ q: '   olio     extra    ' });
+      const resClean = await offerService.getOffers({ q: 'olio extra' });
       assert.equal(resSpaces.totalOffers, resClean.totalOffers);
       assert.ok(resSpaces.totalOffers > 0);
     });

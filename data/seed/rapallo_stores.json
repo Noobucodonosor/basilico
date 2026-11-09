@@ -15,8 +15,8 @@
     "website": "https://www.basko.it",
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_basko_transparent_webp.webp",
     "isRegionalServing": false,
-    "flyerCount": 2,
-    "activeOfferCount": 42
+    "flyerCount": 3,
+    "activeOfferCount": 116
   },
   {
     "id": "rapallo-coop-sciesa",
@@ -35,7 +35,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_coop_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 2,
-    "activeOfferCount": 51
+    "activeOfferCount": 99
   },
   {
     "id": "rapallo-gulliver-mameli",
@@ -54,7 +54,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_gulliver_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 26
+    "activeOfferCount": 50
   },
   {
     "id": "rapallo-carrefour-assereto",
@@ -72,8 +72,8 @@
     "website": "https://www.carrefour.it",
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_carrefour_market_transparent_webp.webp",
     "isRegionalServing": false,
-    "flyerCount": 2,
-    "activeOfferCount": 38
+    "flyerCount": 5,
+    "activeOfferCount": 151
   },
   {
     "id": "rapallo-carrefour-express-mameli",
@@ -92,7 +92,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_carrefour_express_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 25
+    "activeOfferCount": 50
   },
   {
     "id": "rapallo-ekom-mameli",
@@ -111,7 +111,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_ekom_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 25
+    "activeOfferCount": 50
   },
   {
     "id": "rapallo-penny-milano",
@@ -130,7 +130,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_penny_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 2,
-    "activeOfferCount": 13
+    "activeOfferCount": 12
   },
   {
     "id": "rapallo-eurospin-aurelia",
@@ -149,7 +149,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_eurospin_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 25
+    "activeOfferCount": 50
   },
   {
     "id": "rapallo-despar-betti",
@@ -168,7 +168,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_despar_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 2,
-    "activeOfferCount": 47
+    "activeOfferCount": 64
   },
   {
     "id": "rapallo-dpiu-fioria",
@@ -187,7 +187,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_dpiu_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 25
+    "activeOfferCount": 50
   },
   {
     "id": "rapallo-tigota-lamarmora",
@@ -206,7 +206,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_tigota_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 25
+    "activeOfferCount": 49
   },
   {
     "id": "rapallo-piume-neri",
@@ -225,7 +225,7 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_piume_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 25
+    "activeOfferCount": 50
   },
   {
     "id": "rapallo-unieuro-matteotti",
@@ -243,8 +243,8 @@
     "website": "https://www.unieuro.it",
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_unieuro_transparent_webp.webp",
     "isRegionalServing": false,
-    "flyerCount": 2,
-    "activeOfferCount": 50
+    "flyerCount": 3,
+    "activeOfferCount": 100
   },
   {
     "id": "rapallo-arcaplanet-italia",
@@ -263,6 +263,6 @@
     "logoUrl": "https://it-it-media.shopfully.cloud/images/catene/logo_arcaplanet_transparent_webp.webp",
     "isRegionalServing": false,
     "flyerCount": 1,
-    "activeOfferCount": 25
+    "activeOfferCount": 50
   }
 ]

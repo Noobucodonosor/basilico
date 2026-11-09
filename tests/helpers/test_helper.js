@@ -206,10 +206,10 @@ export function validateOfferSchema(offer) {
     errors.push('Missing or invalid category');
   }
   if (typeof offer.promoPrice !== 'number' || offer.promoPrice <= 0) errors.push('Invalid promoPrice');
-  if (offer.originalPrice !== undefined && (typeof offer.originalPrice !== 'number' || offer.originalPrice < offer.promoPrice)) {
+  if (offer.originalPrice !== undefined && offer.originalPrice !== null && (typeof offer.originalPrice !== 'number' || offer.originalPrice < offer.promoPrice)) {
     errors.push('originalPrice must be >= promoPrice when present');
   }
-  if (offer.discountPercentage !== undefined && (typeof offer.discountPercentage !== 'number' || offer.discountPercentage < 0 || offer.discountPercentage > 100)) {
+  if (offer.discountPercentage !== undefined && offer.discountPercentage !== null && (typeof offer.discountPercentage !== 'number' || offer.discountPercentage < 0 || offer.discountPercentage > 100)) {
     errors.push('Invalid discountPercentage range');
   }
   return errors;

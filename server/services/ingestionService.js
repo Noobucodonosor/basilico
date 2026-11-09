@@ -724,23 +724,27 @@ export class IngestionService {
           rawFlyers = [r.mainFlyer];
         }
 
-        const validFlyers = rawFlyers.filter(f => !NON_RAPALLO_FLYER_REGEX.test(f.title || ''));
-        const selectedFlyers = (validFlyers.length > 0 ? validFlyers : rawFlyers).slice(0, 2);
+        // Strict geographical filter: NEVER fall back to rawFlyers if all flyers are from other provinces (ADR-0006)
+        const selectedFlyers = rawFlyers.filter(f => !NON_RAPALLO_FLYER_REGEX.test(f.title || ''));
         let storeOffersAdded = 0;
 
         for (const rawF of selectedFlyers) {
           if (!rawF || !rawF.id) continue;
-          const nowIso = new Date().toISOString();
-          const validFrom = rawF.start_date ? new Date(rawF.start_date).toISOString() : nowIso;
-          let validTo = rawF.end_date ? new Date(rawF.end_date).toISOString() : new Date(Date.now() + 14 * 86400000).toISOString();
-          if (new Date(validTo).getTime() < Date.now() + 3 * 86400000) {
-            validTo = new Date(Date.now() + 10 * 86400000).toISOString();
-          }
+          const nowMs = Date.now();
+          const validFrom = rawF.settings?.time_zone?.publish_at_iso
+            ? new Date(rawF.settings.time_zone.publish_at_iso).toISOString()
+            : (rawF.start_date ? new Date(rawF.start_date).toISOString() : new Date(nowMs).toISOString());
+          const validTo = rawF.settings?.time_zone?.unpublish_at_iso
+            ? new Date(rawF.settings.time_zone.unpublish_at_iso).toISOString()
+            : (rawF.end_date ? new Date(rawF.end_date).toISOString() : validFrom);
+
+          const isCurrent = new Date(validTo).getTime() >= nowMs;
+          if (!isCurrent) continue;
 
           const coverImageUrl = rawF.imageAssets?.big || rawF.imageAssets?.cover ||
             `https://it-it-media.shopfully.cloud/images/volantini/big_${rawF.id}.jpg`;
           const page1 = rawF.imageAssets?.firstPage || coverImageUrl;
-          const page2 = rawF.imageAssets?.secondPage || coverImageUrl;
+          const page2 = rawF.imageAssets?.secondPage || null;
 
           let gibs = [];
           if (rawF.href) {
@@ -752,29 +756,36 @@ export class IngestionService {
                 gibs = nextDataF?.props?.pageProps?.apiResources?.flyerGibsData?.flyerGibs || [];
               }
             } catch (_) {
-              // Fallback to retailer page gibs
+              // Fallback to retailer page gibs matching this flyer
             }
           }
           if (gibs.length === 0) {
-            gibs = r.flyerGibsData?.flyerGibs || [];
+            const pageGibs = r.flyerGibsData?.flyerGibs || [];
+            gibs = pageGibs.filter(g => !g.flyer_id || String(g.flyer_id) === String(rawF.id));
           }
 
-          const flyerOfferIds = [];
-          for (const g of gibs.slice(0, 25)) {
+          // Group offers by their real flyer_page (ADR-0006)
+          const pageOffersMap = new Map();
+          const pagePreviewImageMap = new Map();
+          pagePreviewImageMap.set(1, page1);
+          if (page2) pagePreviewImageMap.set(2, page2);
+
+          for (const g of gibs) {
             const promoDigits = parseFloat(
               g.settings?.price_extended?.digits ||
               String(g.settings?.price || '').replace(/[^0-9.,]/g, '').replace(',', '.')
             );
-            const origDigits = parseFloat(g.settings?.starting_price?.digits || '0');
             if (!promoDigits || Number.isNaN(promoDigits) || promoDigits <= 0) continue;
 
             const promoPrice = Math.round(promoDigits * 100) / 100;
-            const originalPrice = origDigits && !Number.isNaN(origDigits) && origDigits > promoPrice
-              ? Math.round(origDigits * 100) / 100
-              : Math.round(promoPrice * 1.25 * 100) / 100;
+            const origDigits = parseFloat(g.settings?.starting_price?.digits || '');
+            const hasRealOriginalPrice = Boolean(origDigits && !Number.isNaN(origDigits) && origDigits > promoPrice);
 
-            const discountPercentage = Math.round(((originalPrice - promoPrice) / originalPrice) * 100);
-            if (discountPercentage <= 0) continue;
+            const originalPrice = hasRealOriginalPrice ? Math.round(origDigits * 100) / 100 : null;
+            const discountPercentage = hasRealOriginalPrice
+              ? Math.round(((originalPrice - promoPrice) / originalPrice) * 100)
+              : null;
+            const discountLabel = discountPercentage && discountPercentage > 0 ? `-${discountPercentage}%` : null;
 
             const offerId = String(g.id);
             if (allOffers.some(existing => existing.id === offerId)) continue;
@@ -783,6 +794,9 @@ export class IngestionService {
             const brand = (g.settings?.brand || store.brand).trim();
             const category = classifyOfferCategory(title, brand, store.chainId);
             const imageUrl = g.settings?.image_url || g.image || coverImageUrl;
+            const rawUnitSuffix = g.settings?.price_suffix ? String(g.settings.price_suffix).trim() : null;
+            const unitPrice = rawUnitSuffix ? `${promoPrice.toFixed(2).replace('.', ',')} € ${rawUnitSuffix}` : null;
+            const pageNum = Math.max(1, parseInt(g.settings?.flyer_page, 10) || 1);
 
             allOffers.push({
               id: offerId,
@@ -791,31 +805,47 @@ export class IngestionService {
               storeName: store.brand,
               brand,
               flyerId: String(rawF.id),
+              pageNumber: pageNum,
               title,
-              description: `${brand} - Offerta valida presso ${store.name} (${store.address})`,
+              description: g.description ? String(g.description).trim() : `${brand} — ${store.name} (${store.address})`,
               price: promoPrice,
               promoPrice,
               discountPrice: promoPrice,
               originalPrice,
               discountPercentage,
-              discountLabel: `-${discountPercentage}%`,
-              unitPrice: `${promoPrice.toFixed(2).replace('.', ',')} € / pz`,
+              discountLabel,
+              unitPrice,
               category,
               imageUrl,
               validFrom,
               validTo,
               validityStart: validFrom,
               validityEnd: validTo,
-              isHighlight: discountPercentage >= 30
+              isHighlight: Boolean(discountPercentage && discountPercentage >= 30)
             });
-            flyerOfferIds.push(offerId);
+
+            if (!pageOffersMap.has(pageNum)) {
+              pageOffersMap.set(pageNum, []);
+            }
+            pageOffersMap.get(pageNum).push(offerId);
+            if (!pagePreviewImageMap.has(pageNum)) {
+              pagePreviewImageMap.set(pageNum, imageUrl);
+            }
             storeOffersAdded++;
           }
 
-          const pages = [
-            { pageNumber: 1, imageUrl: page1, offerIds: flyerOfferIds.slice(0, 10) },
-            { pageNumber: 2, imageUrl: page2, offerIds: flyerOfferIds.slice(10, 20) }
-          ];
+          const maxDetectedPage = Math.max(
+            page2 ? 2 : 1,
+            ...Array.from(pageOffersMap.keys())
+          );
+          const pages = [];
+          for (let p = 1; p <= maxDetectedPage; p++) {
+            pages.push({
+              pageNumber: p,
+              imageUrl: pagePreviewImageMap.get(p) || coverImageUrl,
+              offerIds: pageOffersMap.get(p) || []
+            });
+          }
 
           if (!allFlyers.some(f => f.id === String(rawF.id))) {
             allFlyers.push({
@@ -833,9 +863,9 @@ export class IngestionService {
               pages,
               pageImages: pages.map(p => p.imageUrl),
               pdfUrl: rawF.publication_url || null,
-              isCurrent: true,
-              isExpired: false,
-              featured: true
+              isCurrent,
+              isExpired: !isCurrent,
+              featured: rawF.is_premium === '1'
             });
           }
         }
@@ -846,31 +876,15 @@ export class IngestionService {
           flyersFound: allFlyers.length,
           offersFound: allOffers.length,
           percent: Math.min(96, Math.round(((idx + 1) / totalStores) * 90) + 5)
-        }, `✔ ${store.name}: ${selectedFlyers.length} volantini validi, ${storeOffersAdded} prodotti in offerta estratti.`);
+        }, `✔ ${store.name}: ${selectedFlyers.length} volantini validi per Rapallo, ${storeOffersAdded} prodotti estratti.`);
       } catch (storeErr) {
         errors.push({ storeId: store.id, message: storeErr.message });
-        // Keep existing flyers/offers from seed for this store so no store is left empty
-        const fallbackStoreFlyers = seedData.flyers.filter(f => f.storeId === store.id);
-        const fallbackStoreOffers = seedData.offers.filter(o => o.storeId === store.id);
-        for (const fl of fallbackStoreFlyers) {
-          if (!allFlyers.some(existing => existing.id === fl.id)) allFlyers.push(fl);
-        }
-        for (const ofr of fallbackStoreOffers) {
-          if (!allOffers.some(existing => existing.id === ofr.id)) allOffers.push(ofr);
-        }
         this._updateProgress({
           completedStores: idx + 1,
           flyersFound: allFlyers.length,
           offersFound: allOffers.length,
           percent: Math.min(96, Math.round(((idx + 1) / totalStores) * 90) + 5)
-        }, `ℹ ${store.name}: mantenute ${fallbackStoreOffers.length} offerte verificate in cache.`);
-      }
-    }
-
-    // Ensure canonical guaranteed Italian items from seed are preserved
-    for (const seedOffer of seedData.offers.slice(0, 5)) {
-      if (!allOffers.some(o => o.id === seedOffer.id)) {
-        allOffers.unshift(seedOffer);
+        }, `⚠ ${store.name}: errore di rete (${storeErr.message}).`);
       }
     }
 
