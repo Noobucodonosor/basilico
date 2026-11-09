@@ -1,0 +1,10 @@
+.env
+*.db
+*.sqlite
+*.sqlite3
+__pycache__/
+.DS_Store
+node_modules/
+data/cache/
+.agents/
+test_render.jsx

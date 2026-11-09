@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+}
+
+/* Modern Web Guidance: Native Dialog & Backdrop scroll containment */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+@layer utilities {
+  /* Scroll Snap & Touch Carousel for Flyer Viewer (F14) */
+  .scroll-snap-x-mandatory,
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scroll-snap-align-center,
+  .snap-align-center {
+    scroll-snap-align: center;
+  }
+
+  .snap-stop-always {
+    scroll-snap-stop: always;
+  }
+
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  /* Dynamic Viewport Units for Mobile Browsers (F10) */
+  .h-dvh {
+    height: 100dvh;
+  }
+  .max-h-dvh {
+    max-height: 100dvh;
+  }
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  /* CSS Subgrid alignment (F13 & Modern Web Guidance) */
+  .grid-rows-subgrid {
+    grid-template-rows: subgrid;
+  }
+
+  /* Hide scrollbars for clean touch carousels and pill rows */
+  .scrollbar-none::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none,
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

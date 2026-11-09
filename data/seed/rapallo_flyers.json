@@ -1,0 +1,503 @@
+[
+  {
+    "id": "1735840",
+    "storeId": "rapallo-basko-colombo",
+    "chainId": "basko",
+    "storeName": "Basko",
+    "title": "Localismi Spezia",
+    "validFrom": "2026-10-27T00:00:00.000Z",
+    "validTo": "2026-11-09T00:00:00.000Z",
+    "startDate": "2026-10-27T00:00:00.000Z",
+    "endDate": "2026-11-09T00:00:00.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735840.jpg?modified=1793611117",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968307/1/page_1_level_2_272232291.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968307/2/page_2_level_2_54099418.webp",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968307/1/page_1_level_2_272232291.webp",
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968307/2/page_2_level_2_54099418.webp"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_968307",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1735839",
+    "storeId": "rapallo-basko-colombo",
+    "chainId": "basko",
+    "storeName": "Basko",
+    "title": "Localismo Piacentino e pavese",
+    "validFrom": "2026-10-27T00:00:00.000Z",
+    "validTo": "2026-11-09T00:00:00.000Z",
+    "startDate": "2026-10-27T00:00:00.000Z",
+    "endDate": "2026-11-09T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735839.jpg?modified=1793611048",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735839.jpg?modified=1793611048",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1735839.jpg?modified=1793611048"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_968305",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1735838",
+    "storeId": "rapallo-basko-colombo",
+    "chainId": "basko",
+    "storeName": "Basko",
+    "title": "Localismo Piemontese",
+    "validFrom": "2026-10-27T00:00:00.000Z",
+    "validTo": "2026-11-09T00:00:00.000Z",
+    "startDate": "2026-10-27T00:00:00.000Z",
+    "endDate": "2026-11-09T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735838.jpg?modified=1793611186",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735838.jpg?modified=1793611186",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1735838.jpg?modified=1793611186"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_968310",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1735837",
+    "storeId": "rapallo-basko-colombo",
+    "chainId": "basko",
+    "storeName": "Basko",
+    "title": "Prima di tutto ",
+    "validFrom": "2026-11-02T00:00:00.000Z",
+    "validTo": "2026-11-09T00:00:00.000Z",
+    "startDate": "2026-11-02T00:00:00.000Z",
+    "endDate": "2026-11-09T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1735837.jpg?modified=1793611137"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_968308",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1731575",
+    "storeId": "rapallo-basko-colombo",
+    "chainId": "basko",
+    "storeName": "Basko",
+    "title": "Black Week",
+    "validFrom": "2026-10-27T00:00:00.000Z",
+    "validTo": "2026-11-09T00:00:00.000Z",
+    "startDate": "2026-10-27T00:00:00.000Z",
+    "endDate": "2026-11-09T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1731575.jpg?modified=1793090151",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1731575.jpg?modified=1793090151",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1731575.jpg?modified=1793090151"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_963421",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1733933",
+    "storeId": "rapallo-coop-sciesa",
+    "chainId": "coop",
+    "storeName": "Coop",
+    "title": "Offerte Top",
+    "validFrom": "2026-10-29T00:00:00.000Z",
+    "validTo": "2026-11-11T00:00:00.000Z",
+    "startDate": "2026-10-29T00:00:00.000Z",
+    "endDate": "2026-11-11T00:00:00.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1733933.jpg?modified=1793261026",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/1/page_1_level_2_400554091.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/2/page_2_level_2_914831274.webp",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/1/page_1_level_2_400554091.webp",
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965332/2/page_2_level_2_914831274.webp"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_965332",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1689209",
+    "storeId": "rapallo-coop-sciesa",
+    "chainId": "coop",
+    "storeName": "Coop",
+    "title": "Al costo",
+    "validFrom": "2026-09-11T00:00:00.000Z",
+    "validTo": "2027-01-03T00:00:00.000Z",
+    "startDate": "2026-09-11T00:00:00.000Z",
+    "endDate": "2027-01-03T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1689209.jpg?modified=1789040415"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_925320",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1735021",
+    "storeId": "rapallo-gulliver-mameli",
+    "chainId": "gulliver",
+    "storeName": "Gulliver",
+    "title": "Sconti d'autunno",
+    "validFrom": "2026-10-30T00:00:00.000Z",
+    "validTo": "2026-11-09T00:00:00.000Z",
+    "startDate": "2026-10-30T00:00:00.000Z",
+    "endDate": "2026-11-09T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735021.jpg?modified=1793347092",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735021.jpg?modified=1793347092",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1735021.jpg?modified=1793347092"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_966358",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1735110",
+    "storeId": "rapallo-penny-milano",
+    "chainId": "penny",
+    "storeName": "Penny",
+    "title": "Catalogo di natale",
+    "validFrom": "2026-11-02T00:00:00.000Z",
+    "validTo": "2026-12-31T00:00:00.000Z",
+    "startDate": "2026-11-02T00:00:00.000Z",
+    "endDate": "2026-12-31T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1735110.jpg?modified=1793351964"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_86555",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": true
+  },
+  {
+    "id": "1722245",
+    "storeId": "rapallo-penny-milano",
+    "chainId": "penny",
+    "storeName": "Penny",
+    "title": "Tutto a 1 2 3 Euro",
+    "validFrom": "2026-10-22T00:00:00.000Z",
+    "validTo": "2026-11-04T00:00:00.000Z",
+    "startDate": "2026-10-22T00:00:00.000Z",
+    "endDate": "2026-11-04T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1722245.jpg?modified=1792137894",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1722245.jpg?modified=1792137894",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1722245.jpg?modified=1792137894"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_86555",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": true
+  },
+  {
+    "id": "1737926",
+    "storeId": "rapallo-ekom-mameli",
+    "chainId": "ekom",
+    "storeName": "Ekom",
+    "title": "Black Week",
+    "validFrom": "2026-11-03T00:00:00.000Z",
+    "validTo": "2026-11-16T00:00:00.000Z",
+    "startDate": "2026-11-03T00:00:00.000Z",
+    "endDate": "2026-11-16T00:00:00.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1737926.jpg?modified=1793695674",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/1/page_1_level_2_194646542.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/2/page_2_level_2_1043237712.webp",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/1/page_1_level_2_194646542.webp",
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/969177/2/page_2_level_2_1043237712.webp"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_969177",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1736776",
+    "storeId": "rapallo-eurospin",
+    "chainId": "eurospin",
+    "storeName": "Eurospin",
+    "title": "SAPORI IN FESTA E SPECIALE CIOCCOLATO",
+    "validFrom": "2026-11-05T00:00:00.000Z",
+    "validTo": "2026-11-15T00:00:00.000Z",
+    "startDate": "2026-11-05T00:00:00.000Z",
+    "endDate": "2026-11-15T00:00:00.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736776.jpg?modified=1793610665",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/1/page_1_level_2_1774686337.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/2/page_2_level_2_1227669926.webp",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/1/page_1_level_2_1774686337.webp",
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/968285/2/page_2_level_2_1227669926.webp"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_968285",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": true
+  },
+  {
+    "id": "1733867",
+    "storeId": "rapallo-despar",
+    "chainId": "despar",
+    "storeName": "Despar",
+    "title": "Super sconti",
+    "validFrom": "2026-10-29T00:00:00.000Z",
+    "validTo": "2026-11-11T00:00:00.000Z",
+    "startDate": "2026-10-29T00:00:00.000Z",
+    "endDate": "2026-11-11T00:00:00.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1733867.jpg?modified=1793265667",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/1/page_1_level_2_1659322805.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/2/page_2_level_2_1632405268.webp",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/1/page_1_level_2_1659322805.webp",
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/965705/2/page_2_level_2_1632405268.webp"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_965705",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1732735",
+    "storeId": "rapallo-despar",
+    "chainId": "despar",
+    "storeName": "Despar",
+    "title": "Sconti di qualita",
+    "validFrom": "2026-10-26T00:00:00.000Z",
+    "validTo": "2026-11-11T00:00:00.000Z",
+    "startDate": "2026-10-26T00:00:00.000Z",
+    "endDate": "2026-11-11T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1732735.jpg?modified=1793177189"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_964424",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1736582",
+    "storeId": "rapallo-tigota",
+    "chainId": "tigota",
+    "storeName": "Tigotà",
+    "title": "Viaggio nel profumo",
+    "validFrom": "2026-11-01T00:00:00.000Z",
+    "validTo": "2026-11-30T00:00:00.000Z",
+    "startDate": "2026-11-01T00:00:00.000Z",
+    "endDate": "2026-11-30T00:00:00.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1736582.jpg?modified=1793605137",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/1/page_1_level_2_836694301.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/2/page_2_level_2_1890251372.webp",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/1/page_1_level_2_836694301.webp",
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/967805/2/page_2_level_2_1890251372.webp"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_967805",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1730471",
+    "storeId": "rapallo-piume",
+    "chainId": "piume",
+    "storeName": "PiùMe",
+    "title": "Le occasioni bussano alla porta.",
+    "validFrom": "2026-10-26T00:00:00.000Z",
+    "validTo": "2026-11-15T00:00:00.000Z",
+    "startDate": "2026-10-26T00:00:00.000Z",
+    "endDate": "2026-11-15T00:00:00.000Z",
+    "pageCount": 2,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1730471.jpg?modified=1793004896",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/1/page_1_level_2_683992341.webp",
+        "offerIds": []
+      },
+      {
+        "pageNumber": 2,
+        "imageUrl": "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/2/page_2_level_2_1187390206.webp",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/1/page_1_level_2_683992341.webp",
+      "https://it-it-media-publications.shopfully.cloud/publications/page_assets/962272/2/page_2_level_2_1187390206.webp"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_962272",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  },
+  {
+    "id": "1235656",
+    "storeId": "rapallo-kasanova",
+    "chainId": "kasanova",
+    "storeName": "Kasanova",
+    "title": "Offerte Kasanova",
+    "validFrom": "2024-10-07T00:00:00.000Z",
+    "validTo": "2027-05-19T00:00:00.000Z",
+    "startDate": "2024-10-07T00:00:00.000Z",
+    "endDate": "2027-05-19T00:00:00.000Z",
+    "pageCount": 1,
+    "coverImageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1235656.jpg?modified=1728306085",
+    "pages": [
+      {
+        "pageNumber": 1,
+        "imageUrl": "https://it-it-media.shopfully.cloud/images/volantini/big_1235656.jpg?modified=1728306085",
+        "offerIds": []
+      }
+    ],
+    "pageImages": [
+      "https://it-it-media.shopfully.cloud/images/volantini/big_1235656.jpg?modified=1728306085"
+    ],
+    "pdfUrl": "http://viewer.zmags.com/publication/it_it_86555",
+    "isCurrent": true,
+    "isExpired": false,
+    "featured": false
+  }
+]
