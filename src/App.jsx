@@ -10,6 +10,7 @@ import FlyerModal from './components/FlyerModal.jsx';
 import SyncStatusModal from './components/SyncStatusModal.jsx';
 import CounterPriceModal from './components/CounterPriceModal.jsx';
 import OfflineNotice from './components/OfflineNotice.jsx';
+import CreaExplorerView from './components/crea/CreaExplorerView.jsx';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
 const DOMAIN_PILLS = [
@@ -43,6 +44,7 @@ export function App() {
   const [activeProfileId, setActiveProfileId] = useState('dany');
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
   const [localShops, setLocalShops] = useState([]);
+  const [selectedCreaFoodId, setSelectedCreaFoodId] = useState(null);
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [activeFlyer, setActiveFlyer] = useState(null);
@@ -452,6 +454,10 @@ export function App() {
                   offers={offers}
                   loading={loading}
                   allFlyers={flyers}
+                  onOpenCreaFood={(creaId) => {
+                    setSelectedCreaFoodId(creaId);
+                    setActiveRoom('room-2-crea');
+                  }}
                   onOpenFlyer={(item) => {
                     const storeFlyer = flyers.find((f) => f.storeId === item?.storeId) || flyers[0] || item;
                     if (storeFlyer) setActiveFlyer(storeFlyer);
@@ -496,6 +502,18 @@ export function App() {
             )}
           </main>
         </>
+      ) : activeRoom === 'room-2-crea' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <CreaExplorerView
+            activeProfileId={activeProfileId}
+            initialFoodId={selectedCreaFoodId}
+            onNavigateToOfferStore={(storeId, productTitle) => {
+              setSelectedStoreId(storeId || null);
+              setSearchQuery(productTitle || '');
+              setActiveRoom('room-1-negozi');
+            }}
+          />
+        </main>
       ) : (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3">

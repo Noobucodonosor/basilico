@@ -5,6 +5,7 @@ export function OfferGrid({
   offers = [],
   loading = false,
   onOpenFlyer,
+  onOpenCreaFood,
   onResetFilters,
   allFlyers = []
 }) {
@@ -50,6 +51,7 @@ export function OfferGrid({
         <OfferCard
           key={offer.id}
           offer={offer}
+          onOpenCreaFood={onOpenCreaFood}
           onOpenFlyer={(item) => {
             if (onOpenFlyer) {
               const matchedFlyer = allFlyers.find((f) => f.storeId === item.storeId) || allFlyers[0] || item;

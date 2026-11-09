@@ -20488,7 +20488,7 @@ const DOMAIN_BADGE_MAP = {
   personal_care: { label: "Igiene Persona", color: "bg-purple-50 text-purple-800 border-purple-200" },
   pet_care: { label: "Pet Care", color: "bg-orange-50 text-orange-800 border-orange-200" }
 };
-function OfferCard({ offer, onOpenFlyer }) {
+function OfferCard({ offer, onOpenFlyer, onOpenCreaFood }) {
   const promoVal = Number(offer.promoPrice ?? offer.price ?? offer.discountPrice ?? 0);
   const origVal = offer.originalPrice != null ? Number(offer.originalPrice) : null;
   const hasDiscount = Boolean(origVal && origVal > promoVal);
@@ -20566,7 +20566,24 @@ function OfferCard({ offer, onOpenFlyer }) {
           normalizedPriceText && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-slate-600 font-semibold", children: [
             "⚖️ ",
             normalizedPriceText
-          ] })
+          ] }),
+          offer.creaMatch && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => onOpenCreaFood && onOpenCreaFood(offer.creaMatch.creaFoodId),
+              className: "mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-1.5 py-0.5 rounded w-fit cursor-pointer",
+              title: `Scheda CREA: ${offer.creaMatch.creaFoodName}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                  "🔬 ",
+                  offer.creaMatch.nutrientsPerEuro?.proteinGPerEuro || 0,
+                  "g prot/€"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "• CREA ↗" })
+              ]
+            }
+          )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 flex items-center justify-between text-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-slate-500 truncate", title: validityText || "", children: validityText || "Offerta attiva" }),
@@ -20589,6 +20606,7 @@ function OfferGrid({
   offers = [],
   loading = false,
   onOpenFlyer,
+  onOpenCreaFood,
   onResetFilters,
   allFlyers = []
 }) {
@@ -20620,6 +20638,7 @@ function OfferGrid({
     OfferCard,
     {
       offer,
+      onOpenCreaFood,
       onOpenFlyer: (item) => {
         if (onOpenFlyer) {
           const matchedFlyer = allFlyers.find((f) => f.storeId === item.storeId) || allFlyers[0] || item;
@@ -21688,6 +21707,821 @@ function OfflineNotice({
   );
 }
 
+function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
+  const [sheet, setSheet] = reactExports.useState(null);
+  const [loading, setLoading] = reactExports.useState(false);
+  const [mode, setMode] = reactExports.useState("100g_edible");
+  const [customGrams, setCustomGrams] = reactExports.useState(100);
+  const [cookingState, setCookingState] = reactExports.useState("as_is");
+  const [per100gCooked, setPer100gCooked] = reactExports.useState(false);
+  const [activeSection, setActiveSection] = reactExports.useState("ALL");
+  reactExports.useEffect(() => {
+    if (!isOpen || !foodId) return;
+    setLoading(true);
+    const params = new URLSearchParams({
+      mode,
+      grams: String(customGrams || 100),
+      state: cookingState,
+      per100gCooked: String(per100gCooked)
+    });
+    fetch(`/api/crea/foods/${encodeURIComponent(foodId)}?${params.toString()}`).then((r) => r.ok ? r.json() : null).then((data) => {
+      if (data) setSheet(data);
+    }).catch(() => {
+    }).finally(() => setLoading(false));
+  }, [foodId, isOpen, mode, customGrams, cookingState, per100gCooked]);
+  if (!isOpen || !foodId) return null;
+  const sectionNames = sheet?.sections ? Object.keys(sheet.sections) : [];
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      className: "fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto",
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-labelledby": "crea-modal-title",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 sm:p-5 bg-slate-900 text-white flex items-start justify-between gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-emerald-600 rounded", children: [
+                "CREA ID #",
+                sheet?.id || foodId
+              ] }),
+              sheet?.category && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 text-[10px] font-semibold bg-slate-800 text-emerald-300 rounded border border-slate-700", children: sheet.category }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-slate-300", children: [
+                "Parte edibile: ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                  sheet?.ediblePartPct ?? 100,
+                  "%"
+                ] }),
+                " • Porzione LARN: ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                  sheet?.defaultPortionG ?? 100,
+                  " g"
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { id: "crea-modal-title", className: "text-lg sm:text-xl font-extrabold mt-1", children: sheet?.name || "Caricamento scheda accademica CREA..." }),
+            (sheet?.scientificName || sheet?.nameEn) && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-300 italic mt-0.5", children: [
+              sheet.scientificName ? `${sheet.scientificName} ` : "",
+              sheet.nameEn ? `(${sheet.nameEn})` : ""
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: onClose,
+              className: "text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 cursor-pointer shrink-0",
+              "aria-label": "Chiudi scheda CREA",
+              children: "✕"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 bg-slate-50 border-b border-slate-200 space-y-2.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-700 mr-1", children: "Base calcolo:" }),
+              [
+                { id: "100g_edible", label: "100 g Edibili (Standard)" },
+                { id: "100g_gross", label: `100 g Lordi Acquistati (${sheet?.ediblePartPct ?? 100}% ed.)` },
+                { id: "portion_larn", label: `Porzione LARN (${sheet?.defaultPortionG ?? 100} g)` },
+                { id: "custom_grams", label: "Grammi Liberi" }
+              ].map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => setMode(opt.id),
+                  className: `px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${mode === opt.id ? "bg-emerald-700 text-white border-emerald-700" : "bg-white text-slate-700 border-slate-300 hover:bg-emerald-50"}`,
+                  children: opt.label
+                },
+                opt.id
+              )),
+              mode === "custom_grams" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "number",
+                  min: "1",
+                  max: "5000",
+                  value: customGrams,
+                  onChange: (e) => setCustomGrams(Math.max(1, parseInt(e.target.value || "100", 10))),
+                  className: "w-20 text-xs font-bold border border-emerald-500 rounded-lg px-2 py-1 bg-white",
+                  "aria-label": "Grammi personalizzati"
+                }
+              )
+            ] }),
+            sheet?.yieldFactor && sheet.yieldFactor.multiplier !== 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 cursor-pointer", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "checkbox",
+                  checked: cookingState === "cooked_from_raw",
+                  onChange: (e) => {
+                    const checked = e.target.checked;
+                    setCookingState(checked ? "cooked_from_raw" : "as_is");
+                    setPer100gCooked(checked);
+                  },
+                  className: "rounded border-amber-400 text-amber-600"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                "🔥 Converti in Cotto (Resa Y=",
+                sheet.yieldFactor.multiplier,
+                "x)"
+              ] })
+            ] }) })
+          ] }),
+          sheet?.calculationContext && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between text-[11px] text-slate-600", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+              "Peso edibile crudo di partenza: ",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                sheet.calculationContext.effectiveEdibleGramsRaw,
+                " g"
+              ] }),
+              sheet.yieldFactor?.multiplier !== 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                " → Peso cotto risultante nel piatto: ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                  sheet.calculationContext.resultingCookedWeightGrams,
+                  " g"
+                ] }),
+                " (",
+                sheet.yieldFactor.method,
+                ")"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+              "Totale parametri certificati: ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: sheet.totalValuesCount }),
+              " (0 troncamenti)"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 overflow-x-auto pt-1 no-scrollbar", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: () => setActiveSection("ALL"),
+                className: `px-2.5 py-1 rounded text-[11px] font-bold whitespace-nowrap cursor-pointer ${activeSection === "ALL" ? "bg-slate-900 text-white" : "bg-white text-slate-600 border border-slate-200"}`,
+                children: [
+                  "Tutte le ",
+                  sectionNames.length,
+                  " Sezioni (",
+                  sheet?.totalValuesCount || 0,
+                  ")"
+                ]
+              }
+            ),
+            sectionNames.map((sec) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: () => setActiveSection(sec),
+                className: `px-2.5 py-1 rounded text-[11px] font-bold whitespace-nowrap cursor-pointer ${activeSection === sec ? "bg-slate-900 text-white" : "bg-white text-slate-600 border border-slate-200"}`,
+                children: [
+                  sec,
+                  " (",
+                  sheet.sections[sec].length,
+                  ")"
+                ]
+              },
+              sec
+            ))
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto p-4 sm:p-5 space-y-5", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-12 text-center text-sm text-slate-500", children: [
+          "Caricamento dei ",
+          sheet?.totalValuesCount || "",
+          " valori chimico-nutrizionali CREA..."
+        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          sheet?.matchingRapalloOffers?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-emerald-900", children: [
+              "🏪 Offerte Attive a Rapallo collegate a questo alimento CREA (",
+              sheet.matchingRapalloOffers.length,
+              "):"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-2", children: sheet.matchingRapalloOffers.map((off) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "p-2.5 rounded-lg bg-white border border-emerald-200 flex items-center justify-between gap-2 text-xs",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900 truncate", children: off.title }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-500", children: [
+                      off.brand,
+                      " • ",
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                        "€ ",
+                        Number(off.promoPrice).toFixed(2)
+                      ] }),
+                      " (",
+                      off.formattedNormalizedPrice || off.unitPrice,
+                      ")"
+                    ] })
+                  ] }),
+                  onSelectOfferStore && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => {
+                        onClose();
+                        onSelectOfferStore(off.storeId, off.title);
+                      },
+                      className: "px-2 py-1 bg-emerald-700 text-white rounded text-[11px] font-bold shrink-0 cursor-pointer",
+                      children: "Vai in Stanza 1 →"
+                    }
+                  )
+                ]
+              },
+              off.id
+            )) })
+          ] }),
+          sectionNames.filter((sec) => activeSection === "ALL" || activeSection === sec).map((secName) => {
+            const rows = sheet.sections[secName] || [];
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-200 rounded-xl overflow-hidden", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-100 px-3.5 py-2 border-b border-slate-200 flex items-center justify-between", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xs font-extrabold text-slate-800 uppercase tracking-wide", children: secName }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-slate-500 font-medium", children: [
+                  rows.length,
+                  " parametri"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-left border-collapse text-xs", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "border-b border-slate-200 text-[11px] text-slate-500 bg-slate-50/50", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2 px-3 font-semibold", children: "Componente Nutrizionale" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2 px-3 font-semibold text-right", children: "Valore Calcolato" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2 px-3 font-semibold text-right", children: "100g Tabella CREA" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2 px-3 font-semibold text-right", children: "% VNR Giornaliero" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2 px-3 font-semibold text-center", children: "Fonte" })
+                ] }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: rows.map((r, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/80", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-1.5 px-3 font-medium text-slate-800", children: [
+                    r.component,
+                    r.isRelativeFraction && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1.5 text-[10px] text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded", children: "frazione invariante" })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-1.5 px-3 text-right font-bold text-emerald-800", children: r.displayValue }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-1.5 px-3 text-right text-slate-500", children: r.value100gRaw ?? "n.d." }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-1.5 px-3 text-right", children: r.vnrPct !== null ? /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-block px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-bold text-[10px]", children: [
+                    r.vnrPct,
+                    "% VNR"
+                  ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-300", children: "—" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-1.5 px-3 text-center text-[10px] text-slate-400", title: r.bibliographicRef || "", children: r.sourceCode || "—" })
+                ] }, i)) })
+              ] }) })
+            ] }, secName);
+          })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "truncate max-w-xl", title: sheet?.langualCodes || "", children: sheet?.langualCodes ? `Codici LanguaL: ${sheet.langualCodes}` : "Fonte: Tabelle di Composizione degli Alimenti CREA" }),
+          sheet?.officialUrl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "a",
+            {
+              href: sheet.officialUrl,
+              target: "_blank",
+              rel: "noreferrer",
+              className: "text-emerald-700 font-bold hover:underline shrink-0",
+              children: "Scheda ufficiale alimentinutrizione.it ↗"
+            }
+          )
+        ] })
+      ] })
+    }
+  );
+}
+
+const COMPARE_METRICS = [
+  { key: "kcal", label: "Energia (kcal/100g)", unit: "kcal" },
+  { key: "proteinG", label: "Proteine (g/100g)", unit: "g" },
+  { key: "fatG", label: "Lipidi (g/100g)", unit: "g" },
+  { key: "carbsG", label: "Carboidrati (g/100g)", unit: "g" },
+  { key: "fiberG", label: "Fibre (g/100g)", unit: "g" },
+  { key: "ironMg", label: "Ferro (mg/100g)", unit: "mg" },
+  { key: "calciumMg", label: "Calcio (mg/100g)", unit: "mg" },
+  { key: "potassiumMg", label: "Potassio (mg/100g)", unit: "mg" },
+  { key: "magnesiumMg", label: "Magnesio (mg/100g)", unit: "mg" },
+  { key: "vitaminCMg", label: "Vitamina C (mg/100g)", unit: "mg" },
+  { key: "waterG", label: "Acqua (g/100g)", unit: "g" }
+];
+function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspectFood }) {
+  if (!items || items.length === 0) return null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "section",
+    {
+      "aria-label": "Vassoio di confronto nutrizionale Side-by-Side",
+      className: "bg-white rounded-2xl border-2 border-indigo-200 p-4 shadow-md space-y-3",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-extrabold text-indigo-950", children: [
+              "⚖️ Confronto Side-by-Side (",
+              items.length,
+              "/4 alimenti selezionati)"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Confronto normalizzato per 100 g di parte edibile secondo le tabelle ufficiali CREA." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: onClearAll,
+              className: "px-2.5 py-1 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg cursor-pointer",
+              children: "Svuota confronto"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-xs border-collapse", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "border-b border-slate-200 bg-slate-50", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2 px-3 text-left font-bold text-slate-700", children: "Parametro (per 100g edibili)" }),
+            items.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("th", { className: "py-2 px-3 text-right font-bold text-slate-900 min-w-[140px]", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-end gap-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => onInspectFood && onInspectFood(item.id),
+                    className: "hover:underline text-indigo-700 truncate max-w-[130px] cursor-pointer",
+                    title: item.name,
+                    children: item.name
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => onRemoveItem(item.id),
+                    className: "text-slate-400 hover:text-rose-600 cursor-pointer",
+                    "aria-label": `Rimuovi ${item.name}`,
+                    children: "✕"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-normal text-slate-500", children: [
+                "Edibile: ",
+                item.ediblePartPct,
+                "% • Resa Y=",
+                item.yieldFactor?.multiplier ?? 1,
+                "x"
+              ] })
+            ] }, item.id))
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: COMPARE_METRICS.map((m) => {
+            const vals = items.map((it) => it.keyMetrics?.[m.key] ?? -1);
+            const maxVal = Math.max(...vals);
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/60", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-1.5 px-3 font-medium text-slate-700", children: m.label }),
+              items.map((it) => {
+                const v = it.keyMetrics?.[m.key];
+                const isBest = v !== null && v !== void 0 && v > 0 && v === maxVal && items.length > 1;
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "td",
+                  {
+                    className: `py-1.5 px-3 text-right font-semibold ${isBest ? "text-emerald-700 bg-emerald-50/60 font-extrabold" : "text-slate-800"}`,
+                    children: v !== null && v !== void 0 ? `${v} ${m.unit}` : "n.d."
+                  },
+                  it.id
+                );
+              })
+            ] }, m.key);
+          }) })
+        ] }) })
+      ]
+    }
+  );
+}
+
+const SORT_OPTIONS = [
+  { id: "proteinG", label: "Proteine più alte (g/100g)" },
+  { id: "nameAsc", label: "Ordine alfabetico (A-Z)" },
+  { id: "ironMg", label: "Ferro più alto (mg/100g)" },
+  { id: "calciumMg", label: "Calcio più alto (mg/100g)" },
+  { id: "potassiumMg", label: "Potassio più alto (mg/100g)" },
+  { id: "magnesiumMg", label: "Magnesio più alto (mg/100g)" },
+  { id: "fiberG", label: "Fibre più alte (g/100g)" },
+  { id: "vitaminCMg", label: "Vitamina C più alta (mg/100g)" },
+  { id: "vitaminB12Ug", label: "Vitamina B12 più alta (μg/100g)" },
+  { id: "kcalAsc", label: "Ipocalorici (kcal crescenti)" }
+];
+const PHYSIOLOGICAL_PRESETS = [
+  { id: null, label: "Tutti gli Alimenti", icon: "🔬" },
+  { id: "high_protein", label: "Alta Densità Proteica (≥18g)", icon: "💪" },
+  { id: "boat_hydration", label: "Idratazione & Elettroliti in Barca", icon: "⛵" },
+  { id: "evening_light", label: "Sazietà Leggera Serale", icon: "🌙" },
+  { id: "iron_vitamin_c", label: "Focus Ferro & Vitamina C", icon: "🩸" }
+];
+const NPE_METRICS = [
+  { id: "proteinGPerEuro", label: "Grammi di Proteine per 1 €", unit: "g prot / €" },
+  { id: "kcalPerEuro", label: "Energia (kcal) per 1 €", unit: "kcal / €" },
+  { id: "ironMgPerEuro", label: "Ferro (mg) per 1 €", unit: "mg Fe / €" },
+  { id: "potassiumMgPerEuro", label: "Potassio (mg) per 1 €", unit: "mg K / €" },
+  { id: "fiberGPerEuro", label: "Fibre (g) per 1 €", unit: "g fibre / €" },
+  { id: "calciumMgPerEuro", label: "Calcio (mg) per 1 €", unit: "mg Ca / €" }
+];
+function CreaExplorerView({
+  activeProfileId = "dany",
+  initialFoodId = null,
+  onNavigateToOfferStore
+}) {
+  const [subTab, setSubTab] = reactExports.useState("database");
+  const [foods, setFoods] = reactExports.useState([]);
+  const [categories, setCategories] = reactExports.useState([]);
+  const [totalFoods, setTotalFoods] = reactExports.useState(0);
+  const [totalCatalogSize, setTotalCatalogSize] = reactExports.useState(832);
+  const [loading, setLoading] = reactExports.useState(true);
+  const [searchQ, setSearchQ] = reactExports.useState("");
+  const [selectedCategory, setSelectedCategory] = reactExports.useState("");
+  const [sortBy, setSortBy] = reactExports.useState("proteinG");
+  const [preset, setPreset] = reactExports.useState(null);
+  const [includeExcluded, setIncludeExcluded] = reactExports.useState(false);
+  const [compareItems, setCompareItems] = reactExports.useState([]);
+  const [activeModalFoodId, setActiveModalFoodId] = reactExports.useState(initialFoodId);
+  const [npeMetric, setNpeMetric] = reactExports.useState("proteinGPerEuro");
+  const [npeRankings, setNpeRankings] = reactExports.useState([]);
+  const [npeLoading, setNpeLoading] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    if (initialFoodId) {
+      setActiveModalFoodId(initialFoodId);
+    }
+  }, [initialFoodId]);
+  const fetchFoods = reactExports.useCallback(() => {
+    setLoading(true);
+    const params = new URLSearchParams({
+      sortBy,
+      profileId: activeProfileId,
+      includeExcluded: String(includeExcluded),
+      limit: "120"
+    });
+    if (searchQ.trim()) params.set("q", searchQ.trim());
+    if (selectedCategory) params.set("category", selectedCategory);
+    if (preset) params.set("preset", preset);
+    fetch(`/api/crea/foods?${params.toString()}`).then((r) => r.ok ? r.json() : null).then((data) => {
+      if (data) {
+        setFoods(data.foods || []);
+        setTotalFoods(data.totalFoods || 0);
+        setTotalCatalogSize(data.totalCatalogSize || 832);
+        if (data.categories) setCategories(data.categories);
+      }
+    }).catch(() => {
+    }).finally(() => setLoading(false));
+  }, [searchQ, selectedCategory, sortBy, preset, activeProfileId, includeExcluded]);
+  const fetchNutrientsPerEuro = reactExports.useCallback(() => {
+    setNpeLoading(true);
+    const params = new URLSearchParams({
+      metric: npeMetric,
+      profileId: activeProfileId,
+      hideIncompatible: String(!includeExcluded)
+    });
+    fetch(`/api/crea/nutrients-per-euro?${params.toString()}`).then((r) => r.ok ? r.json() : null).then((data) => {
+      if (data && Array.isArray(data.rankings)) {
+        setNpeRankings(data.rankings);
+      }
+    }).catch(() => {
+    }).finally(() => setNpeLoading(false));
+  }, [npeMetric, activeProfileId, includeExcluded]);
+  reactExports.useEffect(() => {
+    fetchFoods();
+  }, [fetchFoods]);
+  reactExports.useEffect(() => {
+    if (subTab === "nutrients_per_euro") {
+      fetchNutrientsPerEuro();
+    }
+  }, [subTab, fetchNutrientsPerEuro]);
+  const toggleCompareItem = (food) => {
+    setCompareItems((prev) => {
+      if (prev.some((i) => i.id === food.id)) {
+        return prev.filter((i) => i.id !== food.id);
+      }
+      if (prev.length >= 4) return prev;
+      return [...prev, food];
+    });
+  };
+  const activeMetricUnit = NPE_METRICS.find((m) => m.id === npeMetric)?.unit || "unità / €";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-2xl", children: "🔬" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-extrabold text-slate-900", children: "Stanza 2 — Scienza & Database Ufficiale CREA (100% Integrale)" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-600 mt-1", children: [
+          "Tutti gli ",
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+            totalCatalogSize,
+            " alimenti ufficiali CREA"
+          ] }),
+          " × ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "26.622 valori" }),
+          " nelle ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "7 sezioni complete" }),
+          " (zero tagli ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: ".slice" }),
+          "), ricalcolo 100g edibili/lordi/LARN, resa fisica Crudo↔Cotto e ponte ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Nutrienti per Euro Edibili" }),
+          " sulle offerte di Rapallo."
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 shrink-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            type: "button",
+            onClick: () => setSubTab("database"),
+            className: `px-3.5 py-2 rounded-xl text-xs font-extrabold transition-colors cursor-pointer ${subTab === "database" ? "bg-emerald-700 text-white shadow-xs" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`,
+            children: [
+              "📚 Esploratore & Classifiche (",
+              totalFoods,
+              "/",
+              totalCatalogSize,
+              ")"
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: () => setSubTab("nutrients_per_euro"),
+            className: `px-3.5 py-2 rounded-xl text-xs font-extrabold transition-colors cursor-pointer ${subTab === "nutrients_per_euro" ? "bg-indigo-700 text-white shadow-xs" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`,
+            children: "💶 Classifica Live “Nutrienti per 1 €” a Rapallo"
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      CreaCompareTray,
+      {
+        items: compareItems,
+        onRemoveItem: (id) => setCompareItems((prev) => prev.filter((i) => i.id !== id)),
+        onClearAll: () => setCompareItems([]),
+        onInspectFood: (id) => setActiveModalFoodId(id)
+      }
+    ),
+    subTab === "database" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "flex flex-wrap items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar", children: PHYSIOLOGICAL_PRESETS.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            type: "button",
+            onClick: () => setPreset(preset === p.id ? null : p.id),
+            className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap cursor-pointer ${preset === p.id ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-300"}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: p.icon }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: p.label })
+            ]
+          },
+          p.id || "all"
+        )) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-lg cursor-pointer", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "checkbox",
+              checked: includeExcluded,
+              onChange: (e) => setIncludeExcluded(e.target.checked),
+              className: "rounded border-slate-300 text-emerald-600"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Mostra anche alimenti esclusi dal profilo (studio accademico)" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "grid grid-cols-1 md:grid-cols-3 gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-500 mb-1", children: "Cerca tra gli 832 alimenti (IT / EN / Nome scientifico)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "search",
+              placeholder: "es. acciuga, tonno, lenticchie, spinaci, lupini...",
+              value: searchQ,
+              onChange: (e) => setSearchQ(e.target.value),
+              className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-500 mb-1", children: "Filtra per Categoria Ufficiale CREA (17 categorie)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              value: selectedCategory,
+              onChange: (e) => setSelectedCategory(e.target.value),
+              className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Tutte le 17 Categorie CREA" }),
+                categories.map((cat) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: cat, children: cat }, cat))
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-500 mb-1", children: "Classifica Scientifica per Nutriente (per 100g edibili)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "select",
+            {
+              value: sortBy,
+              onChange: (e) => setSortBy(e.target.value),
+              className: "w-full text-xs font-bold border border-emerald-300 rounded-lg px-3 py-2 bg-emerald-50/40 text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-500",
+              children: SORT_OPTIONS.map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: opt.id, children: opt.label }, opt.id))
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-left border-collapse text-xs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "bg-slate-900 text-white text-[11px]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold", children: "Alimento CREA" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold", children: "Categoria" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Edibile" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "kcal" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Proteine" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Lipidi" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Carbo." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Fibre" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Ferro" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Calcio" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-2.5 font-bold text-right", children: "Potassio" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold text-right", children: "Azioni" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 12, className: "py-10 text-center text-slate-500", children: "Caricamento database scientifico CREA..." }) }) : foods.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 12, className: "py-10 text-center text-slate-500", children: "Nessun alimento CREA trovato con i filtri attuali." }) }) : foods.map((f) => {
+          const km = f.keyMetrics || {};
+          const isCompared = compareItems.some((i) => i.id === f.id);
+          const isExcluded = f.profileCompatibility && f.profileCompatibility.isCompatible === false;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "tr",
+            {
+              className: `hover:bg-emerald-50/40 transition-colors ${isExcluded ? "bg-amber-50/30 opacity-80" : ""}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2 px-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => setActiveModalFoodId(f.id),
+                      className: "font-bold text-slate-900 hover:text-emerald-700 hover:underline text-left cursor-pointer",
+                      children: f.name
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-400", children: [
+                    "ID #",
+                    f.id,
+                    " ",
+                    f.scientificName ? `• ${f.scientificName}` : "",
+                    isExcluded && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1.5 text-amber-700 font-bold", children: "⚠️ Escluso dal profilo" })
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-3 text-[11px] text-slate-600", children: f.category }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2 px-2.5 text-right font-medium text-slate-600", children: [
+                  f.ediblePartPct,
+                  "%"
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right font-semibold text-slate-800", children: km.kcal ?? "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right font-extrabold text-emerald-700", children: km.proteinG != null ? `${km.proteinG} g` : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right text-slate-700", children: km.fatG != null ? `${km.fatG} g` : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right text-slate-700", children: km.carbsG != null ? `${km.carbsG} g` : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right text-slate-700", children: km.fiberG != null ? `${km.fiberG} g` : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right font-medium text-rose-700", children: km.ironMg != null ? `${km.ironMg} mg` : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right text-slate-700", children: km.calciumMg != null ? `${km.calciumMg} mg` : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2 px-2.5 text-right text-sky-700 font-medium", children: km.potassiumMg != null ? `${km.potassiumMg} mg` : "—" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2 px-3 text-right whitespace-nowrap space-x-1.5", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => toggleCompareItem(f),
+                      className: `px-2 py-1 rounded text-[10px] font-bold border cursor-pointer ${isCompared ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"}`,
+                      children: isCompared ? "✓ In confronto" : "+ Confronta"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => setActiveModalFoodId(f.id),
+                      className: "px-2 py-1 rounded text-[10px] font-bold bg-emerald-700 text-white hover:bg-emerald-800 cursor-pointer",
+                      children: "7 Sezioni →"
+                    }
+                  )
+                ] })
+              ]
+            },
+            f.id
+          );
+        }) })
+      ] }) }) })
+    ] }) : (
+      /* Live "Nutrients per Edible Euro" Ranking on Rapallo Offers */
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-indigo-950 text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold", children: "💶 Classifica Live “Nutrienti per 1 € Edibile” nei Supermercati di Rapallo" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-indigo-200 mt-0.5", children: "Incrocio in tempo reale tra i prezzi al kg sgocciolato delle offerte attive a Rapallo, la % di parte edibile e la densità nutrizionale CREA." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 shrink-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-bold text-indigo-200", children: "Ordina per:" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "select",
+              {
+                value: npeMetric,
+                onChange: (e) => setNpeMetric(e.target.value),
+                className: "text-xs font-extrabold bg-white text-slate-900 rounded-lg px-3 py-2 cursor-pointer",
+                children: NPE_METRICS.map((m) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: m.id, children: m.label }, m.id))
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-left border-collapse text-xs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "bg-slate-900 text-white text-[11px]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold", children: "#" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold", children: "Offerta Supermercato Rapallo" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold", children: "Match Scientifico CREA (Head-Noun)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold text-right", children: "Prezzo Cassa" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold text-right", children: "€/kg Edibile Netto" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("th", { className: "py-2.5 px-3 font-bold text-right bg-indigo-900", children: [
+              "Resa per 1 € (",
+              activeMetricUnit,
+              ")"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold text-right", children: "Proteine/€" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold text-right", children: "kcal/€" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "py-2.5 px-3 font-bold text-right", children: "Azioni" })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: npeLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 9, className: "py-10 text-center text-slate-500", children: "Calcolo efficienza nutrizionale per euro sulle offerte di Rapallo..." }) }) : npeRankings.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 9, className: "py-10 text-center text-slate-500", children: "Nessuna offerta abbinata per i criteri correnti." }) }) : npeRankings.map((item, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-indigo-50/40", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3 font-extrabold text-slate-500", children: [
+              "#",
+              idx + 1
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900", children: item.offerTitle }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500", children: [
+                "🏪 ",
+                item.storeName,
+                " ",
+                item.brand ? `• ${item.brand}` : ""
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => setActiveModalFoodId(item.creaFoodId),
+                  className: "font-semibold text-emerald-800 hover:underline text-left cursor-pointer",
+                  children: [
+                    "🔬 ",
+                    item.creaFoodName
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-400", children: [
+                "Edibile: ",
+                item.ediblePartPctUsed,
+                "% • Metodo: ",
+                item.matchBasis
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3 text-right font-bold text-slate-800", children: [
+              "€ ",
+              Number(item.promoPrice).toFixed(2)
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3 text-right font-semibold text-slate-600", children: [
+              "€ ",
+              Number(item.trueEdibleEuroPerKg).toFixed(2),
+              " / kg"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3 text-right font-extrabold text-indigo-800 bg-indigo-50/60", children: [
+              item.nutrientsPerEuro[npeMetric],
+              " ",
+              activeMetricUnit
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3 text-right font-bold text-emerald-700", children: [
+              item.nutrientsPerEuro.proteinGPerEuro,
+              " g/€"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "py-2.5 px-3 text-right text-slate-600", children: [
+              item.nutrientsPerEuro.kcalPerEuro,
+              " kcal/€"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-2.5 px-3 text-right whitespace-nowrap", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => setActiveModalFoodId(item.creaFoodId),
+                className: "px-2 py-1 rounded text-[10px] font-bold bg-emerald-700 text-white hover:bg-emerald-800 cursor-pointer",
+                children: "Scheda CREA"
+              }
+            ) })
+          ] }, `${item.offerId}-${idx}`)) })
+        ] }) }) })
+      ] })
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      CreaFoodModal,
+      {
+        foodId: activeModalFoodId,
+        isOpen: Boolean(activeModalFoodId),
+        onClose: () => setActiveModalFoodId(null),
+        onSelectOfferStore: onNavigateToOfferStore
+      }
+    )
+  ] });
+}
+
 function useSupermarketData(filterOptions = {}) {
   const [stores, setStores] = reactExports.useState([]);
   const [offers, setOffers] = reactExports.useState([]);
@@ -21902,6 +22736,7 @@ function App() {
   const [activeProfileId, setActiveProfileId] = reactExports.useState("dany");
   const [isCounterModalOpen, setIsCounterModalOpen] = reactExports.useState(false);
   const [localShops, setLocalShops] = reactExports.useState([]);
+  const [selectedCreaFoodId, setSelectedCreaFoodId] = reactExports.useState(null);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = reactExports.useState(false);
   const [activeFlyer, setActiveFlyer] = reactExports.useState(null);
   const [isBannerDismissed, setIsBannerDismissed] = reactExports.useState(false);
@@ -22244,6 +23079,10 @@ function App() {
             offers,
             loading,
             allFlyers: flyers,
+            onOpenCreaFood: (creaId) => {
+              setSelectedCreaFoodId(creaId);
+              setActiveRoom("room-2-crea");
+            },
             onOpenFlyer: (item) => {
               const storeFlyer = flyers.find((f) => f.storeId === item?.storeId) || flyers[0] || item;
               if (storeFlyer) setActiveFlyer(storeFlyer);
@@ -22278,7 +23117,18 @@ function App() {
           ] }, shop.id)) })
         ] })
       ] })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+    ] }) : activeRoom === "room-2-crea" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      CreaExplorerView,
+      {
+        activeProfileId,
+        initialFoodId: selectedCreaFoodId,
+        onNavigateToOfferStore: (storeId, productTitle) => {
+          setSelectedStoreId(storeId || null);
+          setSearchQuery(productTitle || "");
+          setActiveRoom("room-1-negozi");
+        }
+      }
+    ) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-3xl", children: currentRoomMeta.icon }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-extrabold text-slate-900", children: currentRoomMeta.fullTitle }),
@@ -22336,4 +23186,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-dazXhVxB.js.map
+//# sourceMappingURL=index-nVpXxSW1.js.map
