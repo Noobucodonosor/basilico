@@ -53,7 +53,7 @@ Nei prototipi precedenti si erano verificati tre difetti gravi che qui vengono b
 
 ## 3. Task Operativi Collegati
 
-- [ ] **TASK-M6-01**: **Servizio `MealPlannerService` (6 Modelli Neo-Dieta, Giorni Barca/Terra, Priorità Freschi Aperti, Concatenazione Confezioni Intere Zero-Spreco e Budget Onesto) e `ShoppingListService` (Simulatore 1/2/3 Negozi Rapallo, Corsie & Piano B)**
+- [x] **TASK-M6-01**: **Servizio `MealPlannerService` (6 Modelli Neo-Dieta, Giorni Barca/Terra, Priorità Freschi Aperti, Concatenazione Confezioni Intere Zero-Spreco e Budget Onesto) e `ShoppingListService` (Simulatore 1/2/3 Negozi Rapallo, Corsie & Piano B)**
   - *File coinvolti*: `server/services/mealPlannerService.js`, `server/services/shoppingListService.js`, `server/routes/planner.js`, `server/routes/shoppingList.js`, `tests/unit/meal_planner_zero_waste.test.js`, `tests/api/planner_and_shopping_list.test.js`
   - *Verification Step*: `npm test`
 - [ ] **TASK-M6-02**: **Interfaccia Completa Stanza 6 ("Pianificatore & Lista Spesa"): Selettore 6 Modelli, Calendario Barca/Terra con Tracciabilità Confezioni, Simulatore Multi-Negozio, Modalità "In Corsia" ed Export WhatsApp/Telegram**

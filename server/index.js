@@ -23,6 +23,8 @@ import pantryRouter from './routes/pantry.js';
 import receiptsRouter from './routes/receipts.js';
 import kitchenRouter from './routes/kitchen.js';
 import recipesRouter from './routes/recipes.js';
+import plannerRouter from './routes/planner.js';
+import shoppingListRouter from './routes/shoppingList.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -287,6 +289,8 @@ export function createApp(options = {}) {
   if (receiptsRouter) app.use('/api/receipts', receiptsRouter);
   if (kitchenRouter) app.use('/api/kitchen', kitchenRouter);
   if (recipesRouter) app.use('/api/recipes', recipesRouter);
+  if (plannerRouter) app.use('/api/planner', plannerRouter);
+  if (shoppingListRouter) app.use('/api/shopping-list', shoppingListRouter);
   if (statusRouter) {
     app.use('/api/status', statusRouter);
     app.use('/api/sync', statusRouter);
