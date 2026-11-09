@@ -1,6 +1,6 @@
 # ADR-0009: Stanza 5 — Acquisizione Scontrini con Quadratura al Centesimo, Storico Prezzi Fuori Offerta & Dispensa Fisica a 3 Luoghi (Casa, Frigo, Barca)
 
-- **Stato:** Proposto (`Proposed`)
+- **Stato:** Accettato (`Accepted`)
 - **Priorità:** **P1 — Alta (Milestone 3 — Livello 3.1 Bottom-Up)**
 - **Data:** 2026-11-09
 - **Autori:** Direttore di Prodotto (@Noobucodonosor) & Team Basilico
@@ -40,6 +40,6 @@ Inoltre, per pianificare i pasti di una persona sola senza sprechi, il sistema d
 - [x] **TASK-M3-01**: **Motore Scontrini con Quadratura Obbligatoria al Centesimo, Alimentazione Automatica Prezzi Fuori Offerta e Servizio Dispensa a 3 Luoghi (`dry_pantry`, `fridge_freezer`, `boat_cooler`) con Finestra $T_{\text{open}}$**
   - *File coinvolti*: `server/services/receiptService.js`, `server/services/pantryService.js`, `server/routes/receipts.js`, `server/routes/pantry.js`, `tests/unit/receipt_reconciliation.test.js`, `tests/api/pantry_and_receipts.test.js`
   - *Verification Step*: `npm test`
-- [ ] **TASK-M3-02**: **Interfaccia Completa Stanza 5 ("Dispensa & Scontrini"): Scanner/Editor Scontrino con Controllo Centesimi, Vista 3 Luoghi (Secca / Frigo / Barca), Alert Freschi Aperti e Controlli Rapidi Scorte (`+ / - / Apri / Finito`)**
+- [x] **TASK-M3-02**: **Interfaccia Completa Stanza 5 ("Dispensa & Scontrini"): Scanner/Editor Scontrino con Controllo Centesimi, Vista 3 Luoghi (Secca / Frigo / Barca), Alert Freschi Aperti e Controlli Rapidi Scorte (`+ / - / Apri / Finito`)**
   - *File coinvolti*: `src/components/pantry/PantryAndReceiptsView.jsx`, `src/components/pantry/ReceiptScannerModal.jsx`, `src/App.jsx`, `tests/e2e/pantry_receipts_ui.test.js`
   - *Verification Step*: `npm test`
