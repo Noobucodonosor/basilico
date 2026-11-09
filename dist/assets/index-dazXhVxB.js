@@ -19995,12 +19995,16 @@ function Header({
   onToggleMobileSearch,
   onRefresh,
   onDeepSync,
-  isRefreshing
+  isRefreshing,
+  profiles = [],
+  activeProfileId = "dany",
+  onChangeProfile,
+  onOpenCounterPriceModal
 }) {
   const online = status ? status.isOnline !== false && status.dataSource !== "seed" : isOnline;
   const source = status?.dataSource || dataSource || "live";
   const isOpen = isMobileSearchOpen ?? mobileSearchOpen;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-16 gap-3", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-16 gap-2 sm:gap-3", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5 min-w-0", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-2xl select-none", "aria-hidden": "true", children: "🌿" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col min-w-0", children: [
@@ -20011,7 +20015,37 @@ function Header({
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-slate-500 truncate hidden sm:block", children: activeStoreName || "Tutti i Supermercati" })
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 sm:gap-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 sm:gap-2.5", children: [
+      profiles.length > 0 && onChangeProfile && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "active-profile-select", className: "sr-only", children: "Profilo Alimentare Attivo" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "select",
+          {
+            id: "active-profile-select",
+            value: activeProfileId,
+            onChange: (e) => onChangeProfile(e.target.value),
+            className: "text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[140px] sm:max-w-[210px] truncate",
+            title: "Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)",
+            children: profiles.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: p.id, children: [
+              "👤 ",
+              p.name
+            ] }, p.id))
+          }
+        )
+      ] }),
+      onOpenCounterPriceModal && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: onOpenCounterPriceModal,
+          className: "hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer",
+          title: "Registra un prezzo visto al banco in pescheria, macelleria o scaffale",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: "🏷️" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Prezzo al banco" })
+          ]
+        }
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
@@ -20024,7 +20058,7 @@ function Header({
                 className: `w-2 h-2 rounded-full ${online ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: online ? "Online" : source === "cache" ? "Copia Cache" : "Offline" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden lg:inline", children: online ? "Online" : source === "cache" ? "Copia Cache" : "Offline" })
           ]
         }
       ),
@@ -20088,7 +20122,7 @@ function Header({
                 )
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Deep Sync" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: "Deep Sync" })
           ]
         }
       ),
@@ -20105,6 +20139,83 @@ function Header({
       )
     ] })
   ] }) }) });
+}
+
+const BASILICO_ROOMS = [
+  {
+    id: "room-1-negozi",
+    number: 1,
+    icon: "🏪",
+    shortTitle: "Negozi & Offerte",
+    fullTitle: "1. Negozi & Offerte Rapallo",
+    subtitle: "14+ insegne, 5 domini, €/kg sgocciolato e Lente Qualità"
+  },
+  {
+    id: "room-2-crea",
+    number: 2,
+    icon: "🔬",
+    shortTitle: "Scienza & CREA",
+    fullTitle: "2. Scienza & CREA",
+    subtitle: "832 alimenti ufficiali × 7 sezioni, Crudo↔Cotto e Nutrienti/€"
+  },
+  {
+    id: "room-3-ricette",
+    number: 3,
+    icon: "🍽️",
+    shortTitle: "Ricette & Fornelli",
+    fullTitle: "3. Ricette, Ristoranti & Fornelli",
+    subtitle: "Scuola base, 32 ristoranti Tigullio, Arbitraggio, 80/20 e Fornelli"
+  },
+  {
+    id: "room-4-cucina",
+    number: 4,
+    icon: "🍳",
+    shortTitle: "Cucina & Pulizia",
+    fullTitle: "4. Cucina, Pentole & Pulizia",
+    subtitle: "Fornello, ROI Pentole sbloccate e Kitchen Reset chimico (Tigotà/PiùMe)"
+  },
+  {
+    id: "room-5-dispensa",
+    number: 5,
+    icon: "🥫",
+    shortTitle: "Dispensa & Scontrini",
+    fullTitle: "5. Dispensa & Scontrini",
+    subtitle: "Scontrini al centesimo, 3 zone (Secca, Frigo, Barca) e orologio T_open"
+  },
+  {
+    id: "room-6-pianificatore",
+    number: 6,
+    icon: "🛒",
+    shortTitle: "Pianificatore & Spesa",
+    fullTitle: "6. Pianificatore & Lista Spesa",
+    subtitle: "6 Neo-Diete, confezioni intere zero-spreco, 1/2/3 negozi e In Corsia"
+  }
+];
+function RoomNavigation({ activeRoom, onSelectRoom }) {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "nav",
+    {
+      "aria-label": "Navigazione 6 Stanze Principali di Basilico",
+      className: "bg-slate-900 text-white border-b border-slate-800 sticky top-16 z-20 shadow-xs",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 overflow-x-auto py-2 no-scrollbar", children: BASILICO_ROOMS.map((room) => {
+        const isActive = activeRoom === room.id;
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            type: "button",
+            onClick: () => onSelectRoom(room.id),
+            title: room.subtitle,
+            className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${isActive ? "bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-400" : "text-slate-300 hover:text-white hover:bg-slate-800"}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: room.icon }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: room.shortTitle })
+            ]
+          },
+          room.id
+        );
+      }) }) })
+    }
+  );
 }
 
 function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
@@ -20370,6 +20481,13 @@ function formatValidityBadge(isoString) {
   const months = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
   return `Valido fino al ${day} ${months[date.getUTCMonth()]}`;
 }
+const DOMAIN_BADGE_MAP = {
+  food_human: { label: "Alimentari", color: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  home_cleaning: { label: "Chimica & Casa", color: "bg-sky-50 text-sky-800 border-sky-200" },
+  kitchen_cookware: { label: "Pentole & Cucina", color: "bg-amber-50 text-amber-800 border-amber-200" },
+  personal_care: { label: "Igiene Persona", color: "bg-purple-50 text-purple-800 border-purple-200" },
+  pet_care: { label: "Pet Care", color: "bg-orange-50 text-orange-800 border-orange-200" }
+};
 function OfferCard({ offer, onOpenFlyer }) {
   const promoVal = Number(offer.promoPrice ?? offer.price ?? offer.discountPrice ?? 0);
   const origVal = offer.originalPrice != null ? Number(offer.originalPrice) : null;
@@ -20380,10 +20498,15 @@ function OfferCard({ offer, onOpenFlyer }) {
   const imageUrl = offer.imageUrl || "/images/placeholder_deal.svg";
   const brand = offer.brand || offer.storeName || (offer.chainId ? offer.chainId.toUpperCase() : "Offerta");
   const validityText = formatValidityBadge(offer.validTo || offer.validityEnd);
+  const normalizedPriceText = offer.formattedNormalizedPrice || offer.unitPrice || null;
+  const domainMeta = DOMAIN_BADGE_MAP[offer.domain] || null;
+  const qualityBadges = Array.isArray(offer.qualityBadges) ? offer.qualityBadges.slice(0, 2) : [];
+  const realDiscount = offer.realDiscountCheck || null;
+  const isFlaggedByProfile = offer.profileCompatibility && offer.profileCompatibility.isCompatible === false;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "article",
     {
-      className: "bg-white rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow p-3.5 grid grid-rows-subgrid row-span-4 gap-2 relative group",
+      className: `bg-white rounded-xl border shadow-xs hover:shadow-md transition-shadow p-3.5 grid grid-rows-subgrid row-span-4 gap-2 relative group ${isFlaggedByProfile ? "border-amber-300 bg-amber-50/20 opacity-85" : "border-slate-200"}`,
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative aspect-square w-full bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center p-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -20399,18 +20522,51 @@ function OfferCard({ offer, onOpenFlyer }) {
             }
           ),
           hasDiscount && discountText && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute top-2 right-2 bg-rose-600 text-white text-xs font-extrabold px-2 py-0.5 rounded-full shadow-xs", children: discountText }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute bottom-2 left-2 bg-slate-900/70 text-white text-[10px] font-semibold px-2 py-0.5 rounded-sm", children: brand })
+          domainMeta && offer.domain !== "food_human" && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full border ${domainMeta.color}`, children: domainMeta.label }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute bottom-2 left-2 bg-slate-900/70 text-white text-[10px] font-semibold px-2 py-0.5 rounded-sm", children: brand }),
+          realDiscount && (realDiscount.status === "verified_best" || realDiscount.status === "verified_good") && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "span",
+            {
+              className: "absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm shadow-xs",
+              title: realDiscount.explanation,
+              children: [
+                "✓ ",
+                realDiscount.badge
+              ]
+            }
+          )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-medium text-emerald-700 line-clamp-1 mb-0.5", children: offer.category }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "line-clamp-2 text-sm font-semibold leading-snug text-slate-900", title: offer.title, children: offer.title })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-1 mb-0.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-medium text-emerald-700 line-clamp-1", children: offer.category }),
+            isFlaggedByProfile && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "span",
+              {
+                className: "text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded shrink-0",
+                title: (offer.profileCompatibility.reasons || []).join(" • "),
+                children: "⚠️ Escluso profilo"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "line-clamp-2 text-sm font-semibold leading-snug text-slate-900", title: offer.title, children: offer.title }),
+          qualityBadges.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-1 mt-1", children: qualityBadges.map((b, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "span",
+            {
+              className: "text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded",
+              children: b.label || b
+            },
+            idx
+          )) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col justify-end", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl font-extrabold text-emerald-700 tracking-tight", children: promoFormatted }),
             hasDiscount && originalFormatted && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-slate-400 line-through", children: originalFormatted })
           ] }),
-          offer.unitPrice && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-slate-500 font-medium", children: offer.unitPrice })
+          normalizedPriceText && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-slate-600 font-semibold", children: [
+            "⚖️ ",
+            normalizedPriceText
+          ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 flex items-center justify-between text-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-slate-500 truncate", title: validityText || "", children: validityText || "Offerta attiva" }),
@@ -21241,6 +21397,198 @@ function SyncStatusModal({ isOpen, progress, onClose }) {
   );
 }
 
+function CounterPriceModal({ isOpen, onClose, stores = [], onSaved }) {
+  const [title, setTitle] = reactExports.useState("");
+  const [brand, setBrand] = reactExports.useState("");
+  const [price, setPrice] = reactExports.useState("");
+  const [unitString, setUnitString] = reactExports.useState("1 kg");
+  const [storeId, setStoreId] = reactExports.useState("pescheria-locale-rapallo");
+  const [notes, setNotes] = reactExports.useState("");
+  const [submitting, setSubmitting] = reactExports.useState(false);
+  const [error, setError] = reactExports.useState(null);
+  if (!isOpen) return null;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      const selectedStore = stores.find((s) => s.id === storeId);
+      const res = await fetch("/api/prices/observe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          brand,
+          price: parseFloat(String(price).replace(",", ".")),
+          unitString,
+          storeId,
+          storeName: selectedStore ? selectedStore.name : storeId,
+          notes,
+          channel: "counter_observed"
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Errore salvataggio prezzo");
+      }
+      setTitle("");
+      setBrand("");
+      setPrice("");
+      setNotes("");
+      if (onSaved) onSaved(data.observation);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      className: "fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4",
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-labelledby": "counter-price-modal-title",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 max-w-md w-full p-5 shadow-xl space-y-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between border-b border-slate-100 pb-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { id: "counter-price-modal-title", className: "text-base font-bold text-slate-900", children: "🏷️ Registra “Prezzo visto al banco”" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Salva un prezzo reale visto in pescheria, macelleria, panificio o scaffale a Rapallo." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: onClose,
+              className: "text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer",
+              "aria-label": "Chiudi",
+              children: "✕"
+            }
+          )
+        ] }),
+        error && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium", children: error }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "space-y-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-700 mb-1", children: "Prodotto visto al banco *" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "text",
+                required: true,
+                placeholder: "es. Acciughe fresche del Mar Ligure / Focaccia al formaggio",
+                value: title,
+                onChange: (e) => setTitle(e.target.value),
+                className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-700 mb-1", children: "Prezzo (€) *" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "text",
+                  required: true,
+                  placeholder: "es. 9,80",
+                  value: price,
+                  onChange: (e) => setPrice(e.target.value),
+                  className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-700 mb-1", children: "Unità / Formato *" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "text",
+                  required: true,
+                  placeholder: "es. 1 kg, all'etto, 500 g",
+                  value: unitString,
+                  onChange: (e) => setUnitString(e.target.value),
+                  className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-700 mb-1", children: "Bottega o Supermercato" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "select",
+                {
+                  value: storeId,
+                  onChange: (e) => setStoreId(e.target.value),
+                  className: "w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "pescheria-locale-rapallo", children: "🐟 Pescheria / Mercato Rapallo" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "macelleria-locale-rapallo", children: "🥩 Macelleria / Polleria Rapallo" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "panificio-pastificio-rapallo", children: "🥖 Panificio / Pastificio Fresco" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "ortofrutta-locale-rapallo", children: "🥬 Ortofrutta Locale Rapallo" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "casalinghi-ferramenta-rapallo", children: "🍳 Casalinghi / Ferramenta Rapallo" }),
+                    stores.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: s.id, children: [
+                      "🏪 ",
+                      s.name
+                    ] }, s.id))
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-700 mb-1", children: "Marca / Origine (opz.)" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "text",
+                  placeholder: "es. Locale Tigullio",
+                  value: brand,
+                  onChange: (e) => setBrand(e.target.value),
+                  className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-slate-700 mb-1", children: "Note (es. pescato del giorno, taglio, qualità)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "input",
+              {
+                type: "text",
+                placeholder: "es. Pescato locale stamattina",
+                value: notes,
+                onChange: (e) => setNotes(e.target.value),
+                className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-2 pt-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: onClose,
+                className: "px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer",
+                children: "Annulla"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "submit",
+                disabled: submitting,
+                className: "px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs disabled:opacity-50 cursor-pointer",
+                children: submitting ? "Salvataggio..." : "Salva Prezzo Osservato"
+              }
+            )
+          ] })
+        ] })
+      ] })
+    }
+  );
+}
+
 function OfflineNotice({
   isOnline = true,
   dataSource = "live",
@@ -21408,6 +21756,9 @@ function useSupermarketData(filterOptions = {}) {
 
     const queryParams = new URLSearchParams();
     if (filterOptions.storeId) queryParams.set('storeId', filterOptions.storeId);
+    if (filterOptions.domain) queryParams.set('domain', filterOptions.domain);
+    if (filterOptions.profileId) queryParams.set('profileId', filterOptions.profileId);
+    if (filterOptions.hideIncompatible) queryParams.set('hideIncompatible', 'true');
     if (filterOptions.q && filterOptions.q.trim()) queryParams.set('q', filterOptions.q.trim());
     if (filterOptions.category) queryParams.set('category', filterOptions.category);
     if (filterOptions.minDiscount) queryParams.set('minDiscount', filterOptions.minDiscount);
@@ -21439,6 +21790,9 @@ function useSupermarketData(filterOptions = {}) {
     }
   }, [
     filterOptions.storeId,
+    filterOptions.domain,
+    filterOptions.profileId,
+    filterOptions.hideIncompatible,
     filterOptions.q,
     filterOptions.category,
     filterOptions.minDiscount,
@@ -21521,22 +21875,65 @@ function useSupermarketData(filterOptions = {}) {
   };
 }
 
+const DOMAIN_PILLS = [
+  { id: null, label: "Tutti i 5 Domini", icon: "🌐" },
+  { id: "food_human", label: "Alimentari & Bevande", icon: "🥩" },
+  { id: "home_cleaning", label: "Chimica & Cura Casa", icon: "🧼" },
+  { id: "kitchen_cookware", label: "Pentole & Utensili", icon: "🍳" },
+  { id: "personal_care", label: "Igiene Persona", icon: "🧴" },
+  { id: "pet_care", label: "Animali (Pet)", icon: "🐾" }
+];
 function App() {
   const initialParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const initialRoom = initialParams.get("room") || "room-1-negozi";
   const initialStore = initialParams.get("store") || null;
+  const initialDomain = initialParams.get("domain") || null;
   const initialQuery = initialParams.get("q") || "";
   const initialCategory = initialParams.get("category") || null;
   const initialSort = initialParams.get("sortBy") || "discountDesc";
+  const [activeRoom, setActiveRoom] = reactExports.useState(initialRoom);
   const [selectedStoreId, setSelectedStoreId] = reactExports.useState(initialStore);
+  const [selectedDomain, setSelectedDomain] = reactExports.useState(initialDomain);
   const [searchQuery, setSearchQuery] = reactExports.useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = reactExports.useState(initialCategory);
   const [sortBy, setSortBy] = reactExports.useState(initialSort);
+  const [hideIncompatible, setHideIncompatible] = reactExports.useState(false);
+  const [profiles, setProfiles] = reactExports.useState([]);
+  const [activeProfileId, setActiveProfileId] = reactExports.useState("dany");
+  const [isCounterModalOpen, setIsCounterModalOpen] = reactExports.useState(false);
+  const [localShops, setLocalShops] = reactExports.useState([]);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = reactExports.useState(false);
   const [activeFlyer, setActiveFlyer] = reactExports.useState(null);
   const [isBannerDismissed, setIsBannerDismissed] = reactExports.useState(false);
   const [isRefreshing, setIsRefreshing] = reactExports.useState(false);
   const [isSyncModalOpen, setIsSyncModalOpen] = reactExports.useState(false);
   const [syncProgress, setSyncProgress] = reactExports.useState(null);
+  reactExports.useEffect(() => {
+    fetch("/api/profiles").then((r) => r.ok ? r.json() : null).then((data) => {
+      if (data && Array.isArray(data.profiles)) {
+        setProfiles(data.profiles);
+        if (data.activeProfileId) setActiveProfileId(data.activeProfileId);
+      }
+    }).catch(() => {
+    });
+    fetch("/api/stores?includeLocalShops=true").then((r) => r.ok ? r.json() : null).then((data) => {
+      if (data && Array.isArray(data.stores)) {
+        setLocalShops(data.stores.filter((s) => s.dataChannel === "receipt_observed"));
+      }
+    }).catch(() => {
+    });
+  }, []);
+  const handleChangeProfile = reactExports.useCallback(async (newProfileId) => {
+    setActiveProfileId(newProfileId);
+    try {
+      await fetch("/api/profiles/active", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profileId: newProfileId })
+      });
+    } catch (_) {
+    }
+  }, []);
   const {
     stores,
     offers,
@@ -21545,9 +21942,13 @@ function App() {
     status,
     loading,
     totalOffers,
-    syncData
+    syncData,
+    refetchOffers
   } = useSupermarketData({
     storeId: selectedStoreId,
+    domain: selectedDomain,
+    profileId: activeProfileId,
+    hideIncompatible,
     q: searchQuery,
     category: selectedCategory,
     sortBy
@@ -21555,17 +21956,22 @@ function App() {
   reactExports.useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams();
+    if (activeRoom && activeRoom !== "room-1-negozi") params.set("room", activeRoom);
     if (selectedStoreId) params.set("store", selectedStoreId);
+    if (selectedDomain) params.set("domain", selectedDomain);
     if (searchQuery.trim()) params.set("q", searchQuery.trim());
     if (selectedCategory) params.set("category", selectedCategory);
     if (sortBy && sortBy !== "discountDesc") params.set("sortBy", sortBy);
     const newRelativePath = params.toString() ? `?${params.toString()}` : window.location.pathname;
     window.history.replaceState(null, "", newRelativePath);
-  }, [selectedStoreId, searchQuery, selectedCategory, sortBy]);
+  }, [activeRoom, selectedStoreId, selectedDomain, searchQuery, selectedCategory, sortBy]);
   const activeStore = reactExports.useMemo(() => {
     return stores.find((s) => s.id === selectedStoreId) || null;
   }, [stores, selectedStoreId]);
   const activeStoreName = activeStore ? activeStore.name : "Tutti i Supermercati";
+  const activeProfile = reactExports.useMemo(() => {
+    return profiles.find((p) => p.id === activeProfileId) || null;
+  }, [profiles, activeProfileId]);
   const currentStoreFlyer = reactExports.useMemo(() => {
     if (!selectedStoreId) return null;
     return flyers.find((f) => f.storeId === selectedStoreId) || null;
@@ -21574,11 +21980,14 @@ function App() {
     let count = 0;
     if (searchQuery.trim().length > 0) count++;
     if (selectedCategory !== null) count++;
+    if (selectedDomain !== null) count++;
     return count;
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, selectedDomain]);
   const handleClearFilters = reactExports.useCallback(() => {
     setSearchQuery("");
     setSelectedCategory(null);
+    setSelectedDomain(null);
+    setHideIncompatible(false);
   }, []);
   const handleToggleCategory = reactExports.useCallback((cat) => {
     setSelectedCategory((prev) => prev === cat ? null : cat);
@@ -21643,6 +22052,7 @@ function App() {
       setActiveFlyer(targetFlyer);
     }
   }, []);
+  const currentRoomMeta = BASILICO_ROOMS.find((r) => r.id === activeRoom) || BASILICO_ROOMS[0];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       OfflineNotice,
@@ -21664,116 +22074,232 @@ function App() {
         onToggleMobileSearch: () => setIsMobileSearchOpen((prev) => !prev),
         onRefresh: handleRefresh,
         onDeepSync: handleDeepSync,
-        isRefreshing
+        isRefreshing,
+        profiles,
+        activeProfileId,
+        onChangeProfile: handleChangeProfile,
+        onOpenCounterPriceModal: () => setIsCounterModalOpen(true)
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      StoreSwitcher,
-      {
-        stores,
-        selectedStoreId,
-        onSelectStore: (id) => setSelectedStoreId(id)
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6", children: [
-      activeStore && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-900", children: activeStore.name }),
-            activeStore.isRegionalServing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200", children: "Servizio Rapallo & Tigullio" })
+    /* @__PURE__ */ jsxRuntimeExports.jsx(RoomNavigation, { activeRoom, onSelectRoom: setActiveRoom }),
+    activeRoom === "room-1-negozi" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        StoreSwitcher,
+        {
+          stores,
+          selectedStoreId,
+          onSelectStore: (id) => setSelectedStoreId(id)
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6", children: [
+        activeProfile && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-emerald-900/95 text-white rounded-xl p-3.5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start sm:items-center gap-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl", "aria-hidden": "true", children: "🛡️" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold uppercase tracking-wider bg-emerald-700 px-2 py-0.5 rounded", children: [
+                  "Profilo: ",
+                  activeProfile.name
+                ] }),
+                activeProfile.excludedIngredients?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-emerald-100", children: [
+                  "Esclusioni attive: ",
+                  activeProfile.excludedIngredients.slice(0, 5).join(", "),
+                  activeProfile.excludedIngredients.length > 5 ? ` (+${activeProfile.excludedIngredients.length - 5})` : ""
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-emerald-200 mt-0.5", children: activeProfile.description })
+            ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500 mt-0.5 truncate max-w-md", children: activeStore.address })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 self-end sm:self-center shrink-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-100 cursor-pointer", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "input",
+                {
+                  type: "checkbox",
+                  checked: hideIncompatible,
+                  onChange: (e) => setHideIncompatible(e.target.checked),
+                  className: "rounded border-emerald-400 text-emerald-500 focus:ring-emerald-400"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Nascondi prodotti esclusi" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => setIsCounterModalOpen(true),
+                className: "sm:hidden px-2.5 py-1 text-xs font-bold bg-amber-400 text-slate-900 rounded-lg",
+                children: "🏷️ Prezzo al banco"
+              }
+            )
+          ] })
         ] }),
-        currentStoreFlyer && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "button",
-          {
-            type: "button",
-            onClick: () => handleOpenFlyer(currentStoreFlyer),
-            className: "inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap self-start sm:self-auto cursor-pointer",
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-4 h-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                "Sfoglia volantino (",
-                currentStoreFlyer.pageCount,
-                " pag.)"
-              ] })
-            ]
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: `flex flex-col sm:flex-row items-stretch sm:items-center gap-3 ${isMobileSearchOpen ? "flex" : "hidden sm:flex"}`, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          SearchBar,
-          {
-            value: searchQuery,
-            onChange: setSearchQuery,
-            onClear: () => setSearchQuery(""),
-            matchCount: totalOffers,
-            autoFocus: isMobileSearchOpen
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort-select", className: "text-xs font-semibold text-slate-500 whitespace-nowrap", children: "Ordina:" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "select",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar", "aria-label": "Domini merceologici", children: DOMAIN_PILLS.map((dom) => {
+          const isSelected = selectedDomain === dom.id;
+          const count = dom.id ? facets?.domains?.[dom.id] : totalOffers;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
             {
-              id: "sort-select",
-              value: sortBy,
-              onChange: (e) => setSortBy(e.target.value),
-              className: "text-xs font-medium bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-xs",
+              type: "button",
+              onClick: () => setSelectedDomain(isSelected ? null : dom.id),
+              className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${isSelected ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40"}`,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "discountDesc", children: "Sconto più alto (% decrescente)" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "priceAsc", children: "Prezzo più basso (€ crescente)" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "priceDesc", children: "Prezzo più alto (€ decrescente)" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: dom.icon }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: dom.label }),
+                count !== void 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? "bg-slate-700 text-slate-100" : "bg-slate-100 text-slate-600"}`, children: count })
+              ]
+            },
+            dom.id || "all"
+          );
+        }) }),
+        activeStore && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-900", children: activeStore.name }),
+              activeStore.isRegionalServing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200", children: "Servizio Rapallo & Tigullio" }),
+              activeStore.loyaltyCard && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-800 border border-amber-200", children: [
+                "💳 ",
+                activeStore.loyaltyCard
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500 mt-0.5 truncate max-w-md", children: [
+              activeStore.address,
+              activeStore.logistics ? ` • 🚶 ${activeStore.logistics.walkMinutesFromCenter} min a piedi` : ""
+            ] })
+          ] }),
+          currentStoreFlyer && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => handleOpenFlyer(currentStoreFlyer),
+              className: "inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap self-start sm:self-auto cursor-pointer",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-4 h-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                  "Sfoglia volantino (",
+                  currentStoreFlyer.pageCount,
+                  " pag.)"
+                ] })
               ]
             }
           )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: `flex flex-col sm:flex-row items-stretch sm:items-center gap-3 ${isMobileSearchOpen ? "flex" : "hidden sm:flex"}`, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            SearchBar,
+            {
+              value: searchQuery,
+              onChange: setSearchQuery,
+              onClear: () => setSearchQuery(""),
+              matchCount: totalOffers,
+              autoFocus: isMobileSearchOpen
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 shrink-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "sort-select", className: "text-xs font-semibold text-slate-500 whitespace-nowrap", children: "Ordina:" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "select",
+              {
+                id: "sort-select",
+                value: sortBy,
+                onChange: (e) => setSortBy(e.target.value),
+                className: "text-xs font-medium bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-xs",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "discountDesc", children: "Sconto più alto (% decrescente)" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "pricePerKgAsc", children: "Prezzo €/kg edibile più basso" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "priceAsc", children: "Prezzo confezione più basso (€ crescente)" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "priceDesc", children: "Prezzo confezione più alto (€ decrescente)" })
+                ]
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CategoryFilters,
+          {
+            selectedCategory,
+            onToggleCategory: handleToggleCategory,
+            categoryCounts: facets?.categories || {},
+            activeFilterCount,
+            onClearFilters: handleClearFilters
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { "aria-label": "Offerte promozionali", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-6", children: Array.from({ length: 8 }).map((_, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-4 h-80 animate-pulse flex flex-col gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-slate-200 rounded-lg aspect-square w-full" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-4 bg-slate-200 rounded w-3/4" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-3 bg-slate-200 rounded w-1/2" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-auto h-6 bg-slate-200 rounded w-1/3" })
+        ] }, i)) }) : offers.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+          EmptyState,
+          {
+            searchQuery,
+            selectedCategory,
+            selectedStoreName: activeStore ? activeStore.name : null,
+            onClearFilters: handleClearFilters,
+            onApplyQuery: (term) => setSearchQuery(term)
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          OfferGrid,
+          {
+            offers,
+            loading,
+            allFlyers: flyers,
+            onOpenFlyer: (item) => {
+              const storeFlyer = flyers.find((f) => f.storeId === item?.storeId) || flyers[0] || item;
+              if (storeFlyer) setActiveFlyer(storeFlyer);
+            },
+            onResetFilters: handleClearFilters
+          }
+        ) }),
+        localShops.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-bold text-slate-900", children: "🐟 Botteghe Storiche, Mercato & Casalinghi Osservati a Rapallo" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500", children: [
+                "Canale ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-emerald-700", children: "receipt_observed" }),
+                ": alimentato dai tuoi scontrini reali e dai prezzi visti al banco (zero finti volantini)."
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => setIsCounterModalOpen(true),
+                className: "px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer shrink-0",
+                children: "+ Prezzo visto al banco"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5", children: localShops.map((shop) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 text-xs", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-800 truncate", children: shop.name }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-500 truncate", children: shop.address }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 inline-block text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded", children: "Scontrini & Banco" })
+          ] }, shop.id)) })
         ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        CategoryFilters,
-        {
-          selectedCategory,
-          onToggleCategory: handleToggleCategory,
-          categoryCounts: facets?.categories || {},
-          activeFilterCount,
-          onClearFilters: handleClearFilters
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("section", { "aria-label": "Offerte promozionali", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-6", children: Array.from({ length: 8 }).map((_, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-4 h-80 animate-pulse flex flex-col gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-slate-200 rounded-lg aspect-square w-full" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-4 bg-slate-200 rounded w-3/4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-3 bg-slate-200 rounded w-1/2" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-auto h-6 bg-slate-200 rounded w-1/3" })
-      ] }, i)) }) : offers.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-        EmptyState,
-        {
-          searchQuery,
-          selectedCategory,
-          selectedStoreName: activeStore ? activeStore.name : null,
-          onClearFilters: handleClearFilters,
-          onApplyQuery: (term) => setSearchQuery(term)
-        }
-      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-        OfferGrid,
-        {
-          offers,
-          loading,
-          allFlyers: flyers,
-          onOpenFlyer: (item) => {
-            const storeFlyer = flyers.find((f) => f.storeId === item?.storeId) || flyers[0] || item;
-            if (storeFlyer) setActiveFlyer(storeFlyer);
-          },
-          onResetFilters: handleClearFilters
-        }
-      ) })
-    ] }),
+      ] })
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-3xl", children: currentRoomMeta.icon }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-extrabold text-slate-900", children: currentRoomMeta.fullTitle }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500", children: currentRoomMeta.subtitle })
+      ] })
+    ] }) }) }),
     activeFlyer && /* @__PURE__ */ jsxRuntimeExports.jsx(
       FlyerModal,
       {
         flyer: activeFlyer,
         isOpen: Boolean(activeFlyer),
         onClose: () => setActiveFlyer(null)
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      CounterPriceModal,
+      {
+        isOpen: isCounterModalOpen,
+        onClose: () => setIsCounterModalOpen(false),
+        stores,
+        onSaved: () => refetchOffers()
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -21785,8 +22311,8 @@ function App() {
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-slate-700", children: "🌿 Basilico — Volantini & Promozioni Supermercati Rapallo (16035 GE)" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Basko • Coop • Gulliver • Carrefour Market & Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-slate-700", children: "🌿 Basilico — Sistema Domestico, Nutrizionale (CREA), Gastronomico & Offerte Rapallo (16035 GE)" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Basko • Coop • Gulliver • Carrefour Market & Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet + Botteghe Locali" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-slate-400", children: [
         "Sorgente dati: ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-600", children: (status.dataSource || "live").toUpperCase() }),
@@ -21810,4 +22336,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-D5loDNsw.js.map
+//# sourceMappingURL=index-dazXhVxB.js.map

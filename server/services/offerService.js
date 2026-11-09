@@ -14,6 +14,8 @@ import { ingestionService } from './ingestionService.js';
 import { classifyProductDomain, VALID_PRODUCT_DOMAINS } from './domainClassifier.js';
 import { normalizeUnitPricing } from './unitPriceExtractor.js';
 import { evaluateQualityLens } from './qualityLensService.js';
+import { priceHistoryService } from './priceHistoryService.js';
+import { userProfileService } from './userProfileService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,13 +88,13 @@ export function getSortComparator(sortBy) {
 /**
  * Enriches an offer record with domain taxonomy, normalized €/kg pricing, and quality lens metadata.
  */
-export function enrichOfferRecord(offer = {}) {
+export function enrichOfferRecord(offer = {}, profileId = null) {
   if (!offer || typeof offer !== 'object') return offer;
   const domain = classifyProductDomain(offer);
   const pricing = normalizeUnitPricing(offer);
   const quality = evaluateQualityLens({ ...offer, domain });
 
-  return {
+  const enrichedBase = {
     ...offer,
     domain,
     checkoutPackPrice: pricing.checkoutPackPrice,
@@ -108,6 +110,15 @@ export function enrichOfferRecord(offer = {}) {
     qualityBadges: quality.badges,
     qualityWarnings: quality.warnings,
     technicalSpec: quality.technicalSpec
+  };
+
+  const realDiscount = priceHistoryService.evaluateRealDiscount(enrichedBase);
+  const profileCompatibility = userProfileService.checkItemCompatibility(enrichedBase, profileId);
+
+  return {
+    ...enrichedBase,
+    realDiscountCheck: realDiscount,
+    profileCompatibility
   };
 }
 
@@ -199,7 +210,15 @@ export class OfferService {
    * Pure synchronous query processing over an offers array
    */
   processQuery(query = {}, offers = []) {
-    let filtered = offers.map((o) => enrichOfferRecord(o));
+    const profileId = query.profileId || null;
+    let filtered = offers.map((o) => enrichOfferRecord(o, profileId));
+
+    // Optional profile filtering when hideIncompatible=true or profile has hard_ban enabled and profileId is explicitly requested
+    if (query.hideIncompatible === 'true' || query.hideIncompatible === true) {
+      filtered = filtered.filter((o) => o.profileCompatibility?.isCompatible !== false);
+    } else if (profileId && query.enforceProfileBan === 'true') {
+      filtered = filtered.filter((o) => o.profileCompatibility?.action !== 'hide');
+    }
 
     // 0. Domain filtering (food_human, home_cleaning, kitchen_cookware, personal_care, pet_care)
     if (query.domain && typeof query.domain === 'string' && query.domain.trim()) {

@@ -68,6 +68,9 @@ export function useSupermarketData(filterOptions = {}) {
 
     const queryParams = new URLSearchParams();
     if (filterOptions.storeId) queryParams.set('storeId', filterOptions.storeId);
+    if (filterOptions.domain) queryParams.set('domain', filterOptions.domain);
+    if (filterOptions.profileId) queryParams.set('profileId', filterOptions.profileId);
+    if (filterOptions.hideIncompatible) queryParams.set('hideIncompatible', 'true');
     if (filterOptions.q && filterOptions.q.trim()) queryParams.set('q', filterOptions.q.trim());
     if (filterOptions.category) queryParams.set('category', filterOptions.category);
     if (filterOptions.minDiscount) queryParams.set('minDiscount', filterOptions.minDiscount);
@@ -99,6 +102,9 @@ export function useSupermarketData(filterOptions = {}) {
     }
   }, [
     filterOptions.storeId,
+    filterOptions.domain,
+    filterOptions.profileId,
+    filterOptions.hideIncompatible,
     filterOptions.q,
     filterOptions.category,
     filterOptions.minDiscount,

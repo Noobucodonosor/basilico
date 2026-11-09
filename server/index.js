@@ -11,11 +11,13 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-// Route modules (M2)
+// Route modules (M2 + ADR-0007..0012)
 import storesRouter from './routes/stores.js';
 import offersRouter from './routes/offers.js';
 import flyersRouter from './routes/flyers.js';
 import statusRouter from './routes/status.js';
+import pricesRouter from './routes/prices.js';
+import profilesRouter from './routes/profiles.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -273,6 +275,8 @@ export function createApp(options = {}) {
   if (storesRouter) app.use('/api/stores', storesRouter);
   if (offersRouter) app.use('/api/offers', offersRouter);
   if (flyersRouter) app.use('/api/flyers', flyersRouter);
+  if (pricesRouter) app.use('/api/prices', pricesRouter);
+  if (profilesRouter) app.use('/api/profiles', profilesRouter);
   if (statusRouter) {
     app.use('/api/status', statusRouter);
     app.use('/api/sync', statusRouter);

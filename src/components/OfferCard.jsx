@@ -9,6 +9,14 @@ export function formatValidityBadge(isoString) {
   return `Valido fino al ${day} ${months[date.getUTCMonth()]}`;
 }
 
+const DOMAIN_BADGE_MAP = {
+  food_human: { label: 'Alimentari', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+  home_cleaning: { label: 'Chimica & Casa', color: 'bg-sky-50 text-sky-800 border-sky-200' },
+  kitchen_cookware: { label: 'Pentole & Cucina', color: 'bg-amber-50 text-amber-800 border-amber-200' },
+  personal_care: { label: 'Igiene Persona', color: 'bg-purple-50 text-purple-800 border-purple-200' },
+  pet_care: { label: 'Pet Care', color: 'bg-orange-50 text-orange-800 border-orange-200' }
+};
+
 export function OfferCard({ offer, onOpenFlyer }) {
   const promoVal = Number(offer.promoPrice ?? offer.price ?? offer.discountPrice ?? 0);
   const origVal = offer.originalPrice != null ? Number(offer.originalPrice) : null;
@@ -23,11 +31,19 @@ export function OfferCard({ offer, onOpenFlyer }) {
   const brand = offer.brand || offer.storeName || (offer.chainId ? offer.chainId.toUpperCase() : 'Offerta');
   const validityText = formatValidityBadge(offer.validTo || offer.validityEnd);
 
+  const normalizedPriceText = offer.formattedNormalizedPrice || offer.unitPrice || null;
+  const domainMeta = DOMAIN_BADGE_MAP[offer.domain] || null;
+  const qualityBadges = Array.isArray(offer.qualityBadges) ? offer.qualityBadges.slice(0, 2) : [];
+  const realDiscount = offer.realDiscountCheck || null;
+  const isFlaggedByProfile = offer.profileCompatibility && offer.profileCompatibility.isCompatible === false;
+
   return (
     <article
-      className="bg-white rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow p-3.5 grid grid-rows-subgrid row-span-4 gap-2 relative group"
+      className={`bg-white rounded-xl border shadow-xs hover:shadow-md transition-shadow p-3.5 grid grid-rows-subgrid row-span-4 gap-2 relative group ${
+        isFlaggedByProfile ? 'border-amber-300 bg-amber-50/20 opacity-85' : 'border-slate-200'
+      }`}
     >
-      {/* Track 1: Media (Image + Discount Badge) */}
+      {/* Track 1: Media (Image + Discount Badge + Domain/Profile Badges) */}
       <div className="relative aspect-square w-full bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center p-2">
         <img
           src={imageUrl}
@@ -45,22 +61,59 @@ export function OfferCard({ offer, onOpenFlyer }) {
           </span>
         )}
 
+        {domainMeta && offer.domain !== 'food_human' && (
+          <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full border ${domainMeta.color}`}>
+            {domainMeta.label}
+          </span>
+        )}
+
         <span className="absolute bottom-2 left-2 bg-slate-900/70 text-white text-[10px] font-semibold px-2 py-0.5 rounded-sm">
           {brand}
         </span>
+
+        {realDiscount && (realDiscount.status === 'verified_best' || realDiscount.status === 'verified_good') && (
+          <span
+            className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm shadow-xs"
+            title={realDiscount.explanation}
+          >
+            ✓ {realDiscount.badge}
+          </span>
+        )}
       </div>
 
-      {/* Track 2: Header (Title clamped to 2 lines + Category) */}
+      {/* Track 2: Header (Title clamped to 2 lines + Category + Quality Lens Badges) */}
       <div className="flex flex-col">
-        <span className="text-[11px] font-medium text-emerald-700 line-clamp-1 mb-0.5">
-          {offer.category}
-        </span>
+        <div className="flex items-center justify-between gap-1 mb-0.5">
+          <span className="text-[11px] font-medium text-emerald-700 line-clamp-1">
+            {offer.category}
+          </span>
+          {isFlaggedByProfile && (
+            <span
+              className="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded shrink-0"
+              title={(offer.profileCompatibility.reasons || []).join(' • ')}
+            >
+              ⚠️ Escluso profilo
+            </span>
+          )}
+        </div>
         <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900" title={offer.title}>
           {offer.title}
         </h3>
+        {qualityBadges.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {qualityBadges.map((b, idx) => (
+              <span
+                key={idx}
+                className="text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded"
+              >
+                {b.label || b}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Track 3: Pricing (Promo Price + Strikethrough + Unit Price) */}
+      {/* Track 3: Pricing (Promo Price + Strikethrough + Normalized Edible €/kg Price) */}
       <div className="flex flex-col justify-end">
         <div className="flex items-baseline gap-2">
           <span className="text-xl font-extrabold text-emerald-700 tracking-tight">
@@ -72,9 +125,9 @@ export function OfferCard({ offer, onOpenFlyer }) {
             </span>
           )}
         </div>
-        {offer.unitPrice && (
-          <span className="text-[11px] text-slate-500 font-medium">
-            {offer.unitPrice}
+        {normalizedPriceText && (
+          <span className="text-[11px] text-slate-600 font-semibold">
+            ⚖️ {normalizedPriceText}
           </span>
         )}
       </div>

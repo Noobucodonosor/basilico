@@ -1,6 +1,6 @@
 # ADR-0007: Fondamenta Multi-Dominio (Livelli 0–1), Normalizzatore Prezzi Edibili (`€/kg`), Storico Prezzi & Profilo Utente Universale
 
-- **Stato:** Proposto (`Proposed`)
+- **Stato:** Accettato (`Accepted`)
 - **Priorità:** **P0 — Critica (Fondamenta Bottom-Up Livelli 0, 1 e 2.4)**
 - **Data:** 2026-11-09
 - **Autori:** Direttore di Prodotto (@Noobucodonosor) & Team Basilico
@@ -65,9 +65,9 @@ Il catalogo attuale di `Basilico` ([ADR-0001](./0001-core-architecture.md) – [
 
 ## 4. Task Operativi Collegati
 
-- [ ] **TASK-M1-01**: **Estensione Anagrafica Negozi Rapallo (6 Categorie, Logistica, Carte Fedeltà), Classificatore a 5 Domini Chiusi, Normalizzatore `€/kg` Edibile e Lente Qualità Scientifica**
+- [x] **TASK-M1-01**: **Estensione Anagrafica Negozi Rapallo (6 Categorie, Logistica, Carte Fedeltà), Classificatore a 5 Domini Chiusi, Normalizzatore `€/kg` Edibile e Lente Qualità Scientifica**
   - *File coinvolti*: `data/seed/rapallo_stores.json`, `server/services/domainClassifier.js`, `server/services/unitPriceExtractor.js`, `server/services/qualityLensService.js`, `server/services/offerService.js`, `tests/unit/domain_and_units.test.js`
   - *Verification Step*: `npm test`
-- [ ] **TASK-M1-02**: **Storico Prezzi Osservati ("È un vero sconto?"), Inserimento Prezzo al Banco, Profili Utente Multipli con Esclusioni a 4 Livelli e Shell UI a 6 Stanze**
+- [x] **TASK-M1-02**: **Storico Prezzi Osservati ("È un vero sconto?"), Inserimento Prezzo al Banco, Profili Utente Multipli con Esclusioni a 4 Livelli e Shell UI a 6 Stanze**
   - *File coinvolti*: `server/services/priceHistoryService.js`, `server/services/userProfileService.js`, `server/routes/profiles.js`, `server/routes/prices.js`, `src/App.jsx`, `src/components/Header.jsx`, `src/components/OfferCard.jsx`, `tests/api/profiles_and_prices.test.js`
   - *Verification Step*: `npm test`

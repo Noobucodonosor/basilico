@@ -10,7 +10,11 @@ export function Header({
   onToggleMobileSearch,
   onRefresh,
   onDeepSync,
-  isRefreshing
+  isRefreshing,
+  profiles = [],
+  activeProfileId = 'dany',
+  onChangeProfile,
+  onOpenCounterPriceModal
 }) {
   const online = status ? (status.isOnline !== false && status.dataSource !== 'seed') : isOnline;
   const source = status?.dataSource || dataSource || 'live';
@@ -19,7 +23,7 @@ export function Header({
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-3">
           {/* Logo & Rapallo Badge */}
           <div className="flex items-center gap-2.5 min-w-0">
             <span className="text-2xl select-none" aria-hidden="true">🌿</span>
@@ -39,8 +43,43 @@ export function Header({
             </div>
           </div>
 
-          {/* Right Actions: Live status & mobile search toggle */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right Actions: Profile selector, counter price, live status & mobile search toggle */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
+            {/* Active Dietary Profile Selector */}
+            {profiles.length > 0 && onChangeProfile && (
+              <div className="flex items-center">
+                <label htmlFor="active-profile-select" className="sr-only">
+                  Profilo Alimentare Attivo
+                </label>
+                <select
+                  id="active-profile-select"
+                  value={activeProfileId}
+                  onChange={(e) => onChangeProfile(e.target.value)}
+                  className="text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[140px] sm:max-w-[210px] truncate"
+                  title="Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)"
+                >
+                  {profiles.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      👤 {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Quick Counter Price Button */}
+            {onOpenCounterPriceModal && (
+              <button
+                type="button"
+                onClick={onOpenCounterPriceModal}
+                className="hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer"
+                title="Registra un prezzo visto al banco in pescheria, macelleria o scaffale"
+              >
+                <span aria-hidden="true">🏷️</span>
+                <span>Prezzo al banco</span>
+              </button>
+            )}
+
             {/* Live Status Indicator */}
             <div
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
@@ -55,7 +94,7 @@ export function Header({
                   online ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
                 }`}
               />
-              <span className="hidden sm:inline">
+              <span className="hidden lg:inline">
                 {online ? 'Online' : source === 'cache' ? 'Copia Cache' : 'Offline'}
               </span>
             </div>
@@ -110,7 +149,7 @@ export function Header({
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
                   />
                 </svg>
-                <span>Deep Sync</span>
+                <span className="hidden sm:inline">Deep Sync</span>
               </button>
             )}
 
