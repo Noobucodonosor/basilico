@@ -18,6 +18,7 @@ import flyersRouter from './routes/flyers.js';
 import statusRouter from './routes/status.js';
 import pricesRouter from './routes/prices.js';
 import profilesRouter from './routes/profiles.js';
+import creaRouter from './routes/crea.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -277,6 +278,7 @@ export function createApp(options = {}) {
   if (flyersRouter) app.use('/api/flyers', flyersRouter);
   if (pricesRouter) app.use('/api/prices', pricesRouter);
   if (profilesRouter) app.use('/api/profiles', profilesRouter);
+  if (creaRouter) app.use('/api/crea', creaRouter);
   if (statusRouter) {
     app.use('/api/status', statusRouter);
     app.use('/api/sync', statusRouter);

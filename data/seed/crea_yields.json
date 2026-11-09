@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "category": "pasta",
+    "cooking_method": "bollitura",
+    "yield_multiplier": 2.4,
+    "description": "Pasta secca bollita (assorbimento acqua, resa ~240%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 2,
+    "category": "rice",
+    "cooking_method": "bollitura",
+    "yield_multiplier": 2.5,
+    "description": "Riso bollito (assorbimento acqua, resa ~250%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 3,
+    "category": "beef",
+    "cooking_method": "cottura_termica",
+    "yield_multiplier": 0.75,
+    "description": "Carne bovina cotta (perdita umidità, resa ~75%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 4,
+    "category": "poultry",
+    "cooking_method": "cottura_termica",
+    "yield_multiplier": 0.78,
+    "description": "Carne avicola cotta (resa ~78%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 5,
+    "category": "fish",
+    "cooking_method": "cottura_termica",
+    "yield_multiplier": 0.85,
+    "description": "Pesce cotto al forno o padella (resa ~85%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 6,
+    "category": "pulses",
+    "cooking_method": "bollitura",
+    "yield_multiplier": 2.2,
+    "description": "Legumi secchi reidratati e bolliti (resa ~220%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 7,
+    "category": "leafy_greens",
+    "cooking_method": "bollitura_vapore",
+    "yield_multiplier": 0.7,
+    "description": "Verdure a foglia lessate (resa ~70%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 8,
+    "category": "root_veg",
+    "cooking_method": "bollitura_forno",
+    "yield_multiplier": 0.95,
+    "description": "Patate e ortaggi a radice cotti (resa ~95%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 9,
+    "category": "riso",
+    "cooking_method": "bollitura",
+    "yield_multiplier": 2.5,
+    "description": "Riso brillato o integrale bollito (resa ~250%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 10,
+    "category": "carne_bovina",
+    "cooking_method": "cottura_termica",
+    "yield_multiplier": 0.75,
+    "description": "Carne bovina cotta in padella o forno (resa ~75%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 11,
+    "category": "carne_avicola",
+    "cooking_method": "cottura_termica",
+    "yield_multiplier": 0.78,
+    "description": "Pollo e tacchino cotti (resa ~78%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 12,
+    "category": "pesce",
+    "cooking_method": "cottura_termica",
+    "yield_multiplier": 0.85,
+    "description": "Filetti di pesce cotti al forno/padella (resa ~85%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 13,
+    "category": "legumi_secchi",
+    "cooking_method": "bollitura",
+    "yield_multiplier": 2.2,
+    "description": "Legumi secchi ammollati e bolliti (resa ~220%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 14,
+    "category": "verdure_foglia",
+    "cooking_method": "bollitura_vapore",
+    "yield_multiplier": 0.7,
+    "description": "Verdure a foglia (spinaci, bietole) cotte (resa ~70%)",
+    "created_at": "2026-11-01 22:49:47"
+  },
+  {
+    "id": 15,
+    "category": "tuberi_radici",
+    "cooking_method": "bollitura_forno",
+    "yield_multiplier": 0.95,
+    "description": "Patate e radici lesse o al forno (resa ~95%)",
+    "created_at": "2026-11-01 22:49:47"
+  }
+]

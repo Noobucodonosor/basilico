@@ -55,7 +55,7 @@ L'obiettivo della **Milestone 2 (Stanza 2: Scienza & CREA)** è esporre in `Basi
 
 ## 3. Task Operativi Collegati
 
-- [ ] **TASK-M2-01**: **Estrazione Seed Certificato CREA (832 Alimenti × 26.622 Valori in 7 Sezioni + Rese Crudo/Cotto) e Servizio Backend `CreaService` + `CreaOfferMatcher` (Head-Noun & Nutrienti/€ Edibili)**
+- [x] **TASK-M2-01**: **Estrazione Seed Certificato CREA (832 Alimenti × 26.622 Valori in 7 Sezioni + Rese Crudo/Cotto) e Servizio Backend `CreaService` + `CreaOfferMatcher` (Head-Noun & Nutrienti/€ Edibili)**
   - *File coinvolti*: `data/seed/crea_foods.json`, `data/seed/crea_yields.json`, `server/services/creaService.js`, `server/services/creaOfferMatcher.js`, `server/routes/crea.js`, `tests/unit/crea_service.test.js`, `tests/api/crea_api.test.js`
   - *Verification Step*: `npm test`
 - [ ] **TASK-M2-02**: **Interfaccia Completa Stanza 2 ("Scienza & CREA"): Scheda Accademica a 7 Sezioni, Switch 100g/Lordo/LARN/Crudo↔Cotto, Confronto Side-by-Side e Classifica Live "Nutrienti per Euro" + Ponte Bidirezionale Stanza 1**

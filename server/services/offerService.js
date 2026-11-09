@@ -16,6 +16,7 @@ import { normalizeUnitPricing } from './unitPriceExtractor.js';
 import { evaluateQualityLens } from './qualityLensService.js';
 import { priceHistoryService } from './priceHistoryService.js';
 import { userProfileService } from './userProfileService.js';
+import { creaOfferMatcher } from './creaOfferMatcher.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -114,11 +115,15 @@ export function enrichOfferRecord(offer = {}, profileId = null) {
 
   const realDiscount = priceHistoryService.evaluateRealDiscount(enrichedBase);
   const profileCompatibility = userProfileService.checkItemCompatibility(enrichedBase, profileId);
+  const creaMatch = enrichedBase.domain === 'food_human'
+    ? creaOfferMatcher.computeOfferNutrientsPerEuro(enrichedBase)
+    : null;
 
   return {
     ...enrichedBase,
     realDiscountCheck: realDiscount,
-    profileCompatibility
+    profileCompatibility,
+    creaMatch
   };
 }
 
