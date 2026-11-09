@@ -12,6 +12,7 @@ import CounterPriceModal from './components/CounterPriceModal.jsx';
 import OfflineNotice from './components/OfflineNotice.jsx';
 import CreaExplorerView from './components/crea/CreaExplorerView.jsx';
 import PantryAndReceiptsView from './components/pantry/PantryAndReceiptsView.jsx';
+import KitchenCareView from './components/kitchen/KitchenCareView.jsx';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
 const DOMAIN_PILLS = [
@@ -511,6 +512,16 @@ export function App() {
             onNavigateToOfferStore={(storeId, productTitle) => {
               setSelectedStoreId(storeId || null);
               setSearchQuery(productTitle || '');
+              setActiveRoom('room-1-negozi');
+            }}
+          />
+        </main>
+      ) : activeRoom === 'room-4-cucina' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <KitchenCareView
+            onNavigateToStoreDomain={(domainId) => {
+              setSelectedDomain(domainId);
+              setSelectedStoreId(null);
               setActiveRoom('room-1-negozi');
             }}
           />

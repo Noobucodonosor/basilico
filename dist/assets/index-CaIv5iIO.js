@@ -23281,6 +23281,298 @@ function PantryAndReceiptsView({ stores = [] }) {
   ] });
 }
 
+function KitchenResetCard({ protocol }) {
+  if (!protocol) return null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-100 text-sky-900", children: "Protocollo Chimico & Fisico" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-sm font-extrabold text-slate-900 mt-1", children: [
+          "🧼 ",
+          protocol.toolName
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-slate-500", children: [
+          "Substrato: ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: protocol.materialLabel })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-xs font-bold text-amber-900", children: [
+        "⏱️ Raffreddamento anti-shock: ",
+        protocol.cooldownMinutes,
+        " min"
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-xs text-amber-950", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🔬 Scienza dei Materiali:" }),
+      " ",
+      protocol.thermalShockWarning
+    ] }),
+    protocol.prohibitions?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-extrabold text-rose-700 uppercase", children: "Divieti Assoluti:" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "list-disc list-inside text-xs text-rose-800 space-y-0.5", children: protocol.prohibitions.map((pr, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: pr }, idx)) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-extrabold text-slate-700 uppercase", children: "Procedura Step-by-Step:" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "list-decimal list-inside text-xs text-slate-700 space-y-1", children: (protocol.steps || []).map((st, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: st }, idx)) })
+    ] }),
+    protocol.requiredSupplies?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold text-slate-500", children: "Prodotti richiesti nel sottolavello:" }),
+      protocol.requiredSupplies.map((sup) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "span",
+        {
+          className: `px-2 py-0.5 rounded-full text-[10px] font-bold border ${sup.ownedInUnderSink ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-rose-50 text-rose-800 border-rose-200"}`,
+          children: [
+            sup.ownedInUnderSink ? "✓ In casa: " : "🛒 Da acquistare (Tigotà/PiùMe): ",
+            sup.name,
+            " (",
+            sup.phRange,
+            ")"
+          ]
+        },
+        sup.id
+      ))
+    ] })
+  ] });
+}
+
+const HEAT_SOURCE_LABELS = {
+  gas: { label: "🔥 Fiamma Viva a Gas", desc: "Conduzione + convezione anulare; compatibile con qualsiasi metallo (incluso rame e terracotta)." },
+  induction: { label: "🧲 Piano a Induzione Elettromagnetica", desc: "Correnti parassite di Foucault (20-100 kHz); richiede fondo ferromagnetico." },
+  electric_radiant: { label: "⚡ Piastra Elettrica / Vetroceramica Radiante", desc: "Alta inerzia termica; richiede fondo perfettamente piatto." },
+  boat_no_stove: { label: "⛵ Cambusa Barca / Borsa Termica (Senza Forno)", desc: "Fornello basculante singolo o zero-fuoco; privilegiate preparazioni one-pot." }
+};
+function KitchenCareView({ onNavigateToStoreDomain }) {
+  const [kitchenState, setKitchenState] = reactExports.useState(null);
+  const [resetData, setResetData] = reactExports.useState({ protocols: [], underSinkCatalog: [], liveRapalloCleaningOffers: [] });
+  const [loading, setLoading] = reactExports.useState(true);
+  const loadAll = reactExports.useCallback(async () => {
+    setLoading(true);
+    try {
+      const [stateRes, resetRes] = await Promise.all([
+        fetch("/api/kitchen/state").then((r) => r.ok ? r.json() : null),
+        fetch("/api/kitchen/reset-protocol").then((r) => r.ok ? r.json() : null)
+      ]);
+      if (stateRes) setKitchenState(stateRes);
+      if (resetRes) setResetData(resetRes);
+    } catch (_) {
+    }
+    setLoading(false);
+  }, []);
+  reactExports.useEffect(() => {
+    loadAll();
+  }, [loadAll]);
+  const handleUpdateConfig = async (payload) => {
+    try {
+      const res = await fetch("/api/kitchen/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setKitchenState(updated);
+        const resetRes = await fetch(
+          `/api/kitchen/reset-protocol?tools=${encodeURIComponent((updated.ownedToolIds || []).join(","))}`
+        );
+        if (resetRes.ok) {
+          setResetData(await resetRes.json());
+        }
+      }
+    } catch (_) {
+    }
+  };
+  if (loading && !kitchenState) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-12 text-center text-sm text-slate-500", children: "Caricamento configurazione cucina..." });
+  }
+  const activeHeatSource = kitchenState?.heatSource || "gas";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-2xl", children: "🍳" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-extrabold text-slate-900", children: "Stanza 4 — Cucina, Pentole (ROI Sblocco Piatti) & Protocollo Chimico “Kitchen Reset”" })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-600 mt-1", children: [
+          "Configura il tuo piano cottura (con verifica ferromagnetica sull'induzione), scopri quanti piatti sblocca ogni pentola mancante e gestisci il sottolavello chimico collegato alle offerte di ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Tigotà" }),
+          " e ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "PiùMe" }),
+          " a Rapallo."
+        ] })
+      ] }),
+      onNavigateToStoreDomain && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 shrink-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: () => onNavigateToStoreDomain("home_cleaning"),
+            className: "px-3 py-2 bg-sky-700 hover:bg-sky-800 text-white text-xs font-extrabold rounded-xl cursor-pointer",
+            children: "🧼 Offerte Tigotà & PiùMe →"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: () => onNavigateToStoreDomain("kitchen_cookware"),
+            className: "px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold rounded-xl cursor-pointer",
+            children: "🍳 Offerte Pentole →"
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "1. Sorgente Termica Attiva (Piano Cottura)" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3", children: Object.entries(HEAT_SOURCE_LABELS).map(([key, info]) => {
+        const isSelected = activeHeatSource === key;
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            type: "button",
+            onClick: () => handleUpdateConfig({ heatSource: key }),
+            className: `p-3 rounded-xl border text-left transition-all cursor-pointer ${isSelected ? "bg-emerald-900 text-white border-emerald-700 shadow-xs" : "bg-slate-50 text-slate-800 border-slate-200 hover:border-emerald-300"}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold", children: info.label }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: `text-[11px] mt-1 ${isSelected ? "text-emerald-100" : "text-slate-500"}`, children: info.desc })
+            ]
+          },
+          key
+        );
+      }) })
+    ] }),
+    kitchenState?.disqualifiedTools?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 space-y-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-extrabold text-rose-900", children: [
+        "⚠️ Pentole Squalificate dal Piano Cottura Attivo (",
+        kitchenState.disqualifiedTools.length,
+        ")"
+      ] }),
+      kitchenState.disqualifiedTools.map((dt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white p-3 rounded-xl border border-rose-200 text-xs flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900", children: dt.name }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-rose-700 font-medium", children: dt.disqualificationReason })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "button",
+          {
+            type: "button",
+            onClick: () => handleUpdateConfig({ toggleToolId: dt.id }),
+            className: "px-2.5 py-1 bg-slate-100 text-slate-700 rounded font-bold shrink-0 cursor-pointer",
+            children: "Rimuovi"
+          }
+        )
+      ] }, dt.id))
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between border-b border-slate-100 pb-2.5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-extrabold text-slate-900", children: [
+            "2. Dotazione Pentole & Lame Attive (",
+            kitchenState?.effectiveTools?.length || 0,
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-500", children: "Stoviglie fisicamente compatibili con il piano cottura selezionato." })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2.5", children: (kitchenState?.effectiveTools || []).map((tool) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl border border-emerald-200 bg-emerald-50/30 text-xs space-y-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold text-slate-900", children: [
+                "✓ ",
+                tool.name
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-emerald-800 font-semibold", children: [
+                "Abilita ",
+                tool.unlockedDishesCount,
+                " piatti del catalogo • T_max: ",
+                tool.maxTempC,
+                "°C"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => handleUpdateConfig({ toggleToolId: tool.id }),
+                className: "px-2 py-1 text-[10px] font-bold text-rose-700 bg-white border border-rose-200 rounded cursor-pointer shrink-0",
+                children: "Togli da dotazione"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-600", children: tool.physicalJustification })
+        ] }, tool.id)) })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-b border-slate-100 pb-2.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-extrabold text-amber-950", children: [
+            "3. Analisi Gap & ROI Utensili Mancanti (",
+            kitchenState?.missingRoiOpportunities?.length || 0,
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-500", children: "Ordinati per numero di nuove ricette e piatti della tradizione ligure che sbloccano." })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2.5", children: (kitchenState?.missingRoiOpportunities || []).map((opp) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl border border-amber-200 bg-amber-50/30 text-xs space-y-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900", children: opp.name }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-extrabold text-amber-800", children: [
+                "🔓 ",
+                opp.roiSummary
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => handleUpdateConfig({ toggleToolId: opp.id }),
+                className: "px-2.5 py-1 text-[10px] font-extrabold bg-emerald-700 text-white rounded-lg cursor-pointer shrink-0",
+                children: "+ Ho questo utensile"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-600", children: opp.physicalJustification }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500", children: [
+            "📍 Riferimento a Rapallo: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: opp.rapalloSource }),
+            " (~€ ",
+            Number(opp.referencePriceEuro).toFixed(2),
+            ")"
+          ] })
+        ] }, opp.id)) })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "4. Dotazione Chimica Sottolavello (Acido / Neutro / Alcalino / Microfibra)" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Spunta i prodotti che hai già in casa sotto il lavello: il protocollo Kitchen Reset segnalerà solo ciò che ti manca da Tigotà o PiùMe." })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5", children: (resetData.underSinkCatalog || []).map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: () => handleUpdateConfig({ toggleCleaningKey: item.key }),
+          className: `p-3 rounded-xl border text-left text-xs transition-all cursor-pointer ${item.ownedInUnderSink ? "bg-sky-50 border-sky-300 text-sky-950" : "bg-slate-50 border-slate-200 text-slate-600"}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.ownedInUnderSink ? "✓ In Sottolavello" : "🛒 Mancante" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] px-1.5 py-0.2 rounded bg-white border border-slate-200", children: item.phRange })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900 mt-1", children: item.name }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500 mt-0.5", children: [
+              item.brand,
+              " • ~€ ",
+              item.referencePriceEuro
+            ] })
+          ]
+        },
+        item.id
+      )) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "5. Protocolli Operativi Post-Cottura “Kitchen Reset” per le tue Pentole" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: (resetData.protocols || []).map((proto) => /* @__PURE__ */ jsxRuntimeExports.jsx(KitchenResetCard, { protocol: proto }, proto.toolId)) })
+    ] })
+  ] });
+}
+
 function useSupermarketData(filterOptions = {}) {
   const [stores, setStores] = reactExports.useState([]);
   const [offers, setOffers] = reactExports.useState([]);
@@ -23887,6 +24179,15 @@ function App() {
           setActiveRoom("room-1-negozi");
         }
       }
+    ) }) : activeRoom === "room-4-cucina" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      KitchenCareView,
+      {
+        onNavigateToStoreDomain: (domainId) => {
+          setSelectedDomain(domainId);
+          setSelectedStoreId(null);
+          setActiveRoom("room-1-negozi");
+        }
+      }
     ) }) : activeRoom === "room-5-dispensa" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PantryAndReceiptsView, { stores }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-3xl", children: currentRoomMeta.icon }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -23945,4 +24246,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-CrJ_1iw3.js.map
+//# sourceMappingURL=index-CaIv5iIO.js.map
