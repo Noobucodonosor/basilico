@@ -145,5 +145,13 @@ describe('API Tests: Sync & Health Status Endpoints (F8 - /api/sync & /api/statu
       assert.equal(res.body.storesProcessed, 5);
       assert.equal(res.body.errors.length, 0);
     });
+
+    it('8.11 should expose real-time sync progress telemetry via ingestionService.getSyncProgress() (ADR-0005)', async () => {
+      const { ingestionService } = await import('../../server/services/ingestionService.js');
+      const progress = ingestionService.getSyncProgress();
+      assert.equal(typeof progress.active, 'boolean');
+      assert.equal(typeof progress.totalStores, 'number');
+      assert.ok(Array.isArray(progress.logs));
+    });
   });
 });

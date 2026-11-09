@@ -6,6 +6,7 @@ import CategoryFilters from './components/CategoryFilters.jsx';
 import OfferGrid from './components/OfferGrid.jsx';
 import EmptyState from './components/EmptyState.jsx';
 import FlyerModal from './components/FlyerModal.jsx';
+import SyncStatusModal from './components/SyncStatusModal.jsx';
 import OfflineNotice from './components/OfflineNotice.jsx';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
@@ -25,6 +26,8 @@ export function App() {
   const [activeFlyer, setActiveFlyer] = useState(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
+  const [syncProgress, setSyncProgress] = useState(null);
 
   // 2. Data Hook
   const {
@@ -86,12 +89,70 @@ export function App() {
     setSelectedCategory((prev) => (prev === cat ? null : cat));
   }, []);
 
-  const handleRefresh = useCallback(async () => {
+  const runSyncWithModal = useCallback(async (deep = false) => {
     setIsRefreshing(true);
-    await syncData(true);
-    setIsRefreshing(false);
-    setIsBannerDismissed(false);
-  }, [syncData]);
+    setIsSyncModalOpen(true);
+    setSyncProgress({
+      active: true,
+      mode: deep ? 'deep' : 'quick',
+      phase: 'starting',
+      title: deep ? 'Deep Sync dei 14 Negozi di Rapallo in corso...' : 'Aggiornamento Rapido in corso...',
+      currentStore: deep ? 'Avvio scansione per-insegna su Rapallo (16035)...' : 'Connessione al server di Rapallo...',
+      completedStores: 0,
+      totalStores: stores.length || 14,
+      flyersFound: flyers.length || 0,
+      offersFound: totalOffers || 0,
+      percent: 8,
+      logs: [
+        `[${new Date().toLocaleTimeString('it-IT')}] ${
+          deep
+            ? 'Avvio Deep Sync approfondito su tutti i 14 punti vendita di Rapallo...'
+            : 'Avvio controllo rapido volantini e stato online di Rapallo...'
+        }`
+      ]
+    });
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/sync/progress');
+        if (res.ok) {
+          const prog = await res.json();
+          if (prog && prog.phase !== 'idle') {
+            setSyncProgress(prog);
+          }
+        }
+      } catch (_) {
+        // Ignore transient polling error
+      }
+    }, 350);
+
+    try {
+      await syncData(true, deep);
+      try {
+        const finalRes = await fetch('/api/sync/progress');
+        if (finalRes.ok) {
+          const finalProg = await finalRes.json();
+          setSyncProgress({ ...finalProg, active: false, percent: 100 });
+        } else {
+          setSyncProgress((prev) => ({ ...(prev || {}), active: false, percent: 100 }));
+        }
+      } catch (_) {
+        setSyncProgress((prev) => ({ ...(prev || {}), active: false, percent: 100 }));
+      }
+    } finally {
+      clearInterval(pollInterval);
+      setIsRefreshing(false);
+      setIsBannerDismissed(false);
+    }
+  }, [syncData, stores.length, flyers.length, totalOffers]);
+
+  const handleRefresh = useCallback(async () => {
+    await runSyncWithModal(false);
+  }, [runSyncWithModal]);
+
+  const handleDeepSync = useCallback(async () => {
+    await runSyncWithModal(true);
+  }, [runSyncWithModal]);
 
   const handleOpenFlyer = useCallback((targetFlyer) => {
     if (targetFlyer) {
@@ -118,6 +179,7 @@ export function App() {
         isMobileSearchOpen={isMobileSearchOpen}
         onToggleMobileSearch={() => setIsMobileSearchOpen((prev) => !prev)}
         onRefresh={handleRefresh}
+        onDeepSync={handleDeepSync}
         isRefreshing={isRefreshing}
       />
 
@@ -250,6 +312,13 @@ export function App() {
         />
       )}
 
+      {/* Informative Operation Status Dialog (ADR-0005) */}
+      <SyncStatusModal
+        isOpen={isSyncModalOpen}
+        progress={syncProgress}
+        onClose={() => setIsSyncModalOpen(false)}
+      />
+
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
@@ -257,7 +326,7 @@ export function App() {
             🌿 Basilico — Volantini & Promozioni Supermercati Rapallo (16035 GE)
           </p>
           <p className="text-slate-400">
-            Basko • Coop • Gulliver • Penny • Ekom • Eurospin • Despar • Tigotà • PiùMe • Kasanova
+            Basko • Coop • Gulliver • Carrefour Market & Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet
           </p>
           <p className="text-[11px] text-slate-400">
             Sorgente dati: <span className="font-semibold text-slate-600">{(status.dataSource || 'live').toUpperCase()}</span> • Supermercati attivi: {stores.length}

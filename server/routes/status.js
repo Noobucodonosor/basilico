@@ -49,7 +49,10 @@ export async function getStatusHandler(req, res, next) {
 export async function postSyncHandler(req, res, next) {
   try {
     const force = Boolean(req.body?.force);
-    const result = await ingestionService.sync(force);
+    const deep = Boolean(req.body?.deep);
+    const result = deep
+      ? await ingestionService.deepSync()
+      : await ingestionService.sync(force);
 
     res.setHeader('content-type', 'application/json; charset=utf-8');
     return res.status(200).json(result);
@@ -63,10 +66,29 @@ export async function postSyncHandler(req, res, next) {
   }
 }
 
+/**
+ * Controller handler for GET /api/sync/progress
+ * Returns live step-by-step telemetry for SyncStatusModal (ADR-0005)
+ */
+export async function getSyncProgressHandler(req, res, next) {
+  try {
+    const progress = ingestionService.getSyncProgress();
+    res.setHeader('content-type', 'application/json; charset=utf-8');
+    return res.status(200).json(progress);
+  } catch (err) {
+    return res.status(500).json({
+      error: 'Failed to fetch sync progress',
+      message: err.message
+    });
+  }
+}
+
 // Support both direct mount (app.use('/api/status', statusRouter), app.use('/api/sync', statusRouter))
 // and grouped mount (app.use('/api', statusRouter))
 router.get('/', getStatusHandler);
 router.get('/status', getStatusHandler);
+router.get('/progress', getSyncProgressHandler);
+router.get('/sync/progress', getSyncProgressHandler);
 router.post('/', postSyncHandler);
 router.post('/sync', postSyncHandler);
 

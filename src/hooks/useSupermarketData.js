@@ -143,20 +143,20 @@ export function useSupermarketData(filterOptions = {}) {
     };
   }, [fetchMetadata, fetchOffers]);
 
-  // Sync / refresh trigger
-  const syncData = useCallback(async (force = true) => {
+  // Sync / refresh trigger (supports both Quick Sync and Deep Sync across all 14 stores)
+  const syncData = useCallback(async (force = true, deep = false) => {
     try {
       setLoading(true);
       const res = await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ force })
+        body: JSON.stringify({ force, deep })
       });
       const result = await res.json().catch(() => ({}));
       await fetchMetadata();
       await fetchOffers();
       await fetchFlyers(filterOptions.storeId);
-      return { success: res.ok, dataSource: result.dataSource || 'live' };
+      return { success: res.ok, dataSource: result.dataSource || 'live', result };
     } catch (err) {
       console.warn('[useSupermarketData] Sync error:', err.message);
       return { success: false, error: err.message };

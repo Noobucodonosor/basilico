@@ -19994,6 +19994,7 @@ function Header({
   isMobileSearchOpen,
   onToggleMobileSearch,
   onRefresh,
+  onDeepSync,
   isRefreshing
 }) {
   const online = status ? status.isOnline !== false && status.dataSource !== "seed" : isOnline;
@@ -20027,33 +20028,68 @@ function Header({
           ]
         }
       ),
-      onRefresh && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      onRefresh && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
           type: "button",
           onClick: onRefresh,
           disabled: isRefreshing,
-          className: "p-2 text-slate-500 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer",
-          title: "Aggiorna offerte",
+          className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 rounded-lg transition-colors disabled:opacity-50 cursor-pointer",
+          title: "Controllo rapido stato online e cache (1-2 secondi)",
           "aria-label": "Aggiorna offerte",
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "svg",
-            {
-              className: `w-4 h-4 ${isRefreshing ? "animate-spin text-emerald-600" : ""}`,
-              fill: "none",
-              viewBox: "0 0 24 24",
-              stroke: "currentColor",
-              strokeWidth: 2,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "path",
-                {
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round",
-                  d: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                }
-              )
-            }
-          )
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "svg",
+              {
+                className: `w-4 h-4 ${isRefreshing ? "animate-spin text-emerald-600" : ""}`,
+                fill: "none",
+                viewBox: "0 0 24 24",
+                stroke: "currentColor",
+                strokeWidth: 2,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "path",
+                  {
+                    strokeLinecap: "round",
+                    strokeLinejoin: "round",
+                    d: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden md:inline", children: "Rapido" })
+          ]
+        }
+      ),
+      onDeepSync && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          type: "button",
+          onClick: onDeepSync,
+          disabled: isRefreshing,
+          className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors disabled:opacity-50 cursor-pointer",
+          title: "Deep Sync completo: scarica volantini e offerte negozio per negozio da tutti i 14 punti vendita di Rapallo",
+          "aria-label": "Deep Sync 14 negozi Rapallo",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "svg",
+              {
+                className: `w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`,
+                fill: "none",
+                viewBox: "0 0 24 24",
+                stroke: "currentColor",
+                strokeWidth: 2.2,
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "path",
+                  {
+                    strokeLinecap: "round",
+                    strokeLinejoin: "round",
+                    d: "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Deep Sync" })
+          ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -21048,6 +21084,163 @@ function FlyerModal({ flyer, isOpen, onClose }) {
   );
 }
 
+function SyncStatusModal({ isOpen, progress, onClose }) {
+  const dialogRef = reactExports.useRef(null);
+  const logContainerRef = reactExports.useRef(null);
+  const isActive = Boolean(progress?.active);
+  const mode = progress?.mode === "deep" ? "deep" : "quick";
+  const percent = typeof progress?.percent === "number" ? Math.max(0, Math.min(100, progress.percent)) : isActive ? 20 : 100;
+  const completedStores = progress?.completedStores ?? 0;
+  const totalStores = progress?.totalStores ?? 14;
+  const flyersFound = progress?.flyersFound ?? 0;
+  const offersFound = progress?.offersFound ?? 0;
+  const logs = Array.isArray(progress?.logs) ? progress.logs : [];
+  reactExports.useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [isOpen]);
+  reactExports.useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [logs.length]);
+  if (!isOpen) return null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "dialog",
+    {
+      ref: dialogRef,
+      "aria-labelledby": "sync-dialog-title",
+      "aria-describedby": "sync-dialog-desc",
+      onCancel: (e) => {
+        if (isActive) {
+          e.preventDefault();
+        } else {
+          onClose?.();
+        }
+      },
+      className: "fixed inset-0 m-auto w-[92vw] max-w-lg rounded-2xl bg-white text-slate-900 shadow-2xl border border-slate-200 p-0 overflow-hidden backdrop:bg-slate-900/60 backdrop:backdrop-blur-xs overscroll-contain",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `px-5 py-4 border-b flex items-center justify-between gap-3 ${isActive ? mode === "deep" ? "bg-indigo-50/90 border-indigo-100" : "bg-emerald-50/90 border-emerald-100" : "bg-emerald-600 text-white border-emerald-700"}`, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 min-w-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isActive ? mode === "deep" ? "bg-indigo-600 text-white" : "bg-emerald-600 text-white" : "bg-white/20 text-white"}`, children: isActive ? /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-5 h-5 animate-spin", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2.2, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-6 h-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2.5, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M5 13l4 4L19 7" }) }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `inline-block text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-0.5 ${isActive ? mode === "deep" ? "bg-indigo-100 text-indigo-800" : "bg-emerald-100 text-emerald-800" : "bg-white/20 text-white"}`, children: mode === "deep" ? "Deep Sync 14 Negozi Rapallo" : "Controllo Rapido Rapallo" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "h2",
+                {
+                  id: "sync-dialog-title",
+                  className: `text-base font-bold truncate ${isActive ? "text-slate-900" : "text-white"}`,
+                  children: progress?.title || (isActive ? "Sincronizzazione in corso..." : "Operazione Completata!")
+                }
+              )
+            ] })
+          ] }),
+          !isActive && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => onClose?.(),
+              "aria-label": "Chiudi finestra di stato",
+              className: "p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors cursor-pointer",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-5 h-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M6 18L18 6M6 6l12 12" }) })
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 space-y-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { id: "sync-dialog-desc", className: "text-xs text-slate-600 leading-relaxed", children: isActive ? mode === "deep" ? "Stiamo interrogando uno per uno i 14 punti vendita reali di Rapallo per scaricare i volantini attivi e i singoli prodotti in offerta, filtrando fuori le province non pertinenti." : "Stiamo verificando la disponibilità online e lo stato della cache dei volantini di Rapallo." : "Tutti i dati sono stati verificati e salvati nella memoria locale di Basilico. Puoi chiudere questa finestra e consultare le offerte." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between text-xs font-semibold", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-700 truncate pr-2", "aria-live": "polite", children: progress?.currentStore || (isActive ? "Connessione in corso..." : "Tutti i negozi di Rapallo aggiornati") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `font-mono shrink-0 ${mode === "deep" ? "text-indigo-700" : "text-emerald-700"}`, children: [
+                percent,
+                "%"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-2.5 bg-slate-200 rounded-full overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                className: `h-full rounded-full transition-all duration-300 ${!isActive ? "bg-emerald-600" : mode === "deep" ? "bg-indigo-600" : "bg-emerald-600"}`,
+                style: { width: `${percent}%` }
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between text-[11px] text-slate-500 pt-0.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                "Punti vendita: ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-slate-700", children: [
+                  completedStores,
+                  " / ",
+                  totalStores
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                "Costo operazione: ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-emerald-700", children: "Gratuito (€ 0,00)" })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-2.5 text-center", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200/80 rounded-xl p-2.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-lg font-extrabold text-slate-900 font-mono", children: [
+                completedStores,
+                "/",
+                totalStores
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-medium text-slate-500", children: "Negozi Analizzati" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200/80 rounded-xl p-2.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-extrabold text-emerald-700 font-mono", children: flyersFound }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-medium text-slate-500", children: "Volantini Rapallo" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200/80 rounded-xl p-2.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-extrabold text-indigo-700 font-mono", children: offersFound }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-medium text-slate-500", children: "Offerte Estratte" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold uppercase tracking-wider text-slate-500", children: "Registro Operazioni in Tempo Reale" }),
+              isActive && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" }),
+                "In esecuzione"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "div",
+              {
+                ref: logContainerRef,
+                className: "bg-slate-900 text-slate-200 font-mono text-[11px] rounded-xl p-3 h-36 overflow-y-auto space-y-1 border border-slate-800",
+                "aria-live": "polite",
+                children: logs.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-slate-400", children: "Avvio comunicazione con il server locale..." }) : logs.map((entry, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "leading-relaxed break-words", children: entry }, idx))
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-slate-500", children: isActive ? "Attendere qualche secondo: chiusura automatica abilitata al termine." : "Dati pronti per la consultazione." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              disabled: isActive,
+              autoFocus: !isActive,
+              onClick: () => onClose?.(),
+              className: `px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${isActive ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"}`,
+              children: isActive ? "Operazione in corso..." : "Chiudi e Visualizza Offerte"
+            }
+          )
+        ] })
+      ]
+    }
+  );
+}
+
 function OfflineNotice({
   isOnline = true,
   dataSource = "live",
@@ -21290,20 +21483,20 @@ function useSupermarketData(filterOptions = {}) {
     };
   }, [fetchMetadata, fetchOffers]);
 
-  // Sync / refresh trigger
-  const syncData = reactExports.useCallback(async (force = true) => {
+  // Sync / refresh trigger (supports both Quick Sync and Deep Sync across all 14 stores)
+  const syncData = reactExports.useCallback(async (force = true, deep = false) => {
     try {
       setLoading(true);
       const res = await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ force })
+        body: JSON.stringify({ force, deep })
       });
       const result = await res.json().catch(() => ({}));
       await fetchMetadata();
       await fetchOffers();
       await fetchFlyers(filterOptions.storeId);
-      return { success: res.ok, dataSource: result.dataSource || 'live' };
+      return { success: res.ok, dataSource: result.dataSource || 'live', result };
     } catch (err) {
       console.warn('[useSupermarketData] Sync error:', err.message);
       return { success: false, error: err.message };
@@ -21342,6 +21535,8 @@ function App() {
   const [activeFlyer, setActiveFlyer] = reactExports.useState(null);
   const [isBannerDismissed, setIsBannerDismissed] = reactExports.useState(false);
   const [isRefreshing, setIsRefreshing] = reactExports.useState(false);
+  const [isSyncModalOpen, setIsSyncModalOpen] = reactExports.useState(false);
+  const [syncProgress, setSyncProgress] = reactExports.useState(null);
   const {
     stores,
     offers,
@@ -21388,12 +21583,61 @@ function App() {
   const handleToggleCategory = reactExports.useCallback((cat) => {
     setSelectedCategory((prev) => prev === cat ? null : cat);
   }, []);
-  const handleRefresh = reactExports.useCallback(async () => {
+  const runSyncWithModal = reactExports.useCallback(async (deep = false) => {
     setIsRefreshing(true);
-    await syncData(true);
-    setIsRefreshing(false);
-    setIsBannerDismissed(false);
-  }, [syncData]);
+    setIsSyncModalOpen(true);
+    setSyncProgress({
+      active: true,
+      mode: deep ? "deep" : "quick",
+      phase: "starting",
+      title: deep ? "Deep Sync dei 14 Negozi di Rapallo in corso..." : "Aggiornamento Rapido in corso...",
+      currentStore: deep ? "Avvio scansione per-insegna su Rapallo (16035)..." : "Connessione al server di Rapallo...",
+      completedStores: 0,
+      totalStores: stores.length || 14,
+      flyersFound: flyers.length || 0,
+      offersFound: totalOffers || 0,
+      percent: 8,
+      logs: [
+        `[${(/* @__PURE__ */ new Date()).toLocaleTimeString("it-IT")}] ${deep ? "Avvio Deep Sync approfondito su tutti i 14 punti vendita di Rapallo..." : "Avvio controllo rapido volantini e stato online di Rapallo..."}`
+      ]
+    });
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/sync/progress");
+        if (res.ok) {
+          const prog = await res.json();
+          if (prog && prog.phase !== "idle") {
+            setSyncProgress(prog);
+          }
+        }
+      } catch (_) {
+      }
+    }, 350);
+    try {
+      await syncData(true, deep);
+      try {
+        const finalRes = await fetch("/api/sync/progress");
+        if (finalRes.ok) {
+          const finalProg = await finalRes.json();
+          setSyncProgress({ ...finalProg, active: false, percent: 100 });
+        } else {
+          setSyncProgress((prev) => ({ ...prev || {}, active: false, percent: 100 }));
+        }
+      } catch (_) {
+        setSyncProgress((prev) => ({ ...prev || {}, active: false, percent: 100 }));
+      }
+    } finally {
+      clearInterval(pollInterval);
+      setIsRefreshing(false);
+      setIsBannerDismissed(false);
+    }
+  }, [syncData, stores.length, flyers.length, totalOffers]);
+  const handleRefresh = reactExports.useCallback(async () => {
+    await runSyncWithModal(false);
+  }, [runSyncWithModal]);
+  const handleDeepSync = reactExports.useCallback(async () => {
+    await runSyncWithModal(true);
+  }, [runSyncWithModal]);
   const handleOpenFlyer = reactExports.useCallback((targetFlyer) => {
     if (targetFlyer) {
       setActiveFlyer(targetFlyer);
@@ -21419,6 +21663,7 @@ function App() {
         isMobileSearchOpen,
         onToggleMobileSearch: () => setIsMobileSearchOpen((prev) => !prev),
         onRefresh: handleRefresh,
+        onDeepSync: handleDeepSync,
         isRefreshing
       }
     ),
@@ -21531,9 +21776,17 @@ function App() {
         onClose: () => setActiveFlyer(null)
       }
     ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SyncStatusModal,
+      {
+        isOpen: isSyncModalOpen,
+        progress: syncProgress,
+        onClose: () => setIsSyncModalOpen(false)
+      }
+    ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-slate-700", children: "🌿 Basilico — Volantini & Promozioni Supermercati Rapallo (16035 GE)" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Basko • Coop • Gulliver • Penny • Ekom • Eurospin • Despar • Tigotà • PiùMe • Kasanova" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Basko • Coop • Gulliver • Carrefour Market & Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-slate-400", children: [
         "Sorgente dati: ",
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-600", children: (status.dataSource || "live").toUpperCase() }),
@@ -21557,4 +21810,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-DJLoU1gR.js.map
+//# sourceMappingURL=index-D5loDNsw.js.map
