@@ -9,7 +9,7 @@
 
 - **Nome Progetto:** `Basilico` — Offerte e Volantini Supermercati Rapallo (GE)
 - **Repository:** `Noobucodonosor/basilico`
-- **Descrizione Sintetica:** Web application responsive (mobile-first 375px e desktop 1280px) per la consultazione in tempo reale e resiliente offline di volantini promozionali e offerte dei supermercati di Rapallo (Coop, Carrefour, Conad, Basko, Doro, Gulliver, Penny, Ekom).
+- **Descrizione Sintetica:** Web application responsive (mobile-first 375px e desktop 1280px) per la consultazione in tempo reale e resiliente offline di volantini promozionali e offerte dei 14 punti vendita reali di Rapallo (Basko, Coop, Gulliver, Carrefour Market, Carrefour Express, Ekom, Penny, Eurospin, Despar, DPiù, Tigotà, PiùMe, Unieuro, Arcaplanet).
 - **Stack Tecnologico:**
   - **Backend:** Node.js (ESM) + Express 4 (`server/index.js`, `server.js`)
   - **Frontend:** React 19 + Vite 6 + Tailwind CSS 3 (`src/App.jsx`, `src/components/`)

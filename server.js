@@ -77,7 +77,10 @@ export function checkAndPrepareBuild(distDir = DEFAULT_DIST_DIR) {
         const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
         if (pkg.scripts && pkg.scripts.build) {
           console.log('[server] Missing dist/index.html. Running automated build (npm run build)...');
-          execSync('npm run build', { stdio: 'inherit', cwd: PROJECT_ROOT });
+          const buildCmd = distDir === DEFAULT_DIST_DIR
+            ? 'npm run build'
+            : `npx vite build --outDir "${distDir}"`;
+          execSync(buildCmd, { stdio: 'inherit', cwd: PROJECT_ROOT });
         } else {
           console.log('[server] No build script configured. Serving responsive UI shell fallback.');
         }

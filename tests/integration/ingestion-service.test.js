@@ -237,4 +237,127 @@ describe('IngestionService Integration Tests', () => {
       assert.ok(status.offerCount >= 40);
     });
   });
+
+  describe('Tier 5: Honest Data Integrity & Deep Sync Verification (ADR-0006)', () => {
+    it('verifies seed dataset contains zero synthetic unitPrice ("€ / pz") and honest null originalPrice when absent', async () => {
+      const seed = await service.loadSeedData();
+      assert.equal(seed.stores.length, 14);
+      assert.ok(seed.flyers.length >= 15);
+      assert.ok(seed.offers.length >= 100);
+
+      const storeIds = new Set(seed.stores.map(s => s.id));
+      const nonRapalloRegex = /spezia|piacentin|pavese|piemont|lombard|sardegn|sicili|pugli|calabri|campani|lazio|toscan|venet|friul|trentin|emili|romagn|umbria|marche|abruzz|molis|basilicat|aosta/i;
+
+      for (const f of seed.flyers) {
+        assert.ok(storeIds.has(f.storeId), `Flyer ${f.id} storeId ${f.storeId} must exist in rapallo_stores.json`);
+        assert.equal(nonRapalloRegex.test(f.title), false, `Flyer "${f.title}" must not be from outside province`);
+      }
+
+      let nullOriginalCount = 0;
+      let realOriginalCount = 0;
+      for (const o of seed.offers) {
+        assert.ok(storeIds.has(o.storeId), `Offer ${o.id} storeId ${o.storeId} must exist in rapallo_stores.json`);
+        assert.ok(!String(o.unitPrice || '').endsWith('€ / pz'), `Offer ${o.id} must not have synthetic "€ / pz" unitPrice`);
+        if (o.originalPrice === null) {
+          nullOriginalCount++;
+          assert.equal(o.discountPercentage, null, 'Offer without originalPrice must have null discountPercentage');
+          assert.equal(o.discountLabel, null, 'Offer without originalPrice must have null discountLabel');
+        } else {
+          realOriginalCount++;
+          const expected = Math.round(((o.originalPrice - o.promoPrice) / o.originalPrice) * 100);
+          assert.equal(o.discountPercentage, expected);
+        }
+      }
+
+      assert.ok(nullOriginalCount > 0, 'Must preserve promo-only offers with originalPrice: null');
+      assert.ok(realOriginalCount > 0, 'Must preserve discounted offers with real originalPrice');
+    });
+
+    it('deepSync() strictly filters out non-Rapallo flyers, preserves real end_date, and never invents x1.25 originalPrice', async () => {
+      const mockService = new IngestionService({ cacheManager: cache });
+      const futureDate = '2026-11-18T23:59:00.000Z';
+
+      mockService.fetchWithTimeout = async (url) => {
+        if (url.includes('/rapallo/gulliver')) {
+          // Store with ONLY out-of-province flyers -> must result in 0 flyers and 0 offers
+          const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+            props: {
+              pageProps: {
+                apiResources: {
+                  flyersByRetailer: [
+                    { id: '9001', title: 'Iper Pavese e Piemontese', start_date: '2026-11-01', end_date: futureDate }
+                  ],
+                  flyerGibsData: {
+                    flyerGibs: [
+                      { id: 'g-pavese', title: 'Riso Pavese', settings: { price_extended: { digits: '2.00' } } }
+                    ]
+                  }
+                }
+              }
+            }
+          })}</script>`;
+          return new Response(html, { status: 200 });
+        }
+
+        const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+          props: {
+            pageProps: {
+              apiResources: {
+                flyersByRetailer: [
+                  {
+                    id: '8001',
+                    title: 'Speciale Rapallo',
+                    start_date: '2026-11-01T00:00:00.000Z',
+                    end_date: futureDate,
+                    settings: { time_zone: { publish_at_iso: '2026-11-01T00:00:00.000Z', unpublish_at_iso: futureDate } }
+                  }
+                ],
+                flyerGibsData: {
+                  flyerGibs: [
+                    {
+                      id: `gib-no-orig-${url.split('/').pop()}`,
+                      title: 'Ananas Promo Solo Prezzo',
+                      settings: {
+                        price_extended: { digits: '1.48' },
+                        starting_price: { digits: '' },
+                        flyer_page: '3',
+                        brand: 'Ortofrutta'
+                      }
+                    },
+                    {
+                      id: `gib-with-orig-${url.split('/').pop()}`,
+                      title: 'Caffè Lavazza Qualità Rossa',
+                      settings: {
+                        price_extended: { digits: '3.99' },
+                        starting_price: { digits: '5.99' },
+                        flyer_page: '1',
+                        brand: 'Lavazza'
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        })}</script>`;
+        return new Response(html, { status: 200 });
+      };
+
+      const res = await mockService.deepSync();
+      assert.equal(res.status, 'success');
+
+      const flyers = await mockService.getFlyers('rapallo-gulliver-mameli');
+      assert.equal(flyers.length, 0, 'Gulliver with only Pavese flyer must have 0 flyers (no fallback to out-of-province)');
+
+      const baskoOffers = await mockService.getOffers({ storeId: 'rapallo-basko-colombo' });
+      const promoOnly = baskoOffers.offers.find(o => o.title === 'Ananas Promo Solo Prezzo');
+      assert.ok(promoOnly, 'Promo-only item must be included');
+      assert.equal(promoOnly.promoPrice, 1.48);
+      assert.equal(promoOnly.originalPrice, null, 'Must NOT invent originalPrice = 1.48 * 1.25');
+      assert.equal(promoOnly.discountPercentage, null, 'Must NOT invent -20% discount');
+      assert.equal(promoOnly.unitPrice, null, 'Must NOT invent "1,48 € / pz"');
+      assert.equal(promoOnly.pageNumber, 3, 'Must preserve real flyer_page 3');
+      assert.equal(promoOnly.validTo, futureDate, 'Must preserve exact validTo without +10d extension');
+    });
+  });
 });

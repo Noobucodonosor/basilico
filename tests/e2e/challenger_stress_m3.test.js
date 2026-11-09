@@ -492,12 +492,14 @@ describe('Challenger 2 Empirical Stress Test Suite: Milestone 3 Resilience & Int
   // =========================================================================
   describe('4. Clean Checkout Automated Build Verification', () => {
     it('4.1 should automatically build dist/index.html if missing and serve 200 on port 3198', async () => {
-      const distDir = path.resolve(PROJECT_ROOT, 'dist');
-      const tempDistDir = path.resolve(PROJECT_ROOT, 'dist_cold_test_temp');
+      const tempDistDir = path.resolve(PROJECT_ROOT, `dist_cold_test_${Date.now()}`);
+      if (fs.existsSync(tempDistDir)) {
+        fs.rmSync(tempDistDir, { recursive: true, force: true });
+      }
 
       assert.equal(distIndexExists(tempDistDir), false, 'Pre-condition: temp dist/index.html must be absent');
-      checkAndPrepareBuild(distDir);
-      assert.equal(distIndexExists(distDir), true, 'dist/index.html must exist after checkAndPrepareBuild');
+      checkAndPrepareBuild(tempDistDir);
+      assert.equal(distIndexExists(tempDistDir), true, 'tempDistDir/index.html must exist after checkAndPrepareBuild');
 
       try {
         process.env.PORT = '3198';

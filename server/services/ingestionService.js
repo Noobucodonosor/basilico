@@ -1076,11 +1076,16 @@ export class IngestionService {
     const flyers = this._unwrapData(this.cacheManager.get('flyers')) || [];
     const offers = this._unwrapData(this.cacheManager.get('offers')) || [];
     const isCacheExpired = this.cacheManager.isExpired('flyers');
+    const storesEnvelope = typeof this.cacheManager.getEnvelope === 'function'
+      ? this.cacheManager.getEnvelope('stores')
+      : null;
+    const envelopeOrigin = storesEnvelope?.metadata?.dataSource || null;
+    const effectiveSource = this.lastResult?.dataSource || envelopeOrigin || 'seed';
 
     return {
-      isOnline: this.lastResult ? (this.lastResult.dataSource === 'live') : true,
-      dataSource: this.lastResult?.dataSource || 'seed',
-      lastSyncTimestamp: this.lastResult?.completedAt || new Date().toISOString(),
+      isOnline: effectiveSource === 'live' || envelopeOrigin === 'live',
+      dataSource: effectiveSource,
+      lastSyncTimestamp: this.lastResult?.completedAt || storesEnvelope?.metadata?.cachedAt || new Date().toISOString(),
       lastResult: this.lastResult,
       storeCount: Array.isArray(stores) && stores.length > 0 ? stores.length : 14,
       flyerCount: Array.isArray(flyers) ? flyers.length : 0,
