@@ -37,7 +37,7 @@ In `Basilico`, questo dominio ottiene la **Stanza 4 dedicata ("Cucina, Pentole &
 
 ## 3. Task Operativi Collegati
 
-- [ ] **TASK-M4-01**: **Seed Archetipi Pentole & Chimica Detergenza, `KitchenInventoryService` (Compatibilità Induzione/Gas & Calcolo ROI Piatti Sbloccati) e `KitchenResetService` (Abbinamento Live Offerte Tigotà/PiùMe)**
+- [x] **TASK-M4-01**: **Seed Archetipi Pentole & Chimica Detergenza, `KitchenInventoryService` (Compatibilità Induzione/Gas & Calcolo ROI Piatti Sbloccati) e `KitchenResetService` (Abbinamento Live Offerte Tigotà/PiùMe)**
   - *File coinvolti*: `data/seed/cookware_archetypes.json`, `data/seed/cleaning_chemistry.json`, `server/services/kitchenInventoryService.js`, `server/services/kitchenResetService.js`, `server/routes/kitchen.js`, `tests/unit/kitchen_services.test.js`
   - *Verification Step*: `npm test`
 - [ ] **TASK-M4-02**: **Interfaccia Completa Stanza 4 ("Cucina, Pentole & Pulizia"): Configuratore Piano Cottura, Cassetto Pentole con ROI Sblocco, Sottolavello e Guida Interattiva "Kitchen Reset" con Offerte Tigotà/PiùMe**

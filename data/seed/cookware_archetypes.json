@@ -1,0 +1,110 @@
+[
+  {
+    "id": "padella_antiaderente",
+    "name": "Padella Antiaderente Alluminio Forgiato (PTFE) 24-28 cm",
+    "category": "cookware",
+    "material": "alluminio_rivestito_ptfe",
+    "inductionCompatible": true,
+    "maxTempC": 200,
+    "unlockedDishesCount": 138,
+    "physicalJustification": "Bassa energia superficiale (~18 mN/m) per impedire l'adesione di proteine delicate (pesce bianco del Tigullio, uova, filetti magri) tra 120 e 180°C con minimo apporto di grassi.",
+    "rapalloSource": "Casalinghi & Ferramenta Rapallo / Coop Via Sciesa / Unieuro Rapallo",
+    "referencePriceEuro": 19.90
+  },
+  {
+    "id": "casseruola_inox",
+    "name": "Casseruola Acciaio Inox 18/10 Triplo Fondo 20-24 cm",
+    "category": "cookware",
+    "material": "acciaio_inox_18_10",
+    "inductionCompatible": true,
+    "maxTempC": 280,
+    "unlockedDishesCount": 73,
+    "physicalJustification": "Resistenza chimico-termica per reazione di Maillard ad alta temperatura (>160°C), formazione del fondo bruno (sucs) e deglassatura acida (vino bianco ligure, limone, pomodoro) senza degradare rivestimenti.",
+    "rapalloSource": "Casalinghi & Ferramenta Rapallo / Basko Corso Colombo",
+    "referencePriceEuro": 29.90
+  },
+  {
+    "id": "pentola",
+    "name": "Pentola Alta Acciaio Inox 18/10 (5-6 Litri) con Coperchio",
+    "category": "cookware",
+    "material": "acciaio_inox_18_10",
+    "inductionCompatible": true,
+    "maxTempC": 280,
+    "unlockedDishesCount": 79,
+    "physicalJustification": "Elevato volano termico (rapporto 1 L d'acqua ogni 100 g di pasta/trofie/trenette) per prevenire il crollo del punto di ebollizione (100°C) all'immersione e gelatinizzare uniformemente gli amidi.",
+    "rapalloSource": "Casalinghi & Ferramenta Rapallo / Coop Via Sciesa",
+    "referencePriceEuro": 24.90
+  },
+  {
+    "id": "bistecchiera",
+    "name": "Bistecchiera in Ghisa Stagionata / Alluminio Pressofuso 28x28 cm",
+    "category": "cookware",
+    "material": "ghisa_stagionata",
+    "inductionCompatible": true,
+    "maxTempC": 300,
+    "unlockedDishesCount": 47,
+    "physicalJustification": "Altissima inerzia termica e conduzione radiativa (>220°C) per cauterizzazione rapida di tranci di pesce azzurro/tonno e tagli di carne senza effetto lessatura.",
+    "rapalloSource": "Casalinghi & Ferramenta Rapallo",
+    "referencePriceEuro": 26.50
+  },
+  {
+    "id": "mortaio",
+    "name": "Mortaio Ligure in Marmo di Carrara con Pestello in Bosso",
+    "category": "prep_tool",
+    "material": "marmo_naturale",
+    "inductionCompatible": false,
+    "maxTempC": 60,
+    "unlockedDishesCount": 16,
+    "physicalJustification": "Frantumazione cellulare a freddo delle foglie di basilico DOP senza ossidazione enzimatica termica (evita l'annerimento da polifenolo-ossidasi causato dalle lame ad alta velocità).",
+    "rapalloSource": "Botteghe Centro Storico Rapallo",
+    "referencePriceEuro": 28.00
+  },
+  {
+    "id": "teglia_forno",
+    "name": "Teglia / Pirofila Rettangolare da Forno (Rame Stagnato / Gres)",
+    "category": "bakeware",
+    "material": "acciaio_inox_18_10",
+    "inductionCompatible": false,
+    "maxTempC": 260,
+    "unlockedDishesCount": 49,
+    "physicalJustification": "Distribuzione uniforme dell'energia termica convettiva e radiativa (180-220°C) per farinata, focaccia, pesce al forno alla ligure e torte di verdura.",
+    "rapalloSource": "Casalinghi & Ferramenta Rapallo / Eurospin",
+    "referencePriceEuro": 14.90
+  },
+  {
+    "id": "wok",
+    "name": "Saltapasta / Wok Conico 28 cm Fondo Induzione",
+    "category": "cookware",
+    "material": "alluminio_rivestito_ptfe",
+    "inductionCompatible": true,
+    "maxTempC": 210,
+    "unlockedDishesCount": 35,
+    "physicalJustification": "Geometria concava a pareti alte per mantecatura meccanica (emulsione acqua di cottura ricca di amido + grassi) e salto rapido di verdure.",
+    "rapalloSource": "Casalinghi & Ferramenta Rapallo",
+    "referencePriceEuro": 21.90
+  },
+  {
+    "id": "coltello_chef",
+    "name": "Coltello da Chef / Trinciante 20 cm Acciaio Martensitico",
+    "category": "knife",
+    "material": "acciaio_inossidabile_martensitico",
+    "inductionCompatible": false,
+    "maxTempC": 60,
+    "unlockedDishesCount": 230,
+    "physicalJustification": "Angolo di bisello affilato (15-20°) per taglio netto a scorrimento delle fibre vegetali e dei filetti di pesce senza schiacciamento cellulare.",
+    "rapalloSource": "Coltelleria / Casalinghi Rapallo",
+    "referencePriceEuro": 24.00
+  },
+  {
+    "id": "pentola_rame_non_induzione",
+    "name": "Paiolo / Tegame in Rame Puro o Terracotta (Non Ferromagnetico)",
+    "category": "cookware",
+    "material": "rame_puro",
+    "inductionCompatible": false,
+    "maxTempC": 240,
+    "unlockedDishesCount": 12,
+    "physicalJustification": "Altissima conducibilità termica su fiamma viva a gas, ma privo di suscettività ferromagnetica: non genera correnti parassite di Foucault su piani a induzione.",
+    "rapalloSource": "Bottega Artigiana Liguria",
+    "referencePriceEuro": 45.00
+  }
+]
