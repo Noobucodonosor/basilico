@@ -1,6 +1,6 @@
 # ADR-0002: Sicurezza HTTP, Protezione Path Traversal, Input Hardening e Sanitizzazione Ricerca
 
-- **Stato:** Proposto (`Proposed` — In completamento per i test Tier 5)
+- **Stato:** Accettato (`Accepted`)
 - **Priorità:** P0 — Critica
 - **Data:** 2026-11-09
 - **Autori:** Team Basilico (@Noobucodonosor)
@@ -47,7 +47,7 @@ Sebbene Basilico non gestisca pagamenti diretti o dati personali sensibili, l'es
 
 ## 4. Task Operativi Collegati (con Definition of Done)
 
-- [ ] **TASK-SEC-01**: **Hardening Clamping Paginazione (`limit` 1..100) e Normalizzazione Whitespace/Accenti in `OfferService` e `/api/offers`**
+- [x] **TASK-SEC-01**: **Hardening Clamping Paginazione (`limit` 1..100) e Normalizzazione Whitespace/Accenti in `OfferService` e `/api/offers`**
   - *File coinvolti*: `server/services/offerService.js`, `server/routes/offers.js`, `server/services/ingestionService.js`
   - *Acceptance Criteria*:
     - `limit` viene sempre limitato tra `1` e `100` (`MAX_LIMIT = 100`) sia nel servizio sia nell'endpoint HTTP `GET /api/offers` (anche per valori estremi come `limit=500000` o `limit=0`).

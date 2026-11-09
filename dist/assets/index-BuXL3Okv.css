@@ -1570,6 +1570,30 @@ dialog::backdrop {
   backdrop-filter: blur(4px);
 }
 
+/* Scroll Snap & Touch Carousel for Flyer Viewer (F14) and Subgrid (F13) */
+.scroll-snap-x-mandatory,
+.snap-x-mandatory {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-align-center,
+.snap-align-center {
+  scroll-snap-align: center;
+}
+
+.snap-stop-always {
+  scroll-snap-stop: always;
+}
+
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+.grid-rows-subgrid {
+  grid-template-rows: subgrid;
+}
+
 .selection\:bg-emerald-100 *::-moz-selection {
   --tw-bg-opacity: 1;
   background-color: rgb(209 250 229 / var(--tw-bg-opacity, 1));

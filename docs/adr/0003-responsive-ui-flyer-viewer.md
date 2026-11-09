@@ -45,7 +45,7 @@ L'interfaccia deve offrire:
 
 ## 4. Task Operativi Collegati (con Definition of Done)
 
-- [ ] **TASK-UI-01**: **Allineamento Build Produzione (`dist/`), Viewport Meta e Verifica E2E Completa (444/444 test pass)**
+- [x] **TASK-UI-01**: **Allineamento Build Produzione (`dist/`), Viewport Meta e Verifica E2E Completa (444/444 test pass)**
   - *File coinvolti*: `index.html`, `dist/index.html`, `src/index.css`, `server.js`, `server/index.js`
   - *Acceptance Criteria*:
     - `npm run build` genera `dist/index.html` e il bundle CSS contenente le regole `scroll-snap` e `subgrid`.

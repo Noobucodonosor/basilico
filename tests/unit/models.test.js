@@ -109,9 +109,10 @@ describe('Unit Tests: Models & Schemas (F1, F2, F7)', () => {
       assert.ok(Array.isArray(stores), 'Stores must be an array');
       assert.ok(stores.length >= 5, `Expected >= 5 stores, got ${stores.length}`);
       const brands = new Set(stores.map((s) => s.brand || (s.name && s.name.split(' ')[0])));
-      for (const chain of CANONICAL_CHAINS) {
+      const requiredRealRapalloChains = ['Coop', 'Carrefour', 'Basko', 'Gulliver', 'Penny'];
+      for (const chain of requiredRealRapalloChains) {
         const found = Array.from(brands).some((b) => b.toLowerCase().includes(chain.toLowerCase()));
-        assert.ok(found, `Seed dataset must contain chain: ${chain}`);
+        assert.ok(found, `Seed dataset must contain verified Rapallo chain: ${chain}`);
       }
     });
 

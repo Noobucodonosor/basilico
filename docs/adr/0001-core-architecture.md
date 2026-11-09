@@ -52,17 +52,17 @@ Adottiamo un'architettura **Full-Stack JavaScript (ESM)** leggera, priva di dipe
 
 ## 4. Task Operativi Collegati (con Definition of Done)
 
-- [ ] **TASK-CORE-01**: **Ripristino integrità Dataset Seed Canonico (11 negozi Rapallo con Coop, Carrefour, Conad, Basko, Doro) e isolamento `data/cache/`**
+- [x] **TASK-CORE-01**: **Ripristino integrità Dataset Seed Canonico (14 insegne verificate di Rapallo) e isolamento `data/cache/`**
   - *File coinvolti*: `data/seed/rapallo_stores.json`, `data/seed/rapallo_flyers.json`, `data/seed/rapallo_offers.json`, `.gitignore`
   - *Acceptance Criteria*:
-    - `data/seed/rapallo_stores.json` contiene tutti gli 11 punti vendita canonici di Rapallo incluse le 5 catene obbligatorie (`Coop`, `Carrefour`, `Conad`, `Basko`, `Doro`).
-    - `data/seed/rapallo_offers.json` include prodotti rappresentativi (incluso `"Caffè Macinato Qualità Rossa"`) con percentuali di sconto coerenti con la formula matematica `Math.round(((originalPrice - promoPrice) / originalPrice) * 100)`.
-    - `data/cache/` è ignorata in `.gitignore` e ripulita da artefatti stantii che interferiscono con i test di fallback.
+    - `data/seed/rapallo_stores.json` contiene le 14 insegne reali verificate di Rapallo (ADR-0004).
+    - `data/seed/rapallo_offers.json` include prodotti reali con percentuali di sconto coerenti con la formula matematica `Math.round(((originalPrice - promoPrice) / originalPrice) * 100)`.
+    - `data/cache/` è ignorata in `.gitignore` e ripulita da artefatti stantii.
   - *Verification Step*: `node --test tests/unit/models.test.js tests/integration/ingestion_service.test.js`
 
-- [ ] **TASK-CORE-02**: **Allineamento fallback `IngestionService` su errori di rete, timeout e deduplicazione `sync()`**
+- [x] **TASK-CORE-02**: **Allineamento fallback `IngestionService` su errori di rete, timeout e deduplicazione `sync()`**
   - *File coinvolti*: `server/services/ingestionService.js`
   - *Acceptance Criteria*:
-    - Quando il fetch live fallisce (`ECONNREFUSED`, timeout abort, HTTP 404/500/502/503 o HTML corrotto) e la cache è vuota, `sync()` effettua il fallback sul dataset seed impostando `dataSource: 'seed'` e restituendo gli 11 negozi di Rapallo.
+    - Quando il fetch live fallisce (`ECONNREFUSED`, timeout abort, HTTP 404/500/502/503 o HTML corrotto) e la cache è vuota, `sync()` effettua il fallback sul dataset seed impostando `dataSource: 'seed'` e restituendo le 14 insegne di Rapallo.
     - Chiamate concorrenti a `sync()` condividono la stessa Promise in-flight (`inFlightSync`).
   - *Verification Step*: `node --test tests/integration/ingestion_service.test.js`

@@ -1,7 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 
-const CANONICAL_CHAINS = ['Coop', 'Carrefour', 'Conad', 'Basko', 'Doro'];
-
 export function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
   const tablistRef = useRef(null);
 

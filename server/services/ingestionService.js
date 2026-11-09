@@ -25,17 +25,25 @@ const PROMOQUI_RAPALLO_FALLBACK_URL = 'https://www.promoqui.it/rapallo';
 const NETWORK_TIMEOUT_MS = 5000;
 const CACHE_TTL_SECONDS = 21600; // 6 hours
 
-// Brand mapping rules for Rapallo supermarkets
+// Brand mapping rules for Rapallo supermarkets and stores (14 verified chains - ADR-0004)
 const BRAND_RULES = [
   { chainId: 'coop', brand: 'Coop', defaultStoreId: 'rapallo-coop-sciesa', patterns: [/coop/i, /ipercoop/i] },
   { chainId: 'carrefour', brand: 'Carrefour', defaultStoreId: 'rapallo-carrefour-assereto', patterns: [/carrefour/i] },
-  { chainId: 'conad', brand: 'Conad', defaultStoreId: 'rapallo-conad-torrecivica', patterns: [/conad/i] },
   { chainId: 'basko', brand: 'Basko', defaultStoreId: 'rapallo-basko-colombo', patterns: [/basko/i] },
-  { chainId: 'doro', brand: 'Doro', defaultStoreId: 'rapallo-doro-tigullio', patterns: [/doro/i] },
   { chainId: 'gulliver', brand: 'Gulliver', defaultStoreId: 'rapallo-gulliver-mameli', patterns: [/gulliver/i] },
   { chainId: 'penny', brand: 'Penny', defaultStoreId: 'rapallo-penny-milano', patterns: [/penny/i] },
-  { chainId: 'ekom', brand: 'Ekom', defaultStoreId: 'rapallo-ekom-mameli', patterns: [/ekom/i] }
+  { chainId: 'ekom', brand: 'Ekom', defaultStoreId: 'rapallo-ekom-mameli', patterns: [/ekom/i] },
+  { chainId: 'eurospin', brand: 'Eurospin', defaultStoreId: 'rapallo-eurospin-aurelia', patterns: [/eurospin/i] },
+  { chainId: 'despar', brand: 'Despar', defaultStoreId: 'rapallo-despar-betti', patterns: [/despar/i] },
+  { chainId: 'dpiu', brand: 'DPiù', defaultStoreId: 'rapallo-dpiu-fioria', patterns: [/dpi[uù]/i, /d-piu/i] },
+  { chainId: 'tigota', brand: 'Tigotà', defaultStoreId: 'rapallo-tigota-lamarmora', patterns: [/tigot[aà]/i] },
+  { chainId: 'piume', brand: 'PiùMe', defaultStoreId: 'rapallo-piume-neri', patterns: [/pi[uù]me/i] },
+  { chainId: 'unieuro', brand: 'Unieuro', defaultStoreId: 'rapallo-unieuro-matteotti', patterns: [/unieuro/i] },
+  { chainId: 'arcaplanet', brand: 'Arcaplanet', defaultStoreId: 'rapallo-arcaplanet-italia', patterns: [/arcaplanet/i] }
 ];
+
+// Geo-filter excluding flyers from unrelated provinces/regions (ADR-0004)
+const NON_RAPALLO_FLYER_REGEX = /spezia|piacentin|pavese|piemont|lombard|sardegn|sicili|pugli|calabri|campani|lazio|toscan|venet|friul|trentin|emili|romagn|umbria|marche|abruzz|molis|basilicat|aosta/i;
 
 export class IngestionService {
   constructor(options = {}) {
@@ -140,6 +148,7 @@ export class IngestionService {
 
     for (const raw of rawFlyers) {
       if (!raw || !raw.id) continue;
+      if (NON_RAPALLO_FLYER_REGEX.test(raw.title || '')) continue;
       const matched = this.matchStore(raw.retailerName, storeList);
       const storeId = matched?.store?.id || `store-${raw.retailer_id || 'unknown'}`;
       const storeName = matched?.store?.name || raw.retailerName || 'Supermercato Rapallo';
@@ -610,7 +619,7 @@ export class IngestionService {
       dataSource: this.lastResult?.dataSource || 'seed',
       lastSyncTimestamp: this.lastResult?.completedAt || new Date().toISOString(),
       lastResult: this.lastResult,
-      storeCount: Array.isArray(stores) && stores.length > 0 ? stores.length : 11,
+      storeCount: Array.isArray(stores) && stores.length > 0 ? stores.length : 14,
       flyerCount: Array.isArray(flyers) ? flyers.length : 0,
       offerCount: Array.isArray(offers) ? offers.length : 0,
       cacheFresh: !isCacheExpired

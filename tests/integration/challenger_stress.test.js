@@ -383,25 +383,25 @@ describe('CHALLENGER EMPIRICAL STRESS HARNESS (Milestone 1)', () => {
       assert.ok(result);
       assert.equal(result.status, 'cached_fallback');
       assert.equal(result.dataSource, 'seed');
-      assert.equal(result.storesProcessed, 11);
-      assert.equal(result.totalFlyers, 13);
-      assert.equal(result.totalOffers, 49);
+      assert.equal(result.storesProcessed, 14);
+      assert.equal(result.totalFlyers, 20);
+      assert.equal(result.totalOffers, 442);
       assert.ok(result.errors.length > 0, 'Error log must capture upstream failure');
 
       // Verify all query methods operate flawlessly on seed fallback
       const stores = await ingestion.getStores();
-      assert.equal(stores.length, 11);
+      assert.equal(stores.length, 14);
 
       const flyers = await ingestion.getFlyers();
-      assert.equal(flyers.length, 13);
+      assert.equal(flyers.length, 20);
 
       const offers = await ingestion.getOffers();
-      assert.equal(offers.totalOffers, 49);
+      assert.equal(offers.totalOffers, 442);
 
       const status = await ingestion.getStatus();
       assert.equal(status.isOnline, false);
       assert.ok(['seed', 'cache'].includes(status.dataSource));
-      assert.equal(status.storeCount, 11);
+      assert.equal(status.storeCount, 14);
     });
 
     it('4.2 should fall back to cached data (Tier 2) when cache contains prior data and network drops', async () => {
@@ -433,9 +433,9 @@ describe('CHALLENGER EMPIRICAL STRESS HARNESS (Milestone 1)', () => {
 
       const result = await ingestion.sync(true);
       assert.equal(result.dataSource, 'seed');
-      assert.equal(result.storesProcessed, 11);
-      assert.equal(result.totalFlyers, 13);
-      assert.equal(result.totalOffers, 49);
+      assert.equal(result.storesProcessed, 14);
+      assert.equal(result.totalFlyers, 20);
+      assert.equal(result.totalOffers, 442);
     });
 
     it('4.4 should smoothly fall back on HTTP 500, 502, 503, 404 responses', async () => {
@@ -456,9 +456,9 @@ describe('CHALLENGER EMPIRICAL STRESS HARNESS (Milestone 1)', () => {
         assert.ok(result);
         assert.equal(result.status, 'cached_fallback');
         assert.equal(result.dataSource, 'seed', `Cold start fallback for HTTP status ${code} should be seed`);
-        assert.equal(result.storesProcessed, 11);
-        assert.equal(result.totalFlyers, 13);
-        assert.equal(result.totalOffers, 49);
+        assert.equal(result.storesProcessed, 14);
+        assert.equal(result.totalFlyers, 20);
+        assert.equal(result.totalOffers, 442);
       }
     });
 
@@ -482,9 +482,9 @@ describe('CHALLENGER EMPIRICAL STRESS HARNESS (Milestone 1)', () => {
         const result = await ingestion.sync(true);
         assert.ok(result);
         assert.equal(result.dataSource, 'seed');
-        assert.equal(result.storesProcessed, 11);
-        assert.equal(result.totalFlyers, 13);
-        assert.equal(result.totalOffers, 49);
+        assert.equal(result.storesProcessed, 14);
+        assert.equal(result.totalFlyers, 20);
+        assert.equal(result.totalOffers, 442);
       }
     });
 
@@ -504,7 +504,7 @@ describe('CHALLENGER EMPIRICAL STRESS HARNESS (Milestone 1)', () => {
       assert.equal(callCount, 2, 'Concurrent sync() calls must share the in-flight promise');
       for (const res of results) {
         assert.equal(res.dataSource, 'seed');
-        assert.equal(res.storesProcessed, 11);
+        assert.equal(res.storesProcessed, 14);
       }
     });
 
@@ -614,7 +614,7 @@ describe('CHALLENGER EMPIRICAL STRESS HARNESS (Milestone 1)', () => {
       const emptyQueries = ['', '   ', '\t\n', null, undefined];
       for (const q of emptyQueries) {
         const res = await ingestion.getOffers({ query: q });
-        assert.equal(res.totalOffers, 49, `Empty query "${q}" should return all 49 offers`);
+        assert.equal(res.totalOffers, 442, `Empty query "${q}" should return all 442 offers`);
       }
     });
 
@@ -640,7 +640,7 @@ describe('CHALLENGER EMPIRICAL STRESS HARNESS (Milestone 1)', () => {
 
     it('5.7 should verify discount percentage calculation accuracy across all seed offers', async () => {
       const res = await ingestion.getOffers({ limit: 100 });
-      assert.equal(res.totalOffers, 49);
+      assert.equal(res.totalOffers, 442);
 
       for (const offer of res.offers) {
         const { originalPrice, promoPrice, discountPrice, discountPercentage, title } = offer;

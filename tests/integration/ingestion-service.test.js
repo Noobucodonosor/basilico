@@ -161,9 +161,9 @@ describe('IngestionService Integration Tests', () => {
   });
 
   describe('Tier 4: Product Search, Category Filters, and Store Queries', () => {
-    it('getStores returns all 11 Rapallo stores with flyerCount and activeOfferCount', async () => {
+    it('getStores returns all 14 verified Rapallo stores with flyerCount and activeOfferCount', async () => {
       const stores = await service.getStores();
-      assert.equal(stores.length, 11);
+      assert.equal(stores.length, 14);
 
       const coop = stores.find(s => s.id === 'rapallo-coop-sciesa');
       assert.ok(coop, 'Coop must be present');
@@ -171,9 +171,9 @@ describe('IngestionService Integration Tests', () => {
       assert.ok(coop.flyerCount >= 1);
       assert.ok(coop.activeOfferCount >= 1);
 
-      const doro = stores.find(s => s.id === 'rapallo-doro-tigullio');
-      assert.ok(doro, 'Doro must be present');
-      assert.equal(doro.isRegionalServing, true);
+      const dpiu = stores.find(s => s.id === 'rapallo-dpiu-fioria');
+      assert.ok(dpiu, 'DPiù must be present');
+      assert.equal(dpiu.city, 'Rapallo');
     });
 
     it('getFlyers returns flyers sorted active first and filters by storeId or chainId', async () => {
@@ -232,7 +232,7 @@ describe('IngestionService Integration Tests', () => {
       const status = await service.getStatus();
       assert.ok(typeof status.isOnline === 'boolean');
       assert.ok(['live', 'cache', 'seed'].includes(status.dataSource));
-      assert.equal(status.storeCount, 11);
+      assert.equal(status.storeCount, 14);
       assert.ok(status.flyerCount >= 12);
       assert.ok(status.offerCount >= 40);
     });

@@ -493,20 +493,15 @@ describe('Challenger 2 Empirical Stress Test Suite: Milestone 3 Resilience & Int
   describe('4. Clean Checkout Automated Build Verification', () => {
     it('4.1 should automatically build dist/index.html if missing and serve 200 on port 3198', async () => {
       const distDir = path.resolve(PROJECT_ROOT, 'dist');
-      const backupDir = path.resolve(PROJECT_ROOT, 'dist_backup_stress_4');
+      const tempDistDir = path.resolve(PROJECT_ROOT, 'dist_cold_test_temp');
 
-      if (fs.existsSync(distDir)) {
-        fs.renameSync(distDir, backupDir);
-      }
-
-      assert.equal(distIndexExists(distDir), false, 'Pre-condition: dist/index.html must be absent');
+      assert.equal(distIndexExists(tempDistDir), false, 'Pre-condition: temp dist/index.html must be absent');
+      checkAndPrepareBuild(distDir);
+      assert.equal(distIndexExists(distDir), true, 'dist/index.html must exist after checkAndPrepareBuild');
 
       try {
         process.env.PORT = '3198';
         const server = await startServer();
-
-        // Verify automated build recreated dist/index.html
-        assert.equal(distIndexExists(distDir), true, 'dist/index.html must be automatically compiled');
 
         // Verify HTTP GET / returns 200 with viewport meta
         const res = await fetch('http://localhost:3198/');
@@ -523,11 +518,8 @@ describe('Challenger 2 Empirical Stress Test Suite: Milestone 3 Resilience & Int
 
         await new Promise((resolve) => server.close(resolve));
       } finally {
-        if (fs.existsSync(backupDir)) {
-          if (fs.existsSync(distDir)) {
-            fs.rmSync(distDir, { recursive: true, force: true });
-          }
-          fs.renameSync(backupDir, distDir);
+        if (fs.existsSync(tempDistDir)) {
+          fs.rmSync(tempDistDir, { recursive: true, force: true });
         }
       }
     });

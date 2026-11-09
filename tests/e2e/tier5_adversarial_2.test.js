@@ -349,7 +349,7 @@ describe('Tier 5 White-Box Adversarial Stress Test Suite (Challenger 2)', () => 
       assert.equal(callCount, 1, 'Concurrent calls to sync() must deduplicate to 1 single in-flight execution');
       assert.equal(syncResults.length, 20);
       for (const res of syncResults) {
-        assert.ok(res.status === 'success' || res.status === 'cached_fallback');
+        assert.ok(['success', 'partial_success', 'cached_fallback'].includes(res.status));
       }
     });
   });
