@@ -1,0 +1,149 @@
+/**
+ * Unit Tests for TASK-M1-01 (ADR-0007):
+ * - 6 Store Categories, Data Channels, Logistics & Loyalty Cards in Rapallo
+ * - 5 Closed Domains Classifier (food_human, home_cleaning, kitchen_cookware, personal_care, pet_care)
+ * - Unit Price & Edible/Drained Weight Normalizer (€/kg, x10 etto, multipack, guardrails)
+ * - Scientific Quality Lens (Tuna mercury/species, Egg codes, EVO oil, Nitrites, pH chemistry, Cookware induction)
+ */
+
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  classifyProductDomain,
+  isHumanFoodOffer,
+  VALID_PRODUCT_DOMAINS
+} from '../../server/services/domainClassifier.js';
+import {
+  extractPackMetrics,
+  normalizeUnitPricing
+} from '../../server/services/unitPriceExtractor.js';
+import { evaluateQualityLens } from '../../server/services/qualityLensService.js';
+import { offerService } from '../../server/services/offerService.js';
+import { loadLocalObservedShops } from '../../server/routes/stores.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const STORES_SEED_PATH = path.resolve(__dirname, '../../data/seed/rapallo_stores.json');
+
+describe('TASK-M1-01: Multi-Domain Taxonomy, Edible €/kg Normalizer & Quality Lens (ADR-0007)', () => {
+  describe('Level 0: Rapallo Store Directory Metadata & Local Shops', () => {
+    it('ensures all 14 canonical Rapallo stores include storeCategory, dataChannel, loyaltyCard, and logistics', () => {
+      const stores = JSON.parse(fs.readFileSync(STORES_SEED_PATH, 'utf8'));
+      assert.equal(stores.length, 14);
+      for (const s of stores) {
+        assert.ok(['gdo', 'bottega_freschi', 'casalinghi_cucina', 'cura_casa_persona', 'elettronica_cucina', 'pet'].includes(s.storeCategory));
+        assert.equal(s.dataChannel, 'flyer_live');
+        assert.ok(s.loyaltyCard && typeof s.loyaltyCard === 'object');
+        assert.ok(s.logistics && typeof s.logistics.distanceKmFromHarbor === 'number');
+        assert.ok(typeof s.logistics.avgVisitMinutes === 'number');
+      }
+    });
+
+    it('loads local observed Rapallo shops (pescheria, macelleria, panificio, casalinghi) with receipt_observed channel', () => {
+      const localShops = loadLocalObservedShops();
+      assert.ok(localShops.length >= 4);
+      assert.ok(localShops.some((s) => s.storeCategory === 'bottega_freschi'));
+      assert.ok(localShops.some((s) => s.storeCategory === 'casalinghi_cucina'));
+      assert.ok(localShops.every((s) => s.dataChannel === 'receipt_observed'));
+    });
+  });
+
+  describe('Level 1.4: 5 Closed Domains Classifier (Zero Contamination)', () => {
+    it('classifies human food and beverages strictly as food_human', () => {
+      assert.equal(
+        classifyProductDomain({ title: 'Tonno Rio Mare all\'Olio di Oliva 3x80g', category: 'Dispensa e Pasta', chainId: 'basko' }),
+        'food_human'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Filetto di Orata Fresca', category: 'Carne e Pesce', chainId: 'coop' }),
+        'food_human'
+      );
+      assert.equal(isHumanFoodOffer({ title: 'Pasta Rummo 500g', chainId: 'gulliver' }), true);
+    });
+
+    it('classifies detergents and surface cleaners strictly as home_cleaning (never food_human)', () => {
+      const sgrassatore = { title: 'Chanteclair Sgrassatore Universale Marsiglia 600ml', chainId: 'tigota' };
+      assert.equal(classifyProductDomain(sgrassatore), 'home_cleaning');
+      assert.equal(isHumanFoodOffer(sgrassatore), false);
+
+      const detersivoInSupermarket = { title: 'Dash Pods Detersivo Lavatrice 36 lavaggi', category: 'Cura Casa e Bucato', chainId: 'basko' };
+      assert.equal(classifyProductDomain(detersivoInSupermarket), 'home_cleaning');
+    });
+
+    it('classifies cookware, knives, and appliances strictly as kitchen_cookware', () => {
+      const padella = { title: 'Lagostina Padella Antiaderente Induzione 28cm', chainId: 'unieuro' };
+      assert.equal(classifyProductDomain(padella), 'kitchen_cookware');
+      assert.equal(isHumanFoodOffer(padella), false);
+    });
+
+    it('classifies hygiene products as personal_care and pet food as pet_care', () => {
+      const shampoo = { title: 'Shampoo Pantene Rigenera 250ml', category: 'Cura Persona e Igiene', chainId: 'piume' };
+      assert.equal(classifyProductDomain(shampoo), 'personal_care');
+
+      const crocchette = { title: 'Monge Crocchette Cane Adulto Salmone 2.5kg', chainId: 'arcaplanet' };
+      assert.equal(classifyProductDomain(crocchette), 'pet_care');
+      assert.equal(isHumanFoodOffer(crocchette), false);
+    });
+  });
+
+  describe('Level 1.2: Unit Price & Edible/Drained Weight Normalizer', () => {
+    it('multiplies "all\'etto / per 100g" prices by 10 to compute true €/kg', () => {
+      const res = normalizeUnitPricing({
+        title: 'Prosciutto Crudo di Parma DOP all\'etto',
+        promoPrice: 2.49
+      });
+      assert.equal(res.isPerEtto, true);
+      assert.equal(res.pricePerKg, 24.90);
+      assert.equal(res.ediblePricePerKg, 24.90);
+      assert.ok(res.formattedNormalizedPrice.includes('24,90 €/kg'));
+    });
+
+    it('computes multipack total weight and drained edible €/kg for canned food', () => {
+      const res = normalizeUnitPricing({
+        title: 'Tonno Rio Mare in Olio di Oliva 3x80g (sgocciolato 156g)',
+        promoPrice: 3.90
+      });
+      assert.equal(res.packWeightGrams, 240);
+      assert.equal(res.drainedWeightGrams, 156);
+      assert.equal(res.pricePerKg, 16.25); // 3.90 / 0.240
+      assert.equal(res.ediblePricePerKg, 25.00); // 3.90 / 0.156
+    });
+
+    it('flags suspiciously low €/kg on premium meats/cheeses as priceAnomalyFlag', () => {
+      const anomaly = normalizeUnitPricing({
+        title: 'Bresaola della Valtellina IGP 1kg',
+        promoPrice: 1.89
+      });
+      assert.equal(anomaly.priceAnomalyFlag, true);
+      assert.ok(anomaly.priceAnomalyReasons.length > 0);
+    });
+  });
+
+  describe('Level 1.4: Scientific Quality Lens & Domain Filtering in OfferService', () => {
+    it('evaluates quality badges and chemical pH specs accurately across domains', () => {
+      const sgombro = evaluateQualityLens({ title: 'Filetti di Sgombro al Naturale in vetro', chainId: 'coop' });
+      assert.equal(sgombro.domain, 'food_human');
+      assert.ok(sgombro.badges.some((b) => b.label.includes('Pesce Azzurro')));
+
+      const viakal = evaluateQualityLens({ title: 'Viakal Anticalcare Spray 500ml', chainId: 'tigota' });
+      assert.equal(viakal.domain, 'home_cleaning');
+      assert.equal(viakal.technicalSpec.phClass, 'acid');
+      assert.ok(viakal.technicalSpec.forbiddenSurfaces.includes('Marmo'));
+
+      const padella = evaluateQualityLens({ title: 'Padella Antiaderente PTFE Induzione 24cm', chainId: 'unieuro' });
+      assert.equal(padella.domain, 'kitchen_cookware');
+      assert.equal(padella.technicalSpec.inductionCompatible, true);
+    });
+
+    it('supports filtering offers by domain in OfferService.processQuery', () => {
+      const seedOffers = offerService.getSeedOffersSync();
+      const resFood = offerService.processQuery({ domain: 'food_human', limit: 25 }, seedOffers);
+      assert.ok(resFood.offers.length > 0);
+      assert.ok(resFood.offers.every((o) => o.domain === 'food_human'));
+      assert.ok(resFood.facets.domains && typeof resFood.facets.domains.food_human === 'number');
+    });
+  });
+});

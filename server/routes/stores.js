@@ -10,7 +10,23 @@
  */
 
 import express from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ingestionService } from '../services/ingestionService.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LOCAL_SHOPS_PATH = path.resolve(__dirname, '../../data/seed/rapallo_local_shops.json');
+
+export function loadLocalObservedShops() {
+  try {
+    if (fs.existsSync(LOCAL_SHOPS_PATH)) {
+      return JSON.parse(fs.readFileSync(LOCAL_SHOPS_PATH, 'utf8'));
+    }
+  } catch (_) {}
+  return [];
+}
 
 const router = express.Router();
 
@@ -64,7 +80,22 @@ export function handleGetStores(queryParams = {}, storeData = null) {
 export async function getStoresHandler(req, res, next) {
   try {
     const rawStores = await ingestionService.getStores();
-    const storesList = Array.isArray(rawStores) ? rawStores : [];
+    let storesList = Array.isArray(rawStores) ? [...rawStores] : [];
+
+    if (req.query?.includeLocalShops === 'true' || req.query?.includeLocalShops === true) {
+      const localShops = loadLocalObservedShops();
+      const existingIds = new Set(storesList.map((s) => s.id));
+      for (const ls of localShops) {
+        if (!existingIds.has(ls.id)) {
+          storesList.push(ls);
+        }
+      }
+    }
+
+    if (req.query?.storeCategory && typeof req.query.storeCategory === 'string') {
+      const cat = req.query.storeCategory.trim();
+      storesList = storesList.filter((s) => s.storeCategory === cat);
+    }
 
     // Ensure badge properties (flyerCount, activeOfferCount) exist and are non-negative numbers
     let stores = storesList.map((store) => ({

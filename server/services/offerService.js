@@ -11,6 +11,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ingestionService } from './ingestionService.js';
+import { classifyProductDomain, VALID_PRODUCT_DOMAINS } from './domainClassifier.js';
+import { normalizeUnitPricing } from './unitPriceExtractor.js';
+import { evaluateQualityLens } from './qualityLensService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,9 +76,39 @@ export function getSortComparator(sortBy) {
       return (a, b) => (b.title || '').localeCompare(a.title || '', 'it', { sensitivity: 'base' });
     case 'expiringsoon':
       return (a, b) => new Date(a.validityEnd || a.validTo || 0) - new Date(b.validityEnd || b.validTo || 0);
+    case 'priceperkgasc':
+      return (a, b) => (a.ediblePricePerKg ?? a.pricePerKg ?? 999999) - (b.ediblePricePerKg ?? b.pricePerKg ?? 999999);
     default:
       return null;
   }
+}
+
+/**
+ * Enriches an offer record with domain taxonomy, normalized €/kg pricing, and quality lens metadata.
+ */
+export function enrichOfferRecord(offer = {}) {
+  if (!offer || typeof offer !== 'object') return offer;
+  const domain = classifyProductDomain(offer);
+  const pricing = normalizeUnitPricing(offer);
+  const quality = evaluateQualityLens({ ...offer, domain });
+
+  return {
+    ...offer,
+    domain,
+    checkoutPackPrice: pricing.checkoutPackPrice,
+    packWeightGrams: pricing.packWeightGrams,
+    drainedWeightGrams: pricing.drainedWeightGrams,
+    packVolumeMl: pricing.packVolumeMl,
+    pricePerKg: pricing.pricePerKg,
+    ediblePricePerKg: pricing.ediblePricePerKg,
+    pricePerLiter: pricing.pricePerLiter,
+    formattedNormalizedPrice: pricing.formattedNormalizedPrice,
+    priceAnomalyFlag: pricing.priceAnomalyFlag,
+    priceAnomalyReasons: pricing.priceAnomalyReasons,
+    qualityBadges: quality.badges,
+    qualityWarnings: quality.warnings,
+    technicalSpec: quality.technicalSpec
+  };
 }
 
 /**
@@ -84,6 +117,7 @@ export function getSortComparator(sortBy) {
 export function computeFacets(offers = []) {
   const categories = {};
   const stores = {};
+  const domains = {};
   const discountRanges = {
     '50+': 0,
     '40-49': 0,
@@ -95,6 +129,9 @@ export function computeFacets(offers = []) {
   for (const cat of VALID_PRODUCT_CATEGORIES) {
     categories[cat] = 0;
   }
+  for (const dom of VALID_PRODUCT_DOMAINS) {
+    domains[dom] = 0;
+  }
 
   for (const o of offers) {
     if (o.category) {
@@ -103,6 +140,9 @@ export function computeFacets(offers = []) {
     if (o.storeId) {
       stores[o.storeId] = (stores[o.storeId] || 0) + 1;
     }
+    const dom = o.domain || classifyProductDomain(o);
+    domains[dom] = (domains[dom] || 0) + 1;
+
     const d = o.discountPercentage || 0;
     if (d >= 50) discountRanges['50+']++;
     else if (d >= 40) discountRanges['40-49']++;
@@ -111,7 +151,7 @@ export function computeFacets(offers = []) {
     else discountRanges['under20']++;
   }
 
-  return { categories, stores, discountRanges };
+  return { categories, stores, domains, discountRanges };
 }
 
 export class OfferService {
@@ -159,7 +199,13 @@ export class OfferService {
    * Pure synchronous query processing over an offers array
    */
   processQuery(query = {}, offers = []) {
-    let filtered = [...offers];
+    let filtered = offers.map((o) => enrichOfferRecord(o));
+
+    // 0. Domain filtering (food_human, home_cleaning, kitchen_cookware, personal_care, pet_care)
+    if (query.domain && typeof query.domain === 'string' && query.domain.trim()) {
+      const dom = query.domain.trim();
+      filtered = filtered.filter((o) => o.domain === dom);
+    }
 
     // 1. Store filtering (supports exact ID and rapallo- prefix alias)
     if (query.storeId && typeof query.storeId === 'string' && query.storeId.trim()) {
