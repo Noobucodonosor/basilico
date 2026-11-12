@@ -15,6 +15,7 @@ import PantryAndReceiptsView from './components/pantry/PantryAndReceiptsView.jsx
 import KitchenCareView from './components/kitchen/KitchenCareView.jsx';
 import RecipesAndRestaurantsView from './components/recipes/RecipesAndRestaurantsView.jsx';
 import PlannerAndShoppingView from './components/planner/PlannerAndShoppingView.jsx';
+import { Agentation } from 'agentation';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
 const DOMAIN_PILLS = [
@@ -699,6 +700,62 @@ export function App() {
         progress={syncProgress}
         onClose={() => setIsSyncModalOpen(false)}
       />
+
+      {/* Agentation Visual Point-to-Agent Toolbar (ADR-0014: active on localhost / local dev) */}
+      {typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+          <Agentation
+            appName={`Basilico (${activeRoom})`}
+            onAnnotationAdd={(annotation) => {
+              fetch('/api/agentation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  annotation: { ...annotation, url: window.location.href }
+                })
+              }).catch(() => {});
+            }}
+            onAnnotationUpdate={(annotation) => {
+              fetch('/api/agentation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  annotation: { ...annotation, url: window.location.href }
+                })
+              }).catch(() => {});
+            }}
+            onAnnotationDelete={(annotation) => {
+              if (annotation?.id) {
+                fetch(`/api/agentation/${encodeURIComponent(annotation.id)}`, {
+                  method: 'DELETE'
+                }).catch(() => {});
+              }
+            }}
+            onSubmit={(markdown, annotations) => {
+              fetch('/api/agentation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  markdown,
+                  url: window.location.href,
+                  annotations: (annotations || []).map((a) => ({
+                    ...a,
+                    url: a.url || window.location.href
+                  }))
+                })
+              })
+                .then((r) => (r.ok ? r.json() : null))
+                .then((res) => {
+                  const n = res?.pendingCount ?? annotations?.length ?? 0;
+                  setShoppingToast(
+                    `🎯 Inviate ${n} annotazioni visive all'Inbox Agente (scrivi "smaltisci inbox" in chat)`
+                  );
+                  setTimeout(() => setShoppingToast(''), 3500);
+                })
+                .catch(() => {});
+            }}
+          />
+        )}
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">

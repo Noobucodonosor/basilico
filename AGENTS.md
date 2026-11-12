@@ -39,21 +39,27 @@
 | [`server/services/offerService.js`](./server/services/offerService.js) | Motore di ricerca/filtro con normalizzazione accenti italiani, filtri categoria/catena e paginazione. |
 | [`src/App.jsx`](./src/App.jsx) | Shell applicativa React 19, sincronizzazione stato/URL e coordinamento componenti UI. |
 | [`src/components/FlyerModal.jsx`](./src/components/FlyerModal.jsx) | Visualizzatore volantini nativo `<dialog>` con carosello CSS Scroll Snap e controlli touch/tastiera. |
+| [`specs/`](./specs/README.md) | **Living Specs** (1 pagina umana per ciascuna delle 6 Stanze: `01-negozi.spec.md` .. `06-pianificatore.spec.md`). |
+| [`evals/run_evals.mjs`](./evals/run_evals.mjs) | **Domain & Common-Sense Evals Suite** (`npm run eval`) con scorecard quantitativa per le 6 Stanze. |
+| [`server/routes/agentation.js`](./server/routes/agentation.js) | Bridge REST per la toolbar visuale **Agentation** (`data/cache/agentation_inbox.json` & `.md`). |
+| [`scripts/board.mjs`](./scripts/board.mjs) | **Mission Control CLI** (`npm run board` / `npm run inbox`) sincronizzata con le 6 Room Issues GitHub (`#28`..`#33`). |
 | [`tests/`](./tests/) | Suite di test automatizzata a 5 Tier (`unit`, `integration`, `api`, `e2e`) eseguita con `node --test`. |
 
 ---
 
-## 3. Metodologia di Lavoro (ADR + GitHub Issues)
+## 3. Metodologia di Lavoro (ADR + Living Specs + Evals + Agentation)
 
 1. **Ogni decisione architetturale o di sicurezza** è documentata in un file `docs/adr/NNNN-titolo.md`.
-2. **Ogni task operativo** ha un codice univoco (`TASK-<MODULO>-XX`) censito sia nell'ADR di origine, sia in `docs/adr/README.md`, sia come **GitHub Issue**.
-3. **Priorità Standard:**
+2. **Living Specs (`specs/`):** Ogni Stanza ha un contratto umano di 1 pagina (`specs/01-negozi.spec.md` .. `06-pianificatore.spec.md`) collegato a una Issue permanente su GitHub (`#28`..`#33` con label `status:spec-review`, `status:agent-ready`, `status:taste-check`). Prima di modificare una Stanza, leggi sempre la sua spec (inclusa la sezione `## 4. Note & Cambiamenti Richiesti dal Regista`).
+3. **Visual Point-to-Agent Inbox (`Agentation`):** Quando l'utente annota elementi nel browser tramite `<Agentation />` (`localhost`), le annotazioni strutturate (selettore DOM, React component stack, URL stanza, commento) vengono salvate automaticamente in `data/cache/agentation_inbox.json` e `data/cache/agentation_inbox.md`. Quando l'utente chiede *"smaltisci inbox"*, leggi `data/cache/agentation_inbox.json`, applica le modifiche, verifica con `npm run eval` + `npm test`, e marca gli ID risolti (`POST /api/agentation/resolve` o helper).
+4. **Ogni task operativo** ha un codice univoco (`TASK-<MODULO>-XX`) censito sia nell'ADR di origine, sia in `docs/adr/README.md`, sia come **GitHub Issue**.
+5. **Priorità Standard:**
    - `P0-critical`: Sicurezza (path traversal, input clamping, secret protection), integrità del dataset seed/cache, bug bloccanti sui test E2E.
    - `P1-high`: Feature core (ingestion, ricerca accenti, API REST, UI responsive, flyer viewer).
    - `P2-medium`: Evoluzioni pianificate, ottimizzazioni UX/performance, moduli secondari.
-4. **Sviluppo & Commit Atomici:**
+6. **Sviluppo & Commit Atomici:**
    - Lavora su un `TASK-<MODULO>-XX` alla volta.
-   - Esegui sempre il **Verification Step** (test/check) previsto nella GitHub Issue prima di concludere.
+   - Esegui sempre `npm run eval` (100% Domain Evals) e `npm test` prima di concludere.
    - Usa messaggi di commit che referenziano il Task ID e chiudono automaticamente la Issue su GitHub:
      ```bash
      git commit -m "feat(TASK-XXX-01): descrizione sintetica della modifica (closes #N)"
@@ -86,6 +92,13 @@ npm run build
 
 # Esecuzione completa della suite di test (Unit, Integration, API, E2E)
 npm test
+
+# Scorecard automatica di dominio e buon senso sulle 6 Stanze (Eval-Driven Development)
+npm run eval
+
+# Mission Control CLI (stato 6 Stanze GitHub + Eval Score + Agentation Inbox)
+npm run board
+npm run inbox
 
 # Audit di sicurezza e conformità ADR pre-release
 python3 ~/.gemini/config/skills/adr-github-methodology/scripts/pre_release_check.py
