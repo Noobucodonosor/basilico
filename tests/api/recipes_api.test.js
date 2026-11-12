@@ -6,7 +6,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { createApp } from '../../server/index.js';
+import { recipeAndArbitrageService } from '../../server/services/recipeAndArbitrageService.js';
 
 function requestJson(server, method, reqPath, body = null) {
   return new Promise((resolve, reject) => {
@@ -44,10 +48,22 @@ function requestJson(server, method, reqPath, body = null) {
 }
 
 test('API /api/recipes — Catalog, 80/20 Solver, Cooking Session, Lab Notes & Custom Deconstruction', async (t) => {
+  const tmpLabPath = path.join(os.tmpdir(), `basilico-lab-test-${process.pid}-${Date.now()}.json`);
+  const origLabPath = recipeAndArbitrageService.labNotebookPath;
+  recipeAndArbitrageService.labNotebookPath = tmpLabPath;
+  recipeAndArbitrageService._labNotes = null;
+
   const app = createApp();
   const server = http.createServer(app);
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
-  t.after(() => server.close());
+  t.after(() => {
+    server.close();
+    recipeAndArbitrageService.labNotebookPath = origLabPath;
+    recipeAndArbitrageService._labNotes = null;
+    try {
+      if (fs.existsSync(tmpLabPath)) fs.unlinkSync(tmpLabPath);
+    } catch (_) {}
+  });
 
   // 1. GET /api/recipes
   const listRes = await requestJson(server, 'GET', '/api/recipes?limit=15&servings=2');

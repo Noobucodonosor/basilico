@@ -1,7 +1,16 @@
 import React, { useState, useMemo } from 'react';
 
+const SAMPLE_RECEIPT_TEXT =
+  'PASSATA MUTTI 700G 1,69\nTONNO RIO MARE 3X80G 3,99\nSCONTO SOCIO -0,50\nTOTALE EURO 5,18';
+
+const LOCAL_ARTISAN_SHOPS = [
+  { id: 'pescheria-locale-rapallo', name: '🐟 Pescheria / Mercato Rapallo' },
+  { id: 'macelleria-locale-rapallo', name: '🥩 Macelleria / Polleria Rapallo' },
+  { id: 'panificio-pastificio-rapallo', name: '🥖 Panificio / Pastificio Rapallo' }
+];
+
 export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
-  const [storeId, setStoreId] = useState('basko-rapallo-colombo');
+  const [storeId, setStoreId] = useState(() => stores[0]?.id || 'rapallo-basko-colombo');
   const [rawText, setRawText] = useState('');
   const [declaredTotal, setDeclaredTotal] = useState('6,58');
   const [lines, setLines] = useState([
@@ -12,6 +21,32 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
   const [discounts, setDiscounts] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+
+  const uniqueGdoStores = useMemo(() => {
+    const seen = new Set();
+    const list = [];
+    const base =
+      stores.length > 0
+        ? stores
+        : [
+            { id: 'rapallo-basko-colombo', name: 'Basko Rapallo (Corso Colombo)' },
+            { id: 'rapallo-coop-sciesa', name: 'Coop Rapallo (Via Sciesa)' },
+            { id: 'rapallo-gulliver-mameli', name: 'Gulliver Rapallo (Corso Mameli)' },
+            { id: 'rapallo-carrefour-assereto', name: 'Carrefour Market (Via Assereto)' },
+            { id: 'rapallo-tigota-italia', name: 'Tigotà Rapallo (Corso Italia)' }
+          ];
+    for (const s of base) {
+      if (!s?.id || seen.has(s.id)) continue;
+      seen.add(s.id);
+      list.push(s);
+    }
+    return list;
+  }, [stores]);
+
+  const uniqueArtisanShops = useMemo(() => {
+    const gdoIds = new Set(uniqueGdoStores.map((s) => s.id));
+    return LOCAL_ARTISAN_SHOPS.filter((s) => !gdoIds.has(s.id));
+  }, [uniqueGdoStores]);
 
   const toCents = (val) => {
     const n = parseFloat(String(val || '0').replace(',', '.'));
@@ -37,13 +72,16 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
 
   if (!isOpen) return null;
 
-  const handleParseRawText = async () => {
-    if (!rawText.trim()) return;
+  const handleParseRawText = async (overrideText = null) => {
+    const effectiveText = typeof overrideText === 'string' ? overrideText : (rawText.trim() ? rawText : SAMPLE_RECEIPT_TEXT);
+    if (!rawText.trim()) {
+      setRawText(effectiveText);
+    }
     try {
       const res = await fetch('/api/receipts/parse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawText, storeId })
+        body: JSON.stringify({ rawText: effectiveText, storeId })
       });
       const data = await res.json();
       if (res.ok && data.lines) {
@@ -150,19 +188,22 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
                 onChange={(e) => setStoreId(e.target.value)}
                 className="w-full text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white"
               >
-                <option value="basko-rapallo-colombo">Basko Rapallo (Corso Colombo)</option>
-                <option value="coop-rapallo-sciesa">Coop Rapallo (Via Sciesa)</option>
-                <option value="conad-city-mameli">Gulliver Rapallo (Corso Mameli)</option>
-                <option value="carrefour-market-assereto">Carrefour Market (Via Assereto)</option>
-                <option value="tigota-rapallo-liberta">Tigotà Rapallo (Corso Italia)</option>
-                <option value="pescheria-locale-rapallo">🐟 Pescheria / Mercato Rapallo</option>
-                <option value="macelleria-locale-rapallo">🥩 Macelleria / Polleria Rapallo</option>
-                <option value="panificio-pastificio-rapallo">🥖 Panificio / Pastificio Rapallo</option>
-                {stores.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
+                <optgroup label="Supermercati & Negozi Rapallo">
+                  {uniqueGdoStores.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </optgroup>
+                {uniqueArtisanShops.length > 0 && (
+                  <optgroup label="Botteghe & Mercato Locale Rapallo">
+                    {uniqueArtisanShops.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             </div>
 
@@ -181,21 +222,30 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
 
           {/* Optional OCR / Raw Text Paste Box */}
           <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-bold text-slate-700">
                 📋 Incolla testo scontrino (OCR / copia-incolla rapido)
               </span>
-              <button
-                type="button"
-                onClick={handleParseRawText}
-                className="px-2.5 py-1 text-xs font-bold bg-slate-800 text-white rounded-lg cursor-pointer"
-              >
-                Analizza righe →
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleParseRawText(SAMPLE_RECEIPT_TEXT)}
+                  className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg cursor-pointer"
+                >
+                  📄 Carica esempio
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleParseRawText()}
+                  className="px-2.5 py-1 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white rounded-lg cursor-pointer"
+                >
+                  Analizza righe →
+                </button>
+              </div>
             </div>
             <textarea
               rows={2}
-              placeholder={'PASSATA MUTTI 700G 1,69\nTONNO RIO MARE 3X80G 3,99\nSCONTO SOCIO -0,50\nTOTALE EURO 5,18'}
+              placeholder={SAMPLE_RECEIPT_TEXT}
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
               className="w-full text-xs font-mono border border-slate-300 rounded-lg p-2 bg-white"

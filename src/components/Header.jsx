@@ -24,18 +24,18 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-2 sm:gap-3">
-          {/* Logo & Rapallo Badge */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="text-2xl select-none" aria-hidden="true">🌿</span>
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-y-2 gap-x-2 sm:gap-3">
+          {/* Logo & Rapallo Badge (Row 1 Left on mobile, never clipped at 375px) */}
+          <div className="order-1 flex items-center gap-2 min-w-0 shrink-0">
+            <span className="text-xl sm:text-2xl select-none" aria-hidden="true">🌿</span>
             <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg text-emerald-800 tracking-tight truncate">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-extrabold text-base sm:text-lg text-emerald-800 tracking-tight whitespace-nowrap">
                   Basilico
                 </span>
                 {/* Rapallo Badge (always visible, complies with F10) */}
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 shrink-0">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-100 text-emerald-800 shrink-0">
                   Rapallo 16035
                 </span>
               </div>
@@ -45,42 +45,46 @@ export function Header({
             </div>
           </div>
 
-          {/* Right Actions: Profile selector, counter price, live status & mobile search toggle */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
-            {/* Active Dietary Profile Selector */}
-            {profiles.length > 0 && onChangeProfile && (
-              <div className="flex items-center">
-                <label htmlFor="active-profile-select" className="sr-only">
-                  Profilo Alimentare Attivo
-                </label>
-                <select
-                  id="active-profile-select"
-                  value={activeProfileId}
-                  onChange={(e) => onChangeProfile(e.target.value)}
-                  className="text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[155px] sm:max-w-[280px] truncate"
-                  title="Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)"
-                >
-                  {profiles.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      👤 {p.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+          {/* Profile Selector & Mobile Counter Price (Row 2 full-width on <640px, inline on >=640px) */}
+          {(profiles.length > 0 || onOpenCounterPriceModal) && (
+            <div className="order-3 sm:order-2 w-full sm:w-auto flex items-center gap-2 sm:ml-auto">
+              {profiles.length > 0 && onChangeProfile && (
+                <div className="flex-1 sm:flex-initial min-w-0">
+                  <label htmlFor="active-profile-select" className="sr-only">
+                    Profilo Alimentare Attivo
+                  </label>
+                  <select
+                    id="active-profile-select"
+                    value={activeProfileId}
+                    onChange={(e) => onChangeProfile(e.target.value)}
+                    className="w-full sm:w-auto text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer sm:max-w-[250px] truncate"
+                    title="Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)"
+                  >
+                    {profiles.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        👤 {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-            {/* Quick Counter Price Button */}
-            {onOpenCounterPriceModal && (
-              <button
-                type="button"
-                onClick={onOpenCounterPriceModal}
-                className="hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer"
-                title="Registra un prezzo visto al banco in pescheria, macelleria o scaffale"
-              >
-                <span aria-hidden="true">🏷️</span>
-                <span>Prezzo al banco</span>
-              </button>
-            )}
+              {onOpenCounterPriceModal && (
+                <button
+                  type="button"
+                  onClick={onOpenCounterPriceModal}
+                  className="inline-flex sm:hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer shrink-0"
+                  title="Registra un prezzo visto al banco in pescheria, macelleria o scaffale"
+                >
+                  <span aria-hidden="true">🏷️</span>
+                  <span>Prezzo al banco</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Right Actions: Shopping list, live status, sync & mobile search toggle */}
+          <div className="order-2 sm:order-3 flex items-center gap-1.5 sm:gap-2 shrink-0">
 
             {/* Live Smart Shopping List Shortcut */}
             {onOpenShoppingList && (

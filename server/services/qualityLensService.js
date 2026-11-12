@@ -148,21 +148,38 @@ export function evaluateQualityLens(item = {}) {
     // Paper goods, food wraps, trash bags, textiles, apparel, toys & home bazar:
     // intentionally receive NO fake chemical pH spec or cookware badge!
   } else if (domain === 'kitchen_cookware') {
-    // Domain C: Cookware & Appliances thermodynamics
-    const isInductionReady = /\b(induzione|induction|inox|acciaio|ghisa)\b/i.test(text);
-    const isNonStick = /\b(antiaderente|teflon|ptfe|mineralia|titanium|granit\w*|petra)\b/i.test(text);
-    technicalSpec = {
-      material: isNonStick ? 'Alluminio rivestito Antiaderente (PTFE/Minerale)' : 'Acciaio Inox / Metallo',
-      inductionCompatible: isInductionReady,
-      maxTempCelsius: isNonStick ? 230 : 280,
-      careRule: isNonStick
-        ? 'Evitare shock termico (mai acqua fredda su padella calda) e usare solo spugna morbida + utensili in legno/silicone'
-        : 'Riscaldare gradualmente; per aloni minerali usare acido citrico o aceto'
-    };
-    badges.push({
-      label: isInductionReady ? 'Compatibile Induzione & Gas' : 'Verificare fondo ferromagnetico per Induzione',
-      tone: isInductionReady ? 'emerald' : 'amber'
-    });
+    // Domain C: Distinguish actual stovetop cookware from built-in/freestanding kitchen appliances & knives
+    const isStovetopCookware =
+      /\b(padell\w*|pentol\w*|casseruol\w*|tegame|wok\b|bistecchiera|rostiera|crepier\w*|moka\b|caffettiera|batteria\s+di\s+pentole)\b/i.test(text);
+
+    if (isStovetopCookware) {
+      const isInductionReady = /\b(induzione|induction|inox|acciaio|ghisa)\b/i.test(text);
+      const isNonStick = /\b(antiaderente|teflon|ptfe|mineralia|titanium|granit\w*|petra|stone)\b/i.test(text);
+      technicalSpec = {
+        material: isNonStick ? 'Alluminio rivestito Antiaderente (PTFE/Minerale)' : 'Acciaio Inox / Metallo',
+        inductionCompatible: isInductionReady,
+        maxTempCelsius: isNonStick ? 230 : 280,
+        careRule: isNonStick
+          ? 'Evitare shock termico (mai acqua fredda su padella calda) e usare solo spugna morbida + utensili in legno/silicone'
+          : 'Riscaldare gradualmente; per aloni minerali usare acido citrico o aceto'
+      };
+      badges.push({
+        label: isInductionReady ? 'Compatibile Induzione & Gas' : 'Verificare fondo ferromagnetico per Induzione',
+        tone: isInductionReady ? 'emerald' : 'amber'
+      });
+    } else if (/\b(piano\s+(?:cottura\s+)?(?:a\s+|ad\s+)?induzione|combilnduction|combiinduction|km\d{4})\b/i.test(text)) {
+      badges.push({ label: 'Piano Cottura a Induzione Elettromagnetica (~90% efficienza)', tone: 'emerald' });
+    } else if (/\b(piano\s+(?:a\s+)?gas|piano\s+cottura\s+misto|pcnr\d+|gmr\d+)\b/i.test(text)) {
+      badges.push({ label: 'Piano Cottura a Gas / Fiamma Diretta', tone: 'sky' });
+    } else if (/\b(lavastoviglie|washlens|smv\d+|gi\d{4}|g\d{4}scvi)\b/i.test(text)) {
+      badges.push({ label: 'Lavastoviglie — Usare ciclo eco + sale/brillantante', tone: 'sky' });
+    } else if (/\b(forno|microonde|steambake|steamcrisp|pirolitic\w*|h\d{4}b)\b/i.test(text)) {
+      badges.push({ label: /\bpirolitic\w*\b/i.test(text) ? 'Forno Pirolitico Autopulente (480°C)' : 'Forno / Cottura Termoventilata', tone: 'sky' });
+    } else if (/\b(frigorifero|congelatore|no\s+frost|less\s+frost|combinato)\b/i.test(text)) {
+      badges.push({ label: 'Catena del Freddo — Conservazione Freschi (+4°C / -18°C)', tone: 'emerald' });
+    } else if (/\b(coltell\w*|affilator\w*|mezzaluna)\b/i.test(text)) {
+      badges.push({ label: 'Coltelleria — Lavare a mano per preservare il filo', tone: 'amber' });
+    }
   }
 
   return {

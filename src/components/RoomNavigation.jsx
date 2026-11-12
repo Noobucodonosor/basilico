@@ -55,10 +55,10 @@ export function RoomNavigation({ activeRoom, onSelectRoom }) {
   return (
     <nav
       aria-label="Navigazione 6 Stanze Principali di Basilico"
-      className="bg-slate-900 text-white border-b border-slate-800 sticky top-16 z-20 shadow-xs"
+      className="bg-slate-900 text-white border-b border-slate-800 sm:sticky sm:top-16 z-20 shadow-xs relative"
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-1.5 overflow-x-auto py-2 no-scrollbar">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative">
+        <div className="flex items-center gap-1.5 overflow-x-auto py-2 pr-8 lg:pr-0 no-scrollbar">
           {BASILICO_ROOMS.map((room) => {
             const isActive = activeRoom === room.id;
             return (
@@ -79,6 +79,10 @@ export function RoomNavigation({ activeRoom, onSelectRoom }) {
             );
           })}
         </div>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none lg:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-slate-900 via-slate-900/70 to-transparent"
+        />
       </div>
     </nav>
   );

@@ -143,7 +143,7 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 self-end sm:self-center">
+          <div className="flex flex-wrap items-center justify-end gap-2 self-stretch sm:self-center">
             <select
               aria-label="Seleziona Piano Cottura"
               value={heatSource}
@@ -174,9 +174,9 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg cursor-pointer"
+              className="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg cursor-pointer whitespace-nowrap"
             >
-              ✕ Chiudi
+              ✕ Esci dai Fornelli
             </button>
           </div>
         </div>
@@ -269,7 +269,7 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
             {/* Step-by-Step Scientific Cooking Timeline */}
             <section className="space-y-4">
               <h3 className="text-sm font-extrabold text-slate-900">
-                🔬 2. Sequenza Termica & Sensoriale (*Harvard Science & Cooking*)
+                🔬 2. Sequenza Termica &amp; Sensoriale (<em className="italic">Harvard Science &amp; Cooking</em>)
               </h3>
               <div className="space-y-4">
                 {session.scientificSteps.map((st) => {

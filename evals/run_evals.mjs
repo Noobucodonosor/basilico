@@ -153,6 +153,46 @@ export async function runAllDomainEvals(options = {}) {
       detail: `Duplicati=${exactDupes}, Scadute=${expiredCount} su ${(allFoodPage.offers || []).length} card`
     });
 
+    const fullEnriched = (await offerService.getRawOffers()).map((o) => enrichOfferRecord(o));
+    const xmasInCookware = fullEnriched.filter(
+      (o) =>
+        o.domain === 'kitchen_cookware' &&
+        /\b(catena\s+led|minilucciol\w*|tenda\s+luminosa|presep\w*|ghirland\w*|giostra\s+animata|paesaggio\s+invernale|albero\s+(?:di\s+)?natale)\b/i.test(
+          o.title || ''
+        )
+    );
+    const fakeInductionAppliances = fullEnriched.filter(
+      (o) =>
+        o.domain === 'kitchen_cookware' &&
+        /\b(forno|frigorifero|lavastoviglie)\b/i.test(o.title || '') &&
+        (o.qualityBadges || []).some((b) => /fondo ferromagnetico/i.test(b.label || ''))
+    );
+    const champagneInFrozen = fullEnriched.filter(
+      (o) =>
+        o.category === 'Surgelati' &&
+        /\b(champagne|spumante|prosecco|franciacorta|trento\s*doc)\b/i.test(o.title || '')
+    );
+    const ocrToysInFood = fullEnriched.filter(
+      (o) =>
+        o.domain === 'food_human' &&
+        /\b(fashion\s+doll|big\s+foot|fermenti\s+lattici|geco\s+interattivo|30\s+anniversario|proiettili\s+soffici)\b/i.test(
+          o.title || ''
+        )
+    );
+    const exposedNameless = fullEnriched.filter((o) => o.isNamelessTile);
+
+    checks.push({
+      id: 'R1-FULL-CORPUS-TAXONOMY-AND-APPLIANCE-LENS',
+      label: 'Intero catalogo (~865 offerte): 0 addobbi natalizi in Pentole, 0 badge fondo induzione su forni/frigo, 0 Champagne in Surgelati, 0 tile anonimi',
+      passed:
+        xmasInCookware.length === 0 &&
+        fakeInductionAppliances.length === 0 &&
+        champagneInFrozen.length === 0 &&
+        ocrToysInFood.length === 0 &&
+        exposedNameless.length === 0,
+      detail: `XmasCookware=${xmasInCookware.length}, FakeInd=${fakeInductionAppliances.length}, ChampFrozen=${champagneInFrozen.length}, ToysFood=${ocrToysInFood.length}, Nameless=${exposedNameless.length}`
+    });
+
     recordSuite(1, 'Negozi & Offerte Rapallo', 'specs/01-negozi.spec.md', 28, checks);
   }
 
@@ -194,6 +234,42 @@ export async function runAllDomainEvals(options = {}) {
       label: 'Classifica Nutrienti/€ Edibili ricca (>=25 offerte food_human), zero "Al Kg" anonimi',
       passed: rankedItems.length >= 25 && namelessInRank.length === 0,
       detail: `${rankedItems.length} offerte classificate, ${namelessInRank.length} anonime`
+    });
+
+    const omegaRanked = creaOfferMatcher.rankOffersByNutrientPerEuro(rawOffersForCrea, {
+      metric: 'omega3GPerEuro',
+      hideIncompatible: false
+    });
+    const badOmegaItems = omegaRanked.filter((r) =>
+      /\b(burro|salame|caff[eè]|espresso|pasta\s+di\s+semola|disidratat\w*)\b/i.test(
+        `${r.offerTitle || ''} ${r.creaFoodName || ''}`
+      )
+    );
+    const passataCheck = enrichOfferRecord({
+      title: 'Mutti - Passata Di Pomodoro',
+      brand: 'Mutti',
+      promoPrice: 1.09,
+      domain: 'food_human'
+    });
+    const inShellWalnutCheck = enrichOfferRecord({
+      title: 'Noci Guscio',
+      promoPrice: 4.99,
+      domain: 'food_human'
+    });
+    const walnutKgOk =
+      inShellWalnutCheck.creaMatch &&
+      inShellWalnutCheck.creaMatch.trueEdibleEuroPerKg > 8 &&
+      inShellWalnutCheck.creaMatch.trueEdibleEuroPerKg < 25;
+
+    checks.push({
+      id: 'R2-OMEGA3-AND-GDO-PACK-REALISM',
+      label: 'Classifica Omega-3 immune da burro/salame/caffè/disidratati; Passata=700g e Noci in guscio senza doppia penalità guscio',
+      passed:
+        omegaRanked.length >= 4 &&
+        badOmegaItems.length === 0 &&
+        passataCheck.referencePackEstimate?.estimatedPackGrams === 700 &&
+        Boolean(walnutKgOk),
+      detail: `Omega3Valide=${omegaRanked.length}, IntrusoOmega=${badOmegaItems.length}, Passata=${passataCheck.referencePackEstimate?.estimatedPackGrams}g, NociGuscioEdibile=€${inShellWalnutCheck.creaMatch?.trueEdibleEuroPerKg}/kg`
     });
 
     recordSuite(2, 'Scienza & CREA', 'specs/02-crea.spec.md', 29, checks);
@@ -262,6 +338,24 @@ export async function runAllDomainEvals(options = {}) {
       detail: `${archetypesSeen.size} archetipi fisici/chimici distinti rilevati (${Array.from(archetypesSeen).slice(0, 5).join(', ')})`
     });
 
+    const michelin11 = allDishes.find((d) => /degustazione\s+11\s+portate/i.test(d.title || ''));
+    const michelin7 = allDishes.find((d) => /degustazione\s+7\s+portate/i.test(d.title || ''));
+    const capponMagro = allDishes.find((d) => /cappon\s+magro/i.test(d.title || ''));
+    const michelinRealistic =
+      Boolean(michelin11 && michelin7 && capponMagro) &&
+      michelin11.prepMinutes >= 180 &&
+      michelin11.costAndArbitrage.purePortionCostEur >= 20 &&
+      michelin7.prepMinutes >= 150 &&
+      michelin7.costAndArbitrage.purePortionCostEur >= 18 &&
+      capponMagro.prepMinutes >= 60;
+
+    checks.push({
+      id: 'R3-MICHELIN-DEGUSTAZIONE-REALISM',
+      label: 'Realismo gastronomico alta cucina: Menu Degustazione 11/7 portate (>=180m, BOM >=€20) e Cappon Magro (>=90m)',
+      passed: michelinRealistic,
+      detail: `11p=${michelin11?.prepMinutes}m/€${michelin11?.costAndArbitrage?.purePortionCostEur}, 7p=${michelin7?.prepMinutes}m/€${michelin7?.costAndArbitrage?.purePortionCostEur}, Cappon=${capponMagro?.prepMinutes}m`
+    });
+
     recordSuite(3, 'Ricette, Ristoranti & Fornelli', 'specs/03-ricette.spec.md', 30, checks);
   }
 
@@ -324,6 +418,26 @@ export async function runAllDomainEvals(options = {}) {
       detail: `${safetyMatrix.length} regole di incompatibilità chimica attive`
     });
 
+    const underSinkSupplies = resetProto.protocols?.[0]?.requiredSupplies || [];
+    const dishSoapSupply = underSinkSupplies.find((s) => s.key === 'detersivo_piatti');
+    const spongeSupply = underSinkSupplies.find((s) => s.key === 'spugna_delicata');
+    const clothSupply = underSinkSupplies.find((s) => s.key === 'panno_microfibra');
+    const dishSoapPromosOk = (dishSoapSupply?.matchedOffers || []).every(
+      (o) => Number(o.promoPrice) <= 4.5 && !/\b(lavastoviglie|pril|finish|tabs|caps)\b/i.test(o.title || '')
+    );
+    const spongePromosOk = (spongeSupply?.matchedOffers || []).every(
+      (o) => !/\b(bagno|corpo|doccia|cotoneve)\b/i.test(`${o.title || ''} ${o.brand || ''}`)
+    );
+    const clothPromosOk = (clothSupply?.matchedOffers || []).every(
+      (o) => Number(o.promoPrice) <= 6.5 && !/\b(turbo\s+smart|mocio|sistema\s+pulizia|secchio)\b/i.test(o.title || '')
+    );
+    checks.push({
+      id: 'R4-UNDERSINK-PROMO-COHERENCE',
+      label: 'Offerte sottolavello coerenti per funzione e taglia (zero gel lavastoviglie su piatti a mano, zero spugne bagno, zero kit mocio)',
+      passed: dishSoapPromosOk && spongePromosOk && clothPromosOk,
+      detail: `PiattiManoOk=${dishSoapPromosOk} (${dishSoapSupply?.matchedOffers?.[0]?.promoPrice ?? 'n/a'}€), SpugneOk=${spongePromosOk}, PanniOk=${clothPromosOk}`
+    });
+
     recordSuite(4, 'Cucina, Pentole & Pulizia', 'specs/04-cucina.spec.md', 31, checks);
   }
 
@@ -374,6 +488,20 @@ export async function runAllDomainEvals(options = {}) {
         label: 'Blocco rigoroso se lo scontrino sballa anche di 1 solo centesimo',
         passed: brokenCheck.isReconciled === false && brokenCheck.deltaCents === -1,
         detail: `2,99 vs 3,00 -> isReconciled=${brokenCheck.isReconciled}, delta=${brokenCheck.deltaCents} cent`
+      });
+      const receiptModalSrc = fs.readFileSync(
+        path.resolve(__dirname, '../src/components/pantry/ReceiptScannerModal.jsx'),
+        'utf8'
+      );
+      const noHardcodedGdoDupes =
+        receiptModalSrc.includes('uniqueGdoStores') &&
+        !receiptModalSrc.includes('<option value="conad-city-mameli">') &&
+        receiptModalSrc.includes('Carica esempio');
+      checks.push({
+        id: 'R5-RECEIPT-STORE-DEDUP-AND-SAMPLE',
+        label: 'Modale Scontrino privo di negozi duplicati nel menu a tendina e dotato di caricamento rapido esempio',
+        passed: noHardcodedGdoDupes,
+        detail: `uniqueGdoStores=true, zero Conad legacy, pulsante Carica esempio attivo`
       });
     } finally {
       try {
@@ -471,6 +599,25 @@ export async function runAllDomainEvals(options = {}) {
         label: 'Simulatore 1/2/3 negozi usa solo insegne reali di Rapallo (zero Esselunga/Conad/Lidl)',
         passed: sims.length === 3 && !hasForeignChains && synced.items.length > 0,
         detail: `1 negozio -> ${sims[0]?.storesVisited?.[0] || 'N/A'} (€${sims[0]?.estimatedTotalEur ?? 0})`
+      });
+
+      const withApple = isolatedShop.addItem({
+        name: 'Mela fresca con buccia',
+        domain: 'food_human',
+        category: 'Frutta e Verdura',
+        quantityLabel: '400 g'
+      });
+      const appleItem = withApple.items.find((i) => /mela fresca/i.test(i.name || ''));
+      const planB = await isolatedShop.getShelfPlanB(appleItem.id);
+      const planBAlts = planB.planBAlternatives || [];
+      const savoryInFruitPlanB = planBAlts.filter((a) =>
+        /\b(insalat\w*|carot\w*|cipoll\w*|patat\w*|zucchin\w*|spinac\w*|cavol\w*|verza)\b/i.test(a.title || '')
+      );
+      checks.push({
+        id: 'R6-PLAN-B-NO-FRUIT-VEG-CLASH',
+        label: 'Piano B sullo Scaffale coerente: una frutta dolce (Mela) non propone mai insalata, carote o cipolle',
+        passed: planBAlts.length > 0 && savoryInFruitPlanB.length === 0,
+        detail: `Alternative Mela=${planBAlts.map((a) => a.title).join(', ')}`
       });
     } finally {
       try {

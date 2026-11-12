@@ -515,17 +515,29 @@ export function App() {
               </div>
             </section>
 
-            {/* Category Filter Pills */}
-            <section>
-              <CategoryFilters
-                categories={visibleCategoriesForDomain}
-                selectedCategory={selectedCategory}
-                onToggleCategory={handleToggleCategory}
-                categoryCounts={facets?.categories || {}}
-                activeFilterCount={activeFilterCount}
-                onClearFilters={handleClearFilters}
-              />
-            </section>
+            {/* Category Filter Pills (shown when multiple food/department categories apply; hidden on single-bucket non-food domains to avoid redundant pills) */}
+            {(!visibleCategoriesForDomain || visibleCategoriesForDomain.length > 1) ? (
+              <section>
+                <CategoryFilters
+                  categories={visibleCategoriesForDomain}
+                  selectedCategory={selectedCategory}
+                  onToggleCategory={handleToggleCategory}
+                  categoryCounts={facets?.categories || {}}
+                  activeFilterCount={activeFilterCount}
+                  onClearFilters={handleClearFilters}
+                />
+              </section>
+            ) : activeFilterCount > 0 ? (
+              <section className="flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer"
+                >
+                  ✕ Azzera filtri ({activeFilterCount})
+                </button>
+              </section>
+            ) : null}
 
             {/* Offer Grid or Empty State */}
             <section aria-label="Offerte promozionali">

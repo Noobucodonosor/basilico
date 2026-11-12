@@ -316,9 +316,22 @@ export class ShoppingListService {
           rationale =
             'Stessa famiglia gastronomica/nutrizionale in offerta oggi a Rapallo — equivalente diretto per le ricette del piano.';
         } else if (candAisle === itemAisle) {
-          tier = 3;
-          score = 30;
-          rationale = 'Alternativa dello stesso reparto disponibile oggi nei supermercati di Rapallo.';
+          // Guardrail: never cross-substitute sweet fresh fruit with savory vegetables/salads in ortofrutta,
+          // nor sweet biscuits/confectionery with savory pasta/legumes in dispensa_secca!
+          const isFruitVegClash =
+            (itemSpec.family === 'fresh_fruit' && candSpec.family === 'fresh_vegetables') ||
+            (itemSpec.family === 'fresh_vegetables' && candSpec.family === 'fresh_fruit') ||
+            (itemSpec.family === 'fresh_fruit' && candSpec.family === 'citrus' && /\b(insalat|carot|cipoll|patat|zucchin)\b/i.test(o.title)) ||
+            (itemSpec.family === 'fresh_fruit' && candSpec.family === 'default');
+          const isSweetSavoryPantryClash =
+            ['dry_pasta_grains', 'legumes_tomato', 'oil_fats'].includes(itemSpec.family) &&
+            (o.category === 'Colazione e Dolci' || candSpec.family === 'honey_sweet');
+
+          if (!isFruitVegClash && !isSweetSavoryPantryClash) {
+            tier = 3;
+            score = 30;
+            rationale = 'Alternativa compatibile dello stesso reparto disponibile oggi nei supermercati di Rapallo.';
+          }
         }
       } else {
         const offNorm = normalizeSearchToken(`${o.title} ${o.brand || ''}`);

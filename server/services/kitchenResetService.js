@@ -146,11 +146,31 @@ export const CHEMICAL_SAFETY_MATRIX = [
 ];
 
 const CLEANING_FUNCTION_MATCHERS = {
-  spugna_delicata: /\b(spugn\w*|abrasiv\w*\s+delicat\w*|scotch\s*brite|spontex|arix)\b/i,
-  detersivo_piatti: /\b(detersiv\w*\s+(?:per\s+)?(?:piatti|stoviglie)|lavastoviglie|svelto|nelsen|fairy|pril|finish|sole\s+.*stoviglie)\b/i,
-  anticalcare_citrico: /\b(anticalcare|acido\s+citrico|viakal|disincrostant\w*|winni['’]?s\s+.*bagno|quasar)\b/i,
-  sgrassatore_alcalino: /\b(sgrassator\w*|chanteclair|cif\b|fornet|mastro\s+lindo|ajax|pulitore)\b/i,
-  panno_microfibra: /\b(microfibra|pann[oi]|vileda|asciugatutto|tutto\s*-?\s*asciugatutto|scottex|carta\s+casa)\b/i
+  spugna_delicata: {
+    include: /\b(spugn\w*|abrasiv\w*\s+delicat\w*|scotch\s*brite|spontex|arix)\b/i,
+    exclude: /\b(bagno|corpo|doccia|cotoneve|esfoliant\w*|pagliett\w*|inox|acciaio)\b/i,
+    maxPromoPrice: 4.50
+  },
+  detersivo_piatti: {
+    include: /\b(detersiv\w*\s+(?:per\s+)?(?:piatti|stoviglie)|svelto\b|nelsen\b|fairy\s+(?:piatti|liquido|limone)|winni['’]?s\s+piatti|sole\s+.*piatti)\b/i,
+    exclude: /\b(lavastoviglie|tabs|caps|capsule|gel\s+lavastoviglie|brillantante|cura\s*lavastoviglie|pril\b|finish\b)\b/i,
+    maxPromoPrice: 4.20
+  },
+  anticalcare_citrico: {
+    include: /\b(anticalcare|acido\s+citrico|viakal|disincrostant\w*|winni['’]?s\s+.*bagno|quasar\s+bagno)\b/i,
+    exclude: /\b(lavastoviglie|curalavatrice)\b/i,
+    maxPromoPrice: 5.50
+  },
+  sgrassatore_alcalino: {
+    include: /\b(sgrassator\w*|chanteclair|cif\b|fornet|mastro\s+lindo|ajax|pulitore)\b/i,
+    exclude: /\b(lavatrice|ammorbident\w*|bucato)\b/i,
+    maxPromoPrice: 5.50
+  },
+  panno_microfibra: {
+    include: /\b(microfibra|pann[oi]|vileda\s+(?:pann\w*|microfibra|attiva)|asciugatutto|tutto\s*-?\s*asciugatutto|scottex|carta\s+casa)\b/i,
+    exclude: /\b(sistema\s+pulizia|turbo\s+smart|mocio|scopa|secchio|pavimenti\s+liquido)\b/i,
+    maxPromoPrice: 6.50
+  }
 };
 
 const GENUINE_KITCHEN_CLEANING_OFFER_REGEX =
@@ -182,19 +202,24 @@ export class KitchenResetService {
   }
 
   matchOffersForSupplyKey(key, activeCleaningOffers = []) {
-    const rx = CLEANING_FUNCTION_MATCHERS[key];
-    if (!rx) return [];
-    return activeCleaningOffers
-      .filter((off) => rx.test(`${off.title || ''} ${off.brand || ''}`))
-      .slice(0, 3)
-      .map((off) => ({
-        id: off.id,
-        title: off.title,
-        brand: off.brand || null,
-        storeId: off.storeId,
-        storeName: off.storeName || off.chainId,
-        promoPrice: off.promoPrice
-      }));
+    const spec = CLEANING_FUNCTION_MATCHERS[key];
+    if (!spec) return [];
+    const matched = activeCleaningOffers.filter((off) => {
+      const txt = `${off.title || ''} ${off.brand || ''}`;
+      if (!spec.include.test(txt)) return false;
+      if (spec.exclude && spec.exclude.test(txt)) return false;
+      if (spec.maxPromoPrice && Number(off.promoPrice) > spec.maxPromoPrice) return false;
+      return true;
+    });
+    matched.sort((a, b) => (Number(a.promoPrice) || 99) - (Number(b.promoPrice) || 99));
+    return matched.slice(0, 3).map((off) => ({
+      id: off.id,
+      title: off.title,
+      brand: off.brand || null,
+      storeId: off.storeId,
+      storeName: off.storeName || off.chainId,
+      promoPrice: off.promoPrice
+    }));
   }
 
   /**

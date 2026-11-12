@@ -20029,19 +20029,19 @@ function Header({
   const online = status ? status.isOnline !== false && status.dataSource !== "seed" : isOnline;
   const source = status?.dataSource || dataSource || "live";
   const isOpen = isMobileSearchOpen ?? mobileSearchOpen;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-16 gap-2 sm:gap-3", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5 min-w-0", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-2xl select-none", "aria-hidden": "true", children: "🌿" }),
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-y-2 gap-x-2 sm:gap-3", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "order-1 flex items-center gap-2 min-w-0 shrink-0", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl sm:text-2xl select-none", "aria-hidden": "true", children: "🌿" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col min-w-0", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-lg text-emerald-800 tracking-tight truncate", children: "Basilico" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 shrink-0", children: "Rapallo 16035" })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 sm:gap-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-base sm:text-lg text-emerald-800 tracking-tight whitespace-nowrap", children: "Basilico" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-100 text-emerald-800 shrink-0", children: "Rapallo 16035" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-slate-500 truncate hidden sm:block", children: activeStoreName || "Tutti i Supermercati" })
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 sm:gap-2.5", children: [
-      profiles.length > 0 && onChangeProfile && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center", children: [
+    (profiles.length > 0 || onOpenCounterPriceModal) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "order-3 sm:order-2 w-full sm:w-auto flex items-center gap-2 sm:ml-auto", children: [
+      profiles.length > 0 && onChangeProfile && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 sm:flex-initial min-w-0", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "active-profile-select", className: "sr-only", children: "Profilo Alimentare Attivo" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "select",
@@ -20049,7 +20049,7 @@ function Header({
             id: "active-profile-select",
             value: activeProfileId,
             onChange: (e) => onChangeProfile(e.target.value),
-            className: "text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[155px] sm:max-w-[280px] truncate",
+            className: "w-full sm:w-auto text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer sm:max-w-[250px] truncate",
             title: "Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)",
             children: profiles.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: p.id, children: [
               "👤 ",
@@ -20063,14 +20063,16 @@ function Header({
         {
           type: "button",
           onClick: onOpenCounterPriceModal,
-          className: "hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer",
+          className: "inline-flex sm:hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer shrink-0",
           title: "Registra un prezzo visto al banco in pescheria, macelleria o scaffale",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: "🏷️" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Prezzo al banco" })
           ]
         }
-      ),
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "order-2 sm:order-3 flex items-center gap-1.5 sm:gap-2 shrink-0", children: [
       onOpenShoppingList && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
@@ -20235,24 +20237,33 @@ function RoomNavigation({ activeRoom, onSelectRoom }) {
     "nav",
     {
       "aria-label": "Navigazione 6 Stanze Principali di Basilico",
-      className: "bg-slate-900 text-white border-b border-slate-800 sticky top-16 z-20 shadow-xs",
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 overflow-x-auto py-2 no-scrollbar", children: BASILICO_ROOMS.map((room) => {
-        const isActive = activeRoom === room.id;
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "button",
+      className: "bg-slate-900 text-white border-b border-slate-800 sm:sticky sm:top-16 z-20 shadow-xs relative",
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 overflow-x-auto py-2 pr-8 lg:pr-0 no-scrollbar", children: BASILICO_ROOMS.map((room) => {
+          const isActive = activeRoom === room.id;
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => onSelectRoom(room.id),
+              title: room.subtitle,
+              className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${isActive ? "bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-400" : "text-slate-300 hover:text-white hover:bg-slate-800"}`,
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: room.icon }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: room.shortTitle })
+              ]
+            },
+            room.id
+          );
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
           {
-            type: "button",
-            onClick: () => onSelectRoom(room.id),
-            title: room.subtitle,
-            className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${isActive ? "bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-400" : "text-slate-300 hover:text-white hover:bg-slate-800"}`,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: room.icon }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: room.shortTitle })
-            ]
-          },
-          room.id
-        );
-      }) }) })
+            "aria-hidden": "true",
+            className: "pointer-events-none lg:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-slate-900 via-slate-900/70 to-transparent"
+          }
+        )
+      ] })
     }
   );
 }
@@ -22324,7 +22335,8 @@ const PHYSIOLOGICAL_PRESETS = [
 ];
 const NPE_METRICS = [
   { id: "proteinGPerEuro", label: "Grammi di Proteine per 1 €", unit: "g prot / €" },
-  { id: "omega3GPerEuro", label: "Omega-3 (g) per 1 €", unit: "g Ω3 / €" },
+  { id: "epaDhaGPerEuro", label: "Omega-3 Marini EPA+DHA (g) per 1 €", unit: "g EPA+DHA / €" },
+  { id: "omega3GPerEuro", label: "Omega-3 Totali ALA+EPA+DHA (g) per 1 €", unit: "g Ω3 / €" },
   { id: "kcalPerEuro", label: "Energia (kcal) per 1 €", unit: "kcal / €" },
   { id: "ironMgPerEuro", label: "Ferro (mg) per 1 €", unit: "mg Fe / €" },
   { id: "potassiumMgPerEuro", label: "Potassio (mg) per 1 €", unit: "mg K / €" },
@@ -22831,8 +22843,14 @@ function CreaExplorerView({
   ] });
 }
 
+const SAMPLE_RECEIPT_TEXT = "PASSATA MUTTI 700G 1,69\nTONNO RIO MARE 3X80G 3,99\nSCONTO SOCIO -0,50\nTOTALE EURO 5,18";
+const LOCAL_ARTISAN_SHOPS = [
+  { id: "pescheria-locale-rapallo", name: "🐟 Pescheria / Mercato Rapallo" },
+  { id: "macelleria-locale-rapallo", name: "🥩 Macelleria / Polleria Rapallo" },
+  { id: "panificio-pastificio-rapallo", name: "🥖 Panificio / Pastificio Rapallo" }
+];
 function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
-  const [storeId, setStoreId] = reactExports.useState("basko-rapallo-colombo");
+  const [storeId, setStoreId] = reactExports.useState(() => stores[0]?.id || "rapallo-basko-colombo");
   const [rawText, setRawText] = reactExports.useState("");
   const [declaredTotal, setDeclaredTotal] = reactExports.useState("6,58");
   const [lines, setLines] = reactExports.useState([
@@ -22843,6 +22861,27 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
   const [discounts, setDiscounts] = reactExports.useState([]);
   const [submitting, setSubmitting] = reactExports.useState(false);
   const [error, setError] = reactExports.useState(null);
+  const uniqueGdoStores = reactExports.useMemo(() => {
+    const seen = /* @__PURE__ */ new Set();
+    const list = [];
+    const base = stores.length > 0 ? stores : [
+      { id: "rapallo-basko-colombo", name: "Basko Rapallo (Corso Colombo)" },
+      { id: "rapallo-coop-sciesa", name: "Coop Rapallo (Via Sciesa)" },
+      { id: "rapallo-gulliver-mameli", name: "Gulliver Rapallo (Corso Mameli)" },
+      { id: "rapallo-carrefour-assereto", name: "Carrefour Market (Via Assereto)" },
+      { id: "rapallo-tigota-italia", name: "Tigotà Rapallo (Corso Italia)" }
+    ];
+    for (const s of base) {
+      if (!s?.id || seen.has(s.id)) continue;
+      seen.add(s.id);
+      list.push(s);
+    }
+    return list;
+  }, [stores]);
+  const uniqueArtisanShops = reactExports.useMemo(() => {
+    const gdoIds = new Set(uniqueGdoStores.map((s) => s.id));
+    return LOCAL_ARTISAN_SHOPS.filter((s) => !gdoIds.has(s.id));
+  }, [uniqueGdoStores]);
   const toCents = (val) => {
     const n = parseFloat(String(val || "0").replace(",", "."));
     return Number.isFinite(n) ? Math.round(n * 100) : 0;
@@ -22864,13 +22903,16 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
     };
   }, [lines, discounts, declaredTotal]);
   if (!isOpen) return null;
-  const handleParseRawText = async () => {
-    if (!rawText.trim()) return;
+  const handleParseRawText = async (overrideText = null) => {
+    const effectiveText = typeof overrideText === "string" ? overrideText : rawText.trim() ? rawText : SAMPLE_RECEIPT_TEXT;
+    if (!rawText.trim()) {
+      setRawText(effectiveText);
+    }
     try {
       const res = await fetch("/api/receipts/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawText, storeId })
+        body: JSON.stringify({ rawText: effectiveText, storeId })
       });
       const data = await res.json();
       if (res.ok && data.lines) {
@@ -22968,15 +23010,8 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
                   onChange: (e) => setStoreId(e.target.value),
                   className: "w-full text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white",
                   children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "basko-rapallo-colombo", children: "Basko Rapallo (Corso Colombo)" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "coop-rapallo-sciesa", children: "Coop Rapallo (Via Sciesa)" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "conad-city-mameli", children: "Gulliver Rapallo (Corso Mameli)" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "carrefour-market-assereto", children: "Carrefour Market (Via Assereto)" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "tigota-rapallo-liberta", children: "Tigotà Rapallo (Corso Italia)" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "pescheria-locale-rapallo", children: "🐟 Pescheria / Mercato Rapallo" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "macelleria-locale-rapallo", children: "🥩 Macelleria / Polleria Rapallo" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "panificio-pastificio-rapallo", children: "🥖 Panificio / Pastificio Rapallo" }),
-                    stores.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s.id, children: s.name }, s.id))
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("optgroup", { label: "Supermercati & Negozi Rapallo", children: uniqueGdoStores.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s.id, children: s.name }, s.id)) }),
+                    uniqueArtisanShops.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("optgroup", { label: "Botteghe & Mercato Locale Rapallo", children: uniqueArtisanShops.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s.id, children: s.name }, s.id)) })
                   ]
                 }
               )
@@ -22995,23 +23030,34 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-700", children: "📋 Incolla testo scontrino (OCR / copia-incolla rapido)" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  type: "button",
-                  onClick: handleParseRawText,
-                  className: "px-2.5 py-1 text-xs font-bold bg-slate-800 text-white rounded-lg cursor-pointer",
-                  children: "Analizza righe →"
-                }
-              )
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => handleParseRawText(SAMPLE_RECEIPT_TEXT),
+                    className: "px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg cursor-pointer",
+                    children: "📄 Carica esempio"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => handleParseRawText(),
+                    className: "px-2.5 py-1 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white rounded-lg cursor-pointer",
+                    children: "Analizza righe →"
+                  }
+                )
+              ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "textarea",
               {
                 rows: 2,
-                placeholder: "PASSATA MUTTI 700G 1,69\nTONNO RIO MARE 3X80G 3,99\nSCONTO SOCIO -0,50\nTOTALE EURO 5,18",
+                placeholder: SAMPLE_RECEIPT_TEXT,
                 value: rawText,
                 onChange: (e) => setRawText(e.target.value),
                 className: "w-full text-xs font-mono border border-slate-300 rounded-lg p-2 bg-white"
@@ -24198,7 +24244,7 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
                 session?.dish?.title || "Caricamento sessione scientifica..."
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 self-end sm:self-center", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2 self-stretch sm:self-center", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "select",
                 {
@@ -24233,8 +24279,8 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
                 {
                   type: "button",
                   onClick: onClose,
-                  className: "px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg cursor-pointer",
-                  children: "✕ Chiudi"
+                  className: "px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg cursor-pointer whitespace-nowrap",
+                  children: "✕ Esci dai Fornelli"
                 }
               )
             ] })
@@ -24328,7 +24374,11 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
               }) })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🔬 2. Sequenza Termica & Sensoriale (*Harvard Science & Cooking*)" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-extrabold text-slate-900", children: [
+                "🔬 2. Sequenza Termica & Sensoriale (",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("em", { className: "italic", children: "Harvard Science & Cooking" }),
+                ")"
+              ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: session.scientificSteps.map((st) => {
                 const timer = activeTimers[st.stepNumber] || {
                   remaining: st.durationSeconds,
@@ -24543,7 +24593,11 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-emerald-500 text-slate-950", children: "Stanza 3 · ADR-0011" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-emerald-300 font-semibold", children: "32 Ristoranti Reali del Tigullio • 234 Piatti • 1.134 Righe BOM Certificate CREA" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-xl sm:text-2xl font-extrabold tracking-tight", children: "🍽️ Ricette Base Single, Ristoranti del Tigullio, Arbitraggio Live & Fornelli (*Science & Cooking*)" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-xl sm:text-2xl font-extrabold tracking-tight", children: [
+          "🍽️ Ricette Base Single, Ristoranti del Tigullio, Arbitraggio Live & Fornelli (",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("em", { className: "italic font-semibold text-emerald-200", children: "Science & Cooking" }),
+          ")"
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs sm:text-sm text-slate-300 max-w-3xl", children: [
           "Confronta il prezzo al tavolo dei ristoranti di Rapallo, Santa Margherita, Portofino, Chiavari e Sestri Levante con il",
           /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: " Costo Porzione Pura" }),
@@ -24912,13 +24966,17 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                     children: isExpanded ? "▲ Chiudi BOM" : `🔬 Vedi BOM (${dish.bom.length} ingr.)`
                   }
                 ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "button",
                   {
                     type: "button",
                     onClick: () => setActiveCookingDishId(dish.id),
                     className: "px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer",
-                    children: "👨‍🍳 Avvia Modalità Fornelli (*Science & Cooking*)"
+                    children: [
+                      "👨‍🍳 Avvia Modalità Fornelli (",
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("em", { className: "italic", children: "Science & Cooking" }),
+                      ")"
+                    ]
                   }
                 )
               ] })
@@ -24970,17 +25028,29 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-sm text-slate-900", children: item.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-slate-600", children: [
-              "Presente in ",
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
-                item.dishFrequency,
-                " piatti"
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-slate-600 space-y-0.5", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                "Presente in ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                  item.dishFrequency,
+                  " piatti"
+                ] }),
+                " del catalogo • Totale sbloccati:",
+                " ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-emerald-700", children: [
+                  item.cumulativeUnlockedDishesCount,
+                  " ricette complete"
+                ] }),
+                item.newlyUnlockedDishesCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "ml-1 text-emerald-800 font-bold", children: [
+                  "(+",
+                  item.newlyUnlockedDishesCount,
+                  " dirette)"
+                ] })
               ] }),
-              " del catalogo • Sblocca cumulativamente",
-              " ",
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-emerald-700", children: [
-                item.cumulativeUnlockedDishesCount,
-                " ricette complete"
+              item.nearlyUnlockedDishesCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-indigo-700 font-medium", children: [
+                "↳ Porta altri ",
+                item.nearlyUnlockedDishesCount,
+                " piatti a 1 solo ingrediente dallo sblocco"
               ] })
             ] })
           ]
@@ -38785,7 +38855,7 @@ function App() {
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        !visibleCategoriesForDomain || visibleCategoriesForDomain.length > 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx("section", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           CategoryFilters,
           {
             categories: visibleCategoriesForDomain,
@@ -38795,7 +38865,19 @@ function App() {
             activeFilterCount,
             onClearFilters: handleClearFilters
           }
-        ) }),
+        ) }) : activeFilterCount > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "button",
+          {
+            type: "button",
+            onClick: handleClearFilters,
+            className: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer",
+            children: [
+              "✕ Azzera filtri (",
+              activeFilterCount,
+              ")"
+            ]
+          }
+        ) }) : null,
         /* @__PURE__ */ jsxRuntimeExports.jsx("section", { "aria-label": "Offerte promozionali", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-6", children: Array.from({ length: 8 }).map((_, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-4 h-80 animate-pulse flex flex-col gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-slate-200 rounded-lg aspect-square w-full" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-4 bg-slate-200 rounded w-3/4" }),
@@ -39015,4 +39097,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-B7nqhhXq.js.map
+//# sourceMappingURL=index-CDHPxI9K.js.map

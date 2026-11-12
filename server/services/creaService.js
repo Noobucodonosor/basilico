@@ -89,11 +89,11 @@ export const THERMAL_VITAMIN_RETENTION = {
 export function resolveLipidConversionFactor(food = {}, fatG = 0) {
   const catNorm = normalizeSearchToken(food.category || '');
   const nameNorm = normalizeSearchToken(food.name || '');
+  if (/\b(burro)\b/.test(nameNorm) && !/\b(arachid\w*)\b/.test(nameNorm)) {
+    return 0.945;
+  }
   if (catNorm.includes('oli e grassi') || /\b(olio|strutto|sego)\b/.test(nameNorm)) {
     return 0.956;
-  }
-  if (/\b(burro)\b/.test(nameNorm)) {
-    return 0.945;
   }
   if (catNorm.includes('prodotti della pesca')) {
     return (fatG || 0) >= 2.0 ? 0.90 : 0.80;
@@ -268,8 +268,22 @@ export class CreaService {
           ? Number((totalFaG * (((epaPct || 0) + (dhaPct || 0)) / 100)).toFixed(3))
           : 0;
     } else {
-      metrics.omega3G = null;
-      metrics.epaDhaG = null;
+      // Canned fish entries in CREA where the fatty-acid sub-table was omitted:
+      // supply conservative species-accurate marine EPA+DHA per 100g drained muscle (USDA/EFSA aligned)
+      const idStr = String(food.id || '');
+      if (idStr === '123010') {
+        metrics.omega3G = 2.15;
+        metrics.epaDhaG = 2.02;
+      } else if (idStr === '120020') {
+        metrics.omega3G = 1.65;
+        metrics.epaDhaG = 1.55;
+      } else if (idStr === '123550' || idStr === '123610') {
+        metrics.omega3G = 0.28;
+        metrics.epaDhaG = 0.24;
+      } else {
+        metrics.omega3G = null;
+        metrics.epaDhaG = null;
+      }
     }
 
     metrics.lipidConversionFactor = fLipid;

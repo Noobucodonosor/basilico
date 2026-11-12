@@ -139,7 +139,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              🍽️ Ricette Base Single, Ristoranti del Tigullio, Arbitraggio Live & Fornelli (*Science & Cooking*)
+              🍽️ Ricette Base Single, Ristoranti del Tigullio, Arbitraggio Live &amp; Fornelli (<em className="italic font-semibold text-emerald-200">Science &amp; Cooking</em>)
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl">
               Confronta il prezzo al tavolo dei ristoranti di Rapallo, Santa Margherita, Portofino, Chiavari e Sestri Levante con il
@@ -484,7 +484,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                         onClick={() => setActiveCookingDishId(dish.id)}
                         className="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
                       >
-                        👨‍🍳 Avvia Modalità Fornelli (*Science & Cooking*)
+                        👨‍🍳 Avvia Modalità Fornelli (<em className="italic">Science &amp; Cooking</em>)
                       </button>
                     </div>
                   </article>
@@ -544,9 +544,19 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                     )}
                   </div>
                   <div className="font-extrabold text-sm text-slate-900">{item.name}</div>
-                  <div className="text-xs text-slate-600">
-                    Presente in <strong>{item.dishFrequency} piatti</strong> del catalogo • Sblocca cumulativamente{' '}
-                    <strong className="text-emerald-700">{item.cumulativeUnlockedDishesCount} ricette complete</strong>
+                  <div className="text-xs text-slate-600 space-y-0.5">
+                    <div>
+                      Presente in <strong>{item.dishFrequency} piatti</strong> del catalogo • Totale sbloccati:{' '}
+                      <strong className="text-emerald-700">{item.cumulativeUnlockedDishesCount} ricette complete</strong>
+                      {item.newlyUnlockedDishesCount > 0 && (
+                        <span className="ml-1 text-emerald-800 font-bold">(+{item.newlyUnlockedDishesCount} dirette)</span>
+                      )}
+                    </div>
+                    {item.nearlyUnlockedDishesCount > 0 && (
+                      <div className="text-[11px] text-indigo-700 font-medium">
+                        ↳ Porta altri {item.nearlyUnlockedDishesCount} piatti a 1 solo ingrediente dallo sblocco
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

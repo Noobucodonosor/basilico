@@ -140,11 +140,20 @@ export function extractPackMetrics(item = {}) {
 }
 
 const STANDARD_GDO_PACK_RULES = [
-  // Fresh Fruit & Vegetables (standard 1 kg loose GDO price or standard punnet)
-  { regex: /\b(banan[ae]|bananito|mele|pere|arance|mandarin\w*|clementin\w*|limon[ei]|limes|ananas|cachi|prugn\w*|pesch[ae]|albicocch\w*|uva|kiwi|finocch\w*|cavolfior\w*|verz[ae]|broccol\w*|zucchin[ae]|melanzan[ae]|peperon[ei]|carot[ae]|cipoll[ae]|castagn\w*|marroni)\b/i, minP: 0.60, maxP: 5.50, grossG: 1000, edibleG: 1000, label: '1 kg sfuso/rete' },
+  // Processed Tomato & Canned Pantry FIRST (must precede fresh "pomodori" so "Passata di Pomodoro" never gets "1 kg sfuso"!)
+  { regex: /\b(passata\s+di\s+pomodoro|passata\s+classica|passata\s+vellutata|passata\s+rustica|mutti\s+.*passata|pomi\s+.*passata)\b/i, minP: 0.65, maxP: 2.69, grossG: 700, edibleG: 700, label: '700 g bottiglia' },
+  { regex: /\b(polpa\s+di\s+pomodoro|pomodori\s+pelati|pelati|datterini\s+pelati)\b/i, minP: 0.59, maxP: 2.49, grossG: 400, edibleG: 400, label: '400 g lattina' },
+
+  // In-shell Nuts & Chestnuts (must precede 200 g shelled nuts & generic 1 kg fruit so CREA shell % is applied only once!)
+  { regex: /\b(noci\s+(?:in\s+)?guscio|arachidi\s+(?:in\s+)?guscio)\b/i, minP: 1.99, maxP: 6.99, grossG: 800, edibleG: 800, label: '800 g sacchetto in guscio' },
+  { regex: /\b(castagn\w*|marroni)\b/i, minP: 0.75, maxP: 1.98, grossG: 250, edibleG: 250, label: '250 g busta castagne' },
+  { regex: /\b(castagn\w*|marroni)\b/i, minP: 1.99, maxP: 6.99, grossG: 1000, edibleG: 1000, label: '1 kg rete castagne' },
+
+  // Fresh Fruit & Vegetables (standard 1 kg loose GDO price or standard punnet; guarded against dehydrated/candied fruit)
+  { regex: /^(?!.*\b(disidratat\w*|essiccat\w*|sciroppat\w*|candit\w*|succo|nettare|marmellat\w*|confettur\w*)\b).*\b(banan[ae]|bananito|mele|pere|arance|mandarin\w*|clementin\w*|limon[ei]|limes|ananas|cachi|prugn\w*|pesch[ae]|albicocch\w*|uva|kiwi|finocch\w*|cavolfior\w*|verz[ae]|broccol\w*|zucchin[ae]|melanzan[ae]|peperon[ei]|carot[ae]|cipoll[ae])\b/i, minP: 0.60, maxP: 5.50, grossG: 1000, edibleG: 1000, label: '1 kg sfuso/rete' },
   { regex: /\b(patat[ae])\b(?!.*\b(fritt|patatin|chips|forno)\b)/i, minP: 0.79, maxP: 3.99, grossG: 1500, edibleG: 1500, label: '1,5 kg sacco' },
-  { regex: /\b(avocado|mango|papaya|passion fruit|zenzero|pomodorin\w*|ciliegino|datterino|fragol\w*|mirtill\w*|lampon\w*|spinaci)\b/i, minP: 0.99, maxP: 4.50, grossG: 500, edibleG: 500, label: '500 g vassoio' },
-  { regex: /\b(pomodor[oi])\b(?!.*\b(passata|polpa|pelat|sugo|secch)\b)/i, minP: 0.99, maxP: 3.99, grossG: 1000, edibleG: 1000, label: '1 kg sfuso' },
+  { regex: /^(?!.*\b(disidratat\w*|essiccat\w*|sciroppat\w*|candit\w*)\b).*\b(avocado|mango|papaya|passion fruit|zenzero|pomodorin\w*|ciliegino|datterino|fragol\w*|mirtill\w*|lampon\w*|spinaci)\b/i, minP: 0.99, maxP: 4.50, grossG: 500, edibleG: 500, label: '500 g vassoio' },
+  { regex: /^(?!.*\b(passata|polpa|pelat\w*|sugo|salsa|concentrato|secch\w*)\b).*\b(pomodor[oi])\b/i, minP: 0.99, maxP: 3.99, grossG: 1000, edibleG: 1000, label: '1 kg sfuso' },
   { regex: /\b(insalat\w*|valerian\w*|rucola|misticanza|lattughin\w*)\b/i, minP: 0.79, maxP: 2.50, grossG: 200, edibleG: 200, label: '200 g busta lavata' },
 
   // Dry Pasta, Rice, Flour, Bread & Pantry
@@ -152,13 +161,11 @@ const STANDARD_GDO_PACK_RULES = [
   { regex: /\b(trofie|pansoti|pansotti|ravioli|tortellini|gnocchi|tagliatelle|lasagne all['’]?uovo)\b/i, minP: 0.89, maxP: 4.50, grossG: 250, edibleG: 250, label: '250 g pasta fresca' },
   { regex: /\b(riso\b)/i, minP: 1.29, maxP: 4.99, grossG: 1000, edibleG: 1000, label: '1 kg pacco riso' },
   { regex: /\b(farina)\b/i, minP: 0.55, maxP: 2.49, grossG: 1000, edibleG: 1000, label: '1 kg pacco farina' },
-  { regex: /\b(passata di pomodoro|passata classica|passata vellutata)\b/i, minP: 0.65, maxP: 2.49, grossG: 700, edibleG: 700, label: '700 g bottiglia' },
-  { regex: /\b(polpa di pomodoro|pomodori pelati|pelati)\b/i, minP: 0.59, maxP: 2.29, grossG: 400, edibleG: 400, label: '400 g lattina' },
   { regex: /\b(olio extra\s*vergine|olio evo)\b/i, minP: 5.49, maxP: 14.99, grossG: 916, edibleG: 916, label: '1 L bottiglia (916 g)' },
   { regex: /\b(ceci|fagioli|lenticchie|piselli)\b(?!.*\b(farina|pasta|chips)\b)/i, minP: 0.55, maxP: 2.20, grossG: 400, edibleG: 240, label: '400 g (240 g sgocc.)' },
   { regex: /\b(olive taggiasche|olive verdi|olive nere)\b/i, minP: 1.49, maxP: 4.50, grossG: 300, edibleG: 180, label: '180 g sgocc. vasetto' },
   { regex: /\b(pan bauletto|pane bianco|pane integrale|pane ai cereali|pancarre)\b/i, minP: 0.55, maxP: 2.29, grossG: 400, edibleG: 400, label: '400 g confezione' },
-  { regex: /\b(noci|mandorle|nocciole|pistacchi|anacardi|arachidi|pinoli)\b(?!.*\b(salsa|gelato|biscott|torta|crema|latte|bevanda)\b)/i, minP: 1.59, maxP: 5.50, grossG: 200, edibleG: 200, label: '200 g busta frutta secca' },
+  { regex: /^(?!.*\bguscio\b).*\b(noci|mandorle|nocciole|pistacchi|anacardi|arachidi|pinoli)\b(?!.*\b(salsa|gelato|biscott|torta|crema|latte|bevanda)\b)/i, minP: 1.59, maxP: 5.50, grossG: 200, edibleG: 200, label: '200 g busta frutta secca sgusciata' },
   { regex: /\b(miele)\b/i, minP: 1.69, maxP: 5.99, grossG: 250, edibleG: 250, label: '250 g vasetto' },
   { regex: /\b(caffe)\b(?!.*\b(gelato|torta|crema|liquore)\b)/i, minP: 1.89, maxP: 4.50, grossG: 250, edibleG: 250, label: '250 g pacco caffè' },
   { regex: /\b(caffe)\b(?!.*\b(gelato|torta|crema|liquore)\b)/i, minP: 4.51, maxP: 8.99, grossG: 500, edibleG: 500, label: '2x250 g caffè' },

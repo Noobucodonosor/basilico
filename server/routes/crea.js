@@ -12,7 +12,7 @@
 import express from 'express';
 import { creaService } from '../services/creaService.js';
 import { creaOfferMatcher } from '../services/creaOfferMatcher.js';
-import { offerService } from '../services/offerService.js';
+import { offerService, enrichOfferRecord } from '../services/offerService.js';
 
 const router = express.Router();
 
@@ -37,11 +37,11 @@ router.get('/foods/:id', async (req, res, next) => {
       return res.status(404).json({ error: `Alimento CREA non trovato: ${req.params.id}` });
     }
 
-    // Also find matching active Rapallo offers for this CREA food (bidirectional bridge)
-    const allOffersRes = await offerService.getOffers({ limit: 100 });
-    const matchingOffers = (allOffersRes.offers || []).filter(
-      (o) => o.creaMatch && String(o.creaMatch.creaFoodId) === String(sheet.id)
-    );
+    // Evaluate ALL active Rapallo food offers for this CREA food (never truncated at 100)
+    const rawOffers = await offerService.getRawOffers();
+    const matchingOffers = rawOffers
+      .map((o) => enrichOfferRecord(o, req.query.profileId || null))
+      .filter((o) => o && o.domain === 'food_human' && o.creaMatch && String(o.creaMatch.creaFoodId) === String(sheet.id));
 
     res.status(200).json({
       ...sheet,
@@ -59,13 +59,12 @@ router.get('/nutrients-per-euro', async (req, res, next) => {
     const hideIncompatible = req.query.hideIncompatible !== 'false';
     const storeId = req.query.storeId || null;
 
-    const allOffersRes = await offerService.getOffers({
-      domain: 'food_human',
-      profileId,
-      limit: 100
-    });
+    const rawOffers = await offerService.getRawOffers();
+    const allFoodOffers = rawOffers
+      .map((o) => enrichOfferRecord(o, profileId))
+      .filter((o) => o && o.domain === 'food_human');
 
-    const ranked = creaOfferMatcher.rankOffersByNutrientPerEuro(allOffersRes.offers || [], {
+    const ranked = creaOfferMatcher.rankOffersByNutrientPerEuro(allFoodOffers, {
       metric,
       storeId,
       hideIncompatible

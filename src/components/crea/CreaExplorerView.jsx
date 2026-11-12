@@ -28,7 +28,8 @@ const PHYSIOLOGICAL_PRESETS = [
 
 const NPE_METRICS = [
   { id: 'proteinGPerEuro', label: 'Grammi di Proteine per 1 €', unit: 'g prot / €' },
-  { id: 'omega3GPerEuro', label: 'Omega-3 (g) per 1 €', unit: 'g Ω3 / €' },
+  { id: 'epaDhaGPerEuro', label: 'Omega-3 Marini EPA+DHA (g) per 1 €', unit: 'g EPA+DHA / €' },
+  { id: 'omega3GPerEuro', label: 'Omega-3 Totali ALA+EPA+DHA (g) per 1 €', unit: 'g Ω3 / €' },
   { id: 'kcalPerEuro', label: 'Energia (kcal) per 1 €', unit: 'kcal / €' },
   { id: 'ironMgPerEuro', label: 'Ferro (mg) per 1 €', unit: 'mg Fe / €' },
   { id: 'potassiumMgPerEuro', label: 'Potassio (mg) per 1 €', unit: 'mg K / €' },

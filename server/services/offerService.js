@@ -68,7 +68,7 @@ export function normalizeSearchToken(str) {
 export function isNamelessOfferTile(offer = {}) {
   const titleNorm = normalizeSearchToken(offer.title || '');
   if (!titleNorm) return true;
-  if (/^(al\s*kg|all\s*etto|al\s*etto|al\s*litro|offerta|solo|prezzo|prezzo\s*speciale)$/.test(titleNorm)) {
+  if (/^(al\s*kg|all\s*etto|al\s*etto|al\s*litro|offerta|solo|prezzo|prezzo\s*speciale|goliath|natural)$/.test(titleNorm)) {
     return true;
   }
   const brandNorm = normalizeSearchToken(offer.brand || '');
@@ -79,6 +79,16 @@ export function isNamelessOfferTile(offer = {}) {
     }
   }
   return false;
+}
+
+export function cleanOfferDisplayTitle(rawTitle = '') {
+  const s = String(rawTitle || '').trim();
+  if (!s) return s;
+  return s
+    .replace(/\bFa\s*-\s*shion\b/gi, 'Fashion')
+    .replace(/(?:\s+-\s*)+$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 /**
  * Returns a sort comparator supporting both snake_case and camelCase keys
@@ -148,17 +158,19 @@ export function enrichOfferRecord(offer = {}, profileId = null) {
     return hit;
   }
 
-  const domain = classifyProductDomain(offer);
-  const category = classifyCanonicalCategory(offer, domain);
+  const cleanedTitle = cleanOfferDisplayTitle(offer.title);
+  const workingOffer = cleanedTitle && cleanedTitle !== offer.title ? { ...offer, title: cleanedTitle } : offer;
+  const domain = classifyProductDomain(workingOffer);
+  const category = classifyCanonicalCategory(workingOffer, domain);
   const isNamelessTile = isNamelessOfferTile(offer);
-  const pricing = normalizeUnitPricing({ ...offer, domain, category });
-  const quality = evaluateQualityLens({ ...offer, domain, category });
+  const pricing = normalizeUnitPricing({ ...workingOffer, domain, category });
+  const quality = evaluateQualityLens({ ...workingOffer, domain, category });
   const _searchNorm = normalizeSearchToken(
-    `${offer.title} ${offer.brand || ''} ${category} ${offer.description || ''}`
+    `${workingOffer.title} ${workingOffer.brand || ''} ${category} ${workingOffer.description || ''}`
   );
 
   const enrichedBase = {
-    ...offer,
+    ...workingOffer,
     category,
     _searchNorm,
     domain,
@@ -324,16 +336,19 @@ export class OfferService {
       await this.ingestionService.init();
       let cached = this.ingestionService._unwrapData(this.ingestionService.cacheManager.get('offers'));
       if (Array.isArray(cached) && cached.length > 0) {
-        return filterActiveAndDeduplicateOffers(cached);
+        const deduped = filterActiveAndDeduplicateOffers(cached);
+        return deduped.length > 20 ? deduped.filter((o) => !isNamelessOfferTile(o)) : deduped;
       }
       const seed = await this.ingestionService.loadSeedData();
       if (seed && Array.isArray(seed.offers) && seed.offers.length > 0) {
-        return filterActiveAndDeduplicateOffers(seed.offers);
+        const deduped = filterActiveAndDeduplicateOffers(seed.offers);
+        return deduped.length > 20 ? deduped.filter((o) => !isNamelessOfferTile(o)) : deduped;
       }
     } catch (err) {
       console.error(`[OfferService] Error fetching raw offers: ${err.message}`);
     }
-    return filterActiveAndDeduplicateOffers(this.getSeedOffersSync());
+    const fallback = filterActiveAndDeduplicateOffers(this.getSeedOffersSync());
+    return fallback.length > 20 ? fallback.filter((o) => !isNamelessOfferTile(o)) : fallback;
   }
 
   /**

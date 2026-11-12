@@ -45,7 +45,8 @@ const GRANULAR_INGREDIENT_PACK_RULES = [
   { key: 'bread_bakery', regex: /\b(pane|focaccia|fette biscottate|gallett\w*|crostin\w*|panino|ciabatta)\b/, packGrams: 300, euroPerKg: 4.8 },
   { key: 'canned_fish', regex: /\b(tonno\s+(?:sott|al\s+naturale|in\s+olio|sgocciolat\w*)|sgombro\s+(?:al\s+naturale|sott|sgocciolat\w*)|filetti\s+di\s+sgombro\s+(?:al\s+naturale|sgocciolat\w*))\b/, packGrams: 160, euroPerKg: 21.0 },
   { key: 'smoked_cured', regex: /\b(salmone\s+affumicato|bresaola|prosciutto|speck|pancetta|guanciale|salame|mortadella)\b/, packGrams: 100, euroPerKg: 28.5 },
-  { key: 'fresh_fish', regex: /\b(acciug\w*|alici|orata|branzino|spigola|salmone|tonno|sgombro|palamita|seppi\w*|calamar\w*|polpo|gamber\w*|scamp\w*|cozz\w*|vongol\w*|pesce|baccala|stoccafisso|merluzzo|nasello|capesante|astice|rombo|sogliola)\b/, packGrams: 250, euroPerKg: 19.5 },
+  { key: 'luxury_crustaceans', regex: /\b(astice|aragosta|gamber\w*\s+viol\w*|scamp\w*\s+reali)\b/, packGrams: 250, euroPerKg: 58.0 },
+  { key: 'fresh_fish', regex: /\b(acciug\w*|alici|orata|branzino|spigola|salmone|tonno|sgombro|palamita|seppi\w*|calamar\w*|polpo|gamber\w*|scamp\w*|cozz\w*|vongol\w*|pesce|pescato|baccala|stoccafisso|merluzzo|nasello|capesante|rombo|sogliola)\b/, packGrams: 250, euroPerKg: 19.5 },
   { key: 'prime_beef_cuts', regex: /\b(vitellon\w*|costat\w*|entrecote|controfiletto|fiorentina|angus|fassone|chianina|agnello|filetto\s+di\s+(?:manzo|vitell\w*|bovino))\b/, packGrams: 250, euroPerKg: 31.0 },
   { key: 'meat_poultry', regex: /\b(manzo|bovino|vitell\w*|pollo|tacchino|coniglio|maiale|suino|anatra|faraona|salsiccia)\b/, packGrams: 300, euroPerKg: 13.8 },
   { key: 'fresh_pasta', regex: /\b(trofie|pansot\w*|raviol\w*|gnocch\w*|tagliolini|tagliatelle|sfoglia)\b/, packGrams: 250, euroPerKg: 7.8 },
@@ -53,7 +54,8 @@ const GRANULAR_INGREDIENT_PACK_RULES = [
   { key: 'legumes_tomato', regex: /\b(ceci|fagiol\w*|lenticchi\w*|fave|piselli|passata|polpa\s+di\s+pomodoro|salsa\s+di\s+pomodoro|sugo|pelati|san\s+marzano)\b/, packGrams: 400, euroPerKg: 3.1 },
   { key: 'oil_fats', regex: /\b(olio)\b/, packGrams: 1000, euroPerKg: 9.8 },
   { key: 'dairy_cheese', regex: /\b(parmigiano|grana|pecorino|mozzarella|stracchino|crescenza|ricotta|formaggio|burro|panna|mascarpone|prescinseua|gorgonzola)\b/, packGrams: 200, euroPerKg: 16.0 },
-  { key: 'vegetables_fruit', regex: /\b(pomodor\w*|zucchin\w*|spinac\w*|bietol\w*|borragine|sedano|cipoll\w*|patat\w*|carciof\w*|melanzan\w*|peperon\w*|insalata|asparag\w*|fungh\w*|finocch\w*|carot\w*|mele|mela|banan\w*|aranc\w*|mirtill\w*|avocado|prugn\w*|agrume|frutta)\b/, packGrams: 400, euroPerKg: 3.2 }
+  { key: 'fresh_fruit', regex: /\b(mele|mela|pere|pera|banan\w*|aranc\w*|mandarin\w*|clementin\w*|kiwi|fragol\w*|mirtill\w*|lampon\w*|more\b|pesch\w*|albicocch\w*|prugn\w*|susin\w*|ciliegi\w*|cachi|ananas|mango|papaya|passion\s*fruit|uva\b|agrume|frutta)\b/, packGrams: 400, euroPerKg: 3.2 },
+  { key: 'fresh_vegetables', regex: /\b(pomodor\w*|zucchin\w*|spinac\w*|bietol\w*|borragine|sedano|cipoll\w*|patat\w*|carciof\w*|melanzan\w*|peperon\w*|insalat\w*|rucola|valerian\w*|misticanza|asparag\w*|fungh\w*|finocch\w*|carot\w*|broccol\w*|cavolfior\w*|cavol\w*|verza|zucca|fagiolin\w*|avocado|verdura|ortagg\w*)\b/, packGrams: 400, euroPerKg: 3.2 }
 ];
 
 export function resolveIngredientPackSpec(name = '') {
@@ -456,9 +458,89 @@ export class RecipeAndArbitrageService {
     this._labNotes = null;
   }
 
+  _normalizeSeedDishRealism(dish) {
+    if (!dish || typeof dish !== 'object') return dish;
+    const titleNorm = normalizeSearchToken(dish.title || '');
+
+    // 1. Multi-course Michelin tasting menus (11 & 7 courses): realistic brigade prep time & luxury multi-course BOM
+    if (/\bmenu\s+degustazione\s+11\s+portate\b/.test(titleNorm)) {
+      return {
+        ...dish,
+        prepMinutes: 240,
+        bom: [
+          { creaId: '125100', name: 'Astice blu del Mar Ligure', rawGramsPerServing: 240, yieldFactor: 0.45, notes: 'Portate crostacei nobili e riduzione bisque' },
+          { creaId: '125100', name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 180, yieldFactor: 0.55, notes: 'Crudo marino e variazioni del Golfo' },
+          { creaId: '123200', name: 'Filetto di branzino di lenza nostrano', rawGramsPerServing: 200, yieldFactor: 0.85, notes: 'Secondo principale alla brace / vapore' },
+          { creaId: '121000', name: 'Capesante e pescato crudo del Golfo', rawGramsPerServing: 140, yieldFactor: 0.9, notes: 'Sequenza antipasti e crudi' },
+          { creaId: '000800', name: 'Pasta di semola trafilata d\'autore', rawGramsPerServing: 80, yieldFactor: 2.1, notes: 'Primi piatti degustazione' },
+          { creaId: '008610', name: 'Pinoli mediterranei scelti e tartufo', rawGramsPerServing: 35, yieldFactor: 1.0, notes: 'Finiture ed estrazioni aromatiche' },
+          { creaId: '009210', name: 'Olio extravergine d\'oliva Riviera Ligure DOP', rawGramsPerServing: 35, yieldFactor: 1.0, notes: 'Emulsioni a freddo multi-portata' }
+        ]
+      };
+    }
+
+    if (/\bmenu\s+degustazione\s+7\s+portate\b/.test(titleNorm)) {
+      return {
+        ...dish,
+        prepMinutes: 180,
+        bom: [
+          { creaId: '125100', name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 200, yieldFactor: 0.55, notes: 'Crudo e antipasto caldo del Golfo' },
+          { creaId: '123200', name: 'Filetto di branzino di lenza nostrano', rawGramsPerServing: 180, yieldFactor: 0.85, notes: 'Portata principale ittica' },
+          { creaId: '121000', name: 'Calamari e pescato crudo del Golfo', rawGramsPerServing: 130, yieldFactor: 0.85, notes: 'Sequenza mare' },
+          { creaId: '000800', name: 'Pasta di semola trafilata d\'autore', rawGramsPerServing: 75, yieldFactor: 2.1, notes: 'Primo piatto degustazione' },
+          { creaId: '008610', name: 'Pinoli mediterranei scelti', rawGramsPerServing: 25, yieldFactor: 1.0, notes: 'Colatura ed emulsione' },
+          { creaId: '009210', name: 'Olio extravergine d\'oliva Riviera Ligure DOP', rawGramsPerServing: 25, yieldFactor: 1.0, notes: 'Finitura a crudo' }
+        ]
+      };
+    }
+
+    // 2. Blue Lobster & Santa Margherita Purple Shrimp signature dishes
+    if (/\bastice\s+blu\b/.test(titleNorm)) {
+      return {
+        ...dish,
+        prepMinutes: Math.max(45, dish.prepMinutes || 25),
+        bom: (dish.bom || []).map((b, idx) =>
+          idx === 0 ? { ...b, name: 'Astice blu del Mar Ligure', rawGramsPerServing: 240 } : b
+        )
+      };
+    }
+
+    if (/\bgambero\s+viola\b/.test(titleNorm)) {
+      return {
+        ...dish,
+        prepMinutes: Math.max(35, dish.prepMinutes || 25),
+        bom: (dish.bom || []).map((b, idx) =>
+          idx === 0 ? { ...b, name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 180 } : b
+        )
+      };
+    }
+
+    // 3. Monumental Ligurian Cappon Magro (multi-layer fish, shellfish & salsa verde)
+    if (/\bcappon\s+magro\b/.test(titleNorm)) {
+      return {
+        ...dish,
+        prepMinutes: Math.max(90, dish.prepMinutes || 25)
+      };
+    }
+
+    // 4. Fiorentina di Fassone (authentic T-bone weight & resting time)
+    if (/\bfiorentina\s+di\s+fassone\b/.test(titleNorm)) {
+      return {
+        ...dish,
+        prepMinutes: Math.max(35, dish.prepMinutes || 25),
+        bom: (dish.bom || []).map((b, idx) =>
+          idx === 0 ? { ...b, rawGramsPerServing: Math.max(450, b.rawGramsPerServing || 220) } : b
+        )
+      };
+    }
+
+    return dish;
+  }
+
   getDishesSeed() {
     if (!this._dishes) {
-      this._dishes = JSON.parse(fs.readFileSync(DISHES_SEED_PATH, 'utf8'));
+      const raw = JSON.parse(fs.readFileSync(DISHES_SEED_PATH, 'utf8'));
+      this._dishes = raw.map((d) => this._normalizeSeedDishRealism(d));
     }
     return [...this._customDishes, ...this._dishes];
   }
@@ -924,10 +1006,12 @@ export class RecipeAndArbitrageService {
       });
     }
 
-    // Seed selected set with items already in user pantry
+    // Seed selected set with items already in user pantry + universal tap/salt/pepper baseline
     const selectedKeys = new Set();
     for (const [k, info] of ingredientMap.entries()) {
-      if (info.inPantry) selectedKeys.add(k);
+      if (info.inPantry || /^(sale|pepe|acqua)\b/.test(normalizeSearchToken(info.name || ''))) {
+        selectedKeys.add(k);
+      }
     }
 
     const greedySteps = [];
@@ -935,11 +1019,13 @@ export class RecipeAndArbitrageService {
       let bestCandidate = null;
       let bestScore = -1;
       let bestNewlyUnlocked = 0;
+      let bestNearlyUnlocked = 0;
 
       for (const [key, info] of ingredientMap.entries()) {
         if (selectedKeys.has(key)) continue;
 
         let newlyUnlocked = 0;
+        let twoMissingCount = 0;
         let partialProgressScore = 0;
 
         for (const ds of dishSets) {
@@ -950,21 +1036,25 @@ export class RecipeAndArbitrageService {
           }
           if (missingCount === 1) {
             newlyUnlocked += 1;
-            partialProgressScore += 3.0;
+            partialProgressScore += 28.0;
           } else if (missingCount === 2) {
+            twoMissingCount += 1;
+            partialProgressScore += 4.5;
+          } else if (missingCount === 3) {
             partialProgressScore += 1.0;
           } else {
-            partialProgressScore += 0.25;
+            partialProgressScore += 0.15;
           }
         }
 
-        const promoBonus = info.onPromoInRapallo ? 1.25 : 1.0;
-        const score = (partialProgressScore + info.dishFrequency * 0.15) * promoBonus;
+        const promoBonus = info.onPromoInRapallo ? 1.15 : 1.0;
+        const score = (partialProgressScore + info.dishFrequency * 0.1) * promoBonus;
 
         if (score > bestScore) {
           bestScore = score;
           bestCandidate = info;
           bestNewlyUnlocked = newlyUnlocked;
+          bestNearlyUnlocked = twoMissingCount;
         }
       }
 
@@ -979,6 +1069,7 @@ export class RecipeAndArbitrageService {
         rank: greedySteps.length + 1,
         ...bestCandidate,
         newlyUnlockedDishesCount: bestNewlyUnlocked,
+        nearlyUnlockedDishesCount: bestNearlyUnlocked,
         cumulativeUnlockedDishesCount: cumulativeUnlockedDishes.length,
         cumulativeUnlockedPct: Math.round((cumulativeUnlockedDishes.length / Math.max(1, dishSets.length)) * 100)
       });
@@ -1574,14 +1665,40 @@ export class RecipeAndArbitrageService {
 
   saveLabNote(dishId, payload = {}) {
     const state = this._loadLabNotes();
+    const cleanRating = Math.max(1, Math.min(5, Number(payload.rating) || 5));
+    const cleanWeight = payload.actualCookedWeightGrams ? Number(payload.actualCookedWeightGrams) : null;
+    const cleanNotes = String(payload.saltAndHydrationNotes || '').trim();
+    const cleanHeat = payload.heatSourceUsed || 'gas';
+
+    // Deduplicate identical lab note entries so repeated clicks or test runs never create duplicate clones
+    const existingIdx = state.entries.findIndex(
+      (e) =>
+        e.dishId === String(dishId) &&
+        e.rating === cleanRating &&
+        e.actualCookedWeightGrams === cleanWeight &&
+        e.saltAndHydrationNotes === cleanNotes &&
+        e.heatSourceUsed === cleanHeat
+    );
+    if (existingIdx !== -1) {
+      const updated = {
+        ...state.entries[existingIdx],
+        dishTitle: payload.dishTitle || state.entries[existingIdx].dishTitle || String(dishId),
+        createdAt: new Date().toISOString()
+      };
+      state.entries.splice(existingIdx, 1);
+      state.entries.unshift(updated);
+      this._saveLabNotes();
+      return updated;
+    }
+
     const entry = {
       id: `lab-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       dishId: String(dishId),
       dishTitle: payload.dishTitle || String(dishId),
-      rating: Math.max(1, Math.min(5, Number(payload.rating) || 5)),
-      actualCookedWeightGrams: payload.actualCookedWeightGrams ? Number(payload.actualCookedWeightGrams) : null,
-      saltAndHydrationNotes: String(payload.saltAndHydrationNotes || '').trim(),
-      heatSourceUsed: payload.heatSourceUsed || 'gas',
+      rating: cleanRating,
+      actualCookedWeightGrams: cleanWeight,
+      saltAndHydrationNotes: cleanNotes,
+      heatSourceUsed: cleanHeat,
       createdAt: new Date().toISOString()
     };
     state.entries.unshift(entry);

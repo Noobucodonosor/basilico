@@ -934,6 +934,12 @@ export class IngestionService {
       flyers = seed.flyers;
     }
 
+    // Exclude unmapped generic national flyers (`store-*`) when real Rapallo store flyers are present
+    const rapalloMappedFlyers = flyers.filter((f) => f && f.storeId && !String(f.storeId).startsWith('store-'));
+    if (rapalloMappedFlyers.length > 0) {
+      flyers = rapalloMappedFlyers;
+    }
+
     if (storeId) {
       flyers = flyers.filter(f =>
         f.storeId === storeId ||
