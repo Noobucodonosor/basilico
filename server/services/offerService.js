@@ -39,7 +39,11 @@ export const VALID_PRODUCT_CATEGORIES = [
   'Acqua e Bevande',
   'Surgelati',
   'Cura Casa e Bucato',
-  'Cura Persona e Igiene'
+  'Cura Persona e Igiene',
+  'Pentole, Cucina ed Elettrodomestici',
+  'Animali Domestici',
+  'Giocattoli, Natale e Tempo Libero',
+  'Tessile, Abbigliamento e Bazar Casa'
 ];
 
 export const DEFAULT_PAGE = 1;

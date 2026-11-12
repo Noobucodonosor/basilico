@@ -1110,9 +1110,6 @@ video {
   --tw-divide-opacity: 1;
   border-color: rgb(241 245 249 / var(--tw-divide-opacity, 1));
 }
-.self-start {
-  align-self: flex-start;
-}
 .self-end {
   align-self: flex-end;
 }
@@ -1254,6 +1251,10 @@ video {
 .border-orange-200 {
   --tw-border-opacity: 1;
   border-color: rgb(254 215 170 / var(--tw-border-opacity, 1));
+}
+.border-pink-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(251 207 232 / var(--tw-border-opacity, 1));
 }
 .border-purple-200 {
   --tw-border-opacity: 1;
@@ -1466,6 +1467,10 @@ video {
 .bg-orange-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(255 247 237 / var(--tw-bg-opacity, 1));
+}
+.bg-pink-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 242 248 / var(--tw-bg-opacity, 1));
 }
 .bg-purple-50 {
   --tw-bg-opacity: 1;
@@ -1986,6 +1991,10 @@ video {
   --tw-text-opacity: 1;
   color: rgb(154 52 18 / var(--tw-text-opacity, 1));
 }
+.text-pink-800 {
+  --tw-text-opacity: 1;
+  color: rgb(157 23 77 / var(--tw-text-opacity, 1));
+}
 .text-purple-800 {
   --tw-text-opacity: 1;
   color: rgb(107 33 168 / var(--tw-text-opacity, 1));
@@ -2323,6 +2332,11 @@ dialog::backdrop {
   backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
 }
 
+.hover\:border-amber-300:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(252 211 77 / var(--tw-border-opacity, 1));
+}
+
 .hover\:border-emerald-200:hover {
   --tw-border-opacity: 1;
   border-color: rgb(167 243 208 / var(--tw-border-opacity, 1));
@@ -2365,6 +2379,10 @@ dialog::backdrop {
 
 .hover\:bg-amber-400\/40:hover {
   background-color: rgb(251 191 36 / 0.4);
+}
+
+.hover\:bg-amber-50\/60:hover {
+  background-color: rgb(255 251 235 / 0.6);
 }
 
 .hover\:bg-amber-600:hover {
@@ -2672,6 +2690,10 @@ dialog::backdrop {
 
   .sm\:flex-nowrap {
     flex-wrap: nowrap;
+  }
+
+  .sm\:items-end {
+    align-items: flex-end;
   }
 
   .sm\:items-center {

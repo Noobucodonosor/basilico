@@ -109,6 +109,36 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
     }
   };
 
+  const handleRemoveShoppingItem = async (itemId) => {
+    const res = await fetch(`/api/shopping-list/items/${encodeURIComponent(itemId)}`, {
+      method: 'DELETE'
+    });
+    if (res.ok) {
+      const state = await res.json();
+      setShoppingList(state);
+      if (onShoppingListChange) {
+        onShoppingListChange(state?.subtotals?.totalItemsCount || 0);
+      }
+    }
+  };
+
+  const handleReplacePlanBItem = async (itemId, alt) => {
+    const res = await fetch(`/api/shopping-list/items/${encodeURIComponent(itemId)}/replace-plan-b`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(alt || {})
+    });
+    if (res.ok) {
+      const state = await res.json();
+      setShoppingList(state);
+      if (onShoppingListChange) {
+        onShoppingListChange(state?.subtotals?.totalItemsCount || 0);
+      }
+      setStatusToast(`🔄 Sostituito nel carrello con "${alt?.title}" (${alt?.chainName})`);
+      setTimeout(() => setStatusToast(''), 3500);
+    }
+  };
+
   const handleAddManualItem = async (e) => {
     e.preventDefault();
     if (!manualItemName.trim()) return;
@@ -545,7 +575,10 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
                 >
                   <option value="food_human">🥩 Alimentari (Subtotale Cibo)</option>
                   <option value="home_cleaning">🧼 Chimica Casa / Tigotà (Subtotale Casa)</option>
-                  <option value="kitchen_cookware">🍳 Pentole & Utensili (Subtotale Casa)</option>
+                  <option value="personal_care">🧴 Cura Persona & Igiene (Subtotale Casa)</option>
+                  <option value="kitchen_cookware">🍳 Pentole & Elettrodomestici (Subtotale Casa)</option>
+                  <option value="pet_care">🐾 Animali Domestici (Subtotale Casa)</option>
+                  <option value="bazar_seasonal">🎄 Giocattoli, Natale & Bazar (Subtotale Casa)</option>
                 </select>
                 <input
                   type="number"
@@ -571,6 +604,8 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
         shoppingList={shoppingList}
         onClose={() => setIsAisleModalOpen(false)}
         onToggleItem={handleToggleShoppingItem}
+        onRemoveItem={handleRemoveShoppingItem}
+        onReplacePlanB={handleReplacePlanBItem}
         onCompleteAndLoadPantry={handleCompleteAndLoadPantry}
       />
     </div>

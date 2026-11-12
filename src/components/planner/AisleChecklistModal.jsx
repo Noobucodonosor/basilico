@@ -5,6 +5,8 @@ export function AisleChecklistModal({
   shoppingList,
   onClose,
   onToggleItem,
+  onRemoveItem,
+  onReplacePlanB,
   onCompleteAndLoadPantry
 }) {
   const [planBData, setPlanBData] = useState(null);
@@ -130,14 +132,28 @@ export function AisleChecklistModal({
                 {planBData.planBAlternatives.map((alt) => (
                   <div
                     key={alt.offerId}
-                    className="p-2 rounded-lg bg-white border border-amber-200 flex items-center justify-between"
+                    className="p-2.5 rounded-lg bg-white border border-amber-200 flex flex-wrap items-center justify-between gap-2"
                   >
                     <div>
                       <div className="font-bold text-slate-900">{alt.title}</div>
                       <div className="text-[10px] text-slate-500">{alt.rationale}</div>
                     </div>
-                    <div className="text-right font-extrabold text-emerald-700">
-                      €{Number(alt.price || 0).toFixed(2)} ({alt.chainName})
+                    <div className="flex items-center gap-2">
+                      <div className="text-right font-extrabold text-emerald-700">
+                        €{Number(alt.price || 0).toFixed(2)} ({alt.chainName})
+                      </div>
+                      {onReplacePlanB && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await onReplacePlanB(planBData.originalItem.id, alt);
+                            setPlanBData(null);
+                          }}
+                          className="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer"
+                        >
+                          ✓ Sostituisci nel carrello
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -193,6 +209,17 @@ export function AisleChecklistModal({
                         >
                           {loadingPlanBId === item.id ? '...' : '🔄 Piano B Scaffale'}
                         </button>
+                        {onRemoveItem && (
+                          <button
+                            type="button"
+                            onClick={() => onRemoveItem(item.id)}
+                            title="Rimuovi articolo dalla lista spesa"
+                            aria-label={`Rimuovi ${item.name}`}
+                            className="px-2 py-1 rounded-lg text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer"
+                          >
+                            ✕
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -14,7 +14,8 @@ const DOMAIN_BADGE_MAP = {
   home_cleaning: { label: 'Chimica & Casa', color: 'bg-sky-50 text-sky-800 border-sky-200' },
   kitchen_cookware: { label: 'Pentole & Cucina', color: 'bg-amber-50 text-amber-800 border-amber-200' },
   personal_care: { label: 'Igiene Persona', color: 'bg-purple-50 text-purple-800 border-purple-200' },
-  pet_care: { label: 'Pet Care', color: 'bg-orange-50 text-orange-800 border-orange-200' }
+  pet_care: { label: 'Pet Care', color: 'bg-orange-50 text-orange-800 border-orange-200' },
+  bazar_seasonal: { label: 'Giocattoli & Bazar', color: 'bg-pink-50 text-pink-800 border-pink-200' }
 };
 
 export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) {

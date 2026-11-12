@@ -6,7 +6,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { createApp } from '../../server/index.js';
+import { shoppingListService } from '../../server/services/shoppingListService.js';
 
 function requestJson(server, method, reqPath, body = null) {
   return new Promise((resolve, reject) => {
@@ -44,10 +48,23 @@ function requestJson(server, method, reqPath, body = null) {
 }
 
 test('API /api/planner & /api/shopping-list — Full Stanza 6 Workflow', async (t) => {
+  const origPath = shoppingListService.storagePath;
+  const origState = shoppingListService._state;
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-shop-api-'));
+  shoppingListService.storagePath = path.join(tmpDir, 'shopping_list.json');
+  shoppingListService._state = null;
+
   const app = createApp();
   const server = http.createServer(app);
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
-  t.after(() => server.close());
+  t.after(() => {
+    server.close();
+    shoppingListService.storagePath = origPath;
+    shoppingListService._state = origState;
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch (_) {}
+  });
 
   // 1. GET /api/planner/models
   const modelsRes = await requestJson(server, 'GET', '/api/planner/models');
@@ -90,4 +107,18 @@ test('API /api/planner & /api/shopping-list — Full Stanza 6 Workflow', async (
   const planBRes = await requestJson(server, 'GET', `/api/shopping-list/items/${encodeURIComponent(targetId)}/plan-b`);
   assert.equal(planBRes.status, 200);
   assert.equal(planBRes.body.originalItem.id, targetId);
+
+  // 6. POST /api/shopping-list/items/:id/replace-plan-b & DELETE /api/shopping-list/items/:id
+  const replRes = await requestJson(
+    server,
+    'POST',
+    `/api/shopping-list/items/${encodeURIComponent(targetId)}/replace-plan-b`,
+    { title: 'Spugne Vegetali PiùMe Rapallo', price: 1.49, chainName: 'PiùMe Rapallo' }
+  );
+  assert.equal(replRes.status, 200);
+  assert.equal(replRes.body.items.find((i) => i.id === targetId)?.name, 'Spugne Vegetali PiùMe Rapallo');
+
+  const delRes = await requestJson(server, 'DELETE', `/api/shopping-list/items/${encodeURIComponent(targetId)}`);
+  assert.equal(delRes.status, 200);
+  assert.ok(!delRes.body.items.some((i) => i.id === targetId));
 });

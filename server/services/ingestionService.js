@@ -14,7 +14,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cacheManager } from './cacheManager.js';
-import { classifyCanonicalCategory } from './domainClassifier.js';
+import { classifyProductDomain, classifyCanonicalCategory } from './domainClassifier.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,8 +43,8 @@ const BRAND_RULES = [
   { chainId: 'arcaplanet', brand: 'Arcaplanet', defaultStoreId: 'rapallo-arcaplanet-italia', patterns: [/arcaplanet/i] }
 ];
 
-// Geo-filter excluding flyers from unrelated provinces/regions (ADR-0004)
-const NON_RAPALLO_FLYER_REGEX = /spezia|piacentin|pavese|piemont|lombard|sardegn|sicili|pugli|calabri|campani|lazio|toscan|venet|friul|trentin|emili|romagn|umbria|marche|abruzz|molis|basilicat|aosta/i;
+// Geo-filter excluding flyers from unrelated provinces/regions (ADR-0004; guard against "Grandi marche" = top brands!)
+const NON_RAPALLO_FLYER_REGEX = /spezia|piacentin|pavese|piemont|lombard|sardegn|sicili|pugli|calabri|campani|lazio|toscan|venet|friul|trentin|emili|romagn|umbria|(?<!grandi\s)marche\b|abruzz|molis|basilicat|aosta/i;
 
 // Per-retailer PromoQui slugs for the 14 verified Rapallo chains (ADR-0004 & ADR-0005)
 const RAPALLO_STORE_SLUGS = {
@@ -435,13 +435,17 @@ export class IngestionService {
 
       const liveFlyers = this.normalizeLiveFlyers(liveData.rawFlyers, baseStores);
 
-      // Merge live flyers with seed/cached flyers so all Rapallo stores maintain active flyers
+      // Merge live flyers with seed/cached flyers so all Rapallo stores maintain active flyers,
+      // excluding unmapped national `store-*` flyers when real Rapallo stores are configured
       const mergedFlyersMap = new Map();
       const baseFlyers = (cachedFlyers && cachedFlyers.length > 0) ? cachedFlyers : seedData.flyers;
+      const hasRealRapalloStores = Array.isArray(baseStores) && baseStores.some((s) => String(s?.id || '').startsWith('rapallo-'));
       for (const fl of (baseFlyers || [])) {
+        if (hasRealRapalloStores && String(fl?.storeId || '').startsWith('store-')) continue;
         mergedFlyersMap.set(fl.id, fl);
       }
       for (const fl of liveFlyers) {
+        if (hasRealRapalloStores && String(fl?.storeId || '').startsWith('store-')) continue;
         mergedFlyersMap.set(fl.id, fl);
       }
       const allFlyers = Array.from(mergedFlyersMap.values());
@@ -687,14 +691,18 @@ export class IngestionService {
           throw new Error('Dati __NEXT_DATA__ assenti');
         }
 
-        let rawFlyers = r.flyersByRetailer || [];
-        if (rawFlyers.length === 0 && r.mainFlyer) {
-          rawFlyers = [r.mainFlyer];
+        const rawFlyersMap = new Map();
+        for (const candidateF of [...(r.mainFlyer ? [r.mainFlyer] : []), ...(r.flyersByRetailer || [])]) {
+          if (candidateF && candidateF.id && !rawFlyersMap.has(String(candidateF.id))) {
+            rawFlyersMap.set(String(candidateF.id), candidateF);
+          }
         }
+        const rawFlyers = [...rawFlyersMap.values()];
 
-        // Strict geographical filter: NEVER fall back to rawFlyers if all flyers are from other provinces (ADR-0006)
+        // Strict geographical filter: NEVER fall back to rawFlyers if all flyers are from other provinces (ADR-0006 & TASK-DATA-03)
         const selectedFlyers = rawFlyers.filter(f => !NON_RAPALLO_FLYER_REGEX.test(f.title || ''));
         let storeOffersAdded = 0;
+        let verifiedFlyersForStore = 0;
 
         for (const rawF of selectedFlyers) {
           if (!rawF || !rawF.id) continue;
@@ -714,19 +722,62 @@ export class IngestionService {
           const page1 = rawF.imageAssets?.firstPage || coverImageUrl;
           const page2 = rawF.imageAssets?.secondPage || null;
 
+          // Always resolve canonical PromoQui flyer path `/volantino/<slug>/<id>` even when `rawF.href`
+          // is an external redirect (`next.doveconviene.it` / `s2s.promoqui.it`), so we inspect real storesData & gibs!
+          const rawHrefStr = String(rawF.href || '').trim();
+          const canonicalFlyerPath = rawHrefStr.startsWith('/volantino/')
+            ? rawHrefStr
+            : `/volantino/${slug}/${rawF.id}`;
+
           let gibs = [];
+          let upstreamGibsCount = null;
+          let flyerGeoRejected = false;
+
           if (rawF.href) {
             try {
-              const resF = await this.fetchWithTimeout(`https://www.promoqui.it${rawF.href}`, NETWORK_TIMEOUT_MS);
+              const resF = await this.fetchWithTimeout(`https://www.promoqui.it${canonicalFlyerPath}`, NETWORK_TIMEOUT_MS);
               if (resF && resF.ok) {
                 const htmlF = await resF.text();
                 const nextDataF = this.extractNextData(htmlF);
-                gibs = nextDataF?.props?.pageProps?.apiResources?.flyerGibsData?.flyerGibs || [];
+                const flyerApi = nextDataF?.props?.pageProps?.apiResources;
+
+                // Strict province/city geo-truth check on PromoQui's attached storesData (TASK-DATA-03):
+                // If PromoQui explicitly attaches stores to this flyer and NONE are in Provincia di Genova (GE) or Rapallo,
+                // reject it immediately (eliminates silent Catanzaro/Latina/Roma flyer leaks).
+                const attachedStores = flyerApi?.storesData?.stores;
+                const isNationalFlyer = Boolean(flyerApi?.flyer?.is_national);
+                if (Array.isArray(attachedStores) && attachedStores.length > 0 && !isNationalFlyer) {
+                  const coversGenovaOrRapallo = attachedStores.some(
+                    (st) =>
+                      String(st?.province || '').toUpperCase().trim() === 'GE' ||
+                      /rapallo|santa\s+margherita|chiavari|recco|genova|lavagna|sestri\s+levante|zoagli/i.test(
+                        String(st?.city || '')
+                      )
+                  );
+                  if (!coversGenovaOrRapallo) {
+                    flyerGeoRejected = true;
+                    const leakedProvinces = [...new Set(attachedStores.map((st) => st?.province).filter(Boolean))].slice(0, 4).join(',');
+                    this._updateProgress(
+                      {},
+                      `⛔ Scartato volantino fuori zona "${rawF.title}" (${store.brand}) — province [${leakedProvinces}], non valido a Rapallo (GE).`
+                    );
+                  }
+                }
+
+                if (!flyerGeoRejected) {
+                  gibs = flyerApi?.flyerGibsData?.flyerGibs || [];
+                  upstreamGibsCount = flyerApi?.flyerGibsData?.flyerGibsCount ?? gibs.length;
+                }
               }
             } catch (_) {
               // Fallback to retailer page gibs matching this flyer
             }
           }
+
+          if (flyerGeoRejected) {
+            continue;
+          }
+
           if (gibs.length === 0) {
             const pageGibs = r.flyerGibsData?.flyerGibs || [];
             gibs = pageGibs.filter(g => !g.flyer_id || String(g.flyer_id) === String(rawF.id));
@@ -737,6 +788,8 @@ export class IngestionService {
           const pagePreviewImageMap = new Map();
           pagePreviewImageMap.set(1, page1);
           if (page2) pagePreviewImageMap.set(2, page2);
+
+          let flyerOffersExtracted = 0;
 
           for (const g of gibs) {
             const promoDigits = parseFloat(
@@ -760,7 +813,8 @@ export class IngestionService {
 
             const title = (g.title || 'Prodotto in Offerta').trim();
             const brand = (g.settings?.brand || store.brand).trim();
-            const category = classifyOfferCategory(title, brand, store.chainId);
+            const domain = classifyProductDomain({ title, brand, chainId: store.chainId, storeId: store.id });
+            const category = classifyCanonicalCategory({ title, brand, chainId: store.chainId, storeId: store.id }, domain);
             const imageUrl = g.settings?.image_url || g.image || coverImageUrl;
             const rawUnitSuffix = g.settings?.price_suffix ? String(g.settings.price_suffix).trim() : null;
             const unitPrice = rawUnitSuffix ? `${promoPrice.toFixed(2).replace('.', ',')} € ${rawUnitSuffix}` : null;
@@ -783,6 +837,7 @@ export class IngestionService {
               discountPercentage,
               discountLabel,
               unitPrice,
+              domain,
               category,
               imageUrl,
               validFrom,
@@ -800,7 +855,15 @@ export class IngestionService {
               pagePreviewImageMap.set(pageNum, imageUrl);
             }
             storeOffersAdded++;
+            flyerOffersExtracted++;
           }
+
+          // Skip empty ghost/redirect flyers with 0 real priced offers unless explicit multi-page images exist
+          if (flyerOffersExtracted === 0 && (!Array.isArray(rawF.imageAssets?.pages) || rawF.imageAssets.pages.length === 0)) {
+            continue;
+          }
+
+          verifiedFlyersForStore++;
 
           const maxDetectedPage = Math.max(
             page2 ? 2 : 1,
@@ -827,6 +890,9 @@ export class IngestionService {
               startDate: validFrom,
               endDate: validTo,
               pageCount: pages.length,
+              extractedOffersCount: flyerOffersExtracted,
+              upstreamIndexedCap: upstreamGibsCount === 50 ? 50 : null,
+              geoVerifiedProvince: 'GE',
               coverImageUrl,
               pages,
               pageImages: pages.map(p => p.imageUrl),
@@ -844,7 +910,7 @@ export class IngestionService {
           flyersFound: allFlyers.length,
           offersFound: allOffers.length,
           percent: Math.min(96, Math.round(((idx + 1) / totalStores) * 90) + 5)
-        }, `✔ ${store.name}: ${selectedFlyers.length} volantini validi per Rapallo, ${storeOffersAdded} prodotti estratti.`);
+        }, `✔ ${store.name}: ${verifiedFlyersForStore} volantini verificati GE/Rapallo, ${storeOffersAdded} prodotti estratti.`);
       } catch (storeErr) {
         errors.push({ storeId: store.id, message: storeErr.message });
         this._updateProgress({

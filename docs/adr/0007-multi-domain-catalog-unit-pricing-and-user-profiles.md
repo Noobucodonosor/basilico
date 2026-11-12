@@ -71,3 +71,6 @@ Il catalogo attuale di `Basilico` ([ADR-0001](./0001-core-architecture.md) – [
 - [x] **TASK-M1-02**: **Storico Prezzi Osservati ("È un vero sconto?"), Inserimento Prezzo al Banco, Profili Utente Multipli con Esclusioni a 4 Livelli e Shell UI a 6 Stanze**
   - *File coinvolti*: `server/services/priceHistoryService.js`, `server/services/userProfileService.js`, `server/routes/profiles.js`, `server/routes/prices.js`, `src/App.jsx`, `src/components/Header.jsx`, `src/components/OfferCard.jsx`, `tests/api/profiles_and_prices.test.js`
   - *Verification Step*: `npm test`
+- [x] **TASK-DATA-03** (`#35`): **6° Dominio `bazar_seasonal` e 4 Categorie Dedicate Extra-Casa (`Pentole, Cucina ed Elettrodomestici`, `Animali Domestici`, `Giocattoli, Natale e Tempo Libero`, `Tessile, Abbigliamento e Bazar Casa`) per preservare al 100% la purezza di `Cura Casa e Bucato`**
+  - *File coinvolti*: `server/services/domainClassifier.js`, `server/services/offerService.js`, `src/components/CategoryFilters.jsx`, `src/components/OfferCard.jsx`, `src/App.jsx`, `tests/unit/domain_and_units.test.js`
+  - *Verification Step*: `npm run eval && npm test`

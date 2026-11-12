@@ -19,12 +19,13 @@ import { Agentation } from 'agentation';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
 const DOMAIN_PILLS = [
-  { id: null, label: 'Tutti i 5 Domini', icon: '🌐' },
+  { id: null, label: 'Tutti i Domini', icon: '🌐' },
   { id: 'food_human', label: 'Alimentari & Bevande', icon: '🥩' },
   { id: 'home_cleaning', label: 'Chimica & Cura Casa', icon: '🧼' },
-  { id: 'kitchen_cookware', label: 'Pentole & Utensili', icon: '🍳' },
+  { id: 'kitchen_cookware', label: 'Pentole & Elettrodomestici', icon: '🍳' },
   { id: 'personal_care', label: 'Igiene Persona', icon: '🧴' },
-  { id: 'pet_care', label: 'Animali (Pet)', icon: '🐾' }
+  { id: 'pet_care', label: 'Animali (Pet)', icon: '🐾' },
+  { id: 'bazar_seasonal', label: 'Giocattoli, Natale & Bazar', icon: '🎄' }
 ];
 
 const DOMAIN_ALLOWED_CATEGORIES = {
@@ -39,9 +40,13 @@ const DOMAIN_ALLOWED_CATEGORIES = {
     'Surgelati'
   ],
   home_cleaning: ['Cura Casa e Bucato'],
-  kitchen_cookware: ['Cura Casa e Bucato'],
+  kitchen_cookware: ['Pentole, Cucina ed Elettrodomestici'],
   personal_care: ['Cura Persona e Igiene'],
-  pet_care: ['Cura Casa e Bucato']
+  pet_care: ['Animali Domestici'],
+  bazar_seasonal: [
+    'Giocattoli, Natale e Tempo Libero',
+    'Tessile, Abbigliamento e Bazar Casa'
+  ]
 };
 
 export function App() {
@@ -66,7 +71,9 @@ export function App() {
   const [activeProfileId, setActiveProfileId] = useState('dany');
   const [profilesReady, setProfilesReady] = useState(false);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
+  const [counterDefaultStoreId, setCounterDefaultStoreId] = useState(null);
   const [localShops, setLocalShops] = useState([]);
+  const [counterObservations, setCounterObservations] = useState([]);
   const [selectedCreaFoodId, setSelectedCreaFoodId] = useState(null);
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -108,9 +115,21 @@ export function App() {
     }
   }, []);
 
+  const refreshCounterObservations = useCallback(() => {
+    fetch('/api/prices/history?channel=counter_observed')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (Array.isArray(data?.observations)) {
+          setCounterObservations(data.observations.slice(0, 12));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     refreshShoppingCount();
-  }, [activeRoom, refreshShoppingCount]);
+    refreshCounterObservations();
+  }, [activeRoom, refreshShoppingCount, refreshCounterObservations]);
 
   // Load user profiles and local shops
   useEffect(() => {
@@ -467,18 +486,25 @@ export function App() {
                   </p>
                 </div>
 
-                {currentStoreFlyer && (
-                  <button
-                    type="button"
-                    onClick={() => handleOpenFlyer(currentStoreFlyer)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap self-start sm:self-auto cursor-pointer"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    <span>Sfoglia volantino ({currentStoreFlyer.pageCount} pag.)</span>
-                  </button>
-                )}
+                <div className="flex flex-col items-start sm:items-end gap-1.5">
+                  {currentStoreFlyer && (
+                    <button
+                      type="button"
+                      onClick={() => handleOpenFlyer(currentStoreFlyer)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      <span>Sfoglia volantino ({currentStoreFlyer.pageCount} pag.)</span>
+                    </button>
+                  )}
+                  {currentStoreFlyer?.upstreamIndexedCap && (
+                    <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium">
+                      ℹ️ Nota trasparenza: PromoQui indicizza max {currentStoreFlyer.upstreamIndexedCap} prodotti per volantino (verificato prov. GE)
+                    </span>
+                  )}
+                </div>
               </section>
             )}
 
@@ -610,7 +636,10 @@ export function App() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setIsCounterModalOpen(true)}
+                    onClick={() => {
+                      setCounterDefaultStoreId(null);
+                      setIsCounterModalOpen(true);
+                    }}
                     className="px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer shrink-0"
                   >
                     + Prezzo visto al banco
@@ -618,15 +647,55 @@ export function App() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
                   {localShops.map((shop) => (
-                    <div key={shop.id} className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 text-xs">
+                    <button
+                      key={shop.id}
+                      type="button"
+                      onClick={() => {
+                        setCounterDefaultStoreId(shop.id);
+                        setIsCounterModalOpen(true);
+                      }}
+                      className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-amber-50/60 hover:border-amber-300 text-left text-xs transition-colors cursor-pointer"
+                    >
                       <div className="font-bold text-slate-800 truncate">{shop.name}</div>
                       <div className="text-[11px] text-slate-500 truncate">{shop.address}</div>
                       <div className="mt-1 inline-block text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
-                        Scontrini & Banco
+                        + Registra prezzo al banco
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
+                {counterObservations.length > 0 && (
+                  <div className="pt-2 border-t border-slate-100 space-y-2">
+                    <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
+                      📌 Ultimi prezzi reali rilevati al banco a Rapallo ({counterObservations.length})
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                      {counterObservations.map((obs) => (
+                        <div
+                          key={obs.id}
+                          className="p-2.5 rounded-lg bg-emerald-50/40 border border-emerald-200 flex items-center justify-between gap-2 text-xs"
+                        >
+                          <div className="min-w-0">
+                            <div className="font-bold text-slate-900 truncate">{obs.title}</div>
+                            <div className="text-[10px] text-slate-500 truncate">
+                              {obs.storeName || obs.storeId} • {obs.unitString || '1 pz'}
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <div className="font-extrabold text-emerald-800">
+                              € {Number(obs.price || 0).toFixed(2).replace('.', ',')}
+                            </div>
+                            {obs.ediblePricePerKg ? (
+                              <div className="text-[10px] text-slate-600">
+                                {Number(obs.ediblePricePerKg).toFixed(2).replace('.', ',')} €/kg
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </section>
             )}
           </main>
@@ -657,6 +726,7 @@ export function App() {
       ) : activeRoom === 'room-4-cucina' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <KitchenCareView
+            onAddToShoppingList={handleAddToShoppingList}
             onNavigateToStoreDomain={(domainId) => {
               handleSelectDomain(domainId);
               setSelectedStoreId(null);
@@ -703,7 +773,11 @@ export function App() {
         isOpen={isCounterModalOpen}
         onClose={() => setIsCounterModalOpen(false)}
         stores={stores}
-        onSaved={() => refetchOffers()}
+        defaultStoreId={counterDefaultStoreId}
+        onSaved={() => {
+          refetchOffers();
+          refreshCounterObservations();
+        }}
       />
 
       {/* Informative Operation Status Dialog (ADR-0005) */}

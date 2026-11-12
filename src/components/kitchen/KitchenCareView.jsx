@@ -8,7 +8,7 @@ const HEAT_SOURCE_LABELS = {
   boat_no_stove: { label: '⛵ Cambusa Barca / Borsa Termica (Senza Forno)', desc: 'Fornello basculante singolo o zero-fuoco; privilegiate preparazioni one-pot.' }
 };
 
-export function KitchenCareView({ onNavigateToStoreDomain }) {
+export function KitchenCareView({ onNavigateToStoreDomain, onAddToShoppingList }) {
   const [kitchenState, setKitchenState] = useState(null);
   const [resetData, setResetData] = useState({ protocols: [], underSinkCatalog: [], liveRapalloCleaningOffers: [] });
   const [loading, setLoading] = useState(true);
@@ -240,30 +240,60 @@ export function KitchenCareView({ onNavigateToStoreDomain }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
           {(resetData.underSinkCatalog || []).map((item) => (
-            <button
+            <div
               key={item.id}
-              type="button"
-              onClick={() => handleUpdateConfig({ toggleCleaningKey: item.key })}
-              className={`p-3 rounded-xl border text-left text-xs transition-all cursor-pointer ${
+              className={`p-3 rounded-xl border text-left text-xs transition-all flex flex-col justify-between ${
                 item.ownedInUnderSink
                   ? 'bg-sky-50 border-sky-300 text-sky-950'
                   : 'bg-slate-50 border-slate-200 text-slate-600'
               }`}
             >
-              <div className="font-extrabold flex items-center justify-between">
-                <span>{item.ownedInUnderSink ? '✓ In Sottolavello' : '🛒 Mancante'}</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-white border border-slate-200">
-                  {item.phRange}
-                </span>
-              </div>
-              <div className="font-bold text-slate-900 mt-1">{item.name}</div>
-              <div className="text-[10px] text-slate-500 mt-0.5">{item.brand} • ~€ {item.referencePriceEuro}</div>
-              {item.matchedOffers?.length > 0 && (
-                <div className="mt-1.5 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5">
-                  🏷️ Promo {item.matchedOffers[0].storeName}: €{Number(item.matchedOffers[0].promoPrice).toFixed(2)}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => handleUpdateConfig({ toggleCleaningKey: item.key })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleUpdateConfig({ toggleCleaningKey: item.key });
+                  }
+                }}
+                className="cursor-pointer"
+              >
+                <div className="font-extrabold flex items-center justify-between">
+                  <span>{item.ownedInUnderSink ? '✓ In Sottolavello' : '🛒 Mancante'}</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-white border border-slate-200">
+                    {item.phRange}
+                  </span>
                 </div>
+                <div className="font-bold text-slate-900 mt-1">{item.name}</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">{item.brand} • ~€ {item.referencePriceEuro}</div>
+                {item.matchedOffers?.length > 0 && (
+                  <div className="mt-1.5 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5">
+                    🏷️ Promo {item.matchedOffers[0].storeName}: €{Number(item.matchedOffers[0].promoPrice).toFixed(2)}
+                  </div>
+                )}
+              </div>
+              {!item.ownedInUnderSink && onAddToShoppingList && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    onAddToShoppingList({
+                      name: item.matchedOffers?.[0]?.title || item.name,
+                      domain: 'home_cleaning',
+                      source: 'kitchen_care',
+                      unitPriceEur: Number(item.matchedOffers?.[0]?.promoPrice ?? item.referencePriceEuro ?? 2.5),
+                      preferredChain: item.matchedOffers?.[0]?.storeName || 'Tigotà / PiùMe Rapallo',
+                      storeId: item.matchedOffers?.[0]?.storeId || null,
+                      onPromo: Boolean(item.matchedOffers?.length > 0)
+                    })
+                  }
+                  className="mt-2 w-full py-1 px-2 rounded-lg text-[10px] font-extrabold bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer"
+                >
+                  + Aggiungi a Lista Spesa
+                </button>
               )}
-            </button>
+            </div>
           ))}
         </div>
       </section>

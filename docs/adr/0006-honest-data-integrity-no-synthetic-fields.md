@@ -52,3 +52,4 @@ Un audit esterno indipendente sul codice di `server/services/ingestionService.js
 | Task ID | Titolo | Priorità | File Coinvolti |
 | :--- | :--- | :--- | :--- |
 | **TASK-DATA-02** | Rimozione Dati Sintetici (Prezzi Originali `×1.25`, Scadenze Prorogate, Limite 25 Offerte, `unitPrice` Fittizio, Fallback Fuori Provincia) e Rigenerazione Pulita del Dataset Seed | **P0 — Critica** | `server/services/ingestionService.js`, `data/seed/rapallo_*.json`, `src/components/OfferCard.jsx`, `tests/` |
+| **TASK-DATA-03** (`#35`) | Verifica Territoriale `GE`/Rapallo su `storesData.stores` PromoQui (esclusione leak silenziosi fuori provincia CZ/LT/RM + risoluzione redirect canonici `/volantino/<slug>/<id>` per Penny/Unieuro) e Trasparenza Cap `50` Offerte | **P0 — Critica** | `server/services/ingestionService.js`, `src/App.jsx`, `tests/integration/ingestion-service.test.js`, `evals/run_evals.mjs` |

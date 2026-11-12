@@ -90,13 +90,13 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 function canStoreSupplyDomain(store, domain = 'food_human') {
   if (!store) return false;
   if (store.storeCategory === 'gdo') {
-    return domain !== 'pet_care' || true; // Supermarkets carry pet, home cleaning, basic cookware & all food
+    return true; // Full-line supermarkets carry food, home cleaning, personal care, basic cookware, pet & seasonal bazar
   }
   if (store.storeCategory === 'cura_casa_persona') {
     return domain === 'home_cleaning' || domain === 'personal_care';
   }
   if (store.storeCategory === 'elettronica_cucina') {
-    return domain === 'kitchen_cookware';
+    return domain === 'kitchen_cookware' || domain === 'bazar_seasonal';
   }
   if (store.storeCategory === 'pet') {
     return domain === 'pet_care';
@@ -236,10 +236,14 @@ export class ShoppingListService {
       preferredStoreId: payload.storeId || payload.preferredStoreId || null,
       preferredChain:
         payload.preferredChain ||
-        (domain === 'home_cleaning'
+        (domain === 'home_cleaning' || domain === 'personal_care'
           ? 'Tigotà / PiùMe Rapallo'
           : domain === 'kitchen_cookware'
           ? 'Unieuro City Rapallo'
+          : domain === 'pet_care'
+          ? 'Arcaplanet Rapallo'
+          : domain === 'bazar_seasonal'
+          ? 'Carrefour Market / Penny Rapallo'
           : 'Basko / Coop Liguria Rapallo'),
       onPromo: Boolean(payload.onPromo),
       usedInMeals: payload.usedInMeals || [],
@@ -248,7 +252,59 @@ export class ShoppingListService {
     };
 
     const state = this._load();
+    const normName = normalizeSearchToken(name);
+    const existing = state.items.find(
+      (i) => normalizeSearchToken(i.name) === normName && (i.domain || 'food_human') === domain
+    );
+    if (existing) {
+      existing.packsToBuy = Number(existing.packsToBuy || 1) + packsToBuy;
+      existing.totalPurchasedGrams = existing.packsToBuy * existing.packSizeGrams;
+      existing.totalRequiredGrams = existing.packsToBuy * existing.packSizeGrams;
+      existing.unitPriceEur = Number(unitPriceEur.toFixed(2));
+      existing.lineTotalEur = Number((existing.packsToBuy * existing.unitPriceEur).toFixed(2));
+      if (payload.preferredChain) existing.preferredChain = payload.preferredChain;
+      if (payload.storeId) existing.preferredStoreId = payload.storeId;
+      if (payload.onPromo !== undefined) existing.onPromo = Boolean(payload.onPromo);
+      this._save();
+      return this.getShoppingListState();
+    }
+
     state.items.unshift(item);
+    this._save();
+    return this.getShoppingListState();
+  }
+
+  removeItem(itemId) {
+    const state = this._load();
+    state.items = state.items.filter((i) => i.id !== itemId);
+    this._save();
+    return this.getShoppingListState();
+  }
+
+  replaceItemWithPlanB(itemId, replacement = {}) {
+    const state = this._load();
+    const idx = state.items.findIndex((i) => i.id === itemId);
+    if (idx === -1) {
+      const err = new Error(`Articolo non trovato: ${itemId}`);
+      err.status = 404;
+      throw err;
+    }
+    const current = state.items[idx];
+    const nextTitle = String(replacement.title || replacement.name || current.name).trim();
+    const nextPrice = Number(replacement.price ?? replacement.unitPriceEur ?? current.unitPriceEur);
+    const validPrice = Number.isFinite(nextPrice) && nextPrice > 0 ? Number(nextPrice.toFixed(2)) : current.unitPriceEur;
+    const packs = Math.max(1, Number(current.packsToBuy || 1));
+
+    state.items[idx] = {
+      ...current,
+      name: nextTitle,
+      unitPriceEur: validPrice,
+      lineTotalEur: Number((packs * validPrice).toFixed(2)),
+      preferredChain: replacement.chainName || replacement.preferredChain || current.preferredChain,
+      preferredStoreId: replacement.storeId || null,
+      onPromo: true,
+      substitutedFrom: current.name
+    };
     this._save();
     return this.getShoppingListState();
   }
@@ -374,6 +430,7 @@ export class ShoppingListService {
       alternatives.push({
         offerId: entry.offer.id,
         title: entry.offer.title,
+        storeId: entry.offer.storeId || null,
         chainName: entry.offer.storeName || entry.offer.chainName || entry.offer.brand || entry.offer.chainId,
         price: Number(entry.offer.promoPrice ?? entry.offer.price ?? entry.offer.discountPrice ?? 0),
         rationale: entry.rationale

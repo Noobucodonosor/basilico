@@ -20448,7 +20448,11 @@ const VALID_PRODUCT_CATEGORIES = [
   "Acqua e Bevande",
   "Surgelati",
   "Cura Casa e Bucato",
-  "Cura Persona e Igiene"
+  "Cura Persona e Igiene",
+  "Pentole, Cucina ed Elettrodomestici",
+  "Animali Domestici",
+  "Giocattoli, Natale e Tempo Libero",
+  "Tessile, Abbigliamento e Bazar Casa"
 ];
 function CategoryFilters({
   categories = VALID_PRODUCT_CATEGORIES,
@@ -20537,7 +20541,8 @@ const DOMAIN_BADGE_MAP = {
   home_cleaning: { label: "Chimica & Casa", color: "bg-sky-50 text-sky-800 border-sky-200" },
   kitchen_cookware: { label: "Pentole & Cucina", color: "bg-amber-50 text-amber-800 border-amber-200" },
   personal_care: { label: "Igiene Persona", color: "bg-purple-50 text-purple-800 border-purple-200" },
-  pet_care: { label: "Pet Care", color: "bg-orange-50 text-orange-800 border-orange-200" }
+  pet_care: { label: "Pet Care", color: "bg-orange-50 text-orange-800 border-orange-200" },
+  bazar_seasonal: { label: "Giocattoli & Bazar", color: "bg-pink-50 text-pink-800 border-pink-200" }
 };
 function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) {
   const [addedToList, setAddedToList] = reactExports.useState(false);
@@ -21640,15 +21645,20 @@ function SyncStatusModal({ isOpen, progress, onClose }) {
   );
 }
 
-function CounterPriceModal({ isOpen, onClose, stores = [], onSaved }) {
+function CounterPriceModal({ isOpen, onClose, stores = [], defaultStoreId = null, onSaved }) {
   const [title, setTitle] = reactExports.useState("");
   const [brand, setBrand] = reactExports.useState("");
   const [price, setPrice] = reactExports.useState("");
   const [unitString, setUnitString] = reactExports.useState("1 kg");
-  const [storeId, setStoreId] = reactExports.useState("pescheria-locale-rapallo");
+  const [storeId, setStoreId] = reactExports.useState(defaultStoreId || "pescheria-locale-rapallo");
   const [notes, setNotes] = reactExports.useState("");
   const [submitting, setSubmitting] = reactExports.useState(false);
   const [error, setError] = reactExports.useState(null);
+  React.useEffect(() => {
+    if (defaultStoreId) {
+      setStoreId(defaultStoreId);
+    }
+  }, [defaultStoreId, isOpen]);
   if (!isOpen) return null;
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23696,7 +23706,7 @@ const HEAT_SOURCE_LABELS$1 = {
   electric_radiant: { label: "⚡ Piastra Elettrica / Vetroceramica Radiante", desc: "Alta inerzia termica; richiede fondo perfettamente piatto." },
   boat_no_stove: { label: "⛵ Cambusa Barca / Borsa Termica (Senza Forno)", desc: "Fornello basculante singolo o zero-fuoco; privilegiate preparazioni one-pot." }
 };
-function KitchenCareView({ onNavigateToStoreDomain }) {
+function KitchenCareView({ onNavigateToStoreDomain, onAddToShoppingList }) {
   const [kitchenState, setKitchenState] = reactExports.useState(null);
   const [resetData, setResetData] = reactExports.useState({ protocols: [], underSinkCatalog: [], liveRapalloCleaningOffers: [] });
   const [loading, setLoading] = reactExports.useState(true);
@@ -23911,28 +23921,60 @@ function KitchenCareView({ onNavigateToStoreDomain }) {
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Spunta i prodotti che hai già in casa sotto il lavello: il protocollo Kitchen Reset segnalerà solo ciò che ti manca da Tigotà o PiùMe." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5", children: (resetData.underSinkCatalog || []).map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "button",
+        "div",
         {
-          type: "button",
-          onClick: () => handleUpdateConfig({ toggleCleaningKey: item.key }),
-          className: `p-3 rounded-xl border text-left text-xs transition-all cursor-pointer ${item.ownedInUnderSink ? "bg-sky-50 border-sky-300 text-sky-950" : "bg-slate-50 border-slate-200 text-slate-600"}`,
+          className: `p-3 rounded-xl border text-left text-xs transition-all flex flex-col justify-between ${item.ownedInUnderSink ? "bg-sky-50 border-sky-300 text-sky-950" : "bg-slate-50 border-slate-200 text-slate-600"}`,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold flex items-center justify-between", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.ownedInUnderSink ? "✓ In Sottolavello" : "🛒 Mancante" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] px-1.5 py-0.2 rounded bg-white border border-slate-200", children: item.phRange })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900 mt-1", children: item.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500 mt-0.5", children: [
-              item.brand,
-              " • ~€ ",
-              item.referencePriceEuro
-            ] }),
-            item.matchedOffers?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-1.5 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5", children: [
-              "🏷️ Promo ",
-              item.matchedOffers[0].storeName,
-              ": €",
-              Number(item.matchedOffers[0].promoPrice).toFixed(2)
-            ] })
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                role: "button",
+                tabIndex: 0,
+                onClick: () => handleUpdateConfig({ toggleCleaningKey: item.key }),
+                onKeyDown: (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleUpdateConfig({ toggleCleaningKey: item.key });
+                  }
+                },
+                className: "cursor-pointer",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold flex items-center justify-between", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: item.ownedInUnderSink ? "✓ In Sottolavello" : "🛒 Mancante" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] px-1.5 py-0.2 rounded bg-white border border-slate-200", children: item.phRange })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900 mt-1", children: item.name }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500 mt-0.5", children: [
+                    item.brand,
+                    " • ~€ ",
+                    item.referencePriceEuro
+                  ] }),
+                  item.matchedOffers?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-1.5 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5", children: [
+                    "🏷️ Promo ",
+                    item.matchedOffers[0].storeName,
+                    ": €",
+                    Number(item.matchedOffers[0].promoPrice).toFixed(2)
+                  ] })
+                ]
+              }
+            ),
+            !item.ownedInUnderSink && onAddToShoppingList && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => onAddToShoppingList({
+                  name: item.matchedOffers?.[0]?.title || item.name,
+                  domain: "home_cleaning",
+                  source: "kitchen_care",
+                  unitPriceEur: Number(item.matchedOffers?.[0]?.promoPrice ?? item.referencePriceEuro ?? 2.5),
+                  preferredChain: item.matchedOffers?.[0]?.storeName || "Tigotà / PiùMe Rapallo",
+                  storeId: item.matchedOffers?.[0]?.storeId || null,
+                  onPromo: Boolean(item.matchedOffers?.length > 0)
+                }),
+                className: "mt-2 w-full py-1 px-2 rounded-lg text-[10px] font-extrabold bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer",
+                children: "+ Aggiungi a Lista Spesa"
+              }
+            )
           ]
         },
         item.id
@@ -25190,6 +25232,8 @@ function AisleChecklistModal({
   shoppingList,
   onClose,
   onToggleItem,
+  onRemoveItem,
+  onReplacePlanB,
   onCompleteAndLoadPantry
 }) {
   const [planBData, setPlanBData] = reactExports.useState(null);
@@ -25312,18 +25356,32 @@ function AisleChecklistModal({
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1.5", children: planBData.planBAlternatives.map((alt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "div",
               {
-                className: "p-2 rounded-lg bg-white border border-amber-200 flex items-center justify-between",
+                className: "p-2.5 rounded-lg bg-white border border-amber-200 flex flex-wrap items-center justify-between gap-2",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900", children: alt.title }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500", children: alt.rationale })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-right font-extrabold text-emerald-700", children: [
-                    "€",
-                    Number(alt.price || 0).toFixed(2),
-                    " (",
-                    alt.chainName,
-                    ")"
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-right font-extrabold text-emerald-700", children: [
+                      "€",
+                      Number(alt.price || 0).toFixed(2),
+                      " (",
+                      alt.chainName,
+                      ")"
+                    ] }),
+                    onReplacePlanB && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: async () => {
+                          await onReplacePlanB(planBData.originalItem.id, alt);
+                          setPlanBData(null);
+                        },
+                        className: "px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer",
+                        children: "✓ Sostituisci nel carrello"
+                      }
+                    )
                   ] })
                 ]
               },
@@ -25381,6 +25439,17 @@ function AisleChecklistModal({
                         onClick: () => handleFetchPlanB(item.id),
                         className: "px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 cursor-pointer",
                         children: loadingPlanBId === item.id ? "..." : "🔄 Piano B Scaffale"
+                      }
+                    ),
+                    onRemoveItem && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: () => onRemoveItem(item.id),
+                        title: "Rimuovi articolo dalla lista spesa",
+                        "aria-label": `Rimuovi ${item.name}`,
+                        className: "px-2 py-1 rounded-lg text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer",
+                        children: "✕"
                       }
                     )
                   ] })
@@ -25487,6 +25556,34 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
       if (onShoppingListChange) {
         onShoppingListChange(state?.subtotals?.totalItemsCount || 0);
       }
+    }
+  };
+  const handleRemoveShoppingItem = async (itemId) => {
+    const res = await fetch(`/api/shopping-list/items/${encodeURIComponent(itemId)}`, {
+      method: "DELETE"
+    });
+    if (res.ok) {
+      const state = await res.json();
+      setShoppingList(state);
+      if (onShoppingListChange) {
+        onShoppingListChange(state?.subtotals?.totalItemsCount || 0);
+      }
+    }
+  };
+  const handleReplacePlanBItem = async (itemId, alt) => {
+    const res = await fetch(`/api/shopping-list/items/${encodeURIComponent(itemId)}/replace-plan-b`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(alt || {})
+    });
+    if (res.ok) {
+      const state = await res.json();
+      setShoppingList(state);
+      if (onShoppingListChange) {
+        onShoppingListChange(state?.subtotals?.totalItemsCount || 0);
+      }
+      setStatusToast(`🔄 Sostituito nel carrello con "${alt?.title}" (${alt?.chainName})`);
+      setTimeout(() => setStatusToast(""), 3500);
     }
   };
   const handleAddManualItem = async (e) => {
@@ -25907,7 +26004,10 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "food_human", children: "🥩 Alimentari (Subtotale Cibo)" }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "home_cleaning", children: "🧼 Chimica Casa / Tigotà (Subtotale Casa)" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "kitchen_cookware", children: "🍳 Pentole & Utensili (Subtotale Casa)" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "personal_care", children: "🧴 Cura Persona & Igiene (Subtotale Casa)" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "kitchen_cookware", children: "🍳 Pentole & Elettrodomestici (Subtotale Casa)" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "pet_care", children: "🐾 Animali Domestici (Subtotale Casa)" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "bazar_seasonal", children: "🎄 Giocattoli, Natale & Bazar (Subtotale Casa)" })
                   ]
                 }
               ),
@@ -25941,6 +26041,8 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
         shoppingList,
         onClose: () => setIsAisleModalOpen(false),
         onToggleItem: handleToggleShoppingItem,
+        onRemoveItem: handleRemoveShoppingItem,
+        onReplacePlanB: handleReplacePlanBItem,
         onCompleteAndLoadPantry: handleCompleteAndLoadPantry
       }
     )
@@ -38446,12 +38548,13 @@ function useSupermarketData(filterOptions = {}) {
 }
 
 const DOMAIN_PILLS = [
-  { id: null, label: "Tutti i 5 Domini", icon: "🌐" },
+  { id: null, label: "Tutti i Domini", icon: "🌐" },
   { id: "food_human", label: "Alimentari & Bevande", icon: "🥩" },
   { id: "home_cleaning", label: "Chimica & Cura Casa", icon: "🧼" },
-  { id: "kitchen_cookware", label: "Pentole & Utensili", icon: "🍳" },
+  { id: "kitchen_cookware", label: "Pentole & Elettrodomestici", icon: "🍳" },
   { id: "personal_care", label: "Igiene Persona", icon: "🧴" },
-  { id: "pet_care", label: "Animali (Pet)", icon: "🐾" }
+  { id: "pet_care", label: "Animali (Pet)", icon: "🐾" },
+  { id: "bazar_seasonal", label: "Giocattoli, Natale & Bazar", icon: "🎄" }
 ];
 const DOMAIN_ALLOWED_CATEGORIES = {
   food_human: [
@@ -38465,9 +38568,13 @@ const DOMAIN_ALLOWED_CATEGORIES = {
     "Surgelati"
   ],
   home_cleaning: ["Cura Casa e Bucato"],
-  kitchen_cookware: ["Cura Casa e Bucato"],
+  kitchen_cookware: ["Pentole, Cucina ed Elettrodomestici"],
   personal_care: ["Cura Persona e Igiene"],
-  pet_care: ["Cura Casa e Bucato"]
+  pet_care: ["Animali Domestici"],
+  bazar_seasonal: [
+    "Giocattoli, Natale e Tempo Libero",
+    "Tessile, Abbigliamento e Bazar Casa"
+  ]
 };
 function App() {
   const initialParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
@@ -38488,7 +38595,9 @@ function App() {
   const [activeProfileId, setActiveProfileId] = reactExports.useState("dany");
   const [profilesReady, setProfilesReady] = reactExports.useState(false);
   const [isCounterModalOpen, setIsCounterModalOpen] = reactExports.useState(false);
+  const [counterDefaultStoreId, setCounterDefaultStoreId] = reactExports.useState(null);
   const [localShops, setLocalShops] = reactExports.useState([]);
+  const [counterObservations, setCounterObservations] = reactExports.useState([]);
   const [selectedCreaFoodId, setSelectedCreaFoodId] = reactExports.useState(null);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = reactExports.useState(false);
   const [activeFlyer, setActiveFlyer] = reactExports.useState(null);
@@ -38523,9 +38632,18 @@ function App() {
     } catch (_) {
     }
   }, []);
+  const refreshCounterObservations = reactExports.useCallback(() => {
+    fetch("/api/prices/history?channel=counter_observed").then((r) => r.ok ? r.json() : null).then((data) => {
+      if (Array.isArray(data?.observations)) {
+        setCounterObservations(data.observations.slice(0, 12));
+      }
+    }).catch(() => {
+    });
+  }, []);
   reactExports.useEffect(() => {
     refreshShoppingCount();
-  }, [activeRoom, refreshShoppingCount]);
+    refreshCounterObservations();
+  }, [activeRoom, refreshShoppingCount, refreshCounterObservations]);
   reactExports.useEffect(() => {
     fetch("/api/profiles").then((r) => r.ok ? r.json() : null).then((data) => {
       if (data && Array.isArray(data.profiles)) {
@@ -38808,22 +38926,29 @@ function App() {
               activeStore.logistics?.avgVisitMinutes != null ? ` • ⏱️ ~${activeStore.logistics.avgVisitMinutes} min visita` : ""
             ] })
           ] }),
-          currentStoreFlyer && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "button",
-            {
-              type: "button",
-              onClick: () => handleOpenFlyer(currentStoreFlyer),
-              className: "inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap self-start sm:self-auto cursor-pointer",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-4 h-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                  "Sfoglia volantino (",
-                  currentStoreFlyer.pageCount,
-                  " pag.)"
-                ] })
-              ]
-            }
-          )
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-start sm:items-end gap-1.5", children: [
+            currentStoreFlyer && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: () => handleOpenFlyer(currentStoreFlyer),
+                className: "inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-4 h-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                    "Sfoglia volantino (",
+                    currentStoreFlyer.pageCount,
+                    " pag.)"
+                  ] })
+                ]
+              }
+            ),
+            currentStoreFlyer?.upstreamIndexedCap && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium", children: [
+              "ℹ️ Nota trasparenza: PromoQui indicizza max ",
+              currentStoreFlyer.upstreamIndexedCap,
+              " prodotti per volantino (verificato prov. GE)"
+            ] })
+          ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: `flex flex-col sm:flex-row items-stretch sm:items-center gap-3 ${isMobileSearchOpen ? "flex" : "hidden sm:flex"}`, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -38935,17 +39060,66 @@ function App() {
               "button",
               {
                 type: "button",
-                onClick: () => setIsCounterModalOpen(true),
+                onClick: () => {
+                  setCounterDefaultStoreId(null);
+                  setIsCounterModalOpen(true);
+                },
                 className: "px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer shrink-0",
                 children: "+ Prezzo visto al banco"
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5", children: localShops.map((shop) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 text-xs", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-800 truncate", children: shop.name }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-500 truncate", children: shop.address }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 inline-block text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded", children: "Scontrini & Banco" })
-          ] }, shop.id)) })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5", children: localShops.map((shop) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => {
+                setCounterDefaultStoreId(shop.id);
+                setIsCounterModalOpen(true);
+              },
+              className: "p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-amber-50/60 hover:border-amber-300 text-left text-xs transition-colors cursor-pointer",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-800 truncate", children: shop.name }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-500 truncate", children: shop.address }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 inline-block text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded", children: "+ Registra prezzo al banco" })
+              ]
+            },
+            shop.id
+          )) }),
+          counterObservations.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-extrabold uppercase tracking-wider text-slate-600", children: [
+              "📌 Ultimi prezzi reali rilevati al banco a Rapallo (",
+              counterObservations.length,
+              ")"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2", children: counterObservations.map((obs) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "p-2.5 rounded-lg bg-emerald-50/40 border border-emerald-200 flex items-center justify-between gap-2 text-xs",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900 truncate", children: obs.title }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500 truncate", children: [
+                      obs.storeName || obs.storeId,
+                      " • ",
+                      obs.unitString || "1 pz"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-right shrink-0", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold text-emerald-800", children: [
+                      "€ ",
+                      Number(obs.price || 0).toFixed(2).replace(".", ",")
+                    ] }),
+                    obs.ediblePricePerKg ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-600", children: [
+                      Number(obs.ediblePricePerKg).toFixed(2).replace(".", ","),
+                      " €/kg"
+                    ] }) : null
+                  ] })
+                ]
+              },
+              obs.id
+            )) })
+          ] })
         ] })
       ] })
     ] }) : activeRoom === "room-2-crea" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -38972,6 +39146,7 @@ function App() {
     ) }) : activeRoom === "room-4-cucina" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       KitchenCareView,
       {
+        onAddToShoppingList: handleAddToShoppingList,
         onNavigateToStoreDomain: (domainId) => {
           handleSelectDomain(domainId);
           setSelectedStoreId(null);
@@ -39005,7 +39180,11 @@ function App() {
         isOpen: isCounterModalOpen,
         onClose: () => setIsCounterModalOpen(false),
         stores,
-        onSaved: () => refetchOffers()
+        defaultStoreId: counterDefaultStoreId,
+        onSaved: () => {
+          refetchOffers();
+          refreshCounterObservations();
+        }
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -39097,4 +39276,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-CDHPxI9K.js.map
+//# sourceMappingURL=index-BRqEBw9y.js.map

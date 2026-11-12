@@ -183,7 +183,7 @@ export async function runAllDomainEvals(options = {}) {
 
     checks.push({
       id: 'R1-FULL-CORPUS-TAXONOMY-AND-APPLIANCE-LENS',
-      label: 'Intero catalogo (~865 offerte): 0 addobbi natalizi in Pentole, 0 badge fondo induzione su forni/frigo, 0 Champagne in Surgelati, 0 tile anonimi',
+      label: 'Intero catalogo offerte: 0 addobbi natalizi in Pentole, 0 badge fondo induzione su forni/frigo, 0 Champagne in Surgelati, 0 tile anonimi',
       passed:
         xmasInCookware.length === 0 &&
         fakeInductionAppliances.length === 0 &&
@@ -191,6 +191,22 @@ export async function runAllDomainEvals(options = {}) {
         ocrToysInFood.length === 0 &&
         exposedNameless.length === 0,
       detail: `XmasCookware=${xmasInCookware.length}, FakeInd=${fakeInductionAppliances.length}, ChampFrozen=${champagneInFrozen.length}, ToysFood=${ocrToysInFood.length}, Nameless=${exposedNameless.length}`
+    });
+
+    const toysOrBeddingInCleaning = fullEnriched.filter(
+      (o) =>
+        o.category === 'Cura Casa e Bucato' &&
+        /\b(giocattol\w*|peluche|lego\b|barbie|playmobil|albero\s+(?:di\s+)?natale|catena\s+led|presep\w*|completo\s+letto|lenzuol[aoie]\b|trapunt\w*)\b/i.test(
+          o.title || ''
+        )
+    );
+    const leakedFlyerIds = new Set(['1689209', '1744270', '1736960', '1736959', '1738505']);
+    const outOfProvinceOffers = fullEnriched.filter((o) => leakedFlyerIds.has(String(o.flyerId || '')));
+    checks.push({
+      id: 'R1-DEDICATED-CATEGORIES-AND-GE-TRUTH',
+      label: 'Categorie dedicate Extra-Casa (0 giocattoli/Natale/lenzuola in Cura Casa e Bucato) e Verità Territoriale GE/Rapallo (0 volantini CZ/LT/RM)',
+      passed: toysOrBeddingInCleaning.length === 0 && outOfProvinceOffers.length === 0,
+      detail: `ToysOrBeddingInCleaning=${toysOrBeddingInCleaning.length}, OutOfProvinceLeaks=${outOfProvinceOffers.length}`
     });
 
     recordSuite(1, 'Negozi & Offerte Rapallo', 'specs/01-negozi.spec.md', 28, checks);

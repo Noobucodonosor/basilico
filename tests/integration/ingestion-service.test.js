@@ -359,5 +359,141 @@ describe('IngestionService Integration Tests', () => {
       assert.equal(promoOnly.pageNumber, 3, 'Must preserve real flyer_page 3');
       assert.equal(promoOnly.validTo, futureDate, 'Must preserve exact validTo without +10d extension');
     });
+
+    it('deepSync() rejects silent out-of-province flyers via storesData.stores (e.g. CZ, LT/RM) while canonicalizing external redirect hrefs for GE flyers (TASK-DATA-03)', async () => {
+      const mockService = new IngestionService({ cacheManager: cache });
+      const futureDate = '2026-11-25T23:59:00.000Z';
+
+      mockService.fetchWithTimeout = async (url) => {
+        if (url === 'https://www.promoqui.it/rapallo/coop') {
+          const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+            props: {
+              pageProps: {
+                apiResources: {
+                  flyersByRetailer: [
+                    {
+                      id: '1689209',
+                      title: 'Al costo',
+                      href: '/volantino/coop/1689209',
+                      start_date: '2026-11-01T00:00:00.000Z',
+                      end_date: futureDate
+                    },
+                    {
+                      id: '1740566',
+                      title: 'Grandi marche',
+                      href: '/volantino/coop/1740566',
+                      start_date: '2026-11-01T00:00:00.000Z',
+                      end_date: futureDate
+                    }
+                  ]
+                }
+              }
+            }
+          })}</script>`;
+          return new Response(html, { status: 200 });
+        }
+
+        if (url === 'https://www.promoqui.it/volantino/coop/1689209') {
+          // Silent Calabria leak (no province in title, but storesData proves Catanzaro CZ)
+          const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+            props: {
+              pageProps: {
+                apiResources: {
+                  flyer: { id: 1689209, is_national: false },
+                  storesData: { stores: [{ city: 'Catanzaro', province: 'CZ' }, { city: 'Cosenza', province: 'CS' }] },
+                  flyerGibsData: {
+                    flyerGibs: [{ id: 'cz-leak-1', title: 'Olio Calabria Leak', settings: { price_extended: { digits: '4.99' } } }]
+                  }
+                }
+              }
+            }
+          })}</script>`;
+          return new Response(html, { status: 200 });
+        }
+
+        if (url === 'https://www.promoqui.it/volantino/coop/1740566') {
+          // Real Liguria GE flyer
+          const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+            props: {
+              pageProps: {
+                apiResources: {
+                  flyer: { id: 1740566, is_national: false },
+                  storesData: { stores: [{ city: 'Rapallo', province: 'GE' }, { city: 'Genova', province: 'GE' }] },
+                  flyerGibsData: {
+                    flyerGibs: [{ id: 'ge-coop-1', title: 'Pesto Genovese Coop Liguria', settings: { price_extended: { digits: '2.19' } } }]
+                  }
+                }
+              }
+            }
+          })}</script>`;
+          return new Response(html, { status: 200 });
+        }
+
+        if (url === 'https://www.promoqui.it/rapallo/penny') {
+          // External redirect href (next.doveconviene.it) -> must canonicalize to /volantino/penny/1735110
+          const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+            props: {
+              pageProps: {
+                apiResources: {
+                  flyersByRetailer: [
+                    {
+                      id: '1735110',
+                      title: 'Catalogo di Natale',
+                      href: 'https://next.doveconviene.it/promoqui?flyer=1735110',
+                      start_date: '2026-11-01T00:00:00.000Z',
+                      end_date: futureDate
+                    }
+                  ]
+                }
+              }
+            }
+          })}</script>`;
+          return new Response(html, { status: 200 });
+        }
+
+        if (url === 'https://www.promoqui.it/volantino/penny/1735110') {
+          const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+            props: {
+              pageProps: {
+                apiResources: {
+                  flyer: { id: 1735110, is_national: false },
+                  storesData: { stores: [{ city: 'Rapallo', province: 'GE' }] },
+                  flyerGibsData: {
+                    flyerGibsCount: 50,
+                    flyerGibs: [{ id: 'ge-penny-xmas-1', title: 'Albero di Natale innevato 180cm', settings: { price_extended: { digits: '29.99' } } }]
+                  }
+                }
+              }
+            }
+          })}</script>`;
+          return new Response(html, { status: 200 });
+        }
+
+        // Other stores empty in this focused test
+        const emptyHtml = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+          props: { pageProps: { apiResources: { flyersByRetailer: [] } } }
+        })}</script>`;
+        return new Response(emptyHtml, { status: 200 });
+      };
+
+      const res = await mockService.deepSync();
+      assert.equal(res.status, 'success');
+
+      const coopFlyers = await mockService.getFlyers('rapallo-coop-sciesa');
+      assert.equal(coopFlyers.length, 1, 'Must reject Catanzaro flyer 1689209 and keep only GE flyer 1740566');
+      assert.equal(coopFlyers[0].id, '1740566');
+
+      const coopOffers = await mockService.getOffers({ storeId: 'rapallo-coop-sciesa' });
+      assert.equal(coopOffers.totalOffers, 1);
+      assert.equal(coopOffers.offers[0].title, 'Pesto Genovese Coop Liguria');
+
+      const pennyFlyers = await mockService.getFlyers('rapallo-penny-milano');
+      assert.equal(pennyFlyers.length, 1, 'External sponsor href must resolve to canonical /volantino/penny/1735110');
+      assert.equal(pennyFlyers[0].upstreamIndexedCap, 50);
+
+      const pennyOffers = await mockService.getOffers({ storeId: 'rapallo-penny-milano', domain: 'bazar_seasonal' });
+      assert.equal(pennyOffers.totalOffers, 1);
+      assert.equal(pennyOffers.offers[0].category, 'Giocattoli, Natale e Tempo Libero');
+    });
   });
 });

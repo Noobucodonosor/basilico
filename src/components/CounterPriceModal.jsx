@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 
-export function CounterPriceModal({ isOpen, onClose, stores = [], onSaved }) {
+export function CounterPriceModal({ isOpen, onClose, stores = [], defaultStoreId = null, onSaved }) {
   const [title, setTitle] = useState('');
   const [brand, setBrand] = useState('');
   const [price, setPrice] = useState('');
   const [unitString, setUnitString] = useState('1 kg');
-  const [storeId, setStoreId] = useState('pescheria-locale-rapallo');
+  const [storeId, setStoreId] = useState(defaultStoreId || 'pescheria-locale-rapallo');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+
+  React.useEffect(() => {
+    if (defaultStoreId) {
+      setStoreId(defaultStoreId);
+    }
+  }, [defaultStoreId, isOpen]);
 
   if (!isOpen) return null;
 

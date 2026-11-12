@@ -101,11 +101,11 @@ describe('TASK-M1-01: Multi-Domain Taxonomy, Edible €/kg Normalizer & Quality 
       );
       assert.equal(
         classifyProductDomain({ title: 'Bassetti - Completo Letto Trendy', chainId: 'carrefour' }),
-        'home_cleaning'
+        'bazar_seasonal'
       );
       assert.equal(
         classifyProductDomain({ title: 'Peluche Orso', chainId: 'carrefour' }),
-        'home_cleaning'
+        'bazar_seasonal'
       );
     });
   });
@@ -219,22 +219,25 @@ describe('TASK-M1-01: Multi-Domain Taxonomy, Edible €/kg Normalizer & Quality 
       const pandoro = { title: 'Melegatti Pandoro Classico 1kg', chainId: 'carrefour' };
       assert.equal(classifyCanonicalCategory(pandoro), 'Pane e Pasticceria');
 
-      // German appliance brand Miele at Unieuro must go to kitchen_cookware, never Colazione e Dolci
+      // German appliance brand Miele at Unieuro must go to kitchen_cookware + dedicated cookware/appliance category
       const mieleDishwasher = { title: 'Miele Lavastoviglie G7281SCVI', brand: 'Miele', chainId: 'unieuro' };
       assert.equal(classifyProductDomain(mieleDishwasher), 'kitchen_cookware');
-      assert.equal(classifyCanonicalCategory(mieleDishwasher), 'Cura Casa e Bucato');
+      assert.equal(classifyCanonicalCategory(mieleDishwasher), 'Pentole, Cucina ed Elettrodomestici');
 
-      // Hair straighteners / dryers go to personal_care, tablecloths / toys go to home_cleaning
+      // Hair straighteners / dryers go to personal_care, tablecloths / toys go to bazar_seasonal with dedicated categories
       assert.equal(classifyProductDomain({ title: 'Beper Piastra Capelli Ceramica', chainId: 'carrefour' }), 'personal_care');
-      assert.equal(classifyProductDomain({ title: 'Candy Tovaglia Antimacchia Cane', chainId: 'carrefour' }), 'home_cleaning');
-      assert.equal(classifyProductDomain({ title: 'Casabella Aspirapolvere Rstoys', chainId: 'carrefour' }), 'home_cleaning');
+      assert.equal(classifyProductDomain({ title: 'Candy Tovaglia Antimacchia Cane', chainId: 'carrefour' }), 'bazar_seasonal');
+      assert.equal(classifyCanonicalCategory({ title: 'Candy Tovaglia Antimacchia Cane', chainId: 'carrefour' }), 'Tessile, Abbigliamento e Bazar Casa');
+      assert.equal(classifyProductDomain({ title: 'Casabella Aspirapolvere Rstoys', chainId: 'carrefour' }), 'bazar_seasonal');
+      assert.equal(classifyCanonicalCategory({ title: 'Casabella Aspirapolvere Rstoys', chainId: 'carrefour' }), 'Giocattoli, Natale e Tempo Libero');
+      assert.equal(classifyCanonicalCategory({ title: 'Monge Crocchette Cane Salmone 2.5kg', chainId: 'arcaplanet' }), 'Animali Domestici');
     });
 
     it('never interprets "letto" (bedsheets) as "l\'etto" (per 100g) and withholds PTFE badges from textiles/toys/laundry', () => {
       const bedsheets = {
         title: 'Bassetti - Completo Letto Trendy Matrimoniale',
         promoPrice: 26.99,
-        domain: 'home_cleaning'
+        domain: 'bazar_seasonal'
       };
       const pricing = normalizeUnitPricing(bedsheets);
       assert.equal(pricing.isPerEtto, false);

@@ -43,6 +43,32 @@ router.post('/items/:id/toggle', (req, res) => {
 });
 
 /**
+ * DELETE /api/shopping-list/items/:id
+ * Removes an item from the shopping list.
+ */
+router.delete('/items/:id', (req, res) => {
+  try {
+    const state = shoppingListService.removeItem(req.params.id);
+    res.json(state);
+  } catch (err) {
+    res.status(err.status || 400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/shopping-list/items/:id/replace-plan-b
+ * Replaces an out-of-stock item in the cart with the selected Plan B shelf substitute.
+ */
+router.post('/items/:id/replace-plan-b', (req, res) => {
+  try {
+    const state = shoppingListService.replaceItemWithPlanB(req.params.id, req.body || {});
+    res.json(state);
+  } catch (err) {
+    res.status(err.status || 400).json({ error: err.message });
+  }
+});
+
+/**
  * GET /api/shopping-list/items/:id/plan-b
  * Returns immediate shelf Plan B substitutes for an out-of-stock item in Rapallo.
  */

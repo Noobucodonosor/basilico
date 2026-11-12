@@ -1,13 +1,14 @@
 /**
- * Basilico — Multi-Domain Taxonomy & Canonical Category Classifier (ADR-0007, ADR-0013)
+ * Basilico — Multi-Domain Taxonomy & Canonical Category Classifier (ADR-0007, ADR-0013, TASK-DATA-03)
  * Location: server/services/domainClassifier.js
  *
- * Strictly partitions every commercial product/offer into one of 5 closed domains:
+ * Strictly partitions every commercial product/offer into one of 6 closed domains:
  *  - 'food_human'       : Alimenti e bevande per consumo umano (unico dominio ammesso in CREA/Ricette/Dieta)
- *  - 'home_cleaning'    : Cura casa, detersivi, chimica superfici, spugne, carta casa, bazar/tessile/giocattoli
- *  - 'kitchen_cookware' : Pentole, padelle, coltelli, elettrodomestici e attrezzatura cucina
- *  - 'personal_care'    : Igiene e cura della persona (shampoo, dentifricio, cosmetica, cura capelli)
+ *  - 'home_cleaning'    : Pura chimica casa, detersivi, disinfettanti, spugne, carta casa/cucina e sacchi
+ *  - 'kitchen_cookware' : Pentole, padelle, coltelli, elettrodomestici cucina/casa e elettronica
+ *  - 'personal_care'    : Igiene e cura della persona (shampoo, dentifricio, cosmetica, cura capelli, integratori)
  *  - 'pet_care'         : Alimenti e accessori per animali domestici (Arcaplanet, crocchette, lettiera)
+ *  - 'bazar_seasonal'   : Giocattoli, addobbi natalizi/stagionali, tessile letto/bagno, abbigliamento e bazar casa
  */
 
 export const VALID_PRODUCT_DOMAINS = [
@@ -15,7 +16,8 @@ export const VALID_PRODUCT_DOMAINS = [
   'home_cleaning',
   'kitchen_cookware',
   'personal_care',
-  'pet_care'
+  'pet_care',
+  'bazar_seasonal'
 ];
 
 export const DOMAIN_LABELS = {
@@ -23,7 +25,8 @@ export const DOMAIN_LABELS = {
   home_cleaning: 'Cura Casa & Detergenza',
   kitchen_cookware: 'Pentole, Cucina & Tech',
   personal_care: 'Igiene & Cura Persona',
-  pet_care: 'Pet & Animali'
+  pet_care: 'Pet & Animali',
+  bazar_seasonal: 'Giocattoli, Natale & Bazar'
 };
 
 export const FOOD_PRODUCT_CATEGORIES = [
@@ -37,6 +40,15 @@ export const FOOD_PRODUCT_CATEGORIES = [
   'Surgelati'
 ];
 
+export const NON_FOOD_PRODUCT_CATEGORIES = [
+  'Cura Casa e Bucato',
+  'Cura Persona e Igiene',
+  'Pentole, Cucina ed Elettrodomestici',
+  'Animali Domestici',
+  'Giocattoli, Natale e Tempo Libero',
+  'Tessile, Abbigliamento e Bazar Casa'
+];
+
 function stripAccents(str = '') {
   return String(str)
     .normalize('NFD')
@@ -47,7 +59,14 @@ function stripAccents(str = '') {
 const PET_STRICT_FOOD_OR_BRAND_REGEX = /\b(crocchett\w*|lettiera|antiparassitar\w*|guinzagli\w*|cuccia|purina|whiskas|felix|friskies|monge|royal canin|sheba|cesar|gourmet gold|almo nature|trainer|acana|orijen|vitakraft|migliorcane|migliorgatto|bocconcini per (?:cane|cani|gatto|gatti)|umido (?:gatto|cane)|cibo per (?:cani|gatti)|snack (?:cane|gatto)|arcaplanet)\b/i;
 const PET_ANIMAL_NOUN_REGEX = /\b(cane|cani|gatto|gatti)\b/i;
 
-const TOYS_BAZAR_TEXTILES_REGEX = /\b(completo letto|lenzuol\w*|trapunt\w*|piumin\w*\s+letto|copriletto|feder[ae]|cuscin\w*|asciugaman\w*|accappatoi\w*|tappet\w*|tovagli\w*(?!\s*carta)|canovacci\w*|presin\w*|bassetti|caleffi|gabel|pantalon\w*|magliett\w*|felp[ae]|giacc[ae]|pigiam\w*|calzin\w*|collant|mutand\w*|reggiseno|pantofol\w*|ciabatt\w*|scarp\w*\s+(?:uomo|donna|bambin\w*|sport\w*)|peluche|pelux|giocattol\w*|rocco giocattoli|rstoys|imctoys|imc toys|re\.el toys|zuru|globo\b|spin master|clementoni|ravensburger|lisciani|giochi uniti|hasbro|mattel|lego\b|playmobil|barbie|pokemon|nintendo|beyblade|hot wheels|squishmallows|radiocomand\w*|filoguidat\w*|costruzioni|mattoncini|bambol\w*|fa\s*-\s*shion\s+doll|fashion\s+doll|\bdoll\b|traxfigure|scacchi|air hockey|gioco\s+della|gioco\s+da\s+tavolo|goliath|grinch|gnom[oi]|follett[oi]|fermaporta|stopper|pupazz\w*|orso\s+(?:natale|con)|addobb\w*|albero\s+(?:di\s+)?natale|catena\s+(?:led|micro)|minilucciol\w*|tenda\s+luminosa|decorazion\w*\s+(?:cagnolin\w*|follett\w*|natali\w*)|ghirland\w*|angelo\s+di\s+natale|stella\s+(?:di\s+natale|con\s+cascata)|corona\s+con\s+fiocco|lampione|palla\s+(?:con\s+luci|di\s+natale)|fiocco\s+con\s+luci|pacch[io]\s+(?:regalo|dono)|pacco\s+dono|cabina\s+telefono|lampada\s+a\s+cuore|giostra\s+animata|paesaggio\s+invernale|presep\w*|lantern\w*|tazza\s+mug\s+natalizi\w*|ciotola\s+natalizi\w*|\brgi\d{5,}\b|\bmey\s*\d{4,}\b|big\s+foot|ruota\s+libera|pista\s+(?:quad|treno)|champion\s*-\s*pista|mezzi\s+da\s+lavoro|trattore\s+con|pistola\s+con|proiettili\s+soffici|auto\s+in\s+metallo|soggetti\s+assortiti|valigetta\s+attrezzi|bisognini\s+o\s+dolce\s+nanna|gioia\s+mia|geco\s+interattivo|toys\s+garden|unicorno|30\s+anniversario|candy\s*-\s*set|solo\s*-\s*box\s+con|candel[ae]|diffusor\w*\s+(?:di\s+)?(?:fragranza|ambiente|bastoncini)|svegli[ae]|majestic|pile\s+(?:stilo|ministilo|alcaline)|batterie\s+(?:stilo|alcaline)|lampadin\w*|terriccio|concime|piant[ae]\s+(?:fiorit\w*|verd\w*|vaso)|orchide\w*|ciclam\w*|stendibiancheria|asse da stiro)\b/i;
+const TOYS_XMAS_LEISURE_REGEX = /\b(peluche|pelux|giocattol\w*|rocco giocattoli|rstoys|imctoys|imc toys|re\.el toys|zuru|globo\b|spin master|clementoni|ravensburger|lisciani|giochi uniti|hasbro|mattel|lego\b|playmobil|barbie|pokemon|nintendo|beyblade|hot wheels|squishmallows|radiocomand\w*|filoguidat\w*|costruzioni|mattoncini|bambol\w*|fa\s*-\s*shion\s+doll|fashion\s+doll|\bdoll\b|traxfigure|scacchi|air hockey|gioco\s+della|gioco\s+da\s+tavolo|goliath|grinch|gnom[oi]|follett[oi]|fermaporta|stopper|pupazz\w*|orso\s+(?:natale|con)|addobb\w*|albero\s+(?:di\s+)?natale|catena\s+(?:led|micro)|minilucciol\w*|tenda\s+luminosa|decorazion\w*\s+(?:cagnolin\w*|follett\w*|natali\w*)|ghirland\w*|angelo\s+di\s+natale|stella\s+(?:di\s+natale|con\s+cascata)|corona\s+con\s+fiocco|lampione|palla\s+(?:con\s+luci|di\s+natale)|fiocco\s+con\s+luci|pacch[io]\s+(?:regalo|dono)|pacco\s+dono|cabina\s+telefono|lampada\s+a\s+cuore|giostra\s+animata|paesaggio\s+invernale|presep\w*|lantern\w*|tazza\s+mug\s+natalizi\w*|ciotola\s+natalizi\w*|\brgi\d{5,}\b|\bmey\s*\d{4,}\b|big\s+foot|ruota\s+libera|pista\s+(?:quad|treno)|champion\s*-\s*pista|mezzi\s+da\s+lavoro|trattore\s+con|pistola\s+con|proiettili\s+soffici|auto\s+in\s+metallo|soggetti\s+assortiti|valigetta\s+attrezzi|bisognini\s+o\s+dolce\s+nanna|gioia\s+mia|geco\s+interattivo|toys\s+garden|unicorno|30\s+anniversario|candy\s*-\s*set|solo\s*-\s*box\s+con|bici\w*|monopattin\w*|valigi\w*|trolley)\b/i;
+
+const TEXTILES_APPAREL_BAZAR_REGEX = /\b(completo letto|lenzuol\w*|trapunt\w*|piumin\w*\s+letto|copriletto|feder[ae]|cuscin\w*|asciugaman\w*|accappatoi\w*|tappet\w*|tovagli\w*(?!\s*carta)|canovacci\w*|presin\w*|bassetti|caleffi|gabel|pantalon\w*|magliett\w*|felp[ae]|giacc[ae]|pigiam\w*|calzin\w*|collant|mutand\w*|reggiseno|slip\s+(?:uomo|donna|bambin\w*|cotone)|pantofol\w*|ciabatt\w*|scarp\w*\s+(?:uomo|donna|bambin\w*|sport\w*)|candel[ae]|diffusor\w*\s+(?:di\s+)?(?:fragranza|ambiente|bastoncini)|svegli[ae]|majestic|pile\s+(?:stilo|ministilo|alcaline)|batterie\s+(?:stilo|alcaline)|lampadin\w*|terriccio|concime|piant[ae]\s+(?:fiorit\w*|verd\w*|vaso)|orchide\w*|ciclam\w*|stendibiancheria|asse da stiro|ombrell\w*|cornic[ei]|portafoto)\b/i;
+
+const TOYS_BAZAR_TEXTILES_REGEX = new RegExp(
+  `(?:${TOYS_XMAS_LEISURE_REGEX.source}|${TEXTILES_APPAREL_BAZAR_REGEX.source})`,
+  'i'
+);
 
 const PERSONAL_CARE_REGEX = /\b(shampoo|balsamo(?:\s+capelli|\s+rigenera|\s+nutriente)?|maschera capelli|tinta capelli|piastra capelli|asciugacapelli|spazzola asciugacapelli|phon\b|sauna facciale|specchio trucco|bagnoschiuma|bagnodoccia|docciaschiuma|dentifrici\w*|spazzolin\w*|collutorio|filo interdentale|oral care|oral[\s-]?b|elmex|emoform|sensodyne|mentadent|colgate|az\s+ricerca|deodorant\w*|profum\w*(?!\s+ambiente|\s+bucato)|eau de parfum|eau de toilette|parfum|body mist|body spray|acqua profumata|olio profumato|after shave|crema\s+(?:viso|corpo|mani|piedi|idratante|nutriente|antirughe|solare|depilatoria)|pasta lenitiva|maschera viso|siero viso|contorno occhi|acqua micellare|latte detergente|struccant\w*|fondotinta|mascara|rossetto|bronzer|terra abbronzante|cosmetics|lattafa|calvin klein|burberry|laura biagiotti|davidoff|syoss|pantene|garnier|gliss|sunsilk|elviv\w*|nivea|neutro roberts|neutro med|borotalco|chilly|saugella|intima roberts|lactacyd|palette\s+oleo|alama\s+repair|tesori d['’]?oriente|fria\b|breeze\b|dove\b|assorbent\w*|salvaslip|pannolin\w*|pannolon\w*|lines\b|tampax|rasoi\w*|gillette|wilkinson|schiuma da barba|dopobarba|sapone\s+(?:liquido|mani|intimo|solido)|detergente\s+(?:intimo|viso|corpo|mani)|fazzolett\w*|carta igienica|cotone idrofilo|dischetti cotone|cerotti|protezione solare|integrator\w*\s+(?:effervescent\w*|alimentar\w*)|fermenti\s+lattici|matt\s*-\s*omega\s*3)\b/i;
 
@@ -58,14 +77,21 @@ const COOKWARE_TECH_REGEX = /\b(padell\w*|pentol\w*|casseruol\w*|tegame|wok\b|bi
 const EXPLICIT_FOOD_GUARD_REGEX = /\b(pasta|spaghetti|penne|fusilli|rigatoni|farfalle|mezze maniche|lasagn\w*|cannellon\w*|ravioli|tortellini|gnocchi|trofie|pansott\w*|riso|risott\w*|farina|semola|polenta|cous\s*cous|pane|focaccia|pizz[ae]|pinsa|piadina|grissini|cracker\w*|tarall\w*|fette biscottate|baguette|panino|panini|piatti pronti|zuppa|vellutata|crema\s+(?:di\s+)?(?:zucca|asparagi|funghi|ceci|lenticchie|piselli|verdure|carciofi|tartufo|nocciole|pistacchio|spalmabile|pasticcera|catalana|mascarpone|latte)|crema\s+e\s+gusto|patatin\w*|al forno|da forno|forno a legna|cotto al forno|polpett\w*|cotolett\w*|biscott\w*|canestrell\w*|amarett\w*|ricciarell\w*|pasticceria|frollini|cornett\w*|croissant|brioche|panettone|pandoro|colomba|torta|crostata|cioccolat\w*|nutella|spalmabil\w*|marmellat\w*|confettur\w*|wafer|merendin\w*|cereali|muesli|caffe|espresso|cialde|capsule\s+(?:caffe|compatibili)|t[eè]\s+(?:verde|nero|deteinato|limone|pesca|classico)|infuso|camomilla|miele(?:\s+(?:millefiori|d['’]?acacia|di\s+castagno|italiano|bio|eucalipto|agrumi|sulla|tiglio))?|latte(?:\s+(?:intero|parzialmente|scremato|uht|fresco|alta|vegetale|mandorla|avena|soia))?|scremat\w*|latterie|yogurt|kefir|skyr|mozzarella|ricotta|formagg\w*|canestrato|parmigiano|grana|pecorino|gorgonzola|stracchino|crescenza|robiola|mascarpone|scamorz\w*|provol\w*|sottilett\w*|burro|panna(?:\s+cucina|\s+fresca|\s+montata|\s+uht)?|uov[ao]|pollo|tacchino|manzo|bovino|vitello|suino|maiale|coniglio|agnello|salsicci\w*|hamburger|wurstel|prosciutt\w*|salame|mortadella|bresaola|speck|pancetta|guanciale|coppa|culatello|lardo|affettat\w*|tagliere\s+italiano|tonno|sgombro|salmone|merluzzo|nasello|platessa|baccala|stoccafisso|verdesca|pesce\s+spada|orata|branzino|spigola|trota|alici|acciughe|sardine|gamber\w*|mazzancoll\w*|scampi|cozze|vongole|calamar\w*|seppi\w*|polpo|frutti di mare|surgelat\w*|gelat\w*|minestrone|olio(?:\s+extra\s*vergine|\s+evo|\s+oliva|\s+semi)?|aceto(?!\s+pulizie)|pomodor\w*|passata|pelati|polpa|pesto|sugo|salsa|maionese|ketchup|senape|olive|capperi|carciofin\w*|sottoli\w*|ceci|fagioli|lenticchie|piselli|mais|insalat\w*|rucola|valerian\w*|spinaci|erbette|bietol\w*|zucchin\w*|melanzan\w*|peperon\w*|patat[ae]|carot[ae]|cipoll[ae]|aglio|finocch\w*|broccol\w*|cavolfior\w*|cavol\w*|zucca|funghi|asparagi|carciofi|mele\b|pere\b|banan\w*|bananito|aranc[ae]|mandarin\w*|clementin\w*|limon[ei]|limes|pompelm\w*|uva\b|kiwi|fragol\w*|mirtill\w*|lampon\w*|more\b|pesch[ae]|albicocch\w*|prugn\w*|susin\w*|ciliegi[ae]|cachi|ananas|avocado|mango|papaya|passion fruit|zenzero|castagn\w*|marron[ei]|noci\b|mandorl\w*|nocciol\w*|pistacch\w*|pinoli|anacardi|arachidi|datteri|fichi|acqua(?:\s+minerale|\s+naturale|\s+frizzante|\s+effervescente)?|vino|prosecco|spumante|champagne|franciacorta|barolo|chianti|amarone|vermentino|pigato|birra|succo|spremuta|aranciata|chinotto|cola|bibita|aperitivo|amaro|fernet|grappa|liquore|liqueur|limoncello|whisky|rum\b|gin\b|vodka)\b/i;
 
 /**
- * Deterministically classifies an offer or product into one of the 5 closed domains.
+ * Deterministically classifies an offer or product into one of the 6 closed domains.
  *
  * @param {object} item - Offer or product object ({ title, brand, category, chainId, storeId })
- * @returns {'food_human' | 'home_cleaning' | 'kitchen_cookware' | 'personal_care' | 'pet_care'}
+ * @returns {'food_human' | 'home_cleaning' | 'kitchen_cookware' | 'personal_care' | 'pet_care' | 'bazar_seasonal'}
  */
 export function classifyProductDomain(item = {}) {
   if (!item || typeof item !== 'object') return 'food_human';
   if (item.domain && VALID_PRODUCT_DOMAINS.includes(item.domain)) {
+    // Re-evaluate if legacy home_cleaning was assigned to a toy/textile/Christmas decoration
+    if (item.domain === 'home_cleaning') {
+      const checkText = stripAccents(`${item.title || ''} ${item.brand || ''}`);
+      if (TOYS_BAZAR_TEXTILES_REGEX.test(checkText) && !HOME_CLEANING_REGEX.test(checkText)) {
+        return 'bazar_seasonal';
+      }
+    }
     return item.domain;
   }
 
@@ -86,14 +112,17 @@ export function classifyProductDomain(item = {}) {
     return 'pet_care';
   }
 
-  // 2. Electronics / Unieuro store: appliances (including Miele dishwashers, Candy washers) -> kitchen_cookware,
-  //    while seasonal home bazar / Christmas decorations go to home_cleaning!
+  // 2. Electronics / Unieuro store: appliances & tech -> kitchen_cookware,
+  //    while seasonal Christmas decorations / bazar go to bazar_seasonal!
   if (chainId.includes('unieuro')) {
     if (hasExplicitPersonalCare && !COOKWARE_TECH_REGEX.test(combined)) {
       return 'personal_care';
     }
-    if ((hasExplicitHomeCleaning || TOYS_BAZAR_TEXTILES_REGEX.test(combined)) && !COOKWARE_TECH_REGEX.test(combined)) {
+    if (hasExplicitHomeCleaning && !COOKWARE_TECH_REGEX.test(combined)) {
       return 'home_cleaning';
+    }
+    if (TOYS_BAZAR_TEXTILES_REGEX.test(combined) && !COOKWARE_TECH_REGEX.test(combined)) {
+      return 'bazar_seasonal';
     }
     return 'kitchen_cookware';
   }
@@ -108,9 +137,9 @@ export function classifyProductDomain(item = {}) {
     return 'home_cleaning';
   }
 
-  // 5. Toys, textiles, apparel, candles, home bazar (checked BEFORE pet animal nouns like "Tovaglia Cane" and BEFORE cookware so "Globo Cucina / Rstoys Aspirapolvere" toys don't leak into cookware/pet/food)
+  // 5. Toys, Christmas decorations, textiles, apparel, candles, home bazar -> dedicated bazar_seasonal domain!
   if (TOYS_BAZAR_TEXTILES_REGEX.test(combined) && !hasExplicitFood) {
-    return 'home_cleaning';
+    return 'bazar_seasonal';
   }
 
   // 6. Generic pet animal nouns ("Ciotola Cane", "Biscotti Cane") when not bazar/textile/food brand
@@ -118,12 +147,25 @@ export function classifyProductDomain(item = {}) {
     return 'pet_care';
   }
 
-  // 7. Legacy category fallbacks guarded against food false-positives ("Latte Scremato", "Caffè Crema e Gusto")
+  // 7. Explicit non-food canonical categories
+  if (category === 'Pentole, Cucina ed Elettrodomestici' && !hasExplicitFood) {
+    return 'kitchen_cookware';
+  }
+  if (category === 'Animali Domestici' && !hasExplicitFood) {
+    return 'pet_care';
+  }
+  if (
+    (category === 'Giocattoli, Natale e Tempo Libero' ||
+      category === 'Tessile, Abbigliamento e Bazar Casa') &&
+    !hasExplicitFood
+  ) {
+    return 'bazar_seasonal';
+  }
   if (category === 'Cura Persona e Igiene' && !hasExplicitFood) {
     return 'personal_care';
   }
 
-  // 7. Casalinghi store or explicit cookware/appliance item (unless clearly food like "pizza da forno" or "Tagliere Italiano" salumi)
+  // 8. Casalinghi store or explicit cookware/appliance item (unless clearly food like "pizza da forno" or "Tagliere Italiano" salumi)
   if (chainId.includes('casalinghi')) {
     if (!hasExplicitFood || COOKWARE_TECH_REGEX.test(combined)) {
       return 'kitchen_cookware';
@@ -133,9 +175,12 @@ export function classifyProductDomain(item = {}) {
     return 'kitchen_cookware';
   }
 
-  // 8. Drugstores (Tigotà / PiùMe) or legacy Cura Casa category
+  // 9. Drugstores (Tigotà / PiùMe) or legacy Cura Casa category
   if (chainId.includes('tigota') || chainId.includes('piume')) {
     if (PERSONAL_CARE_REGEX.test(combined)) return 'personal_care';
+    if (TOYS_BAZAR_TEXTILES_REGEX.test(combined) && !HOME_CLEANING_REGEX.test(combined)) {
+      return 'bazar_seasonal';
+    }
     if (hasExplicitFood && !HOME_CLEANING_REGEX.test(combined) && !TOYS_BAZAR_TEXTILES_REGEX.test(combined)) {
       return 'food_human';
     }
@@ -145,7 +190,7 @@ export function classifyProductDomain(item = {}) {
     return 'home_cleaning';
   }
 
-  // 9. Default for grocery supermarket categories
+  // 10. Default for grocery supermarket categories
   return 'food_human';
 }
 
@@ -166,17 +211,29 @@ const CANNED_TOMATO_OR_PANTRY_GUARD = /\b(passata|polpa|pelati|concentrato|sugo|
  */
 export function classifyCanonicalCategory(item = {}, precomputedDomain = null) {
   const domain = precomputedDomain || classifyProductDomain(item);
+  const rawTitle = `${item.title || ''} ${item.brand || ''}`;
+  const text = stripAccents(rawTitle);
 
   if (domain === 'personal_care') {
     return 'Cura Persona e Igiene';
   }
-  if (domain === 'home_cleaning' || domain === 'kitchen_cookware' || domain === 'pet_care') {
+  if (domain === 'home_cleaning') {
     return 'Cura Casa e Bucato';
+  }
+  if (domain === 'kitchen_cookware') {
+    return 'Pentole, Cucina ed Elettrodomestici';
+  }
+  if (domain === 'pet_care') {
+    return 'Animali Domestici';
+  }
+  if (domain === 'bazar_seasonal') {
+    if (TEXTILES_APPAREL_BAZAR_REGEX.test(text) && !TOYS_XMAS_LEISURE_REGEX.test(text)) {
+      return 'Tessile, Abbigliamento e Bazar Casa';
+    }
+    return 'Giocattoli, Natale e Tempo Libero';
   }
 
   // domain === 'food_human'
-  const rawTitle = `${item.title || ''} ${item.brand || ''}`;
-  const text = stripAccents(rawTitle);
   const existingCat = String(item.category || '').trim();
 
   // Check explicit food departments in priority order with strict word boundaries
@@ -232,6 +289,7 @@ export default {
   VALID_PRODUCT_DOMAINS,
   DOMAIN_LABELS,
   FOOD_PRODUCT_CATEGORIES,
+  NON_FOOD_PRODUCT_CATEGORIES,
   classifyProductDomain,
   classifyCanonicalCategory,
   isHumanFoodOffer
