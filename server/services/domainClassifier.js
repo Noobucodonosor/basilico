@@ -34,7 +34,10 @@ const PERSONAL_CARE_REGEX = /\b(shampoo|balsamo capelli|bagnoschiuma|bagnodoccia
 
 const HOME_CLEANING_REGEX = /\b(detersiv\w*|ammorbident\w*|sgrassator\w*|candeggina|anticalcare|disincrostant\w*|igienizzant\w*|disinfettant\w*|lavapavimenti|pulitore|brillantante|cura lavastoviglie|tabs lavastoviglie|capsule lavatrice|bucato|smacchiator\w*|spugn\w*|pagliett\w*|panno|microfibra|mocio|scopa|sacchi nettezza|sacchi spazzatura|asciugatutto|rotoloni|pellicola|alluminio cucina|carta forno|insetticida|profumatore ambiente|deumidificatore|chanteclair|finish|fairy|svelto|napisan|lysoform|ace\b|viakal|cif\b|bref|pril|dash|dixan|omino bianco|coccolino|vernel|lenor|winni's|quasar|ajax|vetril|mastro lindo|wc net|duck|scottex|regina|foxy)\b/i;
 
-const EXPLICIT_FOOD_GUARD_REGEX = /\b(pasta|spaghetti|penne|fusilli|riso|farina|pane|focaccia|biscott\w*|frollini|caffe|latte|yogurt|mozzarella|ricotta|formaggio|parmigiano|grana|burro|uova|pollo|tacchino|manzo|bovino|suino|salsiccia|prosciutto|salame|mortadella|bresaola|tonno|salmone|merluzzo|orata|branzino|gamber\w*|cozze|vongole|olio|aceto|pomodor\w*|passata|ceci|fagioli|lenticchie|piselli|insalata|zucchine|melanzane|patate|carote|cipolle|mele|pere|banane|arance|limoni|acqua minerale|vino|birra|succo)\b/i;
+// Non-food household textiles, apparel, toys, stationery, batteries, gardening (mapped to home_cleaning, never food_human)
+const GENERAL_HOUSEHOLD_NONFOOD_REGEX = /\b(completo letto|lenzuol\w*|trapunt\w*|piumin\w*\s+letto|copriletto|feder[ae]|cuscin\w*|asciugaman\w*|accappatoi\w*|tappet\w*|bassetti|caleffi|gabel|pantalon\w*|magliett\w*|felp[ae]|giacc[ae]|pigiam\w*|calzin\w*|collant|mutand\w*|reggiseno|pantofol\w*|ciabatt\w*|scarp\w*\s+(?:uomo|donna|bambin\w*|sport\w*)|peluche|giocattol\w*|rocco giocattoli|hasbro|mattel|lego\b|playmobil|barbie|gioco\s+della|gioco\s+da\s+tavolo|goliath|grinch|addobb\w*|albero di natale|pile\s+(?:stilo|ministilo|alcaline)|batterie\s+(?:stilo|alcaline)|lampadin\w*|terriccio|concime)\b/i;
+
+const EXPLICIT_FOOD_GUARD_REGEX = /\b(pasta|spaghetti|penne|fusilli|riso|farina|pane|focaccia|pizz[ae]|pinsa|patatin\w*|al forno|da forno|forno a legna|cotto al forno|lasagn\w*|cannellon\w*|polpett\w*|cotolett\w*|biscott\w*|frollini|cornett\w*|brioche|caffe|miele\s+(?:millefiori|d['’]?acacia|di\s+castagno|italiano)|latte|yogurt|mozzarella|ricotta|formaggio|parmigiano|grana|burro|uova|pollo|tacchino|manzo|bovino|suino|salsiccia|prosciutto|salame|mortadella|bresaola|tonno|salmone|merluzzo|orata|branzino|gamber\w*|cozze|vongole|olio|aceto|pomodor\w*|passata|ceci|fagioli|lenticchie|piselli|insalata|zucchine|melanzane|patate|carote|cipolle|mele|pere|banane|arance|limoni|acqua minerale|vino|birra|succo)\b/i;
 
 /**
  * Deterministically classifies an offer or product into one of the 5 closed domains.
@@ -64,8 +67,8 @@ export function classifyProductDomain(item = {}) {
     return 'personal_care';
   }
 
-  // 3. Home cleaning & detergents (checked BEFORE cookware/appliances so "Detersivo Lavatrice" -> home_cleaning)
-  if (HOME_CLEANING_REGEX.test(combined)) {
+  // 3. Home cleaning, detergents & general household non-food (checked BEFORE cookware/appliances so "Detersivo Lavatrice" -> home_cleaning)
+  if (HOME_CLEANING_REGEX.test(combined) || GENERAL_HOUSEHOLD_NONFOOD_REGEX.test(combined)) {
     return 'home_cleaning';
   }
 

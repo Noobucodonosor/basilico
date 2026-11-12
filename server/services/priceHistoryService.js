@@ -17,13 +17,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DEFAULT_HISTORY_PATH = path.resolve(__dirname, '..', '..', 'data', 'cache', 'price_history.json');
 
-// Baseline reference observations in Rapallo (ordinary off-flyer benchmark prices)
+    // Baseline reference observations in Rapallo (ordinary off-flyer benchmark prices)
 const SEED_BASELINE_OBSERVATIONS = [
   {
     id: 'obs-seed-barilla-500g',
     productKey: 'pasta di semola barilla',
+    stapleKey: 'pasta_semola',
     title: 'Pasta di Semola Barilla 500 g',
-    storeId: 'basko-rapallo-colombo',
+    storeId: 'rapallo-basko-colombo',
     storeName: 'Basko Rapallo',
     price: 1.39,
     unitString: '500 g',
@@ -35,8 +36,9 @@ const SEED_BASELINE_OBSERVATIONS = [
   {
     id: 'obs-seed-mutti-passata-700g',
     productKey: 'passata di pomodoro mutti',
+    stapleKey: 'passata_pomodoro',
     title: 'Passata di Pomodoro Mutti 700 g',
-    storeId: 'coop-rapallo-sciesa',
+    storeId: 'rapallo-coop-sciesa',
     storeName: 'Coop Rapallo',
     price: 1.85,
     unitString: '700 g',
@@ -48,8 +50,9 @@ const SEED_BASELINE_OBSERVATIONS = [
   {
     id: 'obs-seed-lavazza-qualita-rossa',
     productKey: 'caffe macinato qualita rossa lavazza',
+    stapleKey: 'caffe_macinato',
     title: 'Caffè Macinato Qualità Rossa Lavazza 2x250 g',
-    storeId: 'basko-rapallo-colombo',
+    storeId: 'rapallo-basko-colombo',
     storeName: 'Basko Rapallo',
     price: 7.49,
     unitString: '2 x 250 g',
@@ -61,8 +64,9 @@ const SEED_BASELINE_OBSERVATIONS = [
   {
     id: 'obs-seed-olio-evo-monini',
     productKey: 'olio extra vergine di oliva classico monini',
+    stapleKey: 'olio_evo',
     title: 'Olio Extra Vergine di Oliva Classico Monini 1 l',
-    storeId: 'conad-city-mameli',
+    storeId: 'rapallo-gulliver-mameli',
     storeName: 'Gulliver Rapallo',
     price: 9.90,
     unitString: '1 l',
@@ -74,8 +78,9 @@ const SEED_BASELINE_OBSERVATIONS = [
   {
     id: 'obs-seed-tonno-rio-mare',
     productKey: 'tonno all olio di oliva rio mare',
+    stapleKey: 'tonno_conserva',
     title: 'Tonno all\'Olio di Oliva Rio Mare 3 x 80 g',
-    storeId: 'carrefour-market-assereto',
+    storeId: 'rapallo-carrefour-assereto',
     storeName: 'Carrefour Market Rapallo',
     price: 4.99,
     unitString: '3 x 80 g',
@@ -83,8 +88,264 @@ const SEED_BASELINE_OBSERVATIONS = [
     referenceUnit: 'kg',
     channel: 'ordinary_shelf',
     observedAt: '2026-10-15T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-uova-fresche-10',
+    productKey: '10 uova fresche fiordovo latte tigullio',
+    stapleKey: 'uova_fresche',
+    title: 'Uova Fresche Allevamento a Terra 10 pz',
+    storeId: 'rapallo-basko-colombo',
+    storeName: 'Basko Rapallo',
+    price: 3.69,
+    unitString: '10 uova',
+    normalizedPricePerKgOrL: 6.96,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-16T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-banane-sfuse',
+    productKey: 'banane',
+    stapleKey: 'banane',
+    title: 'Banane Sfuse 1 kg',
+    storeId: 'rapallo-coop-sciesa',
+    storeName: 'Coop Rapallo',
+    price: 1.99,
+    unitString: '1 kg',
+    normalizedPricePerKgOrL: 1.99,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-16T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-mele-fuji',
+    productKey: 'mele fuji',
+    stapleKey: 'mele',
+    title: 'Mele Fuji 1 kg',
+    storeId: 'rapallo-gulliver-mameli',
+    storeName: 'Gulliver Rapallo',
+    price: 2.39,
+    unitString: '1 kg',
+    normalizedPricePerKgOrL: 2.39,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-17T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-finocchi',
+    productKey: 'finocchi',
+    stapleKey: 'finocchi',
+    title: 'Finocchi Freschi 1 kg',
+    storeId: 'rapallo-coop-sciesa',
+    storeName: 'Coop Rapallo',
+    price: 2.49,
+    unitString: '1 kg',
+    normalizedPricePerKgOrL: 2.49,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-18T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-ananas',
+    productKey: 'ananas',
+    stapleKey: 'ananas',
+    title: 'Ananas Maturo 1 kg',
+    storeId: 'rapallo-basko-colombo',
+    storeName: 'Basko Rapallo',
+    price: 1.99,
+    unitString: '1 kg',
+    normalizedPricePerKgOrL: 1.99,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-18T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-arance',
+    productKey: 'arance navel',
+    stapleKey: 'arance',
+    title: 'Arance Navel 1 kg',
+    storeId: 'rapallo-eurospin-aurelia',
+    storeName: 'Eurospin Rapallo',
+    price: 1.89,
+    unitString: '1 kg',
+    normalizedPricePerKgOrL: 1.89,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-19T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-avocado',
+    productKey: 'avocado hass',
+    stapleKey: 'avocado',
+    title: 'Avocado Hass 500 g',
+    storeId: 'rapallo-basko-colombo',
+    storeName: 'Basko Rapallo',
+    price: 2.49,
+    unitString: '500 g',
+    normalizedPricePerKgOrL: 4.98,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-19T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-cavolfiori',
+    productKey: 'cavolfiori',
+    stapleKey: 'cavolfiori',
+    title: 'Cavolfiori Bianchi 1 kg',
+    storeId: 'rapallo-eurospin-aurelia',
+    storeName: 'Eurospin Rapallo',
+    price: 1.99,
+    unitString: '1 kg',
+    normalizedPricePerKgOrL: 1.99,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-20T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-orata-filetto',
+    productKey: 'filetto di orata',
+    stapleKey: 'filetto_orata',
+    title: 'Filetto di Orata 250 g',
+    storeId: 'rapallo-coop-sciesa',
+    storeName: 'Coop Rapallo',
+    price: 6.49,
+    unitString: '250 g',
+    normalizedPricePerKgOrL: 25.96,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-20T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-baccala-filetto',
+    productKey: 'filetto di baccala',
+    stapleKey: 'filetto_baccala',
+    title: 'Filetto di Baccalà Dissalato 400 g',
+    storeId: 'rapallo-coop-sciesa',
+    storeName: 'Coop Rapallo',
+    price: 9.90,
+    unitString: '400 g',
+    normalizedPricePerKgOrL: 24.75,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-21T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-petto-pollo',
+    productKey: 'petto di pollo a fette',
+    stapleKey: 'petto_pollo',
+    title: 'Petto di Pollo a Fette 400 g',
+    storeId: 'rapallo-basko-colombo',
+    storeName: 'Basko Rapallo',
+    price: 4.99,
+    unitString: '400 g',
+    normalizedPricePerKgOrL: 12.48,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-21T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-prosciutto-cotto',
+    productKey: 'prosciutto cotto alta qualita',
+    stapleKey: 'prosciutto_cotto',
+    title: 'Prosciutto Cotto Alta Qualità 100 g',
+    storeId: 'rapallo-basko-colombo',
+    storeName: 'Basko Rapallo',
+    price: 2.69,
+    unitString: '100 g',
+    normalizedPricePerKgOrL: 26.90,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-22T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-noci-sgusciate',
+    productKey: 'noci secche',
+    stapleKey: 'noci',
+    title: 'Noci in Guscio / Sgusciate 200 g',
+    storeId: 'rapallo-dpiu-fioria',
+    storeName: 'Doro / DPiù Rapallo',
+    price: 2.99,
+    unitString: '200 g',
+    normalizedPricePerKgOrL: 14.95,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-22T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-pan-bauletto',
+    productKey: 'pan bauletto bianco mulino bianco',
+    stapleKey: 'pan_bauletto',
+    title: 'Pan Bauletto Bianco Mulino Bianco 400 g',
+    storeId: 'rapallo-carrefour-assereto',
+    storeName: 'Carrefour Market Rapallo',
+    price: 1.29,
+    unitString: '400 g',
+    normalizedPricePerKgOrL: 3.23,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-23T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-ricotta-vaccina',
+    productKey: 'ricotta latte tigullio',
+    stapleKey: 'ricotta',
+    title: 'Ricotta Fresca Vaccina 250 g',
+    storeId: 'rapallo-basko-colombo',
+    storeName: 'Basko Rapallo',
+    price: 1.99,
+    unitString: '250 g',
+    normalizedPricePerKgOrL: 7.96,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-23T10:00:00.000Z'
+  },
+  {
+    id: 'obs-seed-mozzarella-fresca',
+    productKey: 'mozzarella fresca',
+    stapleKey: 'mozzarella',
+    title: 'Mozzarella Vaccina 125 g sgocc.',
+    storeId: 'rapallo-gulliver-mameli',
+    storeName: 'Gulliver Rapallo',
+    price: 1.49,
+    unitString: '125 g',
+    normalizedPricePerKgOrL: 11.92,
+    referenceUnit: 'kg',
+    channel: 'ordinary_shelf',
+    observedAt: '2026-10-24T10:00:00.000Z'
   }
 ];
+
+const STAPLE_BENCHMARK_RULES = [
+  { key: 'pasta_semola', regex: /\b(pasta di semola|spaghetti|penne|fusilli|rigatoni)\b/ },
+  { key: 'passata_pomodoro', regex: /\b(passata di pomodoro|passata classica)\b/ },
+  { key: 'caffe_macinato', regex: /\b(caffe macinato|qualita rossa|qualita oro)\b/ },
+  { key: 'olio_evo', regex: /\b(olio extra\s*vergine|olio evo)\b/ },
+  { key: 'tonno_conserva', regex: /\b(tonno all olio|tonno in olio|tonno leggero)\b/ },
+  { key: 'uova_fresche', regex: /\b(\d+\s*uova|uova fresche)\b/ },
+  { key: 'banane', regex: /\b(banane|bananito)\b/ },
+  { key: 'mele', regex: /\b(mele fuji|mele golden|mele gala|mele)\b/ },
+  { key: 'finocchi', regex: /\b(finocchi)\b/ },
+  { key: 'ananas', regex: /\b(ananas)\b/ },
+  { key: 'arance', regex: /\b(arance)\b/ },
+  { key: 'avocado', regex: /\b(avocado)\b/ },
+  { key: 'cavolfiori', regex: /\b(cavolfiori)\b/ },
+  { key: 'filetto_orata', regex: /\b(filetto di orata|filetti di orata)\b/ },
+  { key: 'filetto_baccala', regex: /\b(filetto di baccala|filetti di baccala)\b/ },
+  { key: 'petto_pollo', regex: /\b(petto di pollo|filetti di pollo)\b/ },
+  { key: 'prosciutto_cotto', regex: /\b(prosciutto cotto)\b/ },
+  { key: 'noci', regex: /^(?:.*\s)?(noci)$/ },
+  { key: 'pan_bauletto', regex: /\b(pan bauletto)\b/ },
+  { key: 'ricotta', regex: /\b(ricotta)\b/ },
+  { key: 'mozzarella', regex: /\b(mozzarella)\b/ }
+];
+
+export function resolveStapleKey(text = '') {
+  const norm = normalizeSearchToken(text);
+  for (const r of STAPLE_BENCHMARK_RULES) {
+    if (r.regex.test(norm)) return r.key;
+  }
+  return null;
+}
 
 /**
  * Generates a canonical normalized product key for matching price history.
@@ -209,22 +470,44 @@ export class PriceHistoryService {
 
   /**
    * Evaluates "È un vero sconto?" for an offer against historical observations and declared originalPrice.
+   * Strictly compares normalized €/kg or €/L against normalized historical €/kg or €/L (never pack price vs €/kg).
    */
   evaluateRealDiscount(offer = {}) {
+    if (!offer || offer.isNamelessTile) {
+      return {
+        status: 'first_observation',
+        badge: 'Prima Rilevazione',
+        deltaVsHistoryPct: 0,
+        historicalAvgNormalized: null,
+        observationsCount: 0,
+        explanation: 'Riquadro volantino privo di referenza confrontabile.'
+      };
+    }
+
     const promoVal = Number(offer.promoPrice ?? offer.price ?? 0);
     const origVal = offer.originalPrice != null ? Number(offer.originalPrice) : null;
     const key = buildProductKey(offer.title || '', offer.brand || '');
+    const stapleKey = resolveStapleKey(`${offer.title || ''} ${offer.brand || ''}`);
     const all = this._load();
 
-    // Match observations by productKey or partial token overlap
-    const matchingObs = all.filter((o) => {
+    // Match observations by exact productKey, full-word overlap, or canonical stapleKey
+    const exactMatches = all.filter((o) => {
       if (o.productKey === key) return true;
-      return key.length >= 6 && (o.productKey.includes(key) || key.includes(o.productKey));
+      return key.length >= 8 && o.productKey.length >= 8 && (o.productKey.includes(key) || key.includes(o.productKey));
     });
+    const matchingObs = exactMatches.length > 0
+      ? exactMatches
+      : (stapleKey ? all.filter((o) => (o.stapleKey || resolveStapleKey(o.title)) === stapleKey) : []);
 
-    const offerUnitNorm = offer.ediblePricePerKg ?? offer.pricePerKg ?? offer.pricePerLiter ?? offer.unitPricing?.normalizedPricePerKgOrL ?? null;
+    const offerUnitNorm =
+      offer.ediblePricePerKg ??
+      offer.pricePerKg ??
+      offer.pricePerLiter ??
+      offer.referencePackEstimate?.estimatedEdiblePricePerKg ??
+      offer.unitPricing?.normalizedPricePerKgOrL ??
+      null;
 
-    if (matchingObs.length > 0) {
+    if (matchingObs.length > 0 && offerUnitNorm && offerUnitNorm > 0) {
       const avgHistoricalNorm =
         matchingObs.reduce((acc, o) => acc + (Number(o.normalizedPricePerKgOrL) || o.price), 0) /
         matchingObs.length;
@@ -232,10 +515,13 @@ export class PriceHistoryService {
         ...matchingObs.map((o) => Number(o.normalizedPricePerKgOrL) || o.price)
       );
 
-      const comparePrice = offerUnitNorm || promoVal;
+      const comparePrice = offerUnitNorm;
       const deltaPct = avgHistoricalNorm > 0
         ? Math.round(((avgHistoricalNorm - comparePrice) / avgHistoricalNorm) * 100)
         : 0;
+      const basisNote = offer.referencePackEstimate?.isEstimatedPackSize
+        ? ` (su formato standard ${offer.referencePackEstimate.formatLabel})`
+        : '';
 
       if (comparePrice <= minHistoricalNorm * 0.95) {
         return {
@@ -244,7 +530,7 @@ export class PriceHistoryService {
           deltaVsHistoryPct: deltaPct,
           historicalAvgNormalized: Number(avgHistoricalNorm.toFixed(2)),
           observationsCount: matchingObs.length,
-          explanation: `Sotto del ${deltaPct}% rispetto alla media storica osservata a Rapallo (€ ${avgHistoricalNorm.toFixed(2)}/${matchingObs[0].referenceUnit}).`
+          explanation: `Sotto del ${deltaPct}% rispetto alla media storica osservata a Rapallo (€ ${avgHistoricalNorm.toFixed(2)}/${matchingObs[0].referenceUnit})${basisNote}.`
         };
       }
       if (comparePrice <= avgHistoricalNorm * 0.98) {
@@ -254,7 +540,7 @@ export class PriceHistoryService {
           deltaVsHistoryPct: deltaPct,
           historicalAvgNormalized: Number(avgHistoricalNorm.toFixed(2)),
           observationsCount: matchingObs.length,
-          explanation: `Prezzo inferiore del ${deltaPct}% rispetto allo storico ordinario.`
+          explanation: `Prezzo inferiore del ${deltaPct}% rispetto allo storico ordinario a Rapallo${basisNote}.`
         };
       }
       return {
@@ -263,7 +549,7 @@ export class PriceHistoryService {
         deltaVsHistoryPct: deltaPct,
         historicalAvgNormalized: Number(avgHistoricalNorm.toFixed(2)),
         observationsCount: matchingObs.length,
-        explanation: `Allineato o superiore al prezzo storico medio (€ ${avgHistoricalNorm.toFixed(2)}/${matchingObs[0].referenceUnit}).`
+        explanation: `Allineato o superiore al prezzo storico medio (€ ${avgHistoricalNorm.toFixed(2)}/${matchingObs[0].referenceUnit})${basisNote}.`
       };
     }
 

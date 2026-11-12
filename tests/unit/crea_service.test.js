@@ -10,7 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { creaService, parseCreaValue } from '../../server/services/creaService.js';
 import { CreaOfferMatcher } from '../../server/services/creaOfferMatcher.js';
-import { enrichOfferRecord } from '../../server/services/offerService.js';
+import { enrichOfferRecord, offerService } from '../../server/services/offerService.js';
 
 describe('ADR-0008 / TASK-M2-01: CREA Scientific Nutrition Engine & Head-Noun Offer Matcher', () => {
   let tmpDir;
@@ -137,5 +137,33 @@ describe('ADR-0008 / TASK-M2-01: CREA Scientific Nutrition Engine & Head-Noun Of
     assert.equal(overrideRes.creaFoodId, npe.creaFoodId);
     const rematched = matcher.matchOfferToCrea(tonno);
     assert.equal(rematched.matchBasis, 'manual_override');
+  });
+
+  it('6. should convert FAO fatty acids to true g/100g (Sardines/Mackerel/Walnuts >> Garlic on Omega-3) and apply thermal vitamin retention (ADR-0013)', () => {
+    const aglio = creaService.searchAndRankFoods({ q: 'Aglio', limit: 3 }).foods[0];
+    const sgombro = creaService.searchAndRankFoods({ q: 'Sgombro o maccarello', limit: 3 }).foods[0];
+    const noci = creaService.searchAndRankFoods({ q: 'Noci, secche', limit: 3 }).foods[0];
+
+    assert.ok(aglio.keyMetrics.omega3G < 0.1, `Garlic omega3G must be <0.1g/100g, got ${aglio.keyMetrics.omega3G}`);
+    assert.ok(sgombro.keyMetrics.omega3G > 1.5, 'Mackerel must have >1.5g/100g Omega-3');
+    assert.ok(sgombro.keyMetrics.epaDhaG > 1.5, 'Mackerel must have >1.5g/100g marine EPA+DHA');
+    assert.ok(noci.keyMetrics.omega3G > 5.0, 'Walnuts must have >5g/100g ALA Omega-3');
+
+    // Thermal retention Rf on cooked spinach Vitamin C
+    const spinaci = creaService.searchAndRankFoods({ q: 'Spinaci, crudi', limit: 1 }).foods[0];
+    const rawSheet = creaService.computeNutritionalSheet(spinaci.id, { mode: '100g_edible', state: 'as_is' });
+    const cookedSheet = creaService.computeNutritionalSheet(spinaci.id, { mode: '100g_edible', state: 'cooked_from_raw' });
+    const vitCRaw = rawSheet.sections['VITAMINE'].find((r) => r.component === 'Vitamina C (mg)').computedValue;
+    const vitCCookedRow = cookedSheet.sections['VITAMINE'].find((r) => r.component === 'Vitamina C (mg)');
+    assert.ok(vitCCookedRow.computedValue < vitCRaw, 'Cooked spinach Vitamin C must reflect thermal retention loss');
+    assert.equal(vitCCookedRow.thermalRetentionFactor, 0.6);
+
+    // Real Rapallo seed offers must populate >50 live Nutrients/€ entries while rejecting nameless "Al Kg"
+    const allEnriched = offerService.getSeedOffersSync().map((o) => enrichOfferRecord(o, 'dany'));
+    const alKg = allEnriched.find((o) => o.title === 'Al Kg');
+    assert.equal(alKg.isNamelessTile, true);
+    assert.equal(alKg.creaMatch, null);
+    const ranked = matcher.rankOffersByNutrientPerEuro(allEnriched, { metric: 'proteinGPerEuro', hideIncompatible: true });
+    assert.ok(ranked.length >= 80, `Expected >=80 real Rapallo offers in Nutrients/Euro ranking, got ${ranked.length}`);
   });
 });

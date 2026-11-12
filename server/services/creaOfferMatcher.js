@@ -34,11 +34,15 @@ const CONNECTORS = new Set([
 ]);
 
 const FORBIDDEN_COMPOSITE_HEADS = new Set([
-  'salsa', 'sugo', 'pesto', 'biscotti', 'biscotto', 'torta', 'crostata', 'gelato',
-  'patatine', 'chips', 'cracker', 'crackers', 'bevanda', 'succo', 'nettare',
+  'salsa', 'sugo', 'ragu', 'pesto', 'biscotti', 'biscotto', 'bis', 'baci', 'torta', 'torte', 'crostata', 'gelato', 'gelati',
+  'patatine', 'chips', 'cracker', 'crackers', 'bevanda', 'succo', 'nettare', 'liquore', 'amaro', 'vino', 'birra', 'aperitivo',
   'preparato', 'insaporitore', 'dado', 'brodo', 'snack', 'merendina', 'merendine',
-  'ravioli', 'tortellini', 'pansotti', 'gnocchi', 'lasagne', 'pizza', 'focaccia'
+  'ravioli', 'tortellini', 'pansotti', 'pansoti', 'gnocchi', 'lasagne', 'pizza', 'pizze', 'pinsa', 'pinse',
+  'focaccia', 'focacce', 'focaccina', 'focaccine', 'tocchetti', 'cotoletta', 'cotolette', 'polpette',
+  'cima', 'brandacujun', 'panissa'
 ]);
+
+const LEADING_ARTICLES = new Set(['il', 'lo', 'la', 'i', 'gli', 'le', 'l', 'un', 'uno', 'una']);
 
 // High-precision canonical dictionary mapping common Italian commercial grocery head patterns to official CREA IDs
 const CANONICAL_HEAD_PATTERNS = [
@@ -46,50 +50,69 @@ const CANONICAL_HEAD_PATTERNS = [
   { regex: /^(?:riso\s+(?:carnaroli|arborio|roma|vialone|basmati|parboiled|originario)|riso)\b/, creaQuery: 'Riso, brillato' },
   { regex: /^(?:passata\s+di\s+pomodoro|polpa\s+di\s+pomodoro|pomodori\s+pelati|pelati)\b/, creaQuery: 'Pomodori, pelati' },
   { regex: /^(?:olio\s+extra\s*vergine\s+(?:di\s+oliva|d\s*oliva)|olio\s+evo)\b/, creaQuery: 'Olio di oliva, extra vergine' },
-  { regex: /^(?:tonno\s+(?:all\s*olio|in\s+olio)|tranci\s+di\s+tonno|filetti\s+di\s+tonno)\b/, creaQuery: 'Tonno, sott\'olio, sgocciolato' },
+  { regex: /^(?:tonno\s+(?:all\s*olio|in\s+olio|leggero)|tranci\s+di\s+tonno|filetti\s+di\s+tonno)\b/, creaQuery: 'Tonno, sott\'olio, sgocciolato' },
   { regex: /^(?:tonno\s+al\s+naturale)\b/, creaQuery: 'Tonno, in salamoia, sgocciolato' },
   { regex: /^(?:salmone\s+affumicato|salmone\s+norvegese)\b/, creaQuery: 'Salmone, affumicato' },
-  { regex: /^(?:salmone\s+fresco|trancio\s+di\s+salmone|filetto\s+di\s+salmone)\b/, creaQuery: 'Salmone, fresco' },
-  { regex: /^(?:filetti\s+di\s+merluzzo|cuori\s+di\s+merluzzo|merluzzo|nasello)\b/, creaQuery: 'Merluzzo o nasello, fresco' },
-  { regex: /^(?:orata|orate)\b/, creaQuery: 'Orata, fresca' },
-  { regex: /^(?:branzino|spigola)\b/, creaQuery: 'Spigola, fresca' },
-  { regex: /^(?:acciughe|alici)\b/, creaQuery: 'Acciuga o alice, fresca' },
-  { regex: /^(?:sgombro|filetti\s+di\s+sgombro)\b/, creaQuery: 'Sgombro o maccarello, fresco' },
-  { regex: /^(?:gamberi|code\s+di\s+gambero|mazzancolle)\b/, creaQuery: 'Gamberi, freschi' },
+  { regex: /^(?:salmone\s+fresco|trancio\s+di\s+salmone|filetto\s+di\s+salmone|salmone)\b/, creaQuery: 'Salmone' },
+  { regex: /^(?:filett[oi]\s+di\s+baccala|baccala\s+dissalato|baccala\s+ammollato|baccala)\b/, creaQuery: 'Merluzzo o nasello, baccalà, ammollato' },
+  { regex: /^(?:filetti\s+di\s+merluzzo|cuori\s+di\s+merluzzo|merluzzo|nasello)\b/, creaQuery: 'Merluzzo o nasello' },
+  { regex: /^(?:filett[oi]\s+di\s+orata)\b/, creaQuery: 'Orata, filetti' },
+  { regex: /^(?:orata|orate)\b/, creaQuery: 'Orata, filetti' },
+  { regex: /^(?:filett[oi]\s+di\s+branzino|filett[oi]\s+di\s+spigola|branzino|spigola)\b/, creaQuery: 'Spigola' },
+  { regex: /^(?:acciughe|alici)\b/, creaQuery: 'Acciuga o alice' },
+  { regex: /^(?:sgombro|filetti\s+di\s+sgombro)\b/, creaQuery: 'Sgombro o maccarello' },
+  { regex: /^(?:gamberi|code\s+di\s+gambero|mazzancolle)\b/, creaQuery: 'Gamberi' },
   { regex: /^(?:petto\s+di\s+pollo|fette\s+di\s+pollo|filetti\s+di\s+pollo|pollo)\b/, creaQuery: 'Pollo, petto, crudo' },
   { regex: /^(?:fesa\s+di\s+tacchino|petto\s+di\s+tacchino|tacchino)\b/, creaQuery: 'Tacchino, fesa, crudo' },
   { regex: /^(?:bresaola)\b/, creaQuery: 'Bresaola della Valtellina' },
   { regex: /^(?:prosciutto\s+crudo)\b/, creaQuery: 'Prosciutto crudo' },
-  { regex: /^(?:prosciutto\s+cotto)\b/, creaQuery: 'Prosciutto cotto' },
-  { regex: /^(?:macinato\s+di\s+bovino|polpa\s+di\s+bovino|fettine\s+di\s+bovino|manzo|bovino|scottona)\b/, creaQuery: 'Bovino adulto, fesa, crudo' },
+  { regex: /^(?:gran\s+tenerone\s+prosciutto\s+cotto|prosciutto\s+cotto)\b/, creaQuery: 'Prosciutto cotto' },
+  { regex: /^(?:speck)\b/, creaQuery: 'Speck' },
+  { regex: /^(?:salame)\b/, creaQuery: 'Salame' },
+  { regex: /^(?:macinato\s+di\s+bovino|polpa\s+di\s+bovino|fettine\s+di\s+bovino|manzo|bovino|scottona)\b/, creaQuery: 'Bovino adulto o vitellone, fesa, crudo' },
   { regex: /^(?:uova\s+fresche|uova)\b/, creaQuery: 'Uova di gallina, intero' },
-  { regex: /^(?:latte\s+parzialmente\s+scremato|latte\s+uht)\b/, creaQuery: 'Latte di vacca, parzialmente scremato, UHT' },
-  { regex: /^(?:latte\s+intero)\b/, creaQuery: 'Latte di vacca, intero, pastorizzato' },
-  { regex: /^(?:yogurt\s+greco)\b/, creaQuery: 'Yogurt greco, 0% grassi' },
-  { regex: /^(?:yogurt)\b/, creaQuery: 'Yogurt di latte intero, bianco' },
+  { regex: /^(?:latte\s+parzialmente\s+scremato|latte\s+uht|latte\s+alta\s+digeribilita|latte\s+zymil)\b/, creaQuery: 'Latte di vacca, UHT, parzialmente scremato' },
+  { regex: /^(?:latte\s+intero|latte\s+fresco)\b/, creaQuery: 'Latte di vacca, pastorizzato, intero' },
+  { regex: /^(?:yogurt\s+greco|yogurt\s+colato)\b/, creaQuery: 'Yogurt greco, 0% lipidi' },
+  { regex: /^(?:yogurt|kefir)\b/, creaQuery: 'Yogurt, da latte intero' },
   { regex: /^(?:mozzarella|fior\s+di\s+latte|bocconcini\s+di\s+mozzarella)\b/, creaQuery: 'Mozzarella di vacca' },
   { regex: /^(?:parmigiano\s+reggiano)\b/, creaQuery: 'Parmigiano Reggiano DOP' },
   { regex: /^(?:grana\s+padano)\b/, creaQuery: 'Grana Padano DOP' },
   { regex: /^(?:pecorino)\b/, creaQuery: 'Pecorino' },
   { regex: /^(?:ricotta)\b/, creaQuery: 'Ricotta di vacca' },
-  { regex: /^(?:stracchino|crescenza)\b/, creaQuery: 'Stracchino' },
+  { regex: /^(?:stracchino|crescenza|robiola|caciotta|asiago)\b/, creaQuery: 'Stracchino' },
+  { regex: /^(?:mascarpone)\b/, creaQuery: 'Mascarpone' },
   { regex: /^(?:gorgonzola)\b/, creaQuery: 'Gorgonzola' },
   { regex: /^(?:burro)\b/, creaQuery: 'Burro' },
   { regex: /^(?:ceci)\b/, creaQuery: 'Ceci, in scatola, scolati' },
   { regex: /^(?:lenticchie)\b/, creaQuery: 'Lenticchie, in scatola, scolate' },
-  { regex: /^(?:fagioli\s+(?:borlotti|cannellini)|fagioli)\b/, creaQuery: 'Fagioli, in scatola, scolati' },
+  { regex: /^(?:fagioli\s+cannellini)\b/, creaQuery: 'Fagioli, Cannellini in scatola, scolati' },
+  { regex: /^(?:fagioli\s+borlotti|fagioli)\b/, creaQuery: 'Fagioli, Borlotti, in scatola, scolati' },
   { regex: /^(?:piselli\s+finissimi|piselli)\b/, creaQuery: 'Piselli, surgelati' },
+  { regex: /^(?:olive\s+taggiasche|olive\s+verdi|olive\s+nere)\b/, creaQuery: 'Olive, verdi, in salamoia' },
   { regex: /^(?:spinaci)\b/, creaQuery: 'Spinaci, crudi' },
   { regex: /^(?:zucchine)\b/, creaQuery: 'Zucchine, crude' },
-  { regex: /^(?:pomodori|pomodorini)\b/, creaQuery: 'Pomodori da insalata, maturi' },
+  { regex: /^(?:finocchi)\b/, creaQuery: 'Finocchi, crudi' },
+  { regex: /^(?:cavolfiori|cavolfiore)\b/, creaQuery: 'Cavolfiore, crudo' },
+  { regex: /^(?:verza|cavolo\s+verza)\b/, creaQuery: 'Cavolo verza, cruda' },
+  { regex: /^(?:pomodori|pomodorini)\b/, creaQuery: 'Pomodori, da insalata, freschi' },
   { regex: /^(?:patate)\b/, creaQuery: 'Patate, crude' },
   { regex: /^(?:carote)\b/, creaQuery: 'Carote, crude' },
-  { regex: /^(?:mele|mela)\b/, creaQuery: 'Mele, con buccia' },
-  { regex: /^(?:banane|banana)\b/, creaQuery: 'Banane' },
+  { regex: /^(?:mele|mela)\b/, creaQuery: 'Mele, fresche, con buccia' },
+  { regex: /^(?:banane|banana|bananito)\b/, creaQuery: 'Banane' },
   { regex: /^(?:arance|arancia)\b/, creaQuery: 'Arance' },
+  { regex: /^(?:ananas)\b/, creaQuery: 'Ananas' },
+  { regex: /^(?:kiwi)\b/, creaQuery: 'Kiwi' },
+  { regex: /^(?:mango)\b/, creaQuery: 'Mango' },
+  { regex: /^(?:avocado)\b/, creaQuery: 'Avocado' },
+  { regex: /^(?:cachi|kaki)\b/, creaQuery: 'Kaki' },
+  { regex: /^(?:prugne|susine)\b/, creaQuery: 'Prugne, fresche' },
+  { regex: /^(?:castagne|marroni)\b/, creaQuery: 'Castagne' },
   { regex: /^(?:mandorle)\b/, creaQuery: 'Mandorle, dolci, secche' },
   { regex: /^(?:noci)\b/, creaQuery: 'Noci, secche' },
-  { regex: /^(?:caffe\s+macinato|caffe\s+in\s+grani|caffe)\b/, creaQuery: 'Caffè, tostato, in polvere' }
+  { regex: /^(?:arachidi)\b/, creaQuery: 'Arachidi, tostate' },
+  { regex: /^(?:miele)\b/, creaQuery: 'Miele' },
+  { regex: /^(?:caffe\s+macinato|caffe\s+in\s+grani|caffe)\b/, creaQuery: "Caffe' tostato" }
 ];
 
 export class CreaOfferMatcher {
@@ -138,7 +161,8 @@ export class CreaOfferMatcher {
   }
 
   /**
-   * Strips leading brand name from normalized product title so the head noun is exposed.
+   * Strips leading brand name, numeric counts ("10 uova"), and Italian articles ("L'ananas", "Lo Stracchino")
+   * from normalized product title so the true food head noun is exposed.
    */
   _stripBrandFromTitle(title = '', brand = '') {
     let normTitle = normalizeSearchToken(title);
@@ -146,15 +170,22 @@ export class CreaOfferMatcher {
     if (normBrand && normTitle.startsWith(`${normBrand} `)) {
       normTitle = normTitle.slice(normBrand.length).trim();
     }
-    return normTitle;
+    // Strip leading numeric count only when NOT immediately followed by a weight/volume unit
+    normTitle = normTitle.replace(/^\d+\s+(?!(?:kg|g|gr|hg|l|lt|ml|cl)\b)/, '').trim();
+
+    let parts = normTitle.split(' ').filter(Boolean);
+    while (parts.length > 1 && LEADING_ARTICLES.has(parts[0])) {
+      parts.shift();
+    }
+    return parts.join(' ');
   }
 
   /**
    * Conservatively matches an offer to an official CREA food.
-   * Returns null if domain !== 'food_human' or if no safe head-noun match exists.
+   * Returns null if domain !== 'food_human', if nameless tile, or if no safe head-noun match exists.
    */
   matchOfferToCrea(offer = {}) {
-    if (!offer || (offer.domain && offer.domain !== 'food_human')) {
+    if (!offer || offer.isNamelessTile || (offer.domain && offer.domain !== 'food_human')) {
       return null;
     }
 
@@ -255,17 +286,23 @@ export class CreaOfferMatcher {
 
   /**
    * Computes "Nutrients per Edible Euro" for an offer matched to CREA.
+   * Uses explicit declared weight first; falls back to transparent referencePackEstimate when flyer omits text weight.
    */
   computeOfferNutrientsPerEuro(offer = {}) {
     const match = this.matchOfferToCrea(offer);
     if (!match || !match.food) return null;
 
     const food = match.food;
-    const rawKgPrice = offer.ediblePricePerKg ?? offer.pricePerKg ?? offer.pricePerLiter ?? null;
+    const explicitKgPrice = offer.ediblePricePerKg ?? offer.pricePerKg ?? offer.pricePerLiter ?? null;
+    const estimatedPack = !explicitKgPrice ? offer.referencePackEstimate || null : null;
+    const rawKgPrice = explicitKgPrice ?? estimatedPack?.estimatedEdiblePricePerKg ?? null;
     if (!rawKgPrice || rawKgPrice <= 0) return null;
 
     // Account for CREA edible part % (e.g., whole fish with bones vs 100% edible fillet)
-    const isAlreadyFilletOrPeeled = /\b(filett\w*|tranc\w*|sgusciat\w*|pelat\w*|polpa)\b/i.test(offer.title || '');
+    const isAlreadyFilletOrPeeled =
+      /\b(filett\w*|tranc\w*|sgusciat\w*|pelat\w*|polpa|sgocc\w*)\b/i.test(offer.title || '') ||
+      Boolean(offer.drainedWeightGrams && offer.packWeightGrams && offer.drainedWeightGrams < offer.packWeightGrams) ||
+      Boolean(estimatedPack && estimatedPack.estimatedEdibleGrams < estimatedPack.estimatedPackGrams);
     const ediblePartRatio = isAlreadyFilletOrPeeled ? 1.0 : Math.max(0.2, (Number(food.ediblePartPct) || 100) / 100);
     const trueEdibleEuroPerKg = Number((rawKgPrice / ediblePartRatio).toFixed(2));
 
@@ -273,6 +310,10 @@ export class CreaOfferMatcher {
     // 1 kg edible = 10 × 100g units -> unitsPerEuro = 10 / trueEdibleEuroPerKg
     const units100gPerEuro = 10 / trueEdibleEuroPerKg;
     const km = food.keyMetrics || {};
+    const isEstimatedPackSize = !explicitKgPrice && Boolean(estimatedPack);
+    const priceBasisLabel = isEstimatedPackSize
+      ? `~ Formato tipico (${estimatedPack.formatLabel})`
+      : 'Peso dichiarato a volantino';
 
     return {
       offerId: offer.id,
@@ -282,6 +323,8 @@ export class CreaOfferMatcher {
       storeName: offer.storeName || offer.brand,
       promoPrice: offer.promoPrice,
       trueEdibleEuroPerKg,
+      isEstimatedPackSize,
+      priceBasisLabel,
       creaFoodId: food.id,
       creaFoodName: food.name,
       creaCategory: food.category,
@@ -297,6 +340,7 @@ export class CreaOfferMatcher {
         potassiumMgPerEuro: km.potassiumMg != null ? Math.round(km.potassiumMg * units100gPerEuro) : 0,
         magnesiumMgPerEuro: km.magnesiumMg != null ? Math.round(km.magnesiumMg * units100gPerEuro) : 0,
         omega3GPerEuro: km.omega3G != null ? Number((km.omega3G * units100gPerEuro).toFixed(2)) : 0,
+        epaDhaGPerEuro: km.epaDhaG != null ? Number((km.epaDhaG * units100gPerEuro).toFixed(2)) : 0,
         vitaminCMgPerEuro: km.vitaminCMg != null ? Number((km.vitaminCMg * units100gPerEuro).toFixed(1)) : 0
       },
       keyMetrics100g: km

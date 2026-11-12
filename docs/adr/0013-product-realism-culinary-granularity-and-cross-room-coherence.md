@@ -55,7 +55,7 @@ Il completamento architetturale delle 6 Stanze ([ADR-0007](./0007-multi-domain-c
 
 ## 3. Task Operativi Collegati
 
-- [ ] **TASK-REAL-01**: **Hardening Domini/Categorie, Formato Tipico Trasparente per Prezzi/CREA, Fix Conversione FAO Omega-3 & Paginazione Stanza 2**
+- [x] **TASK-REAL-01**: **Hardening Domini/Categorie, Formato Tipico Trasparente per Prezzi/CREA, Fix Conversione FAO Omega-3 & Paginazione Stanza 2**
   - *File coinvolti*: `server/services/domainClassifier.js`, `server/services/unitPriceExtractor.js`, `server/services/offerService.js`, `server/services/priceHistoryService.js`, `server/services/creaService.js`, `server/services/creaOfferMatcher.js`, `src/components/crea/CreaExplorerView.jsx`, `tests/unit/crea_service.test.js`
   - *Verification Step*: `npm test`
 - [ ] **TASK-REAL-02**: **Espansione Catalogo Ricette (Scuola Base Single, Colazioni Reali, Cambusa Fredda Barca), Tassonomia `dishFamily` e Deduplica Comparativa Ristoranti**

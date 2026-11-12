@@ -87,6 +87,25 @@ describe('TASK-M1-01: Multi-Domain Taxonomy, Edible €/kg Normalizer & Quality 
       assert.equal(classifyProductDomain(crocchette), 'pet_care');
       assert.equal(isHumanFoodOffer(crocchette), false);
     });
+
+    it('keeps "da forno / forno a legna" foods in food_human while routing bedding/apparel/toys out of food_human (ADR-0013)', () => {
+      assert.equal(
+        classifyProductDomain({ title: 'Forno a legna - 2 Pizze Margherita Classica', brand: 'Forno a legna', chainId: 'basko' }),
+        'food_human'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Patatine Da Forno In Vassoio Passione & Natura', chainId: 'despar' }),
+        'food_human'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Bassetti - Completo Letto Trendy', chainId: 'carrefour' }),
+        'home_cleaning'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Peluche Orso', chainId: 'carrefour' }),
+        'home_cleaning'
+      );
+    });
   });
 
   describe('Level 1.2: Unit Price & Edible/Drained Weight Normalizer', () => {
@@ -119,6 +138,31 @@ describe('TASK-M1-01: Multi-Domain Taxonomy, Edible €/kg Normalizer & Quality 
       });
       assert.equal(anomaly.priceAnomalyFlag, true);
       assert.ok(anomaly.priceAnomalyReasons.length > 0);
+    });
+
+    it('parses explicit egg counts ("10 Uova") and keeps referencePackEstimate transparent when text omits weight (ADR-0013)', () => {
+      const eggs = normalizeUnitPricing({
+        title: 'Latte tigullio - 10 Uova Fresche Fiordovo',
+        promoPrice: 3.09
+      });
+      assert.equal(eggs.eggCount, 10);
+      assert.equal(eggs.packWeightGrams, 600);
+      assert.equal(eggs.drainedWeightGrams, 530);
+      assert.equal(eggs.pricePerKg, 5.15);
+      assert.equal(eggs.ediblePricePerKg, 5.83);
+
+      const pastaNoWeight = normalizeUnitPricing({
+        title: 'Barilla - Pasta Di Semola',
+        promoPrice: 0.99,
+        domain: 'food_human'
+      });
+      // Explicit pricePerKg stays null per ADR-0006, while referencePackEstimate provides transparent GDO format
+      assert.equal(pastaNoWeight.pricePerKg, null);
+      assert.equal(pastaNoWeight.formattedNormalizedPrice, null);
+      assert.ok(pastaNoWeight.referencePackEstimate);
+      assert.equal(pastaNoWeight.referencePackEstimate.isEstimatedPackSize, true);
+      assert.equal(pastaNoWeight.referencePackEstimate.estimatedPackGrams, 500);
+      assert.equal(pastaNoWeight.referencePackEstimate.estimatedEdiblePricePerKg, 1.98);
     });
   });
 

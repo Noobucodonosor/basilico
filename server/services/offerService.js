@@ -58,6 +58,25 @@ export function normalizeSearchToken(str) {
 }
 
 /**
+ * Detects generic or OCR-truncated flyer tiles without an identifiable product noun
+ * (e.g. "Al Kg", "Galbani - no", "Biraghi - ni", "Goliath -") so they never pollute CREA or recipe BOM matching.
+ */
+export function isNamelessOfferTile(offer = {}) {
+  const titleNorm = normalizeSearchToken(offer.title || '');
+  if (!titleNorm) return true;
+  if (/^(al\s*kg|all\s*etto|al\s*etto|al\s*litro|offerta|solo|prezzo|prezzo\s*speciale)$/.test(titleNorm)) {
+    return true;
+  }
+  const brandNorm = normalizeSearchToken(offer.brand || '');
+  if (brandNorm && titleNorm.startsWith(`${brandNorm} `)) {
+    const rest = titleNorm.slice(brandNorm.length).trim();
+    if (rest.length <= 2 || /^(no|ni|si|il|lo|la)$/.test(rest)) {
+      return true;
+    }
+  }
+  return false;
+}
+/**
  * Returns a sort comparator supporting both snake_case and camelCase keys
  */
 export function getSortComparator(sortBy) {
@@ -80,7 +99,9 @@ export function getSortComparator(sortBy) {
     case 'expiringsoon':
       return (a, b) => new Date(a.validityEnd || a.validTo || 0) - new Date(b.validityEnd || b.validTo || 0);
     case 'priceperkgasc':
-      return (a, b) => (a.ediblePricePerKg ?? a.pricePerKg ?? 999999) - (b.ediblePricePerKg ?? b.pricePerKg ?? 999999);
+      return (a, b) =>
+        (a.ediblePricePerKg ?? a.pricePerKg ?? a.referencePackEstimate?.estimatedEdiblePricePerKg ?? 999999) -
+        (b.ediblePricePerKg ?? b.pricePerKg ?? b.referencePackEstimate?.estimatedEdiblePricePerKg ?? 999999);
     default:
       return null;
   }
@@ -96,7 +117,7 @@ const _enrichedOfferByIdMemo = new Map();
 export function enrichOfferRecord(offer = {}, profileId = null) {
   if (!offer || typeof offer !== 'object') return offer;
 
-  const obsCount = priceHistoryService._state?.observations?.length || 0;
+  const obsCount = priceHistoryService._observations?.length || 0;
   const cacheKey = `${profileId || '__default__'}:${obsCount}`;
 
   let cachedByProfile = _enrichedOfferMemo.get(offer);
@@ -118,7 +139,8 @@ export function enrichOfferRecord(offer = {}, profileId = null) {
   }
 
   const domain = classifyProductDomain(offer);
-  const pricing = normalizeUnitPricing(offer);
+  const isNamelessTile = isNamelessOfferTile(offer);
+  const pricing = normalizeUnitPricing({ ...offer, domain });
   const quality = evaluateQualityLens({ ...offer, domain });
   const _searchNorm = normalizeSearchToken(
     `${offer.title} ${offer.brand || ''} ${offer.category || ''} ${offer.description || ''}`
@@ -128,6 +150,7 @@ export function enrichOfferRecord(offer = {}, profileId = null) {
     ...offer,
     _searchNorm,
     domain,
+    isNamelessTile,
     checkoutPackPrice: pricing.checkoutPackPrice,
     packWeightGrams: pricing.packWeightGrams,
     drainedWeightGrams: pricing.drainedWeightGrams,
@@ -136,6 +159,7 @@ export function enrichOfferRecord(offer = {}, profileId = null) {
     ediblePricePerKg: pricing.ediblePricePerKg,
     pricePerLiter: pricing.pricePerLiter,
     formattedNormalizedPrice: pricing.formattedNormalizedPrice,
+    referencePackEstimate: isNamelessTile ? null : pricing.referencePackEstimate,
     priceAnomalyFlag: pricing.priceAnomalyFlag,
     priceAnomalyReasons: pricing.priceAnomalyReasons,
     qualityBadges: quality.badges,

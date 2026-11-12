@@ -66,8 +66,49 @@ export const DAILY_VNR_REFERENCE = {
   'Riboflavina (mg)': 1.4,
   'Niacina (mg)': 16,
   'Folati totali (μg)': 200,
+  'Folati (μg)': 200,
   'Vitamina A retinolo equivalente (μg)': 800
 };
+
+// USDA / CREA thermal retention factors (Rf) applied when cooking raw foods (state === 'cooked_from_raw')
+export const THERMAL_VITAMIN_RETENTION = {
+  'Vitamina C (mg)': 0.60,
+  'Folati totali (μg)': 0.65,
+  'Folati (μg)': 0.65,
+  'Tiamina (mg)': 0.75,
+  'Riboflavina (mg)': 0.85,
+  'Vitamina B6 (mg)': 0.80,
+  'Niacina (mg)': 0.85,
+  'Vitamina B12 (μg)': 0.85
+};
+
+/**
+ * FAO / INFOODS (Greenfield & Southgate) lipid-to-total-fatty-acids conversion factor (F_lipid).
+ * Converts total lipids (g/100g) into total fatty acids (g/100g) before multiplying by % fatty acid composition.
+ */
+export function resolveLipidConversionFactor(food = {}, fatG = 0) {
+  const catNorm = normalizeSearchToken(food.category || '');
+  const nameNorm = normalizeSearchToken(food.name || '');
+  if (catNorm.includes('oli e grassi') || /\b(olio|strutto|sego)\b/.test(nameNorm)) {
+    return 0.956;
+  }
+  if (/\b(burro)\b/.test(nameNorm)) {
+    return 0.945;
+  }
+  if (catNorm.includes('prodotti della pesca')) {
+    return (fatG || 0) >= 2.0 ? 0.90 : 0.80;
+  }
+  if (
+    catNorm.includes('carni') ||
+    catNorm.includes('latte') ||
+    catNorm.includes('formaggi') ||
+    catNorm.includes('uova') ||
+    /\b(noci|mandorl\w*|nocciol\w*|pistacch\w*|pinol\w*|arachid\w*|anacard\w*|semi)\b/.test(nameNorm)
+  ) {
+    return 0.90;
+  }
+  return 0.80;
+}
 
 // Canonical key nutrients extracted on every food summary for fast sorting & Nutrients/€
 export const KEY_NUTRIENT_MAP = {
@@ -79,8 +120,11 @@ export const KEY_NUTRIENT_MAP = {
   carbsG: ['Carboidrati disponibili (g)'],
   sugarsG: ['Zuccheri solubili (g)'],
   fiberG: ['Fibra totale (g)', 'Fibra alimentare totale (g)'],
-  saturatedFatG: ['Acidi grassi Saturi (%)', 'Acidi grassi saturi totali (g)'],
-  omega3G: ['Acidi grassi Polinsaturi (%)', 'C20:5 acido eicosapentenoico EPA (%)', 'C22:6 acido docosaesenoico DHA (%)'],
+  saturatedFatG: ['Acidi grassi saturi totali (g)'],
+  monounsaturatedFatG: ['Acidi grassi monoinsaturi totali (g)'],
+  polyunsaturatedFatG: ['Acidi grassi polinsaturi totali (g)'],
+  omega3G: ['C18:3 acido linolenico (%)', 'C20:5 acido eicosapentenoico EPA (%)', 'C22:6 acido docosaesenoico DHA (%)'],
+  epaDhaG: ['C20:5 acido eicosapentenoico EPA (%)', 'C22:6 acido docosaesenoico DHA (%)'],
   sodiumMg: ['Sodio (mg)'],
   potassiumMg: ['Potassio (mg)'],
   ironMg: ['Ferro (mg)'],
@@ -91,7 +135,7 @@ export const KEY_NUTRIENT_MAP = {
   vitaminCMg: ['Vitamina C (mg)'],
   vitaminB12Ug: ['Vitamina B12 (μg)'],
   vitaminDUg: ['Vitamina D (μg)'],
-  folateUg: ['Folati totali (μg)'],
+  folateUg: ['Folati totali (μg)', 'Folati (μg)'],
   cholesterolMg: ['Colesterolo (mg)']
 };
 
@@ -178,6 +222,9 @@ export class CreaService {
 
     const metrics = {};
     for (const [key, labels] of Object.entries(KEY_NUTRIENT_MAP)) {
+      if (['saturatedFatG', 'monounsaturatedFatG', 'polyunsaturatedFatG', 'omega3G', 'epaDhaG'].includes(key)) {
+        continue;
+      }
       let val = null;
       for (const lbl of labels) {
         if (flatMap[lbl] !== undefined) {
@@ -187,6 +234,45 @@ export class CreaService {
       }
       metrics[key] = val;
     }
+
+    // Rigorous FAO fatty-acid conversion from % of total fatty acids -> g per 100g edible food
+    const fatG = metrics.fatG;
+    const fLipid = resolveLipidConversionFactor(food, fatG || 0);
+    const totalFaG = fatG !== null ? fatG * fLipid : null;
+
+    const toGramsFromPct = (pctVal) => {
+      if (fatG === 0) return 0;
+      if (totalFaG === null || pctVal === undefined || pctVal === null) return null;
+      return Number((totalFaG * (pctVal / 100)).toFixed(3));
+    };
+
+    metrics.saturatedFatG =
+      flatMap['Acidi grassi saturi totali (g)'] !== undefined
+        ? flatMap['Acidi grassi saturi totali (g)']
+        : toGramsFromPct(flatMap['Acidi grassi Saturi (%)']);
+    metrics.monounsaturatedFatG = toGramsFromPct(flatMap['Acidi grassi Monoinsaturi (%)']);
+    metrics.polyunsaturatedFatG = toGramsFromPct(flatMap['Acidi grassi Polinsaturi (%)']);
+
+    const alaPct = flatMap['C18:3 acido linolenico (%)'];
+    const epaPct = flatMap['C20:5 acido eicosapentenoico EPA (%)'];
+    const dhaPct = flatMap['C22:6 acido docosaesenoico DHA (%)'];
+
+    if (fatG === 0) {
+      metrics.omega3G = 0;
+      metrics.epaDhaG = 0;
+    } else if (totalFaG !== null && (alaPct !== undefined || epaPct !== undefined || dhaPct !== undefined)) {
+      const sumOmega3Pct = (alaPct || 0) + (epaPct || 0) + (dhaPct || 0);
+      metrics.omega3G = Number((totalFaG * (sumOmega3Pct / 100)).toFixed(3));
+      metrics.epaDhaG =
+        epaPct !== undefined || dhaPct !== undefined
+          ? Number((totalFaG * (((epaPct || 0) + (dhaPct || 0)) / 100)).toFixed(3))
+          : 0;
+    } else {
+      metrics.omega3G = null;
+      metrics.epaDhaG = null;
+    }
+
+    metrics.lipidConversionFactor = fLipid;
     return metrics;
   }
 
@@ -279,6 +365,9 @@ export class CreaService {
     // When state === 'cooked_from_raw', we report both resulting cooked weight and nutrient density per 100g cooked
     const scaleFactor = (effectiveEdibleGramsRaw / 100) / (options.per100gCooked ? yieldMult : 1.0);
     const resultingCookedWeightGrams = Number((effectiveEdibleGramsRaw * yieldMult).toFixed(1));
+    const applyThermalRetention = state === 'cooked_from_raw' && Boolean(food.yieldFactor?.isRaw);
+    const baseFatG = food.keyMetrics?.fatG || 0;
+    const fLipid = food.keyMetrics?.lipidConversionFactor || resolveLipidConversionFactor(food, baseFatG);
 
     const computedSections = {};
     let totalValuesCount = 0;
@@ -291,18 +380,25 @@ export class CreaService {
         totalValuesCount++;
         const parsed = parseCreaValue(row.v100);
         const isRelative = isRelativeFractionComponent(secName, row.c);
+        const retentionFactor = applyThermalRetention && !isRelative
+          ? (THERMAL_VITAMIN_RETENTION[row.c] ?? 1.0)
+          : 1.0;
 
         let computedValue = null;
         let displayValue = 'n.d.';
+        let gramsEquivalent = null;
 
         if (parsed.isTrace) {
           computedValue = 0;
           displayValue = 'tr';
         } else if (parsed.numeric !== null) {
           // Relative percentages (% of proteins / % AG) are NOT multiplied by weight
-          const val = isRelative ? parsed.numeric : parsed.numeric * scaleFactor;
+          const val = isRelative ? parsed.numeric : parsed.numeric * scaleFactor * retentionFactor;
           computedValue = Number(val.toFixed(val < 1 && val > 0 ? 3 : 2));
           displayValue = String(computedValue);
+          if (secName === 'ACIDI GRASSI' && row.c.includes('(%)') && baseFatG > 0) {
+            gramsEquivalent = Number((baseFatG * scaleFactor * fLipid * (parsed.numeric / 100)).toFixed(3));
+          }
         }
 
         const vnrRef = DAILY_VNR_REFERENCE[row.c];
@@ -316,6 +412,8 @@ export class CreaService {
           portionRaw: row.vp,
           computedValue,
           displayValue,
+          gramsEquivalent,
+          thermalRetentionFactor: retentionFactor < 1.0 ? retentionFactor : null,
           isTrace: parsed.isTrace,
           isNull: parsed.isNull,
           isRelativeFraction: isRelative,
@@ -365,7 +463,8 @@ export class CreaService {
         effectiveEdibleGramsRaw: Number(effectiveEdibleGramsRaw.toFixed(1)),
         resultingCookedWeightGrams,
         scaleFactor: Number(scaleFactor.toFixed(4)),
-        state
+        state,
+        thermalRetentionApplied: applyThermalRetention
       },
       keyMetrics: food.keyMetrics,
       totalValuesCount,

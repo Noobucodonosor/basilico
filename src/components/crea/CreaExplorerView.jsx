@@ -5,6 +5,8 @@ import CreaCompareTray from './CreaCompareTray.jsx';
 const SORT_OPTIONS = [
   { id: 'proteinG', label: 'Proteine più alte (g/100g)' },
   { id: 'nameAsc', label: 'Ordine alfabetico (A-Z)' },
+  { id: 'omega3G', label: 'Omega-3 totali ALA+EPA+DHA (g/100g)' },
+  { id: 'epaDhaG', label: 'Omega-3 marini EPA+DHA (g/100g)' },
   { id: 'ironMg', label: 'Ferro più alto (mg/100g)' },
   { id: 'calciumMg', label: 'Calcio più alto (mg/100g)' },
   { id: 'potassiumMg', label: 'Potassio più alto (mg/100g)' },
@@ -12,6 +14,7 @@ const SORT_OPTIONS = [
   { id: 'fiberG', label: 'Fibre più alte (g/100g)' },
   { id: 'vitaminCMg', label: 'Vitamina C più alta (mg/100g)' },
   { id: 'vitaminB12Ug', label: 'Vitamina B12 più alta (μg/100g)' },
+  { id: 'folateUg', label: 'Folati più alti (μg/100g)' },
   { id: 'kcalAsc', label: 'Ipocalorici (kcal crescenti)' }
 ];
 
@@ -25,12 +28,15 @@ const PHYSIOLOGICAL_PRESETS = [
 
 const NPE_METRICS = [
   { id: 'proteinGPerEuro', label: 'Grammi di Proteine per 1 €', unit: 'g prot / €' },
+  { id: 'omega3GPerEuro', label: 'Omega-3 (g) per 1 €', unit: 'g Ω3 / €' },
   { id: 'kcalPerEuro', label: 'Energia (kcal) per 1 €', unit: 'kcal / €' },
   { id: 'ironMgPerEuro', label: 'Ferro (mg) per 1 €', unit: 'mg Fe / €' },
   { id: 'potassiumMgPerEuro', label: 'Potassio (mg) per 1 €', unit: 'mg K / €' },
   { id: 'fiberGPerEuro', label: 'Fibre (g) per 1 €', unit: 'g fibre / €' },
   { id: 'calciumMgPerEuro', label: 'Calcio (mg) per 1 €', unit: 'mg Ca / €' }
 ];
+
+const PAGE_SIZE = 100;
 
 export function CreaExplorerView({
   activeProfileId = 'dany',
@@ -49,6 +55,7 @@ export function CreaExplorerView({
   const [sortBy, setSortBy] = useState('proteinG');
   const [preset, setPreset] = useState(null);
   const [includeExcluded, setIncludeExcluded] = useState(false);
+  const [page, setPage] = useState(1);
 
   const [compareItems, setCompareItems] = useState([]);
   const [activeModalFoodId, setActiveModalFoodId] = useState(initialFoodId);
@@ -64,13 +71,18 @@ export function CreaExplorerView({
     }
   }, [initialFoodId]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchQ, selectedCategory, sortBy, preset, activeProfileId, includeExcluded]);
+
   const fetchFoods = useCallback(() => {
     setLoading(true);
     const params = new URLSearchParams({
       sortBy,
       profileId: activeProfileId,
       includeExcluded: String(includeExcluded),
-      limit: '120'
+      page: String(page),
+      limit: String(PAGE_SIZE)
     });
     if (searchQ.trim()) params.set('q', searchQ.trim());
     if (selectedCategory) params.set('category', selectedCategory);
@@ -88,7 +100,7 @@ export function CreaExplorerView({
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [searchQ, selectedCategory, sortBy, preset, activeProfileId, includeExcluded]);
+  }, [searchQ, selectedCategory, sortBy, preset, activeProfileId, includeExcluded, page]);
 
   const fetchNutrientsPerEuro = useCallback(() => {
     setNpeLoading(true);
@@ -375,6 +387,34 @@ export function CreaExplorerView({
                 </tbody>
               </table>
             </div>
+            {totalFoods > PAGE_SIZE && (
+              <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <span className="font-semibold text-slate-600">
+                  Visualizzati {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalFoods)} di {totalFoods} alimenti CREA
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 cursor-pointer"
+                  >
+                    ← Precedente
+                  </button>
+                  <span className="font-extrabold text-slate-800 px-2">
+                    Pag. {page} / {Math.ceil(totalFoods / PAGE_SIZE)}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={page >= Math.ceil(totalFoods / PAGE_SIZE)}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 cursor-pointer"
+                  >
+                    Successiva →
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         </>
       ) : (
@@ -460,7 +500,10 @@ export function CreaExplorerView({
                           € {Number(item.promoPrice).toFixed(2)}
                         </td>
                         <td className="py-2.5 px-3 text-right font-semibold text-slate-600">
-                          € {Number(item.trueEdibleEuroPerKg).toFixed(2)} / kg
+                          <div>€ {Number(item.trueEdibleEuroPerKg).toFixed(2)} / kg</div>
+                          <div className={`text-[10px] font-bold ${item.isEstimatedPackSize ? 'text-amber-700' : 'text-emerald-700'}`}>
+                            {item.priceBasisLabel || (item.isEstimatedPackSize ? '~ Formato standard stimato' : '✓ Peso dichiarato')}
+                          </div>
                         </td>
                         <td className="py-2.5 px-3 text-right font-extrabold text-indigo-800 bg-indigo-50/60">
                           {item.nutrientsPerEuro[npeMetric]} {activeMetricUnit}
