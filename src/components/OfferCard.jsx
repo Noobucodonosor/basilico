@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export function formatValidityBadge(isoString) {
   if (!isoString) return null;
@@ -17,7 +17,8 @@ const DOMAIN_BADGE_MAP = {
   pet_care: { label: 'Pet Care', color: 'bg-orange-50 text-orange-800 border-orange-200' }
 };
 
-export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood }) {
+export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) {
+  const [addedToList, setAddedToList] = useState(false);
   const promoVal = Number(offer.promoPrice ?? offer.price ?? offer.discountPrice ?? 0);
   const origVal = offer.originalPrice != null ? Number(offer.originalPrice) : null;
   const hasDiscount = Boolean(origVal && origVal > promoVal);
@@ -143,18 +144,51 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood }) {
         )}
       </div>
 
-      {/* Track 4: Footer (Validity + Store Name / Action) */}
-      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+      {/* Track 4: Footer (Validity + Quick Add to Shopping List + Flyer Action) */}
+      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5 text-xs">
         <span className="text-[11px] text-slate-500 truncate" title={validityText || ''}>
           {validityText || 'Offerta attiva'}
         </span>
-        <button
-          type="button"
-          onClick={() => onOpenFlyer && onOpenFlyer(offer)}
-          className="text-emerald-700 font-semibold hover:text-emerald-800 text-[11px] shrink-0 hover:underline cursor-pointer"
-        >
-          Sfoglia volantino →
-        </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {onAddToShoppingList && !offer.isNamelessTile && (
+            <button
+              type="button"
+              onClick={async () => {
+                await onAddToShoppingList({
+                  name: offer.title,
+                  domain: offer.domain || 'food_human',
+                  source: 'promo_flyer',
+                  unitPriceEur: promoVal > 0 ? promoVal : 2.5,
+                  packSizeGrams:
+                    offer.drainedWeightGrams ||
+                    offer.packWeightGrams ||
+                    offer.referencePackEstimate?.estimatedGrossGrams ||
+                    300,
+                  preferredChain: offer.storeName || brand,
+                  storeId: offer.storeId || null,
+                  onPromo: true,
+                  creaId: offer.creaMatch?.creaFoodId || null
+                });
+                setAddedToList(true);
+              }}
+              className={`px-2 py-0.5 rounded font-bold text-[10px] border transition-colors cursor-pointer ${
+                addedToList
+                  ? 'bg-emerald-700 text-white border-emerald-700'
+                  : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+              }`}
+              title="Aggiungi con 1 clic alla Lista Spesa Multi-Negozio di Rapallo"
+            >
+              {addedToList ? '✓ Lista' : '+ Lista'}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => onOpenFlyer && onOpenFlyer(offer)}
+            className="text-emerald-700 font-semibold hover:text-emerald-800 text-[11px] shrink-0 hover:underline cursor-pointer"
+          >
+            Sfoglia volantino →
+          </button>
+        </div>
       </div>
     </article>
   );

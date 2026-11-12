@@ -97,3 +97,129 @@ test('ShoppingListService — Domain Separation, 1/2/3 Store Simulations & Shelf
   assert.equal(planB.originalItem.id, firstId);
   assert.ok(Array.isArray(planB.planBAlternatives));
 });
+
+test('MealPlannerService (TASK-REAL-05) — Human Anti-Monotony, Boat Cold Safety, Real Breakfast BOMs & Diet Purity Across All 6 Models', async () => {
+  const planner = new MealPlannerService();
+  const models = planner.getModels();
+  const meatRx = /\b(manzo|vitello|bovino|pollo|tacchino|coniglio|maiale|suino|agnello|salame|prosciutto|pancetta|guanciale|salsiccia|mortadella|bresaola|cima)\b/i;
+
+  for (const model of models) {
+    const plan = await planner.generateWeeklyPlan({
+      modelId: model.id,
+      daysCount: 7,
+      servings: 1,
+      budgetEur: 55,
+      profileId: 'dany',
+      dayModes: ['land_day', 'land_day', 'boat_day', 'land_day', 'boat_day', 'land_day', 'land_day']
+    });
+
+    const dishIds = new Set();
+    const twinKeys = new Set();
+    let pestoMeals = 0;
+
+    for (const day of plan.days) {
+      // 1. Real Breakfast with CREA BOM
+      assert.ok(day.breakfast?.dish, `Day ${day.dayIndex} in ${model.id} must have a real breakfast dish`);
+      assert.equal(day.breakfast.dish.course, 'colazione');
+      assert.ok(day.breakfast.dish.bom.length >= 2);
+
+      // 2. Boat day lunches MUST be strictly cold-safe (zero hot pasta / stove dishes)
+      if (day.dayMode === 'boat_day') {
+        assert.equal(
+          day.lunch.dish.boatSafeCold,
+          true,
+          `Boat lunch "${day.lunch.dish.title}" in ${model.id} must be cold-safe`
+        );
+      }
+
+      // 3. No double pasta/risotto on the same day
+      assert.ok(
+        !(day.lunch.dish.course === 'primo' && day.dinner.dish.course === 'primo'),
+        `Day ${day.dayName} in ${model.id} must not schedule primo at both lunch and dinner`
+      );
+
+      for (const slot of ['lunch', 'dinner']) {
+        const dish = day[slot].dish;
+        assert.equal(dish.isExcludedByProfileIdentity, false, `Dish "${dish.title}" violates Zero Formaggi identity`);
+        assert.ok(
+          !['dolce', 'gelato', 'merenda', 'aperitivo', 'colazione', 'contorno'].includes(dish.course),
+          `Non-meal course "${dish.course}" ("${dish.title}") must never be scheduled as ${slot}`
+        );
+
+        // Zero duplicate dishes or homologous restaurant twins across the entire week
+        assert.ok(!dishIds.has(dish.id), `Duplicate dish ID ${dish.id} in ${model.id}`);
+        dishIds.add(dish.id);
+        if (dish.canonicalTwinKey) {
+          assert.ok(!twinKeys.has(dish.canonicalTwinKey), `Duplicate twin "${dish.canonicalTwinKey}" in ${model.id}`);
+          twinKeys.add(dish.canonicalTwinKey);
+        }
+
+        if (dish.dishFamily === 'pesto_pasta') pestoMeals += 1;
+
+        if (model.id === 'pescetarian_sea') {
+          const text = `${dish.title} ${dish.bom.map((b) => b.name).join(' ')}`;
+          assert.ok(!meatRx.test(text), `Pescetarian plan must never include meat dish: ${dish.title}`);
+        }
+        if (model.id === 'high_protein_sport') {
+          assert.notEqual(dish.dishFamily, 'pizza_focaccia', `High-protein plan must not include pizza: ${dish.title}`);
+          assert.notEqual(dish.dishFamily, 'fried_dish', `High-protein plan must not include fried dish: ${dish.title}`);
+        }
+      }
+    }
+
+    assert.ok(pestoMeals <= 1, `Weekly plan ${model.id} had ${pestoMeals} pesto meals (max 1 allowed!)`);
+
+    // Verify breakfast ingredients are tracked in the Whole-Pack Ledger
+    const hasBreakfastLedgerUsage = plan.ledger.wholePackItems.some((wp) =>
+      wp.usedInMeals.some((u) => u.slot === 'breakfast')
+    );
+    assert.ok(hasBreakfastLedgerUsage, `Whole-pack ledger in ${model.id} must include real breakfast BOM ingredients`);
+  }
+});
+
+test('ShoppingListService (TASK-REAL-05) — Zero Esselunga, Real Rapallo Stores & Semantic Shelf Plan B', async () => {
+  const shop = new ShoppingListService({
+    storagePath: path.join(os.tmpdir(), `basilico-shop-real05-${Date.now()}.json`)
+  });
+
+  shop.addItem({
+    name: 'Filetto di Orata Fresca',
+    domain: 'food_human',
+    packsToBuy: 1,
+    packSizeGrams: 250,
+    unitPriceEur: 4.9,
+    onPromo: true,
+    preferredStoreId: 'rapallo-basko-colombo',
+    preferredChain: 'Basko'
+  });
+  const state = shop.addItem({
+    name: 'Sgrassatore Cucina Alcalino',
+    domain: 'home_cleaning',
+    packsToBuy: 1,
+    unitPriceEur: 2.49,
+    onPromo: true,
+    preferredStoreId: 'rapallo-tigota-lamarmora',
+    preferredChain: 'Tigotà'
+  });
+
+  // 1. Verify zero non-existent chains ("Esselunga") and real Rapallo store names
+  const simJson = JSON.stringify(state.storeSimulations);
+  assert.ok(!/esselunga/i.test(simJson), 'Rapallo store simulator must NEVER reference Esselunga');
+  assert.ok(
+    state.storeSimulations[0].estimatedTotalEur >= state.storeSimulations[1].estimatedTotalEur,
+    '2-store optimum must be <= 1-store cost'
+  );
+  assert.ok(
+    state.storeSimulations[1].estimatedTotalEur >= state.storeSimulations[2].estimatedTotalEur,
+    '3-store optimum must be <= 2-store cost'
+  );
+
+  // 2. Verify semantic Shelf Plan B excludes nameless tiles ("Al Kg") and cheese for Dany
+  const fishItem = state.items.find((i) => /Orata/i.test(i.name));
+  const planB = await shop.getShelfPlanB(fishItem.id);
+  assert.ok(planB.planBAlternatives.length > 0, 'Must find real Rapallo fish/aisle substitutes');
+  for (const alt of planB.planBAlternatives) {
+    assert.notEqual(alt.title.trim().toLowerCase(), 'al kg', 'Must never return nameless "Al Kg" tile as Plan B');
+    assert.ok(!/formagg|mozzarell|robiola|gorgonzola/i.test(alt.title), `Plan B "${alt.title}" must respect Dany profile`);
+  }
+});

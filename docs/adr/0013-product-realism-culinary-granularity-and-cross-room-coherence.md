@@ -67,6 +67,6 @@ Il completamento architetturale delle 6 Stanze ([ADR-0007](./0007-multi-domain-c
 - [x] **TASK-REAL-04**: **Allineamento ID Pentole con ROI Dinamico Reale, Matching Chimico + Matrice Sicurezza P0 Sottolavello, Parser Scontrini Reale & Scarico Post-Cottura Dispensa**
   - *File coinvolti*: `server/services/kitchenInventoryService.js`, `server/services/kitchenResetService.js`, `server/services/receiptService.js`, `server/services/pantryService.js`, `server/routes/pantry.js`, `src/components/kitchen/KitchenCareView.jsx`, `src/components/recipes/CookingModeModal.jsx`, `tests/unit/kitchen_services.test.js`, `tests/unit/receipt_reconciliation.test.js`
   - *Verification Step*: `npm test`
-- [ ] **TASK-REAL-05**: **Solver Settimanale *Neo-Dieta* Umano (Varietà, Colazioni Vere, Barca Sicura, Pranzo≠Cena), Vero Simulatore Multi-Negozio Rapallo, Piano B Semantico & `+ Lista` Cross-Room**
+- [x] **TASK-REAL-05**: **Solver Settimanale *Neo-Dieta* Umano (Varietà, Colazioni Vere, Barca Sicura, Pranzo≠Cena), Vero Simulatore Multi-Negozio Rapallo, Piano B Semantico & `+ Lista` Cross-Room**
   - *File coinvolti*: `server/services/mealPlannerService.js`, `server/services/shoppingListService.js`, `src/App.jsx`, `src/components/Header.jsx`, `src/components/OfferCard.jsx`, `src/components/planner/PlannerAndShoppingView.jsx`, `tests/unit/meal_planner_zero_waste.test.js`, `tests/e2e/planner_shopping_ui.test.js`
   - *Verification Step*: `npm test`

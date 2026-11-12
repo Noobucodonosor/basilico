@@ -37,18 +37,20 @@ const GRANULAR_INGREDIENT_PACK_RULES = [
   { key: 'olives_capers_anchovies', regex: /\b(olive|capperi|acciug\w*\s+sott\w*|acciug\w*\s+dissalat\w*|alici\s+sott\w*)\b/, packGrams: 150, euroPerKg: 18.5 },
   { key: 'nuts_seeds', regex: /\b(mandorl\w*|noci|nocciol\w*|pistacch\w*|anacard\w*|arachid\w*)\b/, packGrams: 200, euroPerKg: 17.5 },
   { key: 'honey_sweet', regex: /\b(miele|confettura|marmellata)\b/, packGrams: 250, euroPerKg: 11.5 },
-  { key: 'pantry_micro', regex: /\b(sale|pepe|cacao|zucchero|aceto|vino\s+bianco|vino\s+rosso|lievito|cannella|noce moscata|cappero)\b/, packGrams: 200, euroPerKg: 6.5 },
+  { key: 'wine_cooking', regex: /\b(vino\s+bianco|vino\s+rosso|vino\s+da\s+pasto|vermentino|pigato|barbera)\b/, packGrams: 750, euroPerKg: 7.9 },
+  { key: 'pantry_micro', regex: /\b(sale|pepe|cacao|zucchero|aceto|lievito|cannella|noce moscata|cappero)\b/, packGrams: 200, euroPerKg: 6.5 },
   { key: 'yogurt_single', regex: /\b(yogurt|kefir|skyr)\b/, packGrams: 170, euroPerKg: 7.9 },
   { key: 'milk', regex: /^latte\b|\blatte\s+(?:intero|parzialmente|uht|fresco)\b/, packGrams: 1000, euroPerKg: 1.55 },
-  { key: 'eggs', regex: /\b(uov\w*|albume|tuorlo)\b/, packGrams: 360, euroPerKg: 6.2 },
+  { key: 'eggs', regex: /^(?!.*\b(?:pasta|sfoglia|tagliatell\w*|tagliolin\w*|lasagn\w*|biscott\w*|maionese)\b).*\b(uov\w*|albume|tuorlo)\b/, packGrams: 360, euroPerKg: 6.2 },
   { key: 'bread_bakery', regex: /\b(pane|focaccia|fette biscottate|gallett\w*|crostin\w*|panino|ciabatta)\b/, packGrams: 300, euroPerKg: 4.8 },
   { key: 'canned_fish', regex: /\b(tonno\s+(?:sott|al\s+naturale|in\s+olio|sgocciolat\w*)|sgombro\s+(?:al\s+naturale|sott|sgocciolat\w*)|filetti\s+di\s+sgombro\s+(?:al\s+naturale|sgocciolat\w*))\b/, packGrams: 160, euroPerKg: 21.0 },
   { key: 'smoked_cured', regex: /\b(salmone\s+affumicato|bresaola|prosciutto|speck|pancetta|guanciale|salame|mortadella)\b/, packGrams: 100, euroPerKg: 28.5 },
-  { key: 'fresh_fish', regex: /\b(acciug\w*|alici|orata|branzino|spigola|salmone|tonno|sgombro|palamita|seppi\w*|calamar\w*|polpo|gamber\w*|scamp\w*|cozz\w*|vongol\w*|pesce|baccala|stoccafisso|merluzzo|nasello|capesante|astice|rombo)\b/, packGrams: 250, euroPerKg: 19.5 },
-  { key: 'meat_poultry', regex: /\b(manzo|bovino|vitello|pollo|tacchino|coniglio|maiale|agnello|anatra|faraona)\b/, packGrams: 300, euroPerKg: 13.8 },
+  { key: 'fresh_fish', regex: /\b(acciug\w*|alici|orata|branzino|spigola|salmone|tonno|sgombro|palamita|seppi\w*|calamar\w*|polpo|gamber\w*|scamp\w*|cozz\w*|vongol\w*|pesce|baccala|stoccafisso|merluzzo|nasello|capesante|astice|rombo|sogliola)\b/, packGrams: 250, euroPerKg: 19.5 },
+  { key: 'prime_beef_cuts', regex: /\b(vitellon\w*|costat\w*|entrecote|controfiletto|fiorentina|angus|fassone|chianina|agnello|filetto\s+di\s+(?:manzo|vitell\w*|bovino))\b/, packGrams: 250, euroPerKg: 31.0 },
+  { key: 'meat_poultry', regex: /\b(manzo|bovino|vitell\w*|pollo|tacchino|coniglio|maiale|suino|anatra|faraona|salsiccia)\b/, packGrams: 300, euroPerKg: 13.8 },
   { key: 'fresh_pasta', regex: /\b(trofie|pansot\w*|raviol\w*|gnocch\w*|tagliolini|tagliatelle|sfoglia)\b/, packGrams: 250, euroPerKg: 7.8 },
   { key: 'dry_pasta_grains', regex: /\b(spaghett\w*|pasta|trenette|linguine|penne|fusilli|paccheri|riso|farro|avena|fiocchi\s+d\s*avena|farina)\b/, packGrams: 500, euroPerKg: 2.6 },
-  { key: 'legumes_tomato', regex: /\b(ceci|fagiol\w*|lenticchi\w*|fave|piselli|passata|polpa\s+di\s+pomodoro|pelati|san\s+marzano)\b/, packGrams: 400, euroPerKg: 3.1 },
+  { key: 'legumes_tomato', regex: /\b(ceci|fagiol\w*|lenticchi\w*|fave|piselli|passata|polpa\s+di\s+pomodoro|salsa\s+di\s+pomodoro|sugo|pelati|san\s+marzano)\b/, packGrams: 400, euroPerKg: 3.1 },
   { key: 'oil_fats', regex: /\b(olio)\b/, packGrams: 1000, euroPerKg: 9.8 },
   { key: 'dairy_cheese', regex: /\b(parmigiano|grana|pecorino|mozzarella|stracchino|crescenza|ricotta|formaggio|burro|panna|mascarpone|prescinseua|gorgonzola)\b/, packGrams: 200, euroPerKg: 16.0 },
   { key: 'vegetables_fruit', regex: /\b(pomodor\w*|zucchin\w*|spinac\w*|bietol\w*|borragine|sedano|cipoll\w*|patat\w*|carciof\w*|melanzan\w*|peperon\w*|insalata|asparag\w*|fungh\w*|finocch\w*|carot\w*|mele|mela|banan\w*|aranc\w*|mirtill\w*|avocado|prugn\w*|agrume|frutta)\b/, packGrams: 400, euroPerKg: 3.2 }
@@ -93,6 +95,42 @@ function extractOfferCoreWords(offer = {}) {
     words.shift();
   }
   return { stripped: words.join(' '), words };
+}
+
+export function findCompatiblePantryItem(workingItem = {}, pantryItems = []) {
+  if (!workingItem || !Array.isArray(pantryItems) || pantryItems.length === 0) return null;
+  const itemNorm = normalizeSearchToken(workingItem.name || '');
+  const wantsCannedFish =
+    /\b(sott\s*olio|al\s+naturale|sgocciolat\w*|scatola|vetro)\b/.test(itemNorm) ||
+    ['123610', '123550', '123010', '120020'].includes(String(workingItem.creaId));
+  const wantsRawOrFreshFish =
+    !wantsCannedFish &&
+    /\b(tonno|sgombro|salmone|acciug\w*|alici|orata|branzino|spigola|merluzzo|polpo|calamar\w*|gamber\w*)\b/.test(itemNorm);
+
+  const headToken = itemNorm.split(' ').find((w) => w.length >= 4 && !STOP_WORDS_BOM.has(w)) || itemNorm.split(' ')[0];
+  const headWordRegex = headToken && headToken.length >= 4 ? new RegExp(`\\b${headToken}\\b`, 'i') : null;
+
+  return (
+    pantryItems.find((p) => {
+      if (!p || !(p.remainingWeightGrams > 0)) return false;
+      const pNorm = normalizeSearchToken(p.title || '');
+      const pIsCannedOrDry =
+        p.zone === 'dry_pantry' ||
+        /\b(vetro|scatola|sott\s*olio|al\s+naturale|sgocciolat\w*)\b/.test(pNorm) ||
+        ['123610', '123550', '123010', '120020'].includes(String(p.creaFoodId));
+
+      if (wantsRawOrFreshFish && pIsCannedOrDry) return false;
+      if (wantsCannedFish && !pIsCannedOrDry && /\b(fresc\w*|crud\w*)\b/.test(pNorm)) return false;
+
+      if (workingItem.creaId && p.creaFoodId && String(p.creaFoodId) === String(workingItem.creaId)) {
+        return true;
+      }
+      if (!workingItem.isSubstitutedComposite && headWordRegex && headWordRegex.test(pNorm)) {
+        return true;
+      }
+      return false;
+    }) || null
+  );
 }
 
 /**
@@ -167,6 +205,12 @@ export function matchBomIngredientToOffer(workingItem = {}, activeOffers = []) {
       if (!wantsPassataOrPelati && !offIsPassata && (offHead === 'pomodori' || offHead === 'pomodorini')) return off;
       continue;
     }
+    if (coreNoun === 'pane' && !/\bcioccolat\w*\b/.test(bomNorm)) {
+      if (/\b(cioccolat\w*|nutella|merend\w*|biscott\w*|dolc\w*)\b/.test(stripped)) continue;
+    }
+    if (coreNoun === 'pasta' && /\buov[oa]\b/.test(bomNorm)) {
+      if (!/\b(uov[oa]|tagliatell\w*|tagliolin\w*|pappardell\w*|lasagn\w*)\b/.test(stripped)) continue;
+    }
 
     // Exact whole-word match against offer's first 2 core tokens (after unwrapping "filetto di")
     const effectiveOffHead =
@@ -210,6 +254,14 @@ export function classifyDishMetadata(dish = {}) {
     canonicalTwinKey = 'cappon magro ligure';
   } else if (/\b(focaccia)\b.*\b(formaggio|recco)\b/.test(titleNorm)) {
     canonicalTwinKey = 'focaccia col formaggio tipo recco';
+  } else if (/\b(farinata)\b.*\b(ceci)?\b/.test(titleNorm)) {
+    canonicalTwinKey = 'farinata ligure di ceci';
+  } else if (/\b(spaghett\w*)\b.*\b(pomodor\w*)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'spaghetti al pomodoro';
+  } else if (/\b(filetto)\b.*\b(manzo|vitellon\w*|angus|bovino)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'filetto di manzo';
+  } else if (/\b(fiorentina)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'fiorentina alla brace';
   }
 
   // 2. Dish Family (used by Stanza 6 anti-monotony solver: max 2/week per family)
@@ -217,7 +269,11 @@ export function classifyDishMetadata(dish = {}) {
   if (!dishFamily) {
     if (course === 'colazione' || (dish.mealContexts || []).includes('breakfast')) {
       dishFamily = /\b(uov\w*|salat\w*|focaccia)\b/.test(titleNorm) ? 'breakfast_savory' : 'breakfast_sweet';
-    } else if (course === 'dolce' || /\b(tiramisu|gelat\w*|sorbett\w*|panna cotta|torta dolce|crostata|semifreddo|cannol\w*|profiterol\w*|meringata|cheesecake|bunet|crema catalana|zabaione|dolce)\b/.test(titleNorm)) {
+    } else if (
+      course === 'dolce' ||
+      course === 'gelato' ||
+      /\b(tiramisu|gelat\w*|sorbett\w*|panna cotta|torta dolce|crostata|semifreddo|cannol\w*|profiterol\w*|meringata|cheesecake|bunet|crema catalana|zabaione|dolce)\b/.test(titleNorm)
+    ) {
       dishFamily = 'dessert_gelato';
     } else if (/\b(pizz\w*|focaccia\s+col\s+formaggio|focaccia\s+al\s+formaggio|pinsa)\b/.test(titleNorm)) {
       dishFamily = 'pizza_focaccia';
@@ -529,17 +585,8 @@ export class RecipeAndArbitrageService {
         (rawGramsTotal * (Number(workingItem.yieldFactor) || 1.0)).toFixed(1)
       );
 
-      // 1. Check Pantry availability (by exact CREA ID or whole-word head token)
-      const itemNorm = normalizeSearchToken(workingItem.name);
-      const headToken = itemNorm.split(' ').find((w) => w.length >= 4 && !STOP_WORDS_BOM.has(w)) || itemNorm.split(' ')[0];
-      const headWordRegex = headToken && headToken.length >= 4 ? new RegExp(`\\b${headToken}\\b`, 'i') : null;
-
-      const pantryMatch = pantryItems.find(
-        (p) =>
-          p.remainingWeightGrams > 0 &&
-          ((workingItem.creaId && String(p.creaFoodId) === String(workingItem.creaId)) ||
-            (!workingItem.isSubstitutedComposite && headWordRegex && headWordRegex.test(normalizeSearchToken(p.title))))
-      );
+      // 1. Check Pantry availability (by exact CREA ID or physical-state-compatible whole-word head token)
+      const pantryMatch = findCompatiblePantryItem(workingItem, pantryItems);
 
       const gramsInPantry = pantryMatch ? Math.min(rawGramsTotal, pantryMatch.remainingWeightGrams) : 0;
       const netMissingGrams = Math.max(0, Number((rawGramsTotal - gramsInPantry).toFixed(1)));

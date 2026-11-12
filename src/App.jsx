@@ -56,6 +56,42 @@ export function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [syncProgress, setSyncProgress] = useState(null);
+  const [shoppingCount, setShoppingCount] = useState(0);
+  const [shoppingToast, setShoppingToast] = useState('');
+
+  const refreshShoppingCount = useCallback(() => {
+    fetch('/api/shopping-list')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.subtotals?.totalItemsCount !== undefined) {
+          setShoppingCount(data.subtotals.totalItemsCount);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleAddToShoppingList = useCallback(async (payload) => {
+    try {
+      const res = await fetch('/api/shopping-list/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload || {})
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const count = data?.subtotals?.totalItemsCount ?? 0;
+        setShoppingCount(count);
+        setShoppingToast(`🛒 Aggiunto alla Lista Spesa (${count} art.): ${payload?.name || 'Articolo'}`);
+        setTimeout(() => setShoppingToast(''), 2600);
+      }
+    } catch (_) {
+      // Non-fatal
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshShoppingCount();
+  }, [activeRoom, refreshShoppingCount]);
 
   // Load user profiles and local shops
   useEffect(() => {
@@ -263,7 +299,15 @@ export function App() {
         activeProfileId={activeProfileId}
         onChangeProfile={handleChangeProfile}
         onOpenCounterPriceModal={() => setIsCounterModalOpen(true)}
+        shoppingCount={shoppingCount}
+        onOpenShoppingList={() => setActiveRoom('room-6-pianificatore')}
       />
+
+      {shoppingToast && (
+        <div className="bg-emerald-700 text-white text-xs font-extrabold py-2 px-4 text-center shadow-xs">
+          {shoppingToast}
+        </div>
+      )}
 
       {/* 6 Main Rooms Navigation Bar (ADR-0007..0012) */}
       <RoomNavigation activeRoom={activeRoom} onSelectRoom={setActiveRoom} />
@@ -458,6 +502,7 @@ export function App() {
                   offers={offers}
                   loading={loading}
                   allFlyers={flyers}
+                  onAddToShoppingList={handleAddToShoppingList}
                   onOpenCreaFood={(creaId) => {
                     setSelectedCreaFoodId(creaId);
                     setActiveRoom('room-2-crea');
@@ -511,6 +556,7 @@ export function App() {
           <CreaExplorerView
             activeProfileId={activeProfileId}
             initialFoodId={selectedCreaFoodId}
+            onAddToShoppingList={handleAddToShoppingList}
             onNavigateToOfferStore={(storeId, productTitle) => {
               setSelectedStoreId(storeId || null);
               setSearchQuery(productTitle || '');
@@ -544,7 +590,10 @@ export function App() {
         </main>
       ) : activeRoom === 'room-6-pianificatore' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <PlannerAndShoppingView activeProfileId={activeProfileId} />
+          <PlannerAndShoppingView
+            activeProfileId={activeProfileId}
+            onShoppingListChange={setShoppingCount}
+          />
         </main>
       ) : (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">

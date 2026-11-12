@@ -41,9 +41,11 @@ const PAGE_SIZE = 100;
 export function CreaExplorerView({
   activeProfileId = 'dany',
   initialFoodId = null,
-  onNavigateToOfferStore
+  onNavigateToOfferStore,
+  onAddToShoppingList
 }) {
   const [subTab, setSubTab] = useState('database'); // 'database' | 'nutrients_per_euro'
+  const [addedShoppingKeys, setAddedShoppingKeys] = useState({});
   const [foods, setFoods] = useState([]);
   const [categories, setCategories] = useState([]);
   const [totalFoods, setTotalFoods] = useState(0);
@@ -361,6 +363,27 @@ export function CreaExplorerView({
                             {km.potassiumMg != null ? `${km.potassiumMg} mg` : '—'}
                           </td>
                           <td className="py-2 px-3 text-right whitespace-nowrap space-x-1.5">
+                            {onAddToShoppingList && !isExcluded && (
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  await onAddToShoppingList({
+                                    name: f.name,
+                                    domain: 'food_human',
+                                    source: 'crea_explorer',
+                                    creaId: f.id
+                                  });
+                                  setAddedShoppingKeys((prev) => ({ ...prev, [`crea-${f.id}`]: true }));
+                                }}
+                                className={`px-2 py-1 rounded text-[10px] font-bold border cursor-pointer ${
+                                  addedShoppingKeys[`crea-${f.id}`]
+                                    ? 'bg-emerald-700 text-white border-emerald-700'
+                                    : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                                }`}
+                              >
+                                {addedShoppingKeys[`crea-${f.id}`] ? '✓ Lista' : '+ Lista'}
+                              </button>
+                            )}
                             <button
                               type="button"
                               onClick={() => toggleCompareItem(f)}
@@ -514,7 +537,32 @@ export function CreaExplorerView({
                         <td className="py-2.5 px-3 text-right text-slate-600">
                           {item.nutrientsPerEuro.kcalPerEuro} kcal/€
                         </td>
-                        <td className="py-2.5 px-3 text-right whitespace-nowrap">
+                        <td className="py-2.5 px-3 text-right whitespace-nowrap space-x-1.5">
+                          {onAddToShoppingList && (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                await onAddToShoppingList({
+                                  name: item.offerTitle,
+                                  domain: 'food_human',
+                                  source: 'promo_flyer',
+                                  unitPriceEur: item.promoPrice,
+                                  preferredChain: item.storeName,
+                                  storeId: item.storeId || null,
+                                  onPromo: true,
+                                  creaId: item.creaFoodId
+                                });
+                                setAddedShoppingKeys((prev) => ({ ...prev, [`npe-${item.offerId}`]: true }));
+                              }}
+                              className={`px-2 py-1 rounded text-[10px] font-bold border cursor-pointer ${
+                                addedShoppingKeys[`npe-${item.offerId}`]
+                                  ? 'bg-indigo-700 text-white border-indigo-700'
+                                  : 'bg-indigo-50 text-indigo-900 border-indigo-300 hover:bg-indigo-100'
+                              }`}
+                            >
+                              {addedShoppingKeys[`npe-${item.offerId}`] ? '✓ Lista' : '+ Lista'}
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => setActiveModalFoodId(item.creaFoodId)}

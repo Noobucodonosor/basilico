@@ -36,4 +36,11 @@ test('Stanza 6 UI Components — Structural & Contract Verification (ADR-0012 / 
   const appSrc = fs.readFileSync(appPath, 'utf8');
   assert.match(appSrc, /room-6-pianificatore/);
   assert.match(appSrc, /PlannerAndShoppingView/);
+  assert.match(appSrc, /handleAddToShoppingList/);
+
+  const headerSrc = fs.readFileSync(path.join(ROOT, 'src/components/Header.jsx'), 'utf8');
+  assert.match(headerSrc, /onOpenShoppingList/);
+
+  const cardSrc = fs.readFileSync(path.join(ROOT, 'src/components/OfferCard.jsx'), 'utf8');
+  assert.match(cardSrc, /onAddToShoppingList/);
 });

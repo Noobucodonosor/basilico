@@ -14,7 +14,9 @@ export function Header({
   profiles = [],
   activeProfileId = 'dany',
   onChangeProfile,
-  onOpenCounterPriceModal
+  onOpenCounterPriceModal,
+  shoppingCount = 0,
+  onOpenShoppingList
 }) {
   const online = status ? (status.isOnline !== false && status.dataSource !== 'seed') : isOnline;
   const source = status?.dataSource || dataSource || 'live';
@@ -77,6 +79,22 @@ export function Header({
               >
                 <span aria-hidden="true">🏷️</span>
                 <span>Prezzo al banco</span>
+              </button>
+            )}
+
+            {/* Live Smart Shopping List Shortcut */}
+            {onOpenShoppingList && (
+              <button
+                type="button"
+                onClick={onOpenShoppingList}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-extrabold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 rounded-lg transition-colors cursor-pointer"
+                title="Apri la Lista Spesa Multi-Negozio di Rapallo (Stanza 6)"
+              >
+                <span aria-hidden="true">🛒</span>
+                <span className="hidden sm:inline">Lista</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-emerald-800 text-white text-[10px]">
+                  {shoppingCount}
+                </span>
               </button>
             )}
 

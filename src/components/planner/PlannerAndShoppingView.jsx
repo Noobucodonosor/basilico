@@ -7,10 +7,10 @@ const DAY_MODE_OPTIONS = [
   { id: 'eat_out', label: '🍽️ Fuori a Pranzo/Cena' }
 ];
 
-export function PlannerAndShoppingView({ activeProfileId }) {
+export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
   const [models, setModels] = useState([]);
   const [selectedModelId, setSelectedModelId] = useState('promo_driven_neodiet');
-  const [budgetEur, setBudgetEur] = useState(65);
+  const [budgetEur, setBudgetEur] = useState(80);
   const [servings, setServings] = useState(1);
   const [dayModes, setDayModes] = useState([
     'land_day',
@@ -59,11 +59,14 @@ export function PlannerAndShoppingView({ activeProfileId }) {
           if (data) {
             setPlan(data.plan);
             setShoppingList(data.shoppingList);
+            if (onShoppingListChange) {
+              onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
+            }
           }
         })
         .finally(() => setLoading(false));
     },
-    [selectedModelId, servings, budgetEur, dayModes, activeProfileId]
+    [selectedModelId, servings, budgetEur, dayModes, activeProfileId, onShoppingListChange]
   );
 
   useEffect(() => {
@@ -87,6 +90,9 @@ export function PlannerAndShoppingView({ activeProfileId }) {
       const data = await res.json();
       setPlan(data.plan);
       setShoppingList(data.shoppingList);
+      if (onShoppingListChange) {
+        onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
+      }
     }
   };
 
@@ -97,6 +103,9 @@ export function PlannerAndShoppingView({ activeProfileId }) {
     if (res.ok) {
       const state = await res.json();
       setShoppingList(state);
+      if (onShoppingListChange) {
+        onShoppingListChange(state?.subtotals?.totalItemsCount || 0);
+      }
     }
   };
 
@@ -116,6 +125,9 @@ export function PlannerAndShoppingView({ activeProfileId }) {
       const state = await res.json();
       setShoppingList(state);
       setManualItemName('');
+      if (onShoppingListChange) {
+        onShoppingListChange(state?.subtotals?.totalItemsCount || 0);
+      }
     }
   };
 
@@ -126,6 +138,9 @@ export function PlannerAndShoppingView({ activeProfileId }) {
     if (res.ok) {
       const data = await res.json();
       setShoppingList(data.shoppingList);
+      if (onShoppingListChange) {
+        onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
+      }
       setStatusToast(
         `✅ Spesa completata: ${data.loadedCount} confezioni intere caricate automaticamente nella tua Dispensa a 3 Luoghi!`
       );
@@ -322,8 +337,25 @@ export function PlannerAndShoppingView({ activeProfileId }) {
                     </select>
                   </div>
 
-                  <div className="text-[11px] text-slate-600 bg-white/80 p-2 rounded-lg border border-slate-200/60">
-                    ☕ <strong>Colazione:</strong> {day.breakfast.title}
+                  <div className="text-[11px] text-slate-700 bg-white/90 p-2.5 rounded-xl border border-slate-200/70 space-y-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="font-extrabold text-amber-900">☕ Colazione (con BOM CREA)</span>
+                      {day.dayMode !== 'eat_out' && (
+                        <button
+                          type="button"
+                          onClick={() => handleSwapMeal(day.dayIndex, 'breakfast')}
+                          className="text-[10px] font-bold text-indigo-700 hover:underline cursor-pointer"
+                        >
+                          🔄 Cambia
+                        </button>
+                      )}
+                    </div>
+                    <div className="font-bold text-slate-900">{day.breakfast.title}</div>
+                    <div className="text-[10px] text-slate-500">
+                      {day.breakfast.kcal} kcal
+                      {day.breakfast.proteinG ? ` • ${day.breakfast.proteinG}g prot` : ''}
+                      {day.breakfast.purePortionCostEur ? ` • €${Number(day.breakfast.purePortionCostEur).toFixed(2)}` : ''}
+                    </div>
                   </div>
 
                   {day.dayMode === 'eat_out' ? (
@@ -426,7 +458,12 @@ export function PlannerAndShoppingView({ activeProfileId }) {
                   <div className="text-[10px] text-slate-500">
                     Usato in:{' '}
                     {wp.usedInMeals
-                      .map((m) => `${m.dayName} (${m.slot === 'lunch' ? 'Pranzo' : 'Cena'}: ${m.gramsUsed}g)`)
+                      .map(
+                        (m) =>
+                          `${m.dayName} (${
+                            m.slot === 'breakfast' ? 'Colazione' : m.slot === 'lunch' ? 'Pranzo' : 'Cena'
+                          }: ${m.gramsUsed}g)`
+                      )
                       .join(' → ')}
                   </div>
                 </div>

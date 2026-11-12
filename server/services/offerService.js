@@ -99,9 +99,15 @@ export function getSortComparator(sortBy) {
     case 'expiringsoon':
       return (a, b) => new Date(a.validityEnd || a.validTo || 0) - new Date(b.validityEnd || b.validTo || 0);
     case 'priceperkgasc':
-      return (a, b) =>
-        (a.ediblePricePerKg ?? a.pricePerKg ?? a.referencePackEstimate?.estimatedEdiblePricePerKg ?? 999999) -
-        (b.ediblePricePerKg ?? b.pricePerKg ?? b.referencePackEstimate?.estimatedEdiblePricePerKg ?? 999999);
+      return (a, b) => {
+        const va = a.isNamelessTile
+          ? 999999
+          : (a.ediblePricePerKg ?? a.pricePerKg ?? a.referencePackEstimate?.estimatedEdiblePricePerKg ?? 999999);
+        const vb = b.isNamelessTile
+          ? 999999
+          : (b.ediblePricePerKg ?? b.pricePerKg ?? b.referencePackEstimate?.estimatedEdiblePricePerKg ?? 999999);
+        return va - vb;
+      };
     default:
       return null;
   }
