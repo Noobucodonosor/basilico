@@ -61,7 +61,7 @@ Il completamento architetturale delle 6 Stanze ([ADR-0007](./0007-multi-domain-c
 - [x] **TASK-REAL-02**: **Espansione Catalogo Ricette (Scuola Base Single, Colazioni Reali, Cambusa Fredda Barca), Tassonomia `dishFamily` e Deduplica Comparativa Ristoranti**
   - *File coinvolti*: `data/seed/recipes_and_dishes.json`, `server/services/recipeAndArbitrageService.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `tests/unit/recipe_arbitrage_8020.test.js`
   - *Verification Step*: `npm test`
-- [ ] **TASK-REAL-03**: **Matcher Semantico Rigoroso BOM↔Offerte, Formati Confezione Reali, Politica `Zero Formaggi` a 3 Livelli & 8 Archetipi *Science & Cooking***
+- [x] **TASK-REAL-03**: **Matcher Semantico Rigoroso BOM↔Offerte, Formati Confezione Reali, Politica `Zero Formaggi` a 3 Livelli & 8 Archetipi *Science & Cooking***
   - *File coinvolti*: `server/services/recipeAndArbitrageService.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `src/components/recipes/CookingModeModal.jsx`, `tests/unit/recipe_arbitrage_8020.test.js`
   - *Verification Step*: `npm test`
 - [ ] **TASK-REAL-04**: **Allineamento ID Pentole con ROI Dinamico Reale, Matching Chimico + Matrice Sicurezza P0 Sottolavello, Parser Scontrini Reale & Scarico Post-Cottura Dispensa**

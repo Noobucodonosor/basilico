@@ -14,7 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { offerService, normalizeSearchToken } from './offerService.js';
+import { offerService, enrichOfferRecord, normalizeSearchToken } from './offerService.js';
 import { creaService } from './creaService.js';
 import { pantryService } from './pantryService.js';
 import { kitchenInventoryService } from './kitchenInventoryService.js';
@@ -28,46 +28,158 @@ const DISHES_SEED_PATH = path.resolve(__dirname, '../../data/seed/recipes_and_di
 const RESTAURANTS_SEED_PATH = path.resolve(__dirname, '../../data/seed/restaurants_tigullio.json');
 const DEFAULT_LAB_NOTEBOOK_PATH = path.resolve(__dirname, '../../data/cache/lab_notebook.json');
 
-// Reference standard supermarket pack sizes (g) & baseline Rapallo prices (€/kg) when no active offer is matched
-const DEFAULT_INGREDIENT_PACK_AND_PRICE = {
-  fish_seafood: { packGrams: 300, euroPerKg: 18.5 },
-  meat_poultry: { packGrams: 400, euroPerKg: 13.8 },
-  pasta_grains: { packGrams: 500, euroPerKg: 2.6 },
-  legumes: { packGrams: 400, euroPerKg: 3.2 },
-  vegetables: { packGrams: 500, euroPerKg: 3.4 },
-  oil_fats: { packGrams: 1000, euroPerKg: 9.8 },
-  nuts_seeds: { packGrams: 200, euroPerKg: 19.5 },
-  dairy_cheese: { packGrams: 250, euroPerKg: 16.0 },
-  default: { packGrams: 300, euroPerKg: 7.5 }
-};
+// Granular real-world commercial pack sizes (g) & baseline Rapallo prices (€/kg) when no active offer is matched
+const GRANULAR_INGREDIENT_PACK_RULES = [
+  { key: 'fresh_herbs', regex: /\b(basilico|prezzemolo|rosmarino|timo|maggiorana|salvia|menta|origano|erba cipollina|alloro)\b/, packGrams: 30, euroPerKg: 39.0 },
+  { key: 'alliums_chili', regex: /\b(aglio|scalogno|peperoncin\w*|zenzero)\b/, packGrams: 100, euroPerKg: 11.9 },
+  { key: 'citrus', regex: /\b(limon\w*|lime|succo di limone|scorza di limone)\b/, packGrams: 250, euroPerKg: 2.8 },
+  { key: 'pine_bottarga', regex: /\b(pinoli|bottarga|zafferano|tartufo)\b/, packGrams: 50, euroPerKg: 58.0 },
+  { key: 'olives_capers_anchovies', regex: /\b(olive|capperi|acciug\w*\s+sott\w*|acciug\w*\s+dissalat\w*|alici\s+sott\w*)\b/, packGrams: 150, euroPerKg: 18.5 },
+  { key: 'nuts_seeds', regex: /\b(mandorl\w*|noci|nocciol\w*|pistacch\w*|anacard\w*|arachid\w*)\b/, packGrams: 200, euroPerKg: 17.5 },
+  { key: 'honey_sweet', regex: /\b(miele|confettura|marmellata)\b/, packGrams: 250, euroPerKg: 11.5 },
+  { key: 'pantry_micro', regex: /\b(sale|pepe|cacao|zucchero|aceto|vino\s+bianco|vino\s+rosso|lievito|cannella|noce moscata|cappero)\b/, packGrams: 200, euroPerKg: 6.5 },
+  { key: 'yogurt_single', regex: /\b(yogurt|kefir|skyr)\b/, packGrams: 170, euroPerKg: 7.9 },
+  { key: 'milk', regex: /^latte\b|\blatte\s+(?:intero|parzialmente|uht|fresco)\b/, packGrams: 1000, euroPerKg: 1.55 },
+  { key: 'eggs', regex: /\b(uov\w*|albume|tuorlo)\b/, packGrams: 360, euroPerKg: 6.2 },
+  { key: 'bread_bakery', regex: /\b(pane|focaccia|fette biscottate|gallett\w*|crostin\w*|panino|ciabatta)\b/, packGrams: 300, euroPerKg: 4.8 },
+  { key: 'canned_fish', regex: /\b(tonno\s+(?:sott|al\s+naturale|in\s+olio|sgocciolat\w*)|sgombro\s+(?:al\s+naturale|sott|sgocciolat\w*)|filetti\s+di\s+sgombro\s+(?:al\s+naturale|sgocciolat\w*))\b/, packGrams: 160, euroPerKg: 21.0 },
+  { key: 'smoked_cured', regex: /\b(salmone\s+affumicato|bresaola|prosciutto|speck|pancetta|guanciale|salame|mortadella)\b/, packGrams: 100, euroPerKg: 28.5 },
+  { key: 'fresh_fish', regex: /\b(acciug\w*|alici|orata|branzino|spigola|salmone|tonno|sgombro|palamita|seppi\w*|calamar\w*|polpo|gamber\w*|scamp\w*|cozz\w*|vongol\w*|pesce|baccala|stoccafisso|merluzzo|nasello|capesante|astice|rombo)\b/, packGrams: 250, euroPerKg: 19.5 },
+  { key: 'meat_poultry', regex: /\b(manzo|bovino|vitello|pollo|tacchino|coniglio|maiale|agnello|anatra|faraona)\b/, packGrams: 300, euroPerKg: 13.8 },
+  { key: 'fresh_pasta', regex: /\b(trofie|pansot\w*|raviol\w*|gnocch\w*|tagliolini|tagliatelle|sfoglia)\b/, packGrams: 250, euroPerKg: 7.8 },
+  { key: 'dry_pasta_grains', regex: /\b(spaghett\w*|pasta|trenette|linguine|penne|fusilli|paccheri|riso|farro|avena|fiocchi\s+d\s*avena|farina)\b/, packGrams: 500, euroPerKg: 2.6 },
+  { key: 'legumes_tomato', regex: /\b(ceci|fagiol\w*|lenticchi\w*|fave|piselli|passata|polpa\s+di\s+pomodoro|pelati|san\s+marzano)\b/, packGrams: 400, euroPerKg: 3.1 },
+  { key: 'oil_fats', regex: /\b(olio)\b/, packGrams: 1000, euroPerKg: 9.8 },
+  { key: 'dairy_cheese', regex: /\b(parmigiano|grana|pecorino|mozzarella|stracchino|crescenza|ricotta|formaggio|burro|panna|mascarpone|prescinseua|gorgonzola)\b/, packGrams: 200, euroPerKg: 16.0 },
+  { key: 'vegetables_fruit', regex: /\b(pomodor\w*|zucchin\w*|spinac\w*|bietol\w*|borragine|sedano|cipoll\w*|patat\w*|carciof\w*|melanzan\w*|peperon\w*|insalata|asparag\w*|fungh\w*|finocch\w*|carot\w*|mele|mela|banan\w*|aranc\w*|mirtill\w*|avocado|prugn\w*|agrume|frutta)\b/, packGrams: 400, euroPerKg: 3.2 }
+];
 
-function classifyIngredientFamily(name = '') {
+export function resolveIngredientPackSpec(name = '') {
   const norm = normalizeSearchToken(name);
-  if (/\b(acciug\w*|alici|orata|branzino|spigola|salmone|tonno|sgombro|palamita|seppi\w*|calamar\w*|polpo|gamber\w*|scamp\w*|cozz\w*|vongol\w*|pesce|baccala|stoccafisso|merluzzo|capesante|astice|aragosta)\b/.test(norm)) {
-    return 'fish_seafood';
+  for (const rule of GRANULAR_INGREDIENT_PACK_RULES) {
+    if (rule.regex.test(norm)) {
+      return { family: rule.key, packGrams: rule.packGrams, euroPerKg: rule.euroPerKg };
+    }
   }
-  if (/\b(manzo|bovino|vitello|pollo|tacchino|coniglio|maiale|agnello|anatra|prosciutto|pancetta|guanciale)\b/.test(norm)) {
-    return 'meat_poultry';
+  return { family: 'default', packGrams: 250, euroPerKg: 7.5 };
+}
+
+const COMPOSITE_OFFER_HEADS = new Set([
+  'salsa', 'sugo', 'ragu', 'pesto', 'biscotti', 'biscotto', 'bis', 'baci', 'torta', 'torte', 'crostata',
+  'gelato', 'gelati', 'patatine', 'chips', 'cracker', 'crackers', 'bevanda', 'succo', 'nettare',
+  'liquore', 'amaro', 'vino', 'birra', 'aperitivo', 'preparato', 'dado', 'brodo', 'snack',
+  'merendina', 'ravioli', 'tortellini', 'pansotti', 'pansoti', 'gnocchi', 'lasagne', 'pizza', 'pizze',
+  'pinsa', 'focaccia', 'tocchetti', 'cotoletta', 'cotolette', 'polpette', 'cima', 'brandacujun', 'panissa'
+]);
+
+const LEADING_ARTICLES_SET = new Set(['il', 'lo', 'la', 'i', 'gli', 'le', 'l', 'un', 'uno', 'una']);
+const STOP_WORDS_BOM = new Set([
+  'di', 'del', 'dello', 'della', 'dei', 'degli', 'delle', 'al', 'allo', 'alla', 'ai', 'agli', 'alle',
+  'in', 'con', 'da', 'per', 'su', 'o', 'e', 'fresco', 'fresca', 'freschi', 'fresche', 'crudo', 'cruda',
+  'cotto', 'cotta', 'ligure', 'genovese', 'tigullio', 'riviera', 'italiano', 'italiana', 'dop', 'igp',
+  'filetto', 'filetti', 'trancio', 'tranci', 'cuori', 'fette', 'bocconcini', 'spicchi', 'cubetti',
+  'scolati', 'scolate', 'lessati', 'lessate', 'sgocciolato', 'sgocciolati', 'pulito', 'puliti'
+]);
+
+function extractOfferCoreWords(offer = {}) {
+  let normTitle = normalizeSearchToken(offer.title || '');
+  const normBrand = normalizeSearchToken(offer.brand || '');
+  if (normBrand && normTitle.startsWith(`${normBrand} `)) {
+    normTitle = normTitle.slice(normBrand.length).trim();
   }
-  if (/\b(spaghett\w*|pasta|trofie|trenette|linguine|pansot\w*|raviol\w*|gnocch\w*|riso|farina|pane|crostin\w*|focaccia|sfoglia|tagliolini|paccheri)\b/.test(norm)) {
-    return 'pasta_grains';
+  normTitle = normTitle.replace(/^\d+\s+(?!(?:kg|g|gr|hg|l|lt|ml|cl)\b)/, '').trim();
+  const words = normTitle.split(' ').filter(Boolean);
+  while (words.length > 1 && LEADING_ARTICLES_SET.has(words[0])) {
+    words.shift();
   }
-  if (/\b(ceci|fagiol\w*|lenticchi\w*|fave|piselli)\b/.test(norm)) {
-    return 'legumes';
+  return { stripped: words.join(' '), words };
+}
+
+/**
+ * Strict word-boundary & physical-state matcher between a recipe BOM line and active Rapallo offers.
+ * Eliminates substring hallucinations ("Aglio" -> "Battaglio", "Tonno rosso crudo" -> "Rio Mare", "Latte" -> "Robiola").
+ */
+export function matchBomIngredientToOffer(workingItem = {}, activeOffers = []) {
+  if (!workingItem || !Array.isArray(activeOffers) || activeOffers.length === 0) return null;
+
+  const bomNorm = normalizeSearchToken(workingItem.name || '');
+  if (!bomNorm) return null;
+
+  // Reject substituted composite emulsions from matching random raw offers unless by exact CREA ID
+  if (workingItem.isSubstitutedComposite) return null;
+
+  const bomWords = bomNorm.split(' ').filter(Boolean);
+  const coreNoun = bomWords.find((w) => w.length >= 4 && !STOP_WORDS_BOM.has(w)) || bomWords[0];
+  const wantsCannedFish = /\b(sott\s*olio|al\s+naturale|sgocciolat\w*|scatola|vetro)\b/.test(bomNorm) || ['123610', '123550', '123010', '120020'].includes(String(workingItem.creaId));
+  const wantsRawOrFreshFish = !wantsCannedFish && /\b(tonno|sgombro|salmone|acciug\w*|alici|orata|branzino|spigola|merluzzo|polpo|calamar\w*|gamber\w*)\b/.test(bomNorm);
+  const wantsSmoked = /\b(affumicat\w*)\b/.test(bomNorm) || String(workingItem.creaId) === '122410';
+  const wantsProsciuttoCrudo = /\bprosciutto\s+crudo\b/.test(bomNorm);
+  const wantsProsciuttoCotto = /\bprosciutto\s+cotto\b/.test(bomNorm);
+  const wantsPassataOrPelati = /\b(passata|polpa|pelat\w*|san\s+marzano)\b/.test(bomNorm);
+
+  for (const off of activeOffers) {
+    if (!off || off.isNamelessTile || (off.domain && off.domain !== 'food_human')) continue;
+
+    const { stripped, words: offWords } = extractOfferCoreWords(off);
+    if (!stripped || offWords.length === 0) continue;
+
+    const offHead = offWords[0];
+
+    // Physical-state & cured-cut incompatibilities (checked even if CREA ID is shared)
+    const offIsCanned = /\b(rio\s+mare|angelo\s+parodi|asdomar|palmera|scatola|sott\s*olio|all\s*olio|in\s+olio|leggero|al\s+naturale)\b/.test(normalizeSearchToken(`${off.title} ${off.brand || ''}`));
+    const offIsSmoked = /\b(affumicat\w*|norvegese)\b/.test(stripped);
+
+    if (wantsRawOrFreshFish && !wantsSmoked && (offIsCanned || offIsSmoked)) continue;
+    if (wantsCannedFish && !offIsCanned && /\b(fresc\w*|crud\w*|filetto\s+di\s+orata)\b/.test(stripped)) continue;
+    if (wantsSmoked && !offIsSmoked) continue;
+    if (wantsProsciuttoCrudo && (!/\bcrudo\b/.test(stripped) || /\bcotto\b/.test(stripped))) continue;
+    if (wantsProsciuttoCotto && !/\bcotto\b/.test(stripped)) continue;
+
+    // 1. Direct CREA Food ID match (highest precision)
+    if (workingItem.creaId && off.creaMatch?.creaFoodId && String(off.creaMatch.creaFoodId) === String(workingItem.creaId)) {
+      return off;
+    }
+
+    // 2. Reject composite processed offers when BOM asks for a raw/base ingredient
+    if (COMPOSITE_OFFER_HEADS.has(offHead) && !bomWords.includes(offHead)) {
+      continue;
+    }
+
+    // 3. Strict whole-word head match
+    if (!coreNoun || coreNoun.length < 4) continue;
+
+    // Special strictness for "latte", "olio", "noci", "mandorle", "pomodori"
+    if (coreNoun === 'latte') {
+      if (offHead === 'latte') return off;
+      continue;
+    }
+    if (coreNoun === 'olio') {
+      if (offHead === 'olio' && /\b(oliva|vergine|evo)\b/.test(stripped)) return off;
+      continue;
+    }
+    if (['noci', 'mandorle', 'pinoli', 'nocciole'].includes(coreNoun)) {
+      if (offHead === coreNoun) return off;
+      continue;
+    }
+    if (coreNoun.startsWith('pomodor') || wantsPassataOrPelati) {
+      const offIsPassata = /\b(passata|polpa|pelat\w*)\b/.test(stripped);
+      if (wantsPassataOrPelati && offIsPassata) return off;
+      if (!wantsPassataOrPelati && !offIsPassata && (offHead === 'pomodori' || offHead === 'pomodorini')) return off;
+      continue;
+    }
+
+    // Exact whole-word match against offer's first 2 core tokens (after unwrapping "filetto di")
+    const effectiveOffHead =
+      ['filetto', 'filetti', 'trancio', 'tranci', 'cuori', 'fette', 'spicchi'].includes(offHead) && offWords[1] === 'di' && offWords[2]
+        ? offWords[2]
+        : offHead;
+
+    if (effectiveOffHead === coreNoun) {
+      return off;
+    }
   }
-  if (/\b(olio)\b/.test(norm)) {
-    return 'oil_fats';
-  }
-  if (/\b(pinoli|mandorl\w*|noci|nocciole|pistacch\w*)\b/.test(norm)) {
-    return 'nuts_seeds';
-  }
-  if (/\b(parmigiano|grana|pecorino|mozzarella|stracchino|crescenza|ricotta|formaggio|burro|panna|mascarpone|prescinseua)\b/.test(norm)) {
-    return 'dairy_cheese';
-  }
-  if (/\b(pomodor\w*|passata|zucchin\w*|spinac\w*|bietol\w*|borragine|sedano|cipoll\w*|aglio|patat\w*|carciof\w*|melanzan\w*|peperon\w*|basilico|limon\w*|insalata|asparag\w*|fungh\w*)\b/.test(norm)) {
-    return 'vegetables';
-  }
-  return 'default';
+
+  return null;
 }
 
 /**
@@ -192,11 +304,10 @@ export function classifyDishMetadata(dish = {}) {
 }
 
 /**
- * Generates a scientific Ligurian substitution when an ingredient violates the active user profile
- * (e.g. substituting Parmigiano/Pecorino/Stracchino/Burro for a cheese-free profile while keeping
- * lipid mouthfeel, umami/sapidity, and structural emulsion).
+ * Generates a scientific Ligurian substitution ONLY when dairy plays a secondary umami finishing
+ * or savory herb-binding role (`dairyRole !== 'structural_unsubstitutable'`).
  */
-export function buildProfileSubstitution(bomItem, profileCompat) {
+export function buildProfileSubstitution(bomItem, profileCompat, dairyRole = 'secondary_umami_finisher') {
   const norm = normalizeSearchToken(bomItem.name || '');
 
   if (/\b(parmigiano|grana|pecorino|formaggio grattugiato)\b/.test(norm)) {
@@ -204,24 +315,40 @@ export function buildProfileSubstitution(bomItem, profileCompat) {
       substituted: true,
       originalName: bomItem.name,
       originalCreaId: bomItem.creaId,
-      creaId: '008150', // Pinoli / Frutta secca lipidica
-      name: 'Emulsione Ligure di Pinoli/Mandorle Tostate, Lievito Alimentare & Olio EVO (Variante Senza Formaggio)',
-      rawGramsPerServing: bomItem.rawGramsPerServing,
+      creaId: '008590', // Pinoli (verified CREA ID)
+      name: 'Pinoli/Mandorle Tostate Pestati + Olio EVO Ligure (Finitura Sapida Senza Formaggio)',
+      rawGramsPerServing: Math.max(8, Math.round(bomItem.rawGramsPerServing * 0.65)),
+      isSubstitutedComposite: true,
       scientificRationale:
-        'Sostituzione isocalorica e isostrutturale: i lipidi insaturi dei pinoli/mandorle finemente pestati + glutammato naturale replicano la sapidità umami e la legatura dell\'emulsione senza caseine.'
+        'Sostituzione tradizionale ligure di magro: i lipidi insaturi dei pinoli pestati replicano la legatura dell\'emulsione senza caseine.'
     };
   }
 
-  if (/\b(stracchino|crescenza|prescinseua|ricotta|mozzarella|burro|panna|mascarpone)\b/.test(norm)) {
+  if (dairyRole === 'savory_herb_binder' || /\b(prescinseua|presinseua|ricotta|stracchino|crescenza)\b/.test(norm)) {
     return {
       substituted: true,
       originalName: bomItem.name,
       originalCreaId: bomItem.creaId,
-      creaId: '009010',
-      name: 'Crema Emulsionata di Mandorle Pelate, Acqua Amidacea & Olio EVO Riviera Ligure (Senza Latticini)',
-      rawGramsPerServing: Math.max(10, Math.round(bomItem.rawGramsPerServing * 0.75)),
+      creaId: '006580', // Patate novelle (legante amidaceo ligure di magro)
+      name: 'Legante Ligure "di Magro" di Patata Schiacciata, Mandorle Pelate & Maggiorana (Zero Latticini)',
+      rawGramsPerServing: bomItem.rawGramsPerServing,
+      isSubstitutedComposite: true,
       scientificRationale:
-        'Emulsione olio-in-acqua stabilizzata da proteine vegetali di mandorla e amilosio: sostituisce la fase grassa del latticino mantenendo cremosità e punto di fusione al palato.'
+        'Tecnica storica ligure dei ripieni di magro: l\'amido retrogradato della patata + proteine di mandorla legano le erbe senza cagliata lattica.'
+    };
+  }
+
+  if (/\b(burro|panna)\b/.test(norm)) {
+    return {
+      substituted: true,
+      originalName: bomItem.name,
+      originalCreaId: bomItem.creaId,
+      creaId: '009210', // Olio di oliva extra vergine (verified CREA ID)
+      name: 'Olio Extra Vergine di Oliva Riviera Ligure Emulsionato a Freddo',
+      rawGramsPerServing: Math.max(8, Math.round(bomItem.rawGramsPerServing * 0.75)),
+      isSubstitutedComposite: false,
+      scientificRationale:
+        'Mantecatura olio-acqua-amido fuori fuoco (<65°C) al posto dei grassi vaccini saturi.'
     };
   }
 
@@ -229,9 +356,10 @@ export function buildProfileSubstitution(bomItem, profileCompat) {
     substituted: true,
     originalName: bomItem.name,
     originalCreaId: bomItem.creaId,
-    creaId: '009010',
-    name: `Alternativa Compatibile Profilo (${bomItem.name} rimosso — ${profileCompat.reasons?.[0] || 'esclusione profilo'})`,
-    rawGramsPerServing: bomItem.rawGramsPerServing,
+    creaId: '009210',
+    name: `Variante Ligure Compatibile (${bomItem.name} rimosso — ${profileCompat.reasons?.[0] || 'esclusione profilo'})`,
+    rawGramsPerServing: Math.max(8, Math.round(bomItem.rawGramsPerServing * 0.6)),
+    isSubstitutedComposite: true,
     scientificRationale: 'Adattamento automatico per rispettare le esclusioni del profilo attivo.'
   };
 }
@@ -339,25 +467,50 @@ export class RecipeAndArbitrageService {
     return Array.from(mapped);
   }
 
+  async _getFullFoodOffers(profileId = null) {
+    const raw = await offerService.getRawOffers();
+    return raw
+      .map((o) => enrichOfferRecord(o, profileId))
+      .filter((o) => o && o.domain === 'food_human' && !o.isNamelessTile);
+  }
+
   /**
    * Evaluates a dish with:
-   *  - Profile-Adapted Variant (substituting excluded ingredients like cheese)
+   *  - 3-Tier Profile-Adapted Variant (substituting secondary dairy OR flagging structural dairy dishes honestly)
    *  - Dual Cost (`purePortionCostEur` & `checkoutCashCostEur`) scaled by `servings`
-   *  - Live Arbitrage against `menuPriceEuro * servings`
+   *  - Live Arbitrage against `menuPriceEuro * servings` using strict word-boundary + CREA ID matching
    *  - CREA Nutritional Aggregation per serving
    *  - Pantry & Cookware Feasibility Traffic Light
    */
   async evaluateDish(dish, context = {}) {
     const servings = Math.max(1, Math.min(12, Number(context.servings) || 1));
-    const activeOffers = context.activeOffers || (await offerService.getOffers({ domain: 'food_human', limit: 100 })).offers || [];
+    const profileId = context.profileId || userProfileService.getProfileById().id;
+    const activeOffers = context.activeOffers || (await this._getFullFoodOffers(profileId));
     const pantryItems = context.pantryItems || pantryService.getPantryState().items || [];
     const kitchenState = context.kitchenState || kitchenInventoryService.getKitchenState();
     const ownedToolSet = new Set(kitchenState.effectiveTools.map((t) => t.id));
-    const profileId = context.profileId || userProfileService.getProfileById().id;
+    const meta = classifyDishMetadata(dish);
 
     let hasProfileSubstitution = false;
+    let isExcludedByProfileIdentity = false;
+    let profileExclusionReason = null;
     const substitutionsApplied = [];
     const enrichedBom = [];
+
+    // Pre-check if the dish itself is structurally unsubstitutable for the active profile
+    const dishTitleCompat = userProfileService.checkItemCompatibility(
+      { title: dish.title, category: '' },
+      profileId
+    );
+    const hasIncompatibleBomItem = (dish.bom || []).some(
+      (b) => !userProfileService.checkItemCompatibility({ title: b.name, category: '' }, profileId).isCompatible
+    );
+
+    if (meta.dairyRole === 'structural_unsubstitutable' && (!dishTitleCompat.isCompatible || hasIncompatibleBomItem)) {
+      isExcludedByProfileIdentity = true;
+      profileExclusionReason =
+        'Piatto strutturalmente identitario a base di formaggi/latticini non sostituibili senza snaturare la ricetta (escluso dai piani Zero Formaggi; visibile solo per studio arbitraggio o profilo Ospiti).';
+    }
 
     let purePortionCostEur = 0;
     let checkoutCashCostEur = 0;
@@ -378,14 +531,15 @@ export class RecipeAndArbitrageService {
       let workingItem = { ...rawItem };
       let substitutionInfo = null;
 
-      if (!compat.isCompatible) {
+      if (!compat.isCompatible && !isExcludedByProfileIdentity) {
         hasProfileSubstitution = true;
-        substitutionInfo = buildProfileSubstitution(rawItem, compat);
+        substitutionInfo = buildProfileSubstitution(rawItem, compat, meta.dairyRole);
         workingItem = {
           ...rawItem,
           creaId: substitutionInfo.creaId,
           name: substitutionInfo.name,
-          rawGramsPerServing: substitutionInfo.rawGramsPerServing
+          rawGramsPerServing: substitutionInfo.rawGramsPerServing,
+          isSubstitutedComposite: substitutionInfo.isSubstitutedComposite
         };
         substitutionsApplied.push(substitutionInfo);
       }
@@ -395,15 +549,16 @@ export class RecipeAndArbitrageService {
         (rawGramsTotal * (Number(workingItem.yieldFactor) || 1.0)).toFixed(1)
       );
 
-      // 1. Check Pantry availability (by CREA ID or head token)
+      // 1. Check Pantry availability (by exact CREA ID or whole-word head token)
       const itemNorm = normalizeSearchToken(workingItem.name);
-      const headToken = itemNorm.split(' ').find((w) => w.length >= 4) || itemNorm;
+      const headToken = itemNorm.split(' ').find((w) => w.length >= 4 && !STOP_WORDS_BOM.has(w)) || itemNorm.split(' ')[0];
+      const headWordRegex = headToken && headToken.length >= 4 ? new RegExp(`\\b${headToken}\\b`, 'i') : null;
 
       const pantryMatch = pantryItems.find(
         (p) =>
           p.remainingWeightGrams > 0 &&
-          ((workingItem.creaId && p.creaFoodId === workingItem.creaId) ||
-            (headToken && normalizeSearchToken(p.title).includes(headToken)))
+          ((workingItem.creaId && String(p.creaFoodId) === String(workingItem.creaId)) ||
+            (!workingItem.isSubstitutedComposite && headWordRegex && headWordRegex.test(normalizeSearchToken(p.title))))
       );
 
       const gramsInPantry = pantryMatch ? Math.min(rawGramsTotal, pantryMatch.remainingWeightGrams) : 0;
@@ -412,14 +567,9 @@ export class RecipeAndArbitrageService {
         inPantryCount += 1;
       }
 
-      // 2. Match Active Rapallo Offer (by CREA ID or head token)
-      const matchedOffer = activeOffers.find((off) => {
-        const offNorm = normalizeSearchToken(`${off.title} ${off.category || ''}`);
-        return headToken && headToken.length >= 4 && offNorm.includes(headToken);
-      });
-
-      const family = classifyIngredientFamily(workingItem.name);
-      const refSpec = DEFAULT_INGREDIENT_PACK_AND_PRICE[family] || DEFAULT_INGREDIENT_PACK_AND_PRICE.default;
+      // 2. Match Active Rapallo Offer via strict semantic & physical-state matcher
+      const matchedOffer = matchBomIngredientToOffer(workingItem, activeOffers);
+      const refSpec = resolveIngredientPackSpec(workingItem.name);
 
       let euroPerKg = refSpec.euroPerKg;
       let packSizeGrams = refSpec.packGrams;
@@ -430,20 +580,36 @@ export class RecipeAndArbitrageService {
       if (matchedOffer) {
         onPromoCount += 1;
         priceSource = 'live_rapallo_offer';
-        const extractedKg = matchedOffer.unitPriceExtraction?.ediblePricePerKg || matchedOffer.pricePerKg;
-        if (extractedKg && extractedKg > 0.5 && extractedKg < 180) {
+        const offerPromo = Number(matchedOffer.promoPrice ?? matchedOffer.price ?? 0);
+        const extractedKg =
+          matchedOffer.ediblePricePerKg ??
+          matchedOffer.pricePerKg ??
+          matchedOffer.pricePerLiter ??
+          matchedOffer.referencePackEstimate?.estimatedEdiblePricePerKg ??
+          matchedOffer.unitPriceExtraction?.ediblePricePerKg ??
+          null;
+        const extractedPackGrams =
+          matchedOffer.drainedWeightGrams ??
+          matchedOffer.packWeightGrams ??
+          matchedOffer.packVolumeMl ??
+          matchedOffer.referencePackEstimate?.estimatedEdibleGrams ??
+          matchedOffer.unitPriceExtraction?.netWeightGrams ??
+          refSpec.packGrams;
+
+        if (extractedKg && extractedKg > 0.4 && extractedKg < 180) {
           euroPerKg = Number(extractedKg);
-        } else if (matchedOffer.price > 0) {
-          euroPerKg = Number(((matchedOffer.price / refSpec.packGrams) * 1000).toFixed(2));
+        } else if (offerPromo > 0) {
+          euroPerKg = Number(((offerPromo / extractedPackGrams) * 1000).toFixed(2));
         }
-        packPriceEur = Number(matchedOffer.price || packPriceEur);
-        packSizeGrams = matchedOffer.unitPriceExtraction?.netWeightGrams || refSpec.packGrams;
+        packSizeGrams = extractedPackGrams;
+        packPriceEur = offerPromo > 0 ? Number(offerPromo.toFixed(2)) : packPriceEur;
         matchedOfferBrief = {
           id: matchedOffer.id,
           title: matchedOffer.title,
-          chainName: matchedOffer.chainName || matchedOffer.chainId,
-          price: matchedOffer.price,
-          euroPerKg
+          storeId: matchedOffer.storeId,
+          chainName: matchedOffer.storeName || matchedOffer.chainName || matchedOffer.brand || matchedOffer.chainId,
+          price: packPriceEur,
+          euroPerKg: Number(euroPerKg.toFixed(2))
         };
       }
 
@@ -515,14 +681,14 @@ export class RecipeAndArbitrageService {
       feasibilityStatus = 'needs_shopping';
     }
 
-    const meta = classifyDishMetadata(dish);
-
     return {
       ...dish,
       ...meta,
       servings,
       canonicalCookwareIds: canonicalTools,
       hasProfileSubstitution,
+      isExcludedByProfileIdentity,
+      profileExclusionReason,
       substitutionsApplied,
       bom: enrichedBom,
       costAndArbitrage: {
@@ -558,10 +724,10 @@ export class RecipeAndArbitrageService {
   async queryDishes(filters = {}) {
     const allDishes = this.getDishesSeed();
     const restaurants = this.getRestaurantsSeed();
-    const activeOffers = (await offerService.getOffers({ domain: 'food_human', limit: 100 })).offers || [];
+    const profileId = filters.profileId || userProfileService.getProfileById().id;
+    const activeOffers = await this._getFullFoodOffers(profileId);
     const pantryItems = pantryService.getPantryState().items || [];
     const kitchenState = kitchenInventoryService.getKitchenState();
-    const profileId = filters.profileId || userProfileService.getProfileById().id;
     const servings = Math.max(1, Math.min(12, Number(filters.servings) || 1));
 
     // Precompute homologous restaurant twin groups across the full catalog
@@ -620,6 +786,18 @@ export class RecipeAndArbitrageService {
       });
     }
 
+    const excludeIncompatible = filters.excludeIncompatible === true || filters.excludeIncompatible === 'true';
+    if (excludeIncompatible) {
+      filtered = filtered.filter((d) => {
+        if (d.dairyRole !== 'structural_unsubstitutable') return true;
+        const titleOk = userProfileService.checkItemCompatibility({ title: d.title, category: '' }, profileId).isCompatible;
+        const bomOk = (d.bom || []).every(
+          (b) => userProfileService.checkItemCompatibility({ title: b.name, category: '' }, profileId).isCompatible
+        );
+        return titleOk && bomOk;
+      });
+    }
+
     const totalMatching = filtered.length;
     const limit = Math.max(1, Math.min(350, Number(filters.limit) || 80));
     const offset = Math.max(0, Number(filters.offset) || 0);
@@ -675,7 +853,7 @@ export class RecipeAndArbitrageService {
   async computeMaxCoverage8020(options = {}) {
     const topK = Math.max(3, Math.min(25, Number(options.topK) || 12));
     const allDishes = this.getDishesSeed();
-    const activeOffers = (await offerService.getOffers({ domain: 'food_human', limit: 100 })).offers || [];
+    const activeOffers = await this._getFullFoodOffers(options.profileId || null);
     const pantryItems = pantryService.getPantryState().items || [];
 
     // Build ingredient universe keyed by canonical CREA ID or normalized name
@@ -689,13 +867,14 @@ export class RecipeAndArbitrageService {
         reqKeys.add(key);
         if (!ingredientMap.has(key)) {
           const normName = normalizeSearchToken(b.name);
-          const head = normName.split(' ').find((w) => w.length >= 4) || normName;
+          const head = normName.split(' ').find((w) => w.length >= 4 && !STOP_WORDS_BOM.has(w)) || normName.split(' ')[0];
+          const headRegex = head && head.length >= 4 ? new RegExp(`\\b${head}\\b`, 'i') : null;
           const inPantry = pantryItems.some(
-            (p) => p.remainingWeightGrams > 0 && (p.creaFoodId === b.creaId || normalizeSearchToken(p.title).includes(head))
+            (p) =>
+              p.remainingWeightGrams > 0 &&
+              ((b.creaId && String(p.creaFoodId) === String(b.creaId)) || (headRegex && headRegex.test(normalizeSearchToken(p.title))))
           );
-          const promoOffer = activeOffers.find((off) =>
-            head && head.length >= 4 && normalizeSearchToken(off.title).includes(head)
-          );
+          const promoOffer = matchBomIngredientToOffer(b, activeOffers);
           ingredientMap.set(key, {
             key,
             creaId: b.creaId || null,
@@ -703,8 +882,8 @@ export class RecipeAndArbitrageService {
             dishFrequency: 0,
             inPantry,
             onPromoInRapallo: Boolean(promoOffer),
-            promoChain: promoOffer ? promoOffer.chainName || promoOffer.chainId : null,
-            promoPrice: promoOffer ? promoOffer.price : null
+            promoChain: promoOffer ? promoOffer.storeName || promoOffer.chainName || promoOffer.brand || promoOffer.chainId : null,
+            promoPrice: promoOffer ? Number(promoOffer.promoPrice ?? promoOffer.price ?? 0) : null
           });
         }
         ingredientMap.get(key).dishFrequency += 1;
@@ -799,6 +978,530 @@ export class RecipeAndArbitrageService {
   }
 
   /**
+   * Selects one of 8 distinct Harvard "Science & Cooking" culinary-physics archetypes
+   * grounded in the dish's real BOM ingredients, weights, and `dishFamily`.
+   */
+  _buildScientificStepsForDish(evaluated, heatDict) {
+    const bomSummary = evaluated.bom
+      .map((b) => `${b.name} (${b.rawGramsTotal}g${b.notes ? ` — ${b.notes}` : ''})`)
+      .join(' · ');
+    const mainItem = evaluated.bom[0] || { name: evaluated.title, rawGramsTotal: 120 };
+    const secondaryItem = evaluated.bom[1] || { name: 'base aromatica', rawGramsTotal: 40 };
+    const fam = evaluated.dishFamily || 'mediterranean_vegetable';
+    const prepSec = Math.max(180, (evaluated.prepMinutes || 15) * 30);
+
+    // Archetype 1: Cold Osmotic Boat / Cooler Assembly
+    if (evaluated.boatSafeCold && (evaluated.course === 'piatto_unico_barca' || !(evaluated.cookwareRequired || []).some((c) => /padella|pentola|forno|bistecchiera/i.test(c)))) {
+      return {
+        cookingArchetype: 'cold_osmotic_boat_cambusa',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: 'Osmosi & Drenaggio per Cambusa',
+            title: `Scolatura profonda e taglio calibrato di ${mainItem.name} (${mainItem.rawGramsTotal}g)`,
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 180,
+            timerType: 'active',
+            scientificPrinciple:
+              'Rimuovere i liquidi di governo ad alta forza ionica evita che la pressione osmotica estragga acqua libera dagli ortaggi durante le ore in borsa termica, prevenendo il rammollimento cellulare.',
+            instructions: `Preparare a freddo: ${bomSummary}. Tamponare con cura legumi o conserve ittiche prima dell'assemblaggio.`,
+            sensoryCues: {
+              visual: 'Ingredienti ben sgranati, asciutti in superficie e tagliati a sezione uniforme',
+              acoustic: 'Nessun gocciolamento residuo nel colino',
+              olfactory: 'Nota marina o vegetale pulita senza odore metallico di salamoia'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: 'Chelazione Acida & Micro-Emulsione Lipidica',
+            title: 'Battitura dell\'emulsione Olio EVO Ligure + agrume/aceto (pH ~4.6)',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.low,
+            durationSeconds: 120,
+            timerType: 'active',
+            scientificPrinciple:
+              'L\'acidificazione a pH ~4.6 inattiva la polifenolossidasi rallentando l\'imbrunimento enzimatico in barca, mentre i lipidi monoinsaturi dell\'Olio EVO incapsulano gli aromi liposolubili delle erbe liguri.',
+            instructions:
+              'Emulsionare energicamente con forchetta o barattolo chiuso la quota lipidica e acida finché diventa opalescente, poi avvolgere gli ingredienti principali.',
+            sensoryCues: {
+              visual: 'Velo lucido uniforme su ogni boccone senza pozzanghere acquose sul fondo',
+              acoustic: 'Suono vellutato durante il mescolamento',
+              olfactory: 'Bouquet fresco di agrumi ed erbe mediterranee'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: 'Stabilizzazione Termica in Borsa Frigo (4–8°C)',
+            title: 'Stoccaggio ermetico e maturazione aromatica controllata',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 90,
+            timerType: 'passive',
+            scientificPrinciple:
+              'Tra 4°C e 8°C la diffusione aromatica nei lipidi prosegue lentamente mentre la cinetica batterica mesofila resta bloccata, garantendo sicurezza alimentare fino al consumo in rada.',
+            instructions:
+              'Chiudere in contenitore ermetico rigido (tenendo eventuali crostini/farinata separati fino al servizio per evitare migrazione di umidità) e riporre vicino ai siberini.',
+            sensoryCues: {
+              visual: 'Colori brillanti e struttura croccante preservata al momento dell\'apertura in barca',
+              acoustic: 'Scrocchio netto della componente secca aggiunta al momento',
+              olfactory: 'Esplosione balsamica all\'apertura del contenitore'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 2: Cold Pesto / Walnut Emulsion + Pasta
+    if (fam === 'pesto_pasta' || fam === 'walnut_filled_pasta') {
+      return {
+        cookingArchetype: 'cold_emulsion_pesto_walnut',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: 'Frantumazione a Freddo Anti-Ossidazione (<28°C)',
+            title: 'Preparazione dell\'emulsione cruda di basilico/semi oleosi protetta dall\'Olio EVO',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 240,
+            timerType: 'active',
+            scientificPrinciple:
+              'La polifenolossidasi delle foglie di basilico ossida i fenoli in chinoni bruni sopra i 30°C o a contatto con l\'aria: lavorare a freddo (<28°C) rivestendo subito le pareti cellulari rotte con Olio EVO mantiene intatta la clorofilla verde smeraldo e il linalolo.',
+            instructions: `Pesare con precisione: ${bomSummary}. Lavorare a impulsi brevi con contenitore freddo o nel mortaio rotatorio senza scaldare la massa.`,
+            sensoryCues: {
+              visual: 'Crema verde brillante (o avorio vellutato per le noci) priva di aloni scuri ossidati',
+              acoustic: 'Attrito cremoso e pastoso contro la parete del mortaio/ciotola',
+              olfactory: 'Nota balsamica dolce e intensa di basilico di Pra\' / pinoli crudi (zero odore di erba cotta)'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: 'Idratazione Amidacea della Pasta Fresca/Secca',
+            title: `Bollitura in acqua salata (10g/L) di ${mainItem.name} (${mainItem.rawGramsTotal}g)`,
+            heatLevel: 'medium',
+            stoveInstruction: heatDict.medium,
+            durationSeconds: Math.max(240, prepSec),
+            timerType: 'passive',
+            scientificPrinciple:
+              'Durante l\'ebollizione i granuli di amido gelatinizzano tra 65°C e 85°C rilasciando amilosio lineare nell\'acqua: questo idrocolloide è indispensabile per legare l\'olio del pesto senza formaggi fusi o panna.',
+            instructions:
+              'Cuocere la pasta (e patate/fagiolini se previsti) in acqua sobbollente salata; prelevare mezzo mestolo di acqua amidacea e lasciarla intiepidire 30 secondi sotto gli 80°C.',
+            sensoryCues: {
+              visual: 'Acqua leggermente lattiginosa per l\'amido rilasciato; pasta elastica al morso',
+              acoustic: 'Sobbollizione allegra e continua senza schiuma traboccante',
+              olfactory: 'Profumo netto di grano/semola o erbe di ripieno'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: 'Temperaggio Fuori Fuoco (<60°C) & Mantecatura a Freddo',
+            title: 'Emulsione lontano dai fornelli per non cuocere il pesto/salsa di noci',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 90,
+            timerType: 'active',
+            scientificPrinciple:
+              'Portare il pesto o la salsa di noci oltre i 65°C denatura le proteine dei pinoli/noci causando separazione dell\'olio ("stracciatura") e volatilizza gli oli essenziali termolabili del basilico.',
+            instructions:
+              'In una boule FUORI DAL FUOCO stemperare la salsa con 2 cucchiai di acqua di cottura tiepida, versare la pasta scolata e mescolare energicamente dal basso verso l\'alto.',
+            sensoryCues: {
+              visual: 'Velo cremoso e omogeneo avvolto attorno a ogni trofia/pansotto senza olio libero sul fondo',
+              acoustic: 'Cremosità sonora ("ciac-ciac" morbido dell\'emulsione acqua-amido-olio)',
+              olfactory: 'Bouquet esplosivo di basilico fresco, pinoli e Olio EVO Ligure a crudo'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 3: Amylopectin Risotto Kinetics
+    if (fam === 'seafood_risotto' || fam === 'land_risotto') {
+      return {
+        cookingArchetype: 'amylopectin_risotto',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: 'Tostatura Secca/Lipidica della Cariosside (110–120°C)',
+            title: `Vetrificazione superficiale di ${mainItem.name} (${mainItem.rawGramsTotal}g)`,
+            heatLevel: 'medium',
+            stoveInstruction: heatDict.medium,
+            durationSeconds: 150,
+            timerType: 'active',
+            scientificPrinciple:
+              'Il calore moderato a secco o in velo d\'olio compatta gli strati esterni di amido della cariosside di riso, garantendo che il chicco rilasci amilopectina gradualmente senza sfaldarsi al cuore.',
+            instructions: `Mise en place: ${bomSummary}. Tostare il riso mescolando finché i bordi del chicco diventano perlacei-traslucidi e caldi al tatto.`,
+            sensoryCues: {
+              visual: 'Bordo esterno del chicco traslucido con nucleo bianco ("perla") ben visibile',
+              acoustic: 'Tintinnio cristallino dei chicchi contro il fondo della casseruola',
+              olfactory: 'Aroma delicato di pane caldo e amido tostato'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: 'Estrazione Meccanica dell\'Amilopectina (~92°C)',
+            title: 'Cottura per assorbimento progressivo con brodo/fumetto caldo',
+            heatLevel: 'medium',
+            stoveInstruction: heatDict.medium,
+            durationSeconds: 900,
+            timerType: 'passive',
+            scientificPrinciple:
+              'Mantenere il liquido sempre vicino all\'ebollizione (~92°C) evita shock termici che bloccherebbero la gelatinizzazione, mentre l\'urto dolce tra i chicchi estrae l\'amilopectina ramificata creando viscosità naturale.',
+            instructions:
+              'Bagnare con mestoli successivi di liquido bollente man mano che il precedente viene assorbito; inserire i frutti di mare/ingredienti delicati solo negli ultimi 3–4 minuti per non indurirli.',
+            sensoryCues: {
+              visual: 'Bolle lente e dense ("effetto vulcano") in un fondo progressivamente legato',
+              acoustic: 'Sobbollizione densa e ovattata',
+              olfactory: 'Concentrazione aromatica crescente del fumetto/fondo vegetale'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: 'Riposo Termico & Mantecatura all\'Onda (<65°C)',
+            title: 'Emulsione viscoelastica fuori fuoco con Olio EVO freddo',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 120,
+            timerType: 'active',
+            scientificPrinciple:
+              '60 secondi di riposo fuori fuoco abbassano la massa a ~65°C aumentando la viscosità dell\'amido; incorporando aria e Olio EVO freddo a frusta/onda si forma un\'emulsione O/W stabile senza burro né formaggio.',
+            instructions:
+              'Spegnere, attendere 60 secondi a pentola ferma, versare l\'Olio EVO freddo a filo (ed eventuale scorza/prezzemolo) e mantecare con colpo di polso fino a ottenere l\'onda.',
+            sensoryCues: {
+              visual: 'Risotto lucido che si distende piatto nel piatto formando un\'onda morbida',
+              acoustic: 'Schiaffo sordo e vellutato dell\'onda durante il salto',
+              olfactory: 'Profumo nitido di mare/orto bilanciato dal fruttato leggero dell\'EVO ligure'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 4: Starch-Emulsion Pasta (Risottatura & Amylose Surfactant)
+    if (evaluated.course === 'primo') {
+      return {
+        cookingArchetype: 'starch_emulsion_pasta',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: 'Estrazione Liposolubile & Base del Condimento',
+            title: `Infusione aromatica controllata per ${evaluated.title}`,
+            heatLevel: 'low',
+            stoveInstruction: heatDict.low,
+            durationSeconds: 210,
+            timerType: 'active',
+            scientificPrinciple:
+              'I composti solforati dell\'aglio e i terpeni delle erbe sono liposolubili ma pirolizzano rapidamente sopra i 135°C diventando amari: l\'infusione dolce (<110°C) trasferisce l\'aroma nell\'olio senza bruciature.',
+            instructions: `Pesare: ${bomSummary}. Avviare il fondo in padella ampia a calore dolce con Olio EVO e gli aromi prima di calare la pasta.`,
+            sensoryCues: {
+              visual: 'Micro-bollicine fini attorno ad aglio/erbe senza imbrunimento scuro',
+              acoustic: 'Frigolio leggerissimo, quasi impercettibile',
+              olfactory: 'Aroma dolce e rotondo di infusione mediterranea (zero note acri)'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: 'Gelatinizzazione degli Amidi & Risottatura Finale',
+            title: `Scolatura anticipata (-2 min) di ${mainItem.name} (${mainItem.rawGramsTotal}g) e legatura in padella`,
+            heatLevel: 'medium',
+            stoveInstruction: heatDict.medium,
+            durationSeconds: Math.max(300, prepSec),
+            timerType: 'passive',
+            scientificPrinciple:
+              'Finire gli ultimi 120 secondi della pasta direttamente nel sugo con acqua amidacea concentra l\'amilosio lineare sulla superficie ruvida della semola, creando un ponte anfifilico stabile tra acqua e grassi.',
+            instructions:
+              'Lessare la pasta in acqua ridotta del 30% per concentrare l\'amido, trasferirla al dente nella padella del condimento e ultimare con un mestolino di acqua bollente amidacea.',
+            sensoryCues: {
+              visual: 'Il liquido sul fondo passa da acquoso a cremina opalescente che avvolge gli spaghetti/pasta',
+              acoustic: 'Sfrigolio umido che vira verso un suono denso e cremoso',
+              olfactory: 'Fusione armonica tra grano duro e salsa calda'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: 'Micro-Emulsione Fuori Fuoco (<65°C)',
+            title: 'Salto meccanico fuori fiamma con Olio EVO Ligure a crudo',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 75,
+            timerType: 'active',
+            scientificPrinciple:
+              'Sotto i 65°C il taglio meccanico del salto frantuma l\'Olio EVO in goccioline micrometriche stabilizzate dall\'amilosio, regalando cremosità da alta cucina e preservando i polifenoli senza latticini.',
+            instructions:
+              'Allontanare la padella dalla zona calda, versare un filo d\'Olio EVO crudo (ed erbe fresche finali) e saltare con energia per 30–45 secondi prima di servire subito.',
+            sensoryCues: {
+              visual: 'Pasta lucida, nappata al millimetro e senza pozza liquida sul piatto',
+              acoustic: 'Onda cremosa durante il salto in padella',
+              olfactory: 'Nota verde e fruttata dell\'extravergine ligure appena versato'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 5: Fish Skin Maillard / Gentle Marine Myosin Coagulation / Crudo
+    if (fam === 'baked_or_pan_fish' || fam === 'shellfish_cephalopods' || fam === 'raw_crudo') {
+      const isRaw = fam === 'raw_crudo';
+      return {
+        cookingArchetype: 'fish_skin_maillard_or_poach',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: isRaw ? 'Catena del Freddo & Taglio Controfibra (0–4°C)' : 'Essiccazione Superficiale Anti-Vapore',
+            title: `${isRaw ? 'Affettatura a lama fredda' : 'Tamponatura osmotica'} di ${mainItem.name} (${mainItem.rawGramsTotal}g)`,
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 180,
+            timerType: 'active',
+            scientificPrinciple: isRaw
+              ? 'Il tessuto connettivo del pesce è a basso collagene: mantenere le fibre tra 0°C e 4°C irrigidisce temporaneamente i lipidi permettendo tagli netti senza schiacciamento cellulare.'
+              : 'Ogni grammo di acqua superficiale richiede 2.260 Joule per evaporare, bloccando la pelle a 100°C (effetto bollito): tamponare a secco consente di superare subito i 145°C per la croccantezza.',
+            instructions: `Preparare la linea: ${bomSummary}. ${isRaw ? 'Usare coltello affilatissimo su tagliere freddo.' : 'Tamponare perfettamente il pesce con carta assorbente e incidere leggermente la pelle.'}`,
+            sensoryCues: {
+              visual: isRaw ? 'Fette o cubi lucidi con spigoli netti e zero sfilacciature' : 'Pelle/superficie opaca e completamente asciutta al tatto',
+              acoustic: 'Silenzio operativo in mise en place',
+              olfactory: 'Odore pulitissimo di brezza marina e iodio (zero trimetilammina)'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: isRaw ? 'Denaturazione Acida Superficiale Controllata' : 'Termodinamica Marina (Crosta >160°C · Cuore 50–54°C)',
+            title: isRaw
+              ? 'Condimento istantaneo per non "cuocere" eccessivamente la polpa nell\'acido'
+              : `Cottura millimetrica di ${mainItem.name} preservando la miosina marina`,
+            heatLevel: isRaw ? 'off_heat' : 'high',
+            stoveInstruction: isRaw ? heatDict.off_heat : heatDict.high,
+            durationSeconds: isRaw ? 90 : Math.max(240, prepSec),
+            timerType: isRaw ? 'active' : 'passive',
+            scientificPrinciple: isRaw
+              ? 'L\'acido citrico abbassa il pH verso il punto isoelettrico delle proteine miofibrillari (~pH 5.2): applicarlo solo negli ultimi 60 secondi evita l\'opacizzazione gessosa profonda.'
+              : 'La miosina ittica coagula già a 48–52°C (contro i 60°C+ dei mammiferi); oltre i 60°C le fibre espellono albumina bianca coagulata diventando stoppose.',
+            instructions: isRaw
+              ? 'Disporre sul piatto freddo, condire primero con Olio EVO Ligure (barriera lipidica) e solo all\'ultimo con poche gocce di agrume e sale in fiocchi.'
+              : 'Cuocere per l\'80% del tempo dal lato della pelle (o a vapore/guazzetto breve per i molluschi) senza capovolgere continuamente.',
+            sensoryCues: {
+              visual: isRaw ? 'Polpa traslucida color rubino/perla appena velata dall\'olio' : 'Pelle dorata e croccante; polpa interna perlata e succosa senza grumi bianchi di albumina',
+              acoustic: isRaw ? 'Silenzio cristallino' : 'Sfrigolio fine e continuo sulla pelle',
+              olfactory: 'Note iodate nobili sposate a erbe liguri, olive o pinoli'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: 'Carry-Over Termico & Nappatura Mediterranea',
+            title: 'Riposo breve di 60s fuori fuoco ed emulsione al limone/EVO',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 60,
+            timerType: 'active',
+            scientificPrinciple:
+              'L\'inerzia termica porta il cuore esattamente a 52–54°C fuori dalla fiamma senza sovracottura periferica, mentre l\'emulsione acqua-olio-limone lucida le fibre.',
+            instructions:
+              'Togliere subito dalla fonte di calore, lasciar assestare 60 secondi e nappare con il fondo aromatico emulsionato a crudo.',
+            sensoryCues: {
+              visual: 'Sfogliatura naturale dei petali di pesce sotto la forchetta',
+              acoustic: 'Croccantezza netta sulla pelle (se arrosto/padella)',
+              olfactory: 'Profumo fresco di Riviera Ligure'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 6: Meat Sear & Myofibrillar Pressure Relaxation (or Fried Crispness)
+    if (fam === 'white_meat' || fam === 'red_meat' || fam === 'fried_dish') {
+      const isFried = fam === 'fried_dish';
+      return {
+        cookingArchetype: 'meat_sear_and_myofibril_rest',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: isFried ? 'Shock Termico Pastella/Infariatura' : 'Temperaggio & Asciugatura Miofibrillare',
+            title: `Preparazione superficiale di ${mainItem.name} (${mainItem.rawGramsTotal}g)`,
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 180,
+            timerType: 'active',
+            scientificPrinciple: isFried
+              ? 'Una panatura/pastella asciutta o freddissima genera vapore istantaneo al contatto con l\'olio a 175°C: il flusso di vapore verso l\'esterno impedisce fisicamente all\'olio di penetrare nell\'alimento.'
+              : 'Portare la carne fuori dal frigo 15 min prima riduce il gradiente termico interno, mentre l\'asciugatura innesca la reazione di Maillard in metà tempo.',
+            instructions: `Linea pesata: ${bomSummary}. Tamponare perfettamente e predisporre tutti gli aromi prima di accendere il fuoco.`,
+            sensoryCues: {
+              visual: 'Superficie asciutta e spessore regolare per cottura omogenea',
+              acoustic: 'Nessun contatto a metallo freddo',
+              olfactory: 'Aroma neutro e fresco delle materie prime'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: isFried ? 'Frittura per Convezione a 175–180°C' : 'Reazione di Maillard (>155°C) & Controllo al Cuore',
+            title: isFried
+              ? 'Disidratazione croccante rapida senza crollo termico dell\'olio'
+              : `Rosolatura di ${mainItem.name} (pirazine e composti tostati)`,
+            heatLevel: 'high',
+            stoveInstruction: heatDict.high,
+            durationSeconds: Math.max(240, prepSec),
+            timerType: 'passive',
+            scientificPrinciple: isFried
+              ? 'Sotto i 160°C l\'evaporazione rallenta e il cibo assorbe fino al triplo dei lipidi; a 175–180°C la crosta porosa vetrifica in 2–3 minuti mantenendo l\'interno succoso.'
+              : 'Tra 155°C e 185°C amminoacidi e zuccheri riducenti formano centinaia di molecole aromatiche (pirazine, furani); girare ogni 60s uniforma l\'onda termica verso il cuore (56°C manzo / 70°C carni bianche).',
+            instructions: isFried
+              ? 'Immergere pochi pezzi per volta per non abbassare la temperatura; scolare su griglia o carta assorbente salando solo all\'uscita.'
+              : 'Rosolare a metallo ben caldo senza forare le fibre; sfumare se previsto e completare fino alla temperatura target al cuore.',
+            sensoryCues: {
+              visual: 'Crosta dorato-ambrata uniforme (mai nera/carbonizzata)',
+              acoustic: 'Sfrigolio allegro ad alta frequenza (bolle piccole e fitte)',
+              olfactory: 'Note intense di arrosto, nocciola ed erbe aromatiche (rosmarino/timo)'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: isFried ? 'Scolatura Aerata Anti-Condensa' : 'Rilassamento Miofibrillare & Deglassatura (<65°C)',
+            title: isFried ? 'Servizio immediato croccante con sale marino' : 'Riposo obbligatorio di 180s per trattenere +12% di succhi',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: isFried ? 60 : 180,
+            timerType: 'passive',
+            scientificPrinciple: isFried
+              ? 'Coprire un fritto intrappola il vapore acqueo residuo che reidrata l\'amido vetrificato in meno di 90 secondi distruggendo la croccantezza.'
+              : 'Durante il riposo fuori fuoco le fibre di actina/miosina contratte si distendono e la viscosità dei succhi aumenta, evitando l\'emorragia di liquido sul tagliere al taglio.',
+            instructions: isFried
+              ? 'Salare solo a fine cottura su griglia aerata, accompagnare con spicchio di limone a parte e servire immediatamente.'
+              : 'Trasferire su piatto tiepido per 3 minuti; nel frattempo deglassare i succhi caramellati del fondo ("fond") con un cucchiaio d\'acqua/vino e un filo d\'Olio EVO.',
+            sensoryCues: {
+              visual: 'Interno succoso e rosato/morbido con zero pozza di siero nel piatto',
+              acoustic: isFried ? 'Crunch sonoro netto al primo morso' : 'Quiete termica durante il riposo',
+              olfactory: 'Fondo di cottura concentrato e avvolgente'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 7: Differential Egg Protein Coagulation
+    if (fam === 'eggs_savory' || fam === 'breakfast_savory') {
+      return {
+        cookingArchetype: 'egg_protein_coagulation',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: 'Omogeneizzazione Proteica Senza Schiuma',
+            title: `Preparazione delicata di ${mainItem.name} (${mainItem.rawGramsTotal}g) e ${secondaryItem.name}`,
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 120,
+            timerType: 'active',
+            scientificPrinciple:
+              'Battere le uova con una forchetta anziché con la frusta rompe i filamenti di ovomucina senza inglobare bolle d\'aria che espandendosi e collassando renderebbero spugnosa la struttura.',
+            instructions: `Pesare: ${bomSummary}. Salare leggermente le uova 2 minuti prima: gli ioni sodio schermano le cariche elettriche proteiche rendendo il coagulo più tenero.`,
+            sensoryCues: {
+              visual: 'Composto fluido e lucido senza schiuma superficiale',
+              acoustic: 'Battito leggero e breve di forchetta',
+              olfactory: 'Profumo fresco di erbe/verdure già pronte'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: 'Coagulazione Differenziale (62°C → 70°C)',
+            title: 'Cottura dolce sotto la soglia di sineresi (80°C)',
+            heatLevel: 'low',
+            stoveInstruction: heatDict.low,
+            durationSeconds: 210,
+            timerType: 'active',
+            scientificPrinciple:
+              'L\'ovotransferrina dell\'albume coagula a 62°C e il tuorlo diventa cremoso a 68–70°C; superare gli 82°C stringe eccessivamente il reticolo proteico spremendo fuori acqua libera (sineresi gommosa).',
+            instructions:
+              'Versare in padella antiaderente tiepida unta con un velo d\'Olio EVO, muovendo delicatamente con spatola in silicone per formare onde morbide e baveuse.',
+            sensoryCues: {
+              visual: 'Superficie ancora leggermente lucida e cremosa, zero doratura scura sul fondo',
+              acoustic: 'Nessun sfrigolio violento (se frigge forte la padella è troppo calda)',
+              olfactory: 'Aroma delicatissimo di uovo fresco ed erbe liguri'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: 'Arresto dell\'Inerzia Termica',
+            title: 'Impiattamento anticipato con completamento a calore residuo',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 60,
+            timerType: 'active',
+            scientificPrinciple:
+              'Togliere dal metallo quando manca ancora il 10% di cottura sfrutta il calore specifico accumulato per consegnare al piatto una texture setosa perfetta.',
+            instructions:
+              'Trasferire subito dalla padella calda al piatto, rifinire con un filo d\'Olio EVO Ligure crudo e pepe macinato fresco.',
+            sensoryCues: {
+              visual: 'Consistenza vellutata, morbida e fondente al palato',
+              acoustic: 'Morbidezza assoluta al taglio',
+              olfactory: 'Nota fresca finale dell\'olio extravergine'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 8: Baking, Legume/Oat Gelatinization & Mediterranean Vegetable Cooking
+    return {
+      cookingArchetype: 'baking_or_breakfast_gelatinization',
+      steps: [
+        {
+          stepNumber: 1,
+          phase: 'Idratazione & Bilanciamento Stechiometrico',
+          title: `Pesatura di precisione di ${mainItem.name} (${mainItem.rawGramsTotal}g) e linea ingredienti`,
+          heatLevel: 'off_heat',
+          stoveInstruction: heatDict.off_heat,
+          durationSeconds: 150,
+          timerType: 'active',
+          scientificPrinciple:
+            'Nei cereali integrali, farine di ceci/grano e matrici vegetali il rapporto acqua:solidi governa la viscosità dei beta-glucani e la morbidezza delle pectine cellulari.',
+          instructions: `Preparare sul banco: ${bomSummary}. Mescolare a freddo le polveri/fiocchi con i liquidi per evitare grumi idrofobici.`,
+          sensoryCues: {
+            visual: 'Idratazione uniforme senza sacche di farina/avena asciutta',
+            acoustic: 'Mescolamento fluido e omogeneo',
+            olfactory: 'Note naturali di cereali, frutta o ortaggi freschi'
+          }
+        },
+        {
+          stepNumber: 2,
+          phase: 'Gelatinizzazione dei Polisaccaridi / Cottura Termica Controllata',
+          title: `Trattamento termico calibrato per ${evaluated.title}`,
+          heatLevel: 'medium',
+          stoveInstruction: heatDict.medium,
+          durationSeconds: Math.max(180, prepSec),
+          timerType: 'passive',
+          scientificPrinciple:
+            'Tra 75°C e 95°C i beta-glucani e le emicellulose si solubilizzano creando una matrice cremosa o alveolata ad alto indice di sazietà e rilascio glicemico lento.',
+          instructions:
+            evaluated.course === 'colazione'
+              ? 'Cuocere dolcemente mescolando (o assemblare a strati se a freddo con yogurt greco) finché i fiocchi/impasto raggiungono una consistenza vellutata.'
+              : 'Cuocere a calore medio-regolare finché il cuore vegetale/amidaceo risulta tenero e la superficie leggermente caramellata.',
+          sensoryCues: {
+            visual: 'Struttura legata, cremosa o dorata ai bordi secondo la preparazione',
+            acoustic: 'Sobbollizione dolce o lieve crepitio superficiale',
+            olfactory: 'Sviluppo di note calde di cereale tostato, frutta o ortaggi mediterranei'
+          }
+        },
+        {
+          stepNumber: 3,
+          phase: 'Finitura Nutrizionale Termolabile (<55°C)',
+          title: 'Aggiunta fuori fuoco di grassi nobili, frutta secca o antiossidanti',
+          heatLevel: 'off_heat',
+          stoveInstruction: heatDict.off_heat,
+          durationSeconds: 60,
+          timerType: 'active',
+          scientificPrinciple:
+            'Inserire frutta fresca, miele grezzo, semi oleosi o Olio EVO sotto i 55°C preserva la vitamina C, gli enzimi naturali e il contrasto meccanico croccante-morbido.',
+          instructions:
+            'Togliere dal calore, completare con i topping croccanti/aromatici previsti dalla BOM e servire.',
+          sensoryCues: {
+            visual: 'Contrasto cromatico netto e guarnizione integra',
+            acoustic: 'Contrasto tra base morbida e nota croccante di frutta secca/crostini',
+            olfactory: 'Aroma pieno e pulito senza note di grasso ossidato'
+          }
+        }
+      ]
+    };
+  }
+
+  /**
    * Generates a complete Harvard "Science & Cooking" step-by-step interactive session
    * adapted to the user's active stove (`gas`, `induction`, `electric_radiant`, `boat_no_stove`),
    * plus embedded Kitchen Reset protocols for the cookware used.
@@ -821,103 +1524,13 @@ export class RecipeAndArbitrageService {
       profileId: options.profileId
     });
 
-    // Build structured scientific steps from BOM + dish course
-    const isColdBoat = (dish.mealContexts || []).includes('boat_cooler') && dish.course === 'piatto_unico_barca';
-
-    const steps = [];
-    // Step 1: Mise en place & osmotic/thermal preparation
-    steps.push({
-      stepNumber: 1,
-      phase: 'Mise en Place & Preparazione Fisico-Chimica',
-      title: 'Pesatura di precisione e preparazione delle superfici cellulari',
-      heatLevel: 'off_heat',
-      stoveInstruction: heatDict.off_heat,
-      durationSeconds: 180,
-      timerType: 'active',
-      scientificPrinciple:
-        'Controllo dell\'acqua superficiale e della granulometria: tamponare proteine e pesci con carta assorbente elimina il calore latente di evaporazione (2.260 J/g) che altrimenti bloccherebbe la temperatura a 100°C impedendo la reazione di Maillard.',
-      instructions: evaluated.bom.map((b) => `${b.name}: ${b.rawGramsTotal}g — ${b.notes || 'preparare sul tagliere'}`).join(' · '),
-      sensoryCues: {
-        visual: 'Superfici proteiche asciutte e tagli regolari di uguale sezione termica',
-        acoustic: 'Silenzio operativo (nessun contatto prematuro con pentola fredda)',
-        olfactory: 'Profumo fresco delle materie prime crude'
-      }
-    });
-
-    if (isColdBoat) {
-      steps.push({
-        stepNumber: 2,
-        phase: 'Chelazione Acida & Emulsione a Freddo per Cambusa Barca',
-        title: 'Assemblaggio osmotico e protezione lipidica per borsa termica',
-        heatLevel: 'off_heat',
-        stoveInstruction: heatDict.off_heat,
-        durationSeconds: 120,
-        timerType: 'active',
-        scientificPrinciple:
-          'Acido ascorbico/citrico + lipidi monoinsaturi dell\'Olio EVO Ligure: l\'acidificazione a pH ~4.6 inibisce l\'ossidazione enzimatica (polifenolossidasi) e aumenta la biodisponibilità del ferro non-eme durante la conservazione in barca.',
-        instructions:
-          'Unire prima la componente proteica e i legumi/ortaggi ben scolati, emulsionare a parte olio EVO e succo di limone battendo per creare micro-micelle, quindi condire e chiudere in contenitore ermetico.',
-        sensoryCues: {
-          visual: 'Velo lucido uniforme sugli ingredienti senza separazione acquosa sul fondo',
-          acoustic: 'Suono vellutato durante il mescolamento',
-          olfactory: 'Bouquet agrumato-erbaceo netto'
-        }
-      });
-    } else {
-      steps.push({
-        stepNumber: 2,
-        phase: 'Trattamento Termico Primario (Cinetica di Denaturazione / Gelatinizzazione)',
-        title:
-          dish.course === 'primo'
-            ? 'Idratazione e gelatinizzazione controllata degli amidi (65–85°C) + base aromatica'
-            : 'Reazione di Maillard controllata (>140°C) e denaturazione proteica dolce al cuore',
-        heatLevel: dish.course === 'primo' ? 'medium' : 'high',
-        stoveInstruction: dish.course === 'primo' ? heatDict.medium : heatDict.high,
-        durationSeconds: Math.max(240, (dish.prepMinutes || 15) * 35),
-        timerType: 'passive',
-        scientificPrinciple:
-          dish.course === 'primo'
-            ? 'I granuli di amido assorbono acqua calda gonfiandosi e rilasciando amilosio lineare nell\'acqua di cottura: questo biopolimero agirà da tensioattivo naturale per stabilizzare l\'emulsione con l\'Olio EVO senza bisogno di panna o formaggi.'
-            : 'Sopra i 140°C gli zuccheri riducenti reagiscono con i gruppi amminici delle proteine (Maillard) generando pirazine e composti tostati, mentre al cuore la temperatura resta tra 52°C e 62°C preservando i succhi miofibrillari.',
-        instructions:
-          dish.course === 'primo'
-            ? 'Scolare al dente (2 minuti prima del tempo nominale) conservando una tazza di acqua amidacea biancastra e trasferire nella padella del condimento.'
-            : 'Adagiare l\'ingrediente principale solo a metallo in temperatura; non muovere nei primi 90 secondi per non lacerare la crosta proteica in formazione.',
-        sensoryCues: {
-          visual:
-            dish.course === 'primo'
-              ? 'Acqua di cottura leggermente opalescente e bordo esterno della pasta traslucido'
-              : 'Doratura ambrata uniforme sui bordi e contrazione elastica controllata',
-          acoustic: 'Sfrigolio vivo e regolare (100–120 Hz, bolle fini di vapore)',
-          olfactory: 'Note calde di nocciola tostata, mare e composti aromatici liposolubili'
-        }
-      });
-
-      steps.push({
-        stepNumber: 3,
-        phase: 'Mantecatura / Emulsione Fuori Fuoco (<65°C) & Riposo dei Succhi',
-        title: 'Legatura dell\'emulsione e ridistribuzione dei gradienti di pressione',
-        heatLevel: 'off_heat',
-        stoveInstruction: heatDict.off_heat,
-        durationSeconds: 90,
-        timerType: 'active',
-        scientificPrinciple:
-          'Fuori dal fuoco (<65°C) i polifenoli volatili dell\'Olio EVO Ligure non evaporano e le proteine non coagulano: il movimento meccanico disperde i lipidi in micro-goccioline stabili (per le carni/pesci: il riposo di 90s rilassa le fibre muscolari trattenendo fino al +12% di succhi).',
-        instructions:
-          'Spostare la pentola fuori dalla sorgente di calore, aggiungere l\'Olio EVO a filo (o la variante ligure senza latticini) ed emulsionare energicamente prima di impiattare.',
-        sensoryCues: {
-          visual: 'Salsa lucida, cremosa e velante sul cucchiaio senza gocce d\'olio separate',
-          acoustic: 'Suono cremoso ("onda" morbida in padella)',
-          olfactory: 'Esplosione di olio extravergine crudo ed erbe fresche'
-        }
-      });
-    }
-
+    const { cookingArchetype, steps } = this._buildScientificStepsForDish(evaluated, heatDict);
     const kitchenReset = await kitchenResetService.generateProtocol(evaluated.canonicalCookwareIds);
     const labNotes = this.getLabNotesForDish(dish.id);
 
     return {
       dish: evaluated,
+      cookingArchetype,
       heatSource,
       availableHeatSources: ['gas', 'induction', 'electric_radiant', 'boat_no_stove'],
       scientificSteps: steps,
@@ -1001,7 +1614,7 @@ export class RecipeAndArbitrageService {
           notes: 'Cottura millimetrica sulla pelle'
         },
         {
-          creaId: '009010',
+          creaId: '009210',
           name: 'Olio extra vergine di oliva ligure',
           rawGramsPerServing: 15,
           yieldFactor: 1.0,

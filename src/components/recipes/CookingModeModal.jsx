@@ -155,7 +155,15 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
           </div>
         ) : (
           <div className="p-5 space-y-6">
-            {/* Profile Substitution Notice if active */}
+            {/* Profile Substitution Notice or Structural Dairy Identity Warning */}
+            {session.dish.isExcludedByProfileIdentity && (
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-950 space-y-1">
+                <div className="font-extrabold">
+                  🚫 Piatto a Identità Latticini Strutturale (Non Sostituibile per Profilo Zero Formaggi):
+                </div>
+                <p>{session.dish.profileExclusionReason}</p>
+              </div>
+            )}
             {session.dish.hasProfileSubstitution && (
               <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-1">
                 <div className="font-extrabold">

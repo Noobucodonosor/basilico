@@ -59,7 +59,9 @@ export const DEFAULT_USER_PROFILES = [
       'certosa',
       'galbanino',
       'sottilette',
-      'philadelphia'
+      'philadelphia',
+      'prescinseua',
+      'presinseua'
     ],
     allowedExceptions: ['latte', 'yogurt greco', 'burro chiarificato'],
     logisticsMode: 'land_kitchen',
@@ -87,6 +89,8 @@ export const DEFAULT_USER_PROFILES = [
       'ricotta',
       'burrata',
       'scamorza',
+      'prescinseua',
+      'presinseua',
       'surgelato',
       'gelato'
     ],

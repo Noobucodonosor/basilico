@@ -25,6 +25,7 @@ router.get('/', async (req, res) => {
       limit: req.query.limit,
       offset: req.query.offset,
       deduplicateTwins: req.query.deduplicateTwins,
+      excludeIncompatible: req.query.excludeIncompatible,
       profileId: req.query.profileId
     });
     res.json(result);

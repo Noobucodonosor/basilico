@@ -26,6 +26,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
   const [servings, setServings] = useState(1);
   const [sortBy, setSortBy] = useState('arbitrage_desc');
   const [deduplicateTwins, setDeduplicateTwins] = useState(false);
+  const [excludeIncompatible, setExcludeIncompatible] = useState(false);
   const [visibleLimit, setVisibleLimit] = useState(80);
 
   const [catalogData, setCatalogData] = useState({
@@ -49,7 +50,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
 
   useEffect(() => {
     setVisibleLimit(80);
-  }, [sourceType, restaurantId, mealContext, searchQuery, deduplicateTwins, activeProfileId]);
+  }, [sourceType, restaurantId, mealContext, searchQuery, deduplicateTwins, excludeIncompatible, activeProfileId]);
 
   const fetchCatalog = useCallback(() => {
     setLoading(true);
@@ -62,6 +63,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
       sortBy,
       limit: String(visibleLimit),
       deduplicateTwins: String(deduplicateTwins),
+      excludeIncompatible: String(excludeIncompatible),
       profileId: activeProfileId || 'dany'
     });
     fetch(`/api/recipes?${params.toString()}`)
@@ -70,7 +72,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
         if (data) setCatalogData(data);
       })
       .finally(() => setLoading(false));
-  }, [sourceType, restaurantId, mealContext, searchQuery, servings, sortBy, visibleLimit, deduplicateTwins, activeProfileId]);
+  }, [sourceType, restaurantId, mealContext, searchQuery, servings, sortBy, visibleLimit, deduplicateTwins, excludeIncompatible, activeProfileId]);
 
   useEffect(() => {
     fetchCatalog();
@@ -217,15 +219,26 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
               ))}
             </div>
 
-            <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer">
-              <input
-                type="checkbox"
-                checked={deduplicateTwins}
-                onChange={(e) => setDeduplicateTwins(e.target.checked)}
-                className="rounded border-slate-300 text-emerald-600"
-              />
-              <span>🔗 Raggruppa piatti omonimi tra ristoranti (fascia prezzo)</span>
-            </label>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={deduplicateTwins}
+                  onChange={(e) => setDeduplicateTwins(e.target.checked)}
+                  className="rounded border-slate-300 text-emerald-600"
+                />
+                <span>🔗 Raggruppa omonimi (fascia prezzo)</span>
+              </label>
+              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={excludeIncompatible}
+                  onChange={(e) => setExcludeIncompatible(e.target.checked)}
+                  className="rounded border-slate-300 text-emerald-600"
+                />
+                <span>🛡️ Nascondi piatti a identità latticini (solo compatibili)</span>
+              </label>
+            </div>
           </div>
 
           {/* Filter Bar: Restaurant Selector, Meal Context, Search, Servings Scaler, Sort */}
@@ -340,6 +353,14 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                           {dish.hasProfileSubstitution && (
                             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300">
                               🛡️ Variante Senza Formaggi Attiva
+                            </span>
+                          )}
+                          {dish.isExcludedByProfileIdentity && (
+                            <span
+                              className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-100 text-rose-900 border border-rose-300"
+                              title={dish.profileExclusionReason || ''}
+                            >
+                              🚫 Identità Latticini — Solo Studio / Ospiti
                             </span>
                           )}
                           {dish.restaurantPriceRangeEur && (
