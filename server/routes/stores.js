@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ingestionService } from '../services/ingestionService.js';
+import { offerService } from '../services/offerService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,7 +80,11 @@ export function handleGetStores(queryParams = {}, storeData = null) {
  */
 export async function getStoresHandler(req, res, next) {
   try {
-    const rawStores = await ingestionService.getStores();
+    const [rawStores, activeOffers, allFlyers] = await Promise.all([
+      ingestionService.getStores(),
+      offerService.getRawOffers(),
+      ingestionService.getFlyers()
+    ]);
     let storesList = Array.isArray(rawStores) ? [...rawStores] : [];
 
     if (req.query?.includeLocalShops === 'true' || req.query?.includeLocalShops === true) {
@@ -97,12 +102,39 @@ export async function getStoresHandler(req, res, next) {
       storesList = storesList.filter((s) => s.storeCategory === cat);
     }
 
-    // Ensure badge properties (flyerCount, activeOfferCount) exist and are non-negative numbers
-    let stores = storesList.map((store) => ({
-      ...store,
-      flyerCount: typeof store.flyerCount === 'number' && store.flyerCount >= 0 ? store.flyerCount : 0,
-      activeOfferCount: typeof store.activeOfferCount === 'number' && store.activeOfferCount >= 0 ? store.activeOfferCount : 0
-    }));
+    const offerCountByStore = new Map();
+    if (Array.isArray(activeOffers)) {
+      for (const o of activeOffers) {
+        if (o?.storeId) {
+          offerCountByStore.set(o.storeId, (offerCountByStore.get(o.storeId) || 0) + 1);
+        }
+      }
+    }
+
+    const nowMs = Date.now();
+    const activeFlyersList = Array.isArray(allFlyers)
+      ? allFlyers.filter((f) => !f?.validTo || new Date(f.validTo).getTime() >= nowMs)
+      : [];
+    const effectiveFlyers = activeFlyersList.length > 0 ? activeFlyersList : (Array.isArray(allFlyers) ? allFlyers : []);
+
+    // Synchronize badge properties (flyerCount, activeOfferCount) 1:1 with OfferService's active deduplicated dataset
+    let stores = storesList.map((store) => {
+      const sId = store.id;
+      const syncedOfferCount = Array.isArray(activeOffers) && activeOffers.length > 0
+        ? (offerCountByStore.get(sId) || 0)
+        : (typeof store.activeOfferCount === 'number' && store.activeOfferCount >= 0 ? store.activeOfferCount : 0);
+      const syncedFlyerCount = effectiveFlyers.length > 0
+        ? effectiveFlyers.filter(
+            (f) => f.storeId === sId || (Array.isArray(f.storeIds) && f.storeIds.includes(sId))
+          ).length
+        : (typeof store.flyerCount === 'number' && store.flyerCount >= 0 ? store.flyerCount : 0);
+
+      return {
+        ...store,
+        flyerCount: syncedFlyerCount,
+        activeOfferCount: syncedOfferCount
+      };
+    });
 
     // Filter by hasOffers query parameter if valid boolean string
     const hasOffersParam = req.query?.hasOffers;

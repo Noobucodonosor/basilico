@@ -11,7 +11,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ingestionService } from './ingestionService.js';
-import { classifyProductDomain, VALID_PRODUCT_DOMAINS } from './domainClassifier.js';
+import {
+  classifyProductDomain,
+  classifyCanonicalCategory,
+  VALID_PRODUCT_DOMAINS
+} from './domainClassifier.js';
 import { normalizeUnitPricing } from './unitPriceExtractor.js';
 import { evaluateQualityLens } from './qualityLensService.js';
 import { priceHistoryService } from './priceHistoryService.js';
@@ -145,15 +149,17 @@ export function enrichOfferRecord(offer = {}, profileId = null) {
   }
 
   const domain = classifyProductDomain(offer);
+  const category = classifyCanonicalCategory(offer, domain);
   const isNamelessTile = isNamelessOfferTile(offer);
-  const pricing = normalizeUnitPricing({ ...offer, domain });
-  const quality = evaluateQualityLens({ ...offer, domain });
+  const pricing = normalizeUnitPricing({ ...offer, domain, category });
+  const quality = evaluateQualityLens({ ...offer, domain, category });
   const _searchNorm = normalizeSearchToken(
-    `${offer.title} ${offer.brand || ''} ${offer.category || ''} ${offer.description || ''}`
+    `${offer.title} ${offer.brand || ''} ${category} ${offer.description || ''}`
   );
 
   const enrichedBase = {
     ...offer,
+    category,
     _searchNorm,
     domain,
     isNamelessTile,
@@ -242,6 +248,50 @@ export function computeFacets(offers = []) {
   return { categories, stores, domains, discountRanges };
 }
 
+export function filterActiveAndDeduplicateOffers(rawOffers = [], nowMs = Date.now()) {
+  if (!Array.isArray(rawOffers) || rawOffers.length === 0) return [];
+
+  // 1. Filter out expired promotional flyers when at least one offer in the dataset is currently active
+  const activeCandidates = rawOffers.filter((o) => {
+    const end = o?.validityEnd || o?.validTo;
+    if (!end) return true;
+    const endTime = new Date(end).getTime();
+    return Number.isNaN(endTime) || endTime >= nowMs;
+  });
+  const baseList = activeCandidates.length > 0 ? activeCandidates : rawOffers;
+
+  // 2. Deduplicate identical promo tiles across overlapping flyers of the same store
+  const byKey = new Map();
+  for (const offer of baseList) {
+    if (!offer || typeof offer !== 'object') continue;
+    const titleNorm = normalizeSearchToken(offer.title || '');
+    const priceKey = Number(offer.promoPrice ?? offer.discountPrice ?? offer.price ?? 0).toFixed(2);
+    const dedupKey = isNamelessOfferTile(offer)
+      ? `${offer.storeId || ''}|nameless|${offer.id || `${offer.flyerId}-${offer.pageNumber}-${priceKey}`}`
+      : `${offer.storeId || ''}|${titleNorm}|${priceKey}`;
+
+    const existing = byKey.get(dedupKey);
+    if (!existing) {
+      byKey.set(dedupKey, offer);
+      continue;
+    }
+
+    // Prefer the richer record (with discountPercentage / originalPrice / unitPrice / imageUrl / later validity)
+    const score = (item) =>
+      (item.discountPercentage ? 4 : 0) +
+      (item.originalPrice ? 2 : 0) +
+      (item.unitPrice ? 2 : 0) +
+      (item.imageUrl ? 1 : 0);
+    const existingEnd = new Date(existing.validityEnd || existing.validTo || 0).getTime() || 0;
+    const candidateEnd = new Date(offer.validityEnd || offer.validTo || 0).getTime() || 0;
+    if (score(offer) > score(existing) || (score(offer) === score(existing) && candidateEnd > existingEnd)) {
+      byKey.set(dedupKey, offer);
+    }
+  }
+
+  return Array.from(byKey.values());
+}
+
 export class OfferService {
   constructor(options = {}) {
     this.ingestionService = options.ingestionService || ingestionService;
@@ -267,23 +317,23 @@ export class OfferService {
   }
 
   /**
-   * Asynchronous raw offer retrieval from cache or seed
+   * Asynchronous raw offer retrieval from cache or seed (active & deduplicated)
    */
   async getRawOffers() {
     try {
       await this.ingestionService.init();
       let cached = this.ingestionService._unwrapData(this.ingestionService.cacheManager.get('offers'));
       if (Array.isArray(cached) && cached.length > 0) {
-        return cached;
+        return filterActiveAndDeduplicateOffers(cached);
       }
       const seed = await this.ingestionService.loadSeedData();
       if (seed && Array.isArray(seed.offers) && seed.offers.length > 0) {
-        return seed.offers;
+        return filterActiveAndDeduplicateOffers(seed.offers);
       }
     } catch (err) {
       console.error(`[OfferService] Error fetching raw offers: ${err.message}`);
     }
-    return this.getSeedOffersSync();
+    return filterActiveAndDeduplicateOffers(this.getSeedOffersSync());
   }
 
   /**

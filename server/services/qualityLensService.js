@@ -85,28 +85,28 @@ export function evaluateQualityLens(item = {}) {
       }
     }
   } else if (domain === 'home_cleaning') {
-    // Domain B: Chemical pH & surface safety
-    if (/\b(anticalcare|viakal|acido citrico|aceto|disincrostante|wc net)\b/i.test(text)) {
+    // Domain B: Chemical pH & surface safety (ONLY on real chemical/cleaning products, never on textiles, toys, or paper)
+    if (/\b(anticalcare|viakal|acido citrico|aceto\s+pulizie|disincrostant\w*|wc net|anitra\s+wc|bref\s+wc|duck\b)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'acid',
         phLabel: 'pH Acido (2.0 – 4.5)',
-        function: 'Scioglie carbonato di calcio (calcare), aloni minerali e ossidi su acciaio inox e vetro',
+        function: 'Scioglie carbonato di calcio (calcare), aloni minerali e ossidi su acciaio inox e ceramica',
         safeSurfaces: ['Acciaio Inox 18/10', 'Ceramica', 'Vetro', 'Vetroceramica Induzione'],
         forbiddenSurfaces: ['Marmo', 'Pietra naturale/Ardesia', 'Alluminio nudo', 'Ghisa non smaltata']
       };
       badges.push({ label: 'Chimica Acida — Anticalcare & Brillantante Inox', tone: 'sky' });
-      warnings.push('VIETATO su marmo, ardesia e alluminio nudo (corrosione chimica)');
-    } else if (/\b(sgrassatore|chanteclair|forno|griglia|candeggina|ace\b)\b/i.test(text)) {
+      warnings.push('VIETATO su marmo, ardesia e alluminio nudo (corrosione chimica); MAI miscelare con candeggina');
+    } else if (/\b(sgrassator\w*|chanteclair|pulitore\s+forno|griglia|candeggina|ipoclorito|ace\b)\b/i.test(text) && !/\b(ammorbidente|bucato\s+delicato)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'alkaline',
-        phLabel: 'pH Alcalino (10.5 – 13.0)',
+        phLabel: 'pH Alcalino / Ossidante (10.5 – 13.0)',
         function: 'Saponifica e scioglie grassi polimerizzati, oli cotti e residui organici',
         safeSurfaces: ['Acciaio Inox 18/10', 'Vetroceramica Induzione (a freddo)', 'Piani Gas smaltati', 'Pirofile Pyrex'],
         forbiddenSurfaces: ['Alluminio nudo (annerisce)', 'Ghisa stagionata (rimuove la patina)', 'Legno non trattato']
       };
       badges.push({ label: 'Chimica Alcalina — Sgrassante Grassi Cotti', tone: 'amber' });
       warnings.push('Risciacquare bene su antiaderente PTFE; non usare su alluminio nudo o ghisa stagionata');
-    } else if (/\b(spugn\w* abrasiv\w*|pagliett\w*|acciaio|inox spirale)\b/i.test(text)) {
+    } else if (/\b(spugn\w*\s+abrasiv\w*|pagliett\w*|inox\s+spirale|lana\s+d['’]?acciaio)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'mechanical_abrasive',
         phLabel: 'Azione Meccanica Abrasiva',
@@ -115,16 +115,38 @@ export function evaluateQualityLens(item = {}) {
         forbiddenSurfaces: ['Padelle Antiaderenti PTFE/Teflon', 'Vetroceramica Induzione', 'Pentole smaltate']
       };
       warnings.push('VIETATO su padelle antiaderenti (PTFE) e piano a induzione (graffi permanenti)');
-    } else {
+    } else if (/\b(lavastoviglie|finish\b|pril\b|fairy\s+(?:platinum|original|caps|tabs)|brillantante|cura\s*lavastoviglie)\b/i.test(text)) {
+      technicalSpec = {
+        phClass: 'alkaline_enzymatic',
+        phLabel: 'Enzimatico Alcalino Lavastoviglie (pH 9.5 – 11.0)',
+        function: 'Idrolisi enzimatica di amidi/proteine e brillantatura automatica ad alta temperatura',
+        safeSurfaces: ['Acciaio Inox 18/10', 'Vetro temperato', 'Ceramica/Porcellana'],
+        forbiddenSurfaces: ['Padelle Antiaderenti PTFE', 'Coltelli da chef (perde il filo)', 'Alluminio nudo', 'Legno', 'Moka']
+      };
+      badges.push({ label: 'Enzimatico Lavastoviglie — Evitare su Antiaderente e Moka', tone: 'sky' });
+    } else if (/\b(detersiv\w*\s+(?:per\s+)?(?:piatti|stoviglie)|svelto\b|fairy\s+(?:liquido|piatti|limone)|sapone\s+piatti|winni['’]?s\s+piatti|nelsen)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'neutral_surfactant',
-        phLabel: 'pH Neutro / Tensioattivo (6.5 – 8.0)',
-        function: 'Emulsiona grassi freschi, amidi e proteine senza aggredire i rivestimenti delicati',
+        phLabel: 'pH Neutro / Tensioattivo Stoviglie (6.5 – 8.0)',
+        function: 'Emulsiona grassi freschi, amidi e proteine a mano senza aggredire i rivestimenti delicati',
         safeSurfaces: ['Padelle Antiaderenti PTFE', 'Acciaio Inox', 'Ghisa', 'Vetroceramica Induzione', 'Lame Coltelli'],
         forbiddenSurfaces: []
       };
       badges.push({ label: 'pH Neutro — Sicuro su Antiaderente PTFE e Induzione', tone: 'emerald' });
+    } else if (/\b(lavapavimenti|pavimenti|vetril|quasar|ajax|mastro\s+lindo|lysoform|cif\b|igienizzant\w*\s+superfici|panni\s+pavimenti)\b/i.test(text)) {
+      technicalSpec = {
+        phClass: 'neutral_surface',
+        phLabel: 'Detergente Superfici & Pavimenti',
+        function: 'Detersione rapida senza aloni di superfici lavabili e pavimenti domestici',
+        safeSurfaces: ['Gres', 'Ceramica', 'Vetro', 'Acciaio Inox'],
+        forbiddenSurfaces: []
+      };
+      badges.push({ label: 'Detergenza Superfici & Pavimenti', tone: 'sky' });
+    } else if (/\b(lavatrice|bucato|ammorbident\w*|smacchiator\w*|acchiappacolore|curalavatrice|calgon|dash\b|dixan|omino\s+bianco|coccolino|vernel|lenor|napisan\s+bucato|perlana|sole\s+bucato)\b/i.test(text)) {
+      badges.push({ label: 'Cura Bucato & Lavatrice', tone: 'sky' });
     }
+    // Paper goods, food wraps, trash bags, textiles, apparel, toys & home bazar:
+    // intentionally receive NO fake chemical pH spec or cookware badge!
   } else if (domain === 'kitchen_cookware') {
     // Domain C: Cookware & Appliances thermodynamics
     const isInductionReady = /\b(induzione|induction|inox|acciaio|ghisa)\b/i.test(text);

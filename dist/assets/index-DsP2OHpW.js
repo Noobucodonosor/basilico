@@ -20026,7 +20026,7 @@ function Header({
             id: "active-profile-select",
             value: activeProfileId,
             onChange: (e) => onChangeProfile(e.target.value),
-            className: "text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[140px] sm:max-w-[210px] truncate",
+            className: "text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[155px] sm:max-w-[280px] truncate",
             title: "Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)",
             children: profiles.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: p.id, children: [
               "👤 ",
@@ -20248,7 +20248,8 @@ function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
       id: s.id,
       name: s.brand || s.name,
       fullName: s.name,
-      badgeText: s.activeOfferCount > 0 ? `${s.activeOfferCount} offerte` : null,
+      badgeText: s.activeOfferCount > 0 ? `${s.activeOfferCount} offerte` : "0",
+      hasActiveOffers: s.activeOfferCount > 0,
       isRegionalServing: Boolean(s.isRegionalServing)
     }))
   ];
@@ -20291,13 +20292,13 @@ function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
               "aria-selected": isSelected,
               tabIndex: isSelected ? 0 : -1,
               onClick: () => onSelectStore(tab.id),
-              className: `flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all shrink-0 select-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 cursor-pointer ${isSelected ? "bg-emerald-700 text-white shadow-sm" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`,
+              className: `flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all shrink-0 select-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 cursor-pointer ${isSelected ? "bg-emerald-700 text-white shadow-sm" : tab.hasActiveOffers === false ? "bg-slate-50 text-slate-400 border border-slate-200/70 hover:bg-slate-100" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: tab.name }),
                 tab.badgeText && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "span",
                   {
-                    className: `text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isSelected ? "bg-emerald-800 text-emerald-100" : "bg-slate-200 text-slate-600"}`,
+                    className: `text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isSelected ? "bg-emerald-800 text-emerald-100" : tab.hasActiveOffers === false ? "bg-slate-100 text-slate-400" : "bg-slate-200 text-slate-600"}`,
                     children: tab.badgeText
                   }
                 )
@@ -20602,9 +20603,9 @@ function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) 
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5 text-xs", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-slate-500 truncate", title: validityText || "", children: validityText || "Offerta attiva" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 shrink-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 flex items-center justify-between gap-1 text-xs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] text-slate-500 whitespace-nowrap truncate", title: validityText || "", children: validityText || "Offerta attiva" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 shrink-0", children: [
             onAddToShoppingList && !offer.isNamelessTile && /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
@@ -20615,7 +20616,7 @@ function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) 
                     domain: offer.domain || "food_human",
                     source: "promo_flyer",
                     unitPriceEur: promoVal > 0 ? promoVal : 2.5,
-                    packSizeGrams: offer.drainedWeightGrams || offer.packWeightGrams || offer.referencePackEstimate?.estimatedGrossGrams || 300,
+                    packSizeGrams: offer.drainedWeightGrams || offer.packWeightGrams || offer.referencePackEstimate?.estimatedPackGrams || 300,
                     preferredChain: offer.storeName || brand,
                     storeId: offer.storeId || null,
                     onPromo: true,
@@ -20623,7 +20624,7 @@ function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) 
                   });
                   setAddedToList(true);
                 },
-                className: `px-2 py-0.5 rounded font-bold text-[10px] border transition-colors cursor-pointer ${addedToList ? "bg-emerald-700 text-white border-emerald-700" : "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"}`,
+                className: `px-1.5 py-0.5 rounded font-bold text-[10px] border transition-colors cursor-pointer ${addedToList ? "bg-emerald-700 text-white border-emerald-700" : "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"}`,
                 title: "Aggiungi con 1 clic alla Lista Spesa Multi-Negozio di Rapallo",
                 children: addedToList ? "✓ Lista" : "+ Lista"
               }
@@ -20634,7 +20635,8 @@ function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) 
                 type: "button",
                 onClick: () => onOpenFlyer && onOpenFlyer(offer),
                 className: "text-emerald-700 font-semibold hover:text-emerald-800 text-[11px] shrink-0 hover:underline cursor-pointer",
-                children: "Sfoglia volantino →"
+                title: offer.pageNumber ? `Apri volantino a pagina ${offer.pageNumber}` : "Apri volantino promozionale",
+                children: offer.pageNumber ? `Pag. ${offer.pageNumber} →` : "Volantino →"
               }
             )
           ] })
@@ -20646,12 +20648,15 @@ function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) 
 
 function OfferGrid({
   offers = [],
+  totalOffers = 0,
+  hasMoreOffers = false,
+  loadingMore = false,
+  onLoadMore,
   loading = false,
   onOpenFlyer,
   onOpenCreaFood,
   onAddToShoppingList,
-  onResetFilters,
-  allFlyers = []
+  onResetFilters
 }) {
   if (loading) {
     return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-6", children: Array.from({ length: 8 }).map((_, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl border border-slate-200 p-4 h-80 animate-pulse flex flex-col gap-3", children: [
@@ -20677,21 +20682,48 @@ function OfferGrid({
       )
     ] });
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-4", children: offers.map((offer) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-    OfferCard,
-    {
-      offer,
-      onOpenCreaFood,
-      onAddToShoppingList,
-      onOpenFlyer: (item) => {
-        if (onOpenFlyer) {
-          const matchedFlyer = allFlyers.find((f) => f.storeId === item.storeId) || allFlyers[0] || item;
-          onOpenFlyer(matchedFlyer);
+  const effectiveTotal = totalOffers > 0 ? totalOffers : offers.length;
+  const remainingCount = Math.max(0, effectiveTotal - offers.length);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between text-xs text-slate-500 px-0.5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+      "Visualizzate ",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-slate-800", children: offers.length }),
+      " di",
+      " ",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-slate-800", children: effectiveTotal }),
+      " offerte attive"
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-1", children: offers.map((offer) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      OfferCard,
+      {
+        offer,
+        onOpenCreaFood,
+        onAddToShoppingList,
+        onOpenFlyer: (item) => {
+          if (onOpenFlyer) {
+            onOpenFlyer(item);
+          }
         }
+      },
+      offer.id
+    )) }),
+    hasMoreOffers && onLoadMore && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-2 pb-4 flex flex-col items-center gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "button",
+      {
+        type: "button",
+        onClick: onLoadMore,
+        disabled: loadingMore,
+        className: "px-6 py-2.5 bg-slate-900 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-colors disabled:opacity-60 cursor-pointer inline-flex items-center gap-2",
+        children: loadingMore ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Caricamento offerte..." }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+          "Mostra altre offerte (+",
+          Math.min(60, remainingCount),
+          " di ",
+          remainingCount,
+          " rimanenti)"
+        ] })
       }
-    },
-    offer.id
-  )) });
+    ) })
+  ] });
 }
 
 function EmptyState({
@@ -20788,9 +20820,10 @@ class FlyerModalCoordinator {
     this.scrollSnapAlign = 'center';
   }
 
-  open() {
+  open(initialPage = 1) {
     this.isOpen = true;
-    this.currentPage = 1;
+    const parsed = parseInt(initialPage, 10);
+    this.currentPage = !isNaN(parsed) && parsed >= 1 && parsed <= this.totalPages ? parsed : 1;
     return this.getState();
   }
 
@@ -20899,7 +20932,9 @@ function FlyerCarousel({
   zoomLevel = 1,
   onZoomToggle,
   flyerTitle = "Volantino Rapallo",
-  storeName = "Supermercato"
+  storeName = "Supermercato",
+  flyerOffers = [],
+  highlightOfferId = null
 }) {
   const scrollerRef = reactExports.useRef(null);
   const [isSwiping, setIsSwiping] = reactExports.useState(false);
@@ -20982,6 +21017,8 @@ function FlyerCarousel({
         const pageNum = idx + 1;
         const isCurrent = pageNum === currentPage;
         const isFailed = Boolean(failedPages[pageNum]);
+        const isSingleItemCrop = typeof url === "string" && url.includes("/flyergibs/");
+        const offersOnThisPage = Array.isArray(flyerOffers) ? flyerOffers.filter((o) => Number(o.pageNumber) === pageNum) : [];
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -20989,7 +21026,67 @@ function FlyerCarousel({
             "data-scroll-snap-align": "center",
             style: { scrollSnapAlign: "center", scrollSnapStop: "always" },
             className: "flex-shrink-0 w-full h-full snap-center scroll-snap-align-center flex items-center justify-center p-2 sm:p-4 overflow-hidden relative",
-            children: isFailed ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            children: isSingleItemCrop && offersOnThisPage.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full max-w-3xl h-full max-h-[75dvh] bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden select-text", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-4 py-2.5 bg-emerald-900 text-white flex items-center justify-between gap-2 shrink-0", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider bg-emerald-700 px-1.5 py-0.5 rounded mr-2", children: storeName }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs sm:text-sm font-bold truncate", children: [
+                    flyerTitle,
+                    " — Pagina ",
+                    pageNum
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-semibold text-emerald-200 shrink-0", children: [
+                  offersOnThisPage.length,
+                  " ",
+                  offersOnThisPage.length === 1 ? "offerta estratta" : "offerte estratte"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50", children: offersOnThisPage.map((item) => {
+                const isHighlighted = highlightOfferId && String(item.id) === String(highlightOfferId);
+                const priceVal = Number(item.promoPrice ?? item.price ?? 0);
+                return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: `bg-white rounded-lg border p-2.5 flex flex-col gap-1.5 shadow-xs ${isHighlighted ? "border-emerald-600 ring-2 ring-emerald-500/50 bg-emerald-50/30" : "border-slate-200"}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "aspect-square w-full bg-slate-50 rounded flex items-center justify-center p-1.5 overflow-hidden relative", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "img",
+                          {
+                            src: item.imageUrl || url,
+                            alt: item.title,
+                            loading: "lazy",
+                            className: "max-h-full max-w-full object-contain"
+                          }
+                        ),
+                        item.discountPercentage > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "absolute top-1 right-1 bg-rose-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full", children: [
+                          "-",
+                          item.discountPercentage,
+                          "%"
+                        ] })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-semibold text-slate-900 line-clamp-2 leading-tight", children: item.title }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-auto flex items-baseline gap-1.5", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm font-extrabold text-emerald-700", children: [
+                          "€ ",
+                          priceVal.toFixed(2).replace(".", ",")
+                        ] }),
+                        item.originalPrice > priceVal && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-slate-400 line-through", children: [
+                          "€ ",
+                          Number(item.originalPrice).toFixed(2).replace(".", ",")
+                        ] })
+                      ] }),
+                      item.formattedNormalizedPrice && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-slate-500 font-medium truncate", children: [
+                        "⚖️ ",
+                        item.formattedNormalizedPrice
+                      ] })
+                    ]
+                  },
+                  item.id
+                );
+              }) })
+            ] }) : isFailed ? /* @__PURE__ */ jsxRuntimeExports.jsx(
               FlyerFallbackCard,
               {
                 storeName,
@@ -21037,15 +21134,46 @@ function FlyerModal({ flyer, isOpen, onClose }) {
   const dialogRef = reactExports.useRef(null);
   const [currentPage, setCurrentPage] = reactExports.useState(1);
   const [zoomLevel, setZoomLevel] = reactExports.useState(1);
+  const [flyerOffers, setFlyerOffers] = reactExports.useState([]);
   const coordinator = reactExports.useMemo(() => {
     return new FlyerModalCoordinator(flyer);
   }, [flyer]);
   reactExports.useEffect(() => {
+    if (!isOpen || !flyer) return;
+    let cancelled = false;
+    const storeParam = flyer.storeId ? `storeId=${encodeURIComponent(flyer.storeId)}&` : "";
+    Promise.all([
+      fetch(`/api/offers?${storeParam}page=1&limit=100`).then((r) => r.ok ? r.json() : null).catch(() => null),
+      fetch(`/api/offers?${storeParam}page=2&limit=100`).then((r) => r.ok ? r.json() : null).catch(() => null),
+      fetch(`/api/offers?${storeParam}page=3&limit=100`).then((r) => r.ok ? r.json() : null).catch(() => null)
+    ]).then((responses) => {
+      if (cancelled) return;
+      const all = [];
+      const seen = /* @__PURE__ */ new Set();
+      for (const res of responses) {
+        if (res && Array.isArray(res.offers)) {
+          for (const o of res.offers) {
+            if (!seen.has(o.id)) {
+              seen.add(o.id);
+              all.push(o);
+            }
+          }
+        }
+      }
+      const matchingFlyer = flyer.id ? all.filter((o) => String(o.flyerId) === String(flyer.id)) : all;
+      setFlyerOffers(matchingFlyer.length > 0 ? matchingFlyer : all);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, flyer]);
+  reactExports.useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (isOpen) {
-      coordinator.open();
-      setCurrentPage(1);
+      const startPage = flyer?.initialPage || 1;
+      const nextState = coordinator.open(startPage);
+      setCurrentPage(nextState.currentPage);
       setZoomLevel(1);
       if (!dialog.open) {
         dialog.showModal();
@@ -21056,7 +21184,7 @@ function FlyerModal({ flyer, isOpen, onClose }) {
         dialog.close();
       }
     }
-  }, [isOpen, coordinator]);
+  }, [isOpen, coordinator, flyer?.initialPage]);
   const totalPages = coordinator.totalPages;
   const pageIndicator = `Pagina ${currentPage} di ${totalPages}`;
   const hasNext = currentPage < totalPages;
@@ -21141,7 +21269,7 @@ function FlyerModal({ flyer, isOpen, onClose }) {
       className: "fixed inset-0 m-auto h-[90dvh] max-h-[100dvh] w-full max-w-4xl rounded-2xl bg-slate-900 text-white shadow-2xl flex flex-col overflow-hidden border border-slate-700 p-0 backdrop:bg-slate-950/80 backdrop:backdrop-blur-sm overscroll-contain",
       style: { overscrollBehavior: "contain" },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex items-center justify-between px-4 py-3 bg-slate-800/90 border-b border-slate-700/80 z-20 shrink-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "flex items-center justify-between px-4 py-3 bg-slate-800/90 border-b border-slate-700/80 z-20 shrink-0 gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2.5 min-w-0 pr-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold tracking-wide uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0", children: flyer.storeName || "Rapallo" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -21163,6 +21291,17 @@ function FlyerModal({ flyer, isOpen, onClose }) {
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 sm:gap-2 shrink-0", children: [
+            flyer.pdfUrl && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "a",
+              {
+                href: flyer.pdfUrl,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                className: "hidden md:inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-700/70 hover:bg-emerald-700 text-slate-100 border border-slate-600 transition-colors",
+                title: "Apri scansione originale esterna in una nuova scheda",
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Fonte ↗" })
+              }
+            ),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center bg-slate-700/50 rounded-lg p-0.5 border border-slate-600/50", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
@@ -21216,7 +21355,9 @@ function FlyerModal({ flyer, isOpen, onClose }) {
               zoomLevel,
               onZoomToggle: () => setZoomLevel((z) => z > 1 ? 1 : 2),
               flyerTitle: flyer.title,
-              storeName: flyer.storeName
+              storeName: flyer.storeName,
+              flyerOffers,
+              highlightOfferId: flyer.highlightOfferId || null
             }
           ),
           hasPrev && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -21254,7 +21395,9 @@ function FlyerModal({ flyer, isOpen, onClose }) {
               children: pages.map((url, idx) => {
                 const pageNum = idx + 1;
                 const isActive = pageNum === currentPage;
-                return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                const isCropThumb = typeof url === "string" && url.includes("/flyergibs/");
+                const pageItemCount = flyerOffers.filter((o) => Number(o.pageNumber) === pageNum).length;
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
                   {
                     type: "button",
@@ -21263,7 +21406,16 @@ function FlyerModal({ flyer, isOpen, onClose }) {
                     "aria-label": `Vai a pagina ${pageNum}`,
                     onClick: () => handleGoToPage(pageNum),
                     className: `relative shrink-0 w-11 h-14 rounded overflow-hidden border transition-all text-xs font-semibold cursor-pointer ${isActive ? "border-emerald-500 ring-2 ring-emerald-500/50 scale-105 z-10 shadow-md" : "border-slate-700 opacity-60 hover:opacity-100 hover:border-slate-500"}`,
-                    children: [
+                    children: isCropThumb ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-full bg-slate-800 flex flex-col items-center justify-center text-[10px] text-slate-300 leading-tight px-0.5", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-bold text-emerald-400", children: [
+                        "P.",
+                        pageNum
+                      ] }),
+                      pageItemCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[8px] text-slate-400", children: [
+                        pageItemCount,
+                        " art."
+                      ] })
+                    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx(
                         "img",
                         {
@@ -21279,18 +21431,12 @@ function FlyerModal({ flyer, isOpen, onClose }) {
                           }
                         }
                       ),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                        "div",
-                        {
-                          className: "hidden absolute inset-0 bg-slate-800 items-center justify-center text-[10px] text-slate-400",
-                          children: [
-                            "P.",
-                            pageNum
-                          ]
-                        }
-                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden absolute inset-0 bg-slate-800 items-center justify-center text-[10px] text-slate-400", children: [
+                        "P.",
+                        pageNum
+                      ] }),
                       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "absolute bottom-0 right-0 bg-slate-950/80 px-1 py-0.5 text-[9px] font-mono text-slate-200 rounded-tl", children: pageNum })
-                    ]
+                    ] })
                   },
                   `thumb-${pageNum}`
                 );
@@ -25708,6 +25854,8 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
   ] });
 }
 
+const DEFAULT_PAGE_SIZE = 60;
+
 function useSupermarketData(filterOptions = {}) {
   const [stores, setStores] = reactExports.useState([]);
   const [offers, setOffers] = reactExports.useState([]);
@@ -25718,14 +25866,18 @@ function useSupermarketData(filterOptions = {}) {
     isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
     dataSource: 'live',
     lastSyncTimestamp: new Date().toISOString(),
-    storeCount: 5
+    storeCount: 14
   });
 
   const [loading, setLoading] = reactExports.useState(true);
+  const [loadingMore, setLoadingMore] = reactExports.useState(false);
   const [error, setError] = reactExports.useState(null);
   const [totalOffers, setTotalOffers] = reactExports.useState(0);
+  const [currentPage, setCurrentPage] = reactExports.useState(1);
+  const [totalPages, setTotalPages] = reactExports.useState(1);
 
   const abortControllerRef = reactExports.useRef(null);
+  const pageSize = Math.min(100, Math.max(1, Number(filterOptions.limit) || DEFAULT_PAGE_SIZE));
 
   // 1. Fetch Store Directory & System Status
   const fetchMetadata = reactExports.useCallback(async () => {
@@ -25749,7 +25901,7 @@ function useSupermarketData(filterOptions = {}) {
     }
   }, []);
 
-  // 2. Fetch Flyers (optional filter by storeId)
+  // 2. Fetch Flyers (always load full flyer list or store-specific list)
   const fetchFlyers = reactExports.useCallback(async (storeId) => {
     try {
       const url = storeId ? `/api/flyers?storeId=${encodeURIComponent(storeId)}` : '/api/flyers';
@@ -25763,17 +25915,7 @@ function useSupermarketData(filterOptions = {}) {
     }
   }, []);
 
-  // 3. Fetch Offers with filtering, sorting, pagination
-  const fetchOffers = reactExports.useCallback(async () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    setLoading(true);
-    setError(null);
-
+  const buildOfferQueryParams = reactExports.useCallback((pageToLoad = 1) => {
     const queryParams = new URLSearchParams();
     if (filterOptions.storeId) queryParams.set('storeId', filterOptions.storeId);
     if (filterOptions.domain) queryParams.set('domain', filterOptions.domain);
@@ -25783,8 +25925,35 @@ function useSupermarketData(filterOptions = {}) {
     if (filterOptions.category) queryParams.set('category', filterOptions.category);
     if (filterOptions.minDiscount) queryParams.set('minDiscount', filterOptions.minDiscount);
     if (filterOptions.sortBy) queryParams.set('sortBy', filterOptions.sortBy);
-    if (filterOptions.page) queryParams.set('page', filterOptions.page);
-    queryParams.set('limit', filterOptions.limit || 1000);
+    queryParams.set('page', String(pageToLoad));
+    queryParams.set('limit', String(pageSize));
+    return queryParams;
+  }, [
+    filterOptions.storeId,
+    filterOptions.domain,
+    filterOptions.profileId,
+    filterOptions.hideIncompatible,
+    filterOptions.q,
+    filterOptions.category,
+    filterOptions.minDiscount,
+    filterOptions.sortBy,
+    pageSize
+  ]);
+
+  // 3. Fetch First Page of Offers on filter change
+  const fetchOffers = reactExports.useCallback(async () => {
+    if (filterOptions.ready === false) return;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setLoading(true);
+    setError(null);
+
+    const queryParams = buildOfferQueryParams(1);
 
     try {
       const res = await fetch(`/api/offers?${queryParams.toString()}`, {
@@ -25798,6 +25967,8 @@ function useSupermarketData(filterOptions = {}) {
       const data = await res.json();
       setOffers(data.offers || []);
       setTotalOffers(data.totalOffers || 0);
+      setCurrentPage(data.page || 1);
+      setTotalPages(data.totalPages || 0);
       if (data.categories) setCategories(data.categories);
       if (data.facets) setFacets(data.facets);
     } catch (err) {
@@ -25806,20 +25977,45 @@ function useSupermarketData(filterOptions = {}) {
         setStatus((prev) => ({ ...prev, isOnline: false }));
       }
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
     }
-  }, [
-    filterOptions.storeId,
-    filterOptions.domain,
-    filterOptions.profileId,
-    filterOptions.hideIncompatible,
-    filterOptions.q,
-    filterOptions.category,
-    filterOptions.minDiscount,
-    filterOptions.sortBy,
-    filterOptions.page,
-    filterOptions.limit
-  ]);
+  }, [buildOfferQueryParams, filterOptions.ready]);
+
+  // 4. Load next page and append without losing scroll position
+  const loadMoreOffers = reactExports.useCallback(async () => {
+    if (loading || loadingMore || currentPage >= totalPages) return;
+    const nextPage = currentPage + 1;
+    setLoadingMore(true);
+    try {
+      const queryParams = buildOfferQueryParams(nextPage);
+      const res = await fetch(`/api/offers?${queryParams.toString()}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: Failed to load more offers`);
+      }
+      const data = await res.json();
+      const incoming = Array.isArray(data.offers) ? data.offers : [];
+      setOffers((prev) => {
+        const seen = new Set(prev.map((o) => o.id));
+        const merged = [...prev];
+        for (const item of incoming) {
+          if (!seen.has(item.id)) {
+            seen.add(item.id);
+            merged.push(item);
+          }
+        }
+        return merged;
+      });
+      setCurrentPage(data.page || nextPage);
+      setTotalPages(data.totalPages || totalPages);
+      setTotalOffers(data.totalOffers ?? totalOffers);
+    } catch (err) {
+      console.warn('[useSupermarketData] Load more warning:', err.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loading, loadingMore, currentPage, totalPages, buildOfferQueryParams, totalOffers]);
 
   // Initial metadata load
   reactExports.useEffect(() => {
@@ -25879,6 +26075,8 @@ function useSupermarketData(filterOptions = {}) {
     }
   }, [fetchMetadata, fetchOffers, fetchFlyers, filterOptions.storeId]);
 
+  const hasMoreOffers = offers.length < totalOffers && currentPage < totalPages;
+
   return {
     stores,
     offers,
@@ -25888,8 +26086,14 @@ function useSupermarketData(filterOptions = {}) {
     status,
     setStatus,
     loading,
+    loadingMore,
     error,
     totalOffers,
+    currentPage,
+    totalPages,
+    pageSize,
+    hasMoreOffers,
+    loadMoreOffers,
     syncData,
     refetchOffers: fetchOffers
   };
@@ -25903,6 +26107,22 @@ const DOMAIN_PILLS = [
   { id: "personal_care", label: "Igiene Persona", icon: "🧴" },
   { id: "pet_care", label: "Animali (Pet)", icon: "🐾" }
 ];
+const DOMAIN_ALLOWED_CATEGORIES = {
+  food_human: [
+    "Frutta e Verdura",
+    "Carne e Pesce",
+    "Latticini e Formaggi",
+    "Pane e Pasticceria",
+    "Dispensa e Pasta",
+    "Colazione e Dolci",
+    "Acqua e Bevande",
+    "Surgelati"
+  ],
+  home_cleaning: ["Cura Casa e Bucato"],
+  kitchen_cookware: ["Cura Casa e Bucato"],
+  personal_care: ["Cura Persona e Igiene"],
+  pet_care: ["Cura Casa e Bucato"]
+};
 function App() {
   const initialParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
   const initialRoom = initialParams.get("room") || "room-1-negozi";
@@ -25920,6 +26140,7 @@ function App() {
   const [hideIncompatible, setHideIncompatible] = reactExports.useState(false);
   const [profiles, setProfiles] = reactExports.useState([]);
   const [activeProfileId, setActiveProfileId] = reactExports.useState("dany");
+  const [profilesReady, setProfilesReady] = reactExports.useState(false);
   const [isCounterModalOpen, setIsCounterModalOpen] = reactExports.useState(false);
   const [localShops, setLocalShops] = reactExports.useState([]);
   const [selectedCreaFoodId, setSelectedCreaFoodId] = reactExports.useState(null);
@@ -25966,7 +26187,7 @@ function App() {
         if (data.activeProfileId) setActiveProfileId(data.activeProfileId);
       }
     }).catch(() => {
-    });
+    }).finally(() => setProfilesReady(true));
     fetch("/api/stores?includeLocalShops=true").then((r) => r.ok ? r.json() : null).then((data) => {
       if (data && Array.isArray(data.stores)) {
         setLocalShops(data.stores.filter((s) => s.dataChannel === "receipt_observed"));
@@ -25992,10 +26213,14 @@ function App() {
     facets,
     status,
     loading,
+    loadingMore,
     totalOffers,
+    hasMoreOffers,
+    loadMoreOffers,
     syncData,
     refetchOffers
   } = useSupermarketData({
+    ready: profilesReady,
     storeId: selectedStoreId,
     domain: selectedDomain,
     profileId: activeProfileId,
@@ -26040,6 +26265,19 @@ function App() {
     setSelectedDomain(null);
     setHideIncompatible(false);
   }, []);
+  const handleSelectDomain = reactExports.useCallback((nextDomain) => {
+    setSelectedDomain(nextDomain);
+    if (nextDomain && selectedCategory) {
+      const allowed = DOMAIN_ALLOWED_CATEGORIES[nextDomain] || [];
+      if (!allowed.includes(selectedCategory)) {
+        setSelectedCategory(null);
+      }
+    }
+  }, [selectedCategory]);
+  const visibleCategoriesForDomain = reactExports.useMemo(() => {
+    if (!selectedDomain) return void 0;
+    return DOMAIN_ALLOWED_CATEGORIES[selectedDomain] || void 0;
+  }, [selectedDomain]);
   const handleToggleCategory = reactExports.useCallback((cat) => {
     setSelectedCategory((prev) => prev === cat ? null : cat);
   }, []);
@@ -26195,7 +26433,7 @@ function App() {
             "button",
             {
               type: "button",
-              onClick: () => setSelectedDomain(isSelected ? null : dom.id),
+              onClick: () => handleSelectDomain(isSelected ? null : dom.id),
               className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${isSelected ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40"}`,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: dom.icon }),
@@ -26212,13 +26450,16 @@ function App() {
               /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-900", children: activeStore.name }),
               activeStore.isRegionalServing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200", children: "Servizio Rapallo & Tigullio" }),
               activeStore.loyaltyCard && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-800 border border-amber-200", children: [
-                "💳 ",
-                activeStore.loyaltyCard
+                "💳",
+                " ",
+                typeof activeStore.loyaltyCard === "string" ? activeStore.loyaltyCard : activeStore.loyaltyCard?.name || "Carta Fedeltà",
+                typeof activeStore.loyaltyCard === "object" && activeStore.loyaltyCard?.requiredForPromo ? " (richiesta per promo)" : ""
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500 mt-0.5 truncate max-w-md", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500 mt-0.5 truncate max-w-xl", children: [
               activeStore.address,
-              activeStore.logistics ? ` • 🚶 ${activeStore.logistics.walkMinutesFromCenter} min a piedi` : ""
+              activeStore.logistics?.distanceKmFromHarbor != null ? ` • 📍 ${activeStore.logistics.distanceKmFromHarbor} km dal Porto` : "",
+              activeStore.logistics?.avgVisitMinutes != null ? ` • ⏱️ ~${activeStore.logistics.avgVisitMinutes} min visita` : ""
             ] })
           ] }),
           currentStoreFlyer && /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -26271,6 +26512,7 @@ function App() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("section", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           CategoryFilters,
           {
+            categories: visibleCategoriesForDomain,
             selectedCategory,
             onToggleCategory: handleToggleCategory,
             categoryCounts: facets?.categories || {},
@@ -26296,16 +26538,27 @@ function App() {
           OfferGrid,
           {
             offers,
+            totalOffers,
+            hasMoreOffers,
+            loadingMore,
+            onLoadMore: loadMoreOffers,
             loading,
-            allFlyers: flyers,
             onAddToShoppingList: handleAddToShoppingList,
             onOpenCreaFood: (creaId) => {
               setSelectedCreaFoodId(creaId);
               setActiveRoom("room-2-crea");
             },
             onOpenFlyer: (item) => {
-              const storeFlyer = flyers.find((f) => f.storeId === item?.storeId) || flyers[0] || item;
-              if (storeFlyer) setActiveFlyer(storeFlyer);
+              const exactFlyer = item?.flyerId && flyers.find((f) => String(f.id) === String(item.flyerId)) || flyers.find(
+                (f) => f.storeId === item?.storeId || Array.isArray(f.storeIds) && f.storeIds.includes(item?.storeId)
+              ) || flyers[0] || null;
+              if (exactFlyer) {
+                setActiveFlyer({
+                  ...exactFlyer,
+                  initialPage: Number(item?.pageNumber) >= 1 ? Number(item.pageNumber) : 1,
+                  highlightOfferId: item?.id || null
+                });
+              }
             },
             onResetFilters: handleClearFilters
           }
@@ -26362,7 +26615,7 @@ function App() {
       KitchenCareView,
       {
         onNavigateToStoreDomain: (domainId) => {
-          setSelectedDomain(domainId);
+          handleSelectDomain(domainId);
           setSelectedStoreId(null);
           setActiveRoom("room-1-negozi");
         }
@@ -26431,4 +26684,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-7KmgXA_0.js.map
+//# sourceMappingURL=index-DsP2OHpW.js.map

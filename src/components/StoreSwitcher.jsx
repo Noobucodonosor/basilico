@@ -16,7 +16,8 @@ export function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
       id: s.id,
       name: s.brand || s.name,
       fullName: s.name,
-      badgeText: s.activeOfferCount > 0 ? `${s.activeOfferCount} offerte` : null,
+      badgeText: s.activeOfferCount > 0 ? `${s.activeOfferCount} offerte` : '0',
+      hasActiveOffers: s.activeOfferCount > 0,
       isRegionalServing: Boolean(s.isRegionalServing)
     }))
   ];
@@ -67,14 +68,20 @@ export function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all shrink-0 select-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 cursor-pointer ${
                   isSelected
                     ? 'bg-emerald-700 text-white shadow-sm'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    : tab.hasActiveOffers === false
+                      ? 'bg-slate-50 text-slate-400 border border-slate-200/70 hover:bg-slate-100'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
                 <span>{tab.name}</span>
                 {tab.badgeText && (
                   <span
                     className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                      isSelected ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-200 text-slate-600'
+                      isSelected
+                        ? 'bg-emerald-800 text-emerald-100'
+                        : tab.hasActiveOffers === false
+                          ? 'bg-slate-100 text-slate-400'
+                          : 'bg-slate-200 text-slate-600'
                     }`}
                   >
                     {tab.badgeText}

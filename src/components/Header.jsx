@@ -57,7 +57,7 @@ export function Header({
                   id="active-profile-select"
                   value={activeProfileId}
                   onChange={(e) => onChangeProfile(e.target.value)}
-                  className="text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[140px] sm:max-w-[210px] truncate"
+                  className="text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer max-w-[155px] sm:max-w-[280px] truncate"
                   title="Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)"
                 >
                   {profiles.map((p) => (

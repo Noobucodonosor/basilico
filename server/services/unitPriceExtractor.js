@@ -43,7 +43,8 @@ export function extractPackMetrics(item = {}) {
   let isDirectPerLiter = false;
 
   // Check explicit "all'etto / l'etto / €/etto / per 100g"
-  if (/\b(all['’\s]?etto|l['’\s]?etto|al\s*etto|€\s*\/\s*etto|euro\s*\/\s*etto|per\s*100\s*g|\/\s*100\s*g|al\s*100\s*g)\b/i.test(text)) {
+  // NOTE: require real apostrophe in l['’]etto so the Italian word "letto" (bedding) never matches!
+  if (/\b(all['’\s]?etto|l['’]etto|al\s+etto|€\s*\/\s*etto|euro\s*\/\s*etto|per\s*100\s*g|\/\s*100\s*g|al\s*100\s*g)\b/i.test(text)) {
     isPerEtto = true;
     packWeightGrams = 100;
   } else if (/\b(al\s*kg|€\s*\/\s*kg|euro\s*\/\s*kg|prezzo\s*al\s*kg)\b/i.test(text)) {
@@ -240,12 +241,14 @@ export function normalizeUnitPricing(item = {}) {
   let pricePerWash = null;
   let formattedNormalizedPrice = null;
 
+  const isFoodOrPetDomain = !item.domain || item.domain === 'food_human' || item.domain === 'pet_care';
+
   if (promoPrice > 0) {
-    if (metrics.isPerEtto) {
+    if (metrics.isPerEtto && isFoodOrPetDomain) {
       pricePerKg = Number((promoPrice * 10).toFixed(2));
       ediblePricePerKg = pricePerKg;
       formattedNormalizedPrice = `${pricePerKg.toFixed(2).replace('.', ',')} €/kg (da ${promoPrice.toFixed(2).replace('.', ',')} €/etto)`;
-    } else if (metrics.packWeightGrams && metrics.packWeightGrams > 0) {
+    } else if (metrics.packWeightGrams && metrics.packWeightGrams > 0 && isFoodOrPetDomain) {
       pricePerKg = Number(((promoPrice / metrics.packWeightGrams) * 1000).toFixed(2));
       const effectiveDrained = metrics.drainedWeightGrams || metrics.packWeightGrams;
       ediblePricePerKg = Number(((promoPrice / effectiveDrained) * 1000).toFixed(2));

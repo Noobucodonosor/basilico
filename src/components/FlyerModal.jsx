@@ -5,17 +5,51 @@ import FlyerCarousel from './FlyerCarousel.jsx';
 /**
  * FlyerModal Component
  * Native HTML5 <dialog> with top-layer promotion, scroll containment,
- * keyboard navigation, and thumbnail preview bar.
+ * keyboard navigation, product-per-page sheet fallback for GIB crops, and thumbnail preview bar.
  */
 export function FlyerModal({ flyer, isOpen, onClose }) {
   const dialogRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [flyerOffers, setFlyerOffers] = useState([]);
 
   // Initialize or update coordinator instance
   const coordinator = useMemo(() => {
     return new FlyerModalCoordinator(flyer);
   }, [flyer]);
+
+  // Load all active offers belonging to this store/flyer so pages without full-bleed scans can display real multi-product page sheets
+  useEffect(() => {
+    if (!isOpen || !flyer) return;
+    let cancelled = false;
+    const storeParam = flyer.storeId ? `storeId=${encodeURIComponent(flyer.storeId)}&` : '';
+    Promise.all([
+      fetch(`/api/offers?${storeParam}page=1&limit=100`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch(`/api/offers?${storeParam}page=2&limit=100`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch(`/api/offers?${storeParam}page=3&limit=100`).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+    ]).then((responses) => {
+      if (cancelled) return;
+      const all = [];
+      const seen = new Set();
+      for (const res of responses) {
+        if (res && Array.isArray(res.offers)) {
+          for (const o of res.offers) {
+            if (!seen.has(o.id)) {
+              seen.add(o.id);
+              all.push(o);
+            }
+          }
+        }
+      }
+      const matchingFlyer = flyer.id
+        ? all.filter((o) => String(o.flyerId) === String(flyer.id))
+        : all;
+      setFlyerOffers(matchingFlyer.length > 0 ? matchingFlyer : all);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, flyer]);
 
   // Sync open/close lifecycle with native <dialog>
   useEffect(() => {
@@ -23,8 +57,9 @@ export function FlyerModal({ flyer, isOpen, onClose }) {
     if (!dialog) return;
 
     if (isOpen) {
-      coordinator.open();
-      setCurrentPage(1);
+      const startPage = flyer?.initialPage || 1;
+      const nextState = coordinator.open(startPage);
+      setCurrentPage(nextState.currentPage);
       setZoomLevel(1);
       if (!dialog.open) {
         dialog.showModal();
@@ -35,7 +70,7 @@ export function FlyerModal({ flyer, isOpen, onClose }) {
         dialog.close();
       }
     }
-  }, [isOpen, coordinator]);
+  }, [isOpen, coordinator, flyer?.initialPage]);
 
   const totalPages = coordinator.totalPages;
   const pageIndicator = `Pagina ${currentPage} di ${totalPages}`;
@@ -148,7 +183,7 @@ export function FlyerModal({ flyer, isOpen, onClose }) {
       style={{ overscrollBehavior: 'contain' }}
     >
       {/* Top Controls Header */}
-      <header className="flex items-center justify-between px-4 py-3 bg-slate-800/90 border-b border-slate-700/80 z-20 shrink-0">
+      <header className="flex items-center justify-between px-4 py-3 bg-slate-800/90 border-b border-slate-700/80 z-20 shrink-0 gap-2">
         <div className="flex items-center gap-2.5 min-w-0 pr-2">
           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold tracking-wide uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
             {flyer.storeName || 'Rapallo'}
@@ -170,8 +205,20 @@ export function FlyerModal({ flyer, isOpen, onClose }) {
           {pageIndicator}
         </div>
 
-        {/* Right: Zoom controls and Close Button */}
+        {/* Right: External Flyer Link, Zoom controls and Close Button */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {flyer.pdfUrl && (
+            <a
+              href={flyer.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-700/70 hover:bg-emerald-700 text-slate-100 border border-slate-600 transition-colors"
+              title="Apri scansione originale esterna in una nuova scheda"
+            >
+              <span>Fonte ↗</span>
+            </a>
+          )}
+
           <div className="flex items-center bg-slate-700/50 rounded-lg p-0.5 border border-slate-600/50">
             <button
               type="button"
@@ -226,6 +273,8 @@ export function FlyerModal({ flyer, isOpen, onClose }) {
           onZoomToggle={() => setZoomLevel((z) => (z > 1 ? 1 : 2))}
           flyerTitle={flyer.title}
           storeName={flyer.storeName}
+          flyerOffers={flyerOffers}
+          highlightOfferId={flyer.highlightOfferId || null}
         />
 
         {/* Floating Desktop Next / Prev Buttons */}
@@ -273,6 +322,8 @@ export function FlyerModal({ flyer, isOpen, onClose }) {
             {pages.map((url, idx) => {
               const pageNum = idx + 1;
               const isActive = pageNum === currentPage;
+              const isCropThumb = typeof url === 'string' && url.includes('/flyergibs/');
+              const pageItemCount = flyerOffers.filter((o) => Number(o.pageNumber) === pageNum).length;
               return (
                 <button
                   key={`thumb-${pageNum}`}
@@ -287,26 +338,35 @@ export function FlyerModal({ flyer, isOpen, onClose }) {
                       : 'border-slate-700 opacity-60 hover:opacity-100 hover:border-slate-500'
                   }`}
                 >
-                  <img
-                    src={url}
-                    alt={`Anteprima pagina ${pageNum}`}
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      if (e.currentTarget.nextElementSibling) {
-                        e.currentTarget.nextElementSibling.style.display = 'flex';
-                      }
-                    }}
-                  />
-                  <div
-                    className="hidden absolute inset-0 bg-slate-800 items-center justify-center text-[10px] text-slate-400"
-                  >
-                    P.{pageNum}
-                  </div>
-                  <span className="absolute bottom-0 right-0 bg-slate-950/80 px-1 py-0.5 text-[9px] font-mono text-slate-200 rounded-tl">
-                    {pageNum}
-                  </span>
+                  {isCropThumb ? (
+                    <div className="w-full h-full bg-slate-800 flex flex-col items-center justify-center text-[10px] text-slate-300 leading-tight px-0.5">
+                      <span className="font-bold text-emerald-400">P.{pageNum}</span>
+                      {pageItemCount > 0 && (
+                        <span className="text-[8px] text-slate-400">{pageItemCount} art.</span>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <img
+                        src={url}
+                        alt={`Anteprima pagina ${pageNum}`}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          if (e.currentTarget.nextElementSibling) {
+                            e.currentTarget.nextElementSibling.style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <div className="hidden absolute inset-0 bg-slate-800 items-center justify-center text-[10px] text-slate-400">
+                        P.{pageNum}
+                      </div>
+                      <span className="absolute bottom-0 right-0 bg-slate-950/80 px-1 py-0.5 text-[9px] font-mono text-slate-200 rounded-tl">
+                        {pageNum}
+                      </span>
+                    </>
+                  )}
                 </button>
               );
             })}

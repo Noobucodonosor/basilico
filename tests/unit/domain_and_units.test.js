@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   classifyProductDomain,
+  classifyCanonicalCategory,
   isHumanFoodOffer,
   VALID_PRODUCT_DOMAINS
 } from '../../server/services/domainClassifier.js';
@@ -21,7 +22,8 @@ import {
   normalizeUnitPricing
 } from '../../server/services/unitPriceExtractor.js';
 import { evaluateQualityLens } from '../../server/services/qualityLensService.js';
-import { offerService } from '../../server/services/offerService.js';
+import { offerService, filterActiveAndDeduplicateOffers } from '../../server/services/offerService.js';
+import { FlyerModalCoordinator } from '../../src/components/FlyerModalCoordinator.js';
 import { loadLocalObservedShops } from '../../server/routes/stores.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -188,6 +190,82 @@ describe('TASK-M1-01: Multi-Domain Taxonomy, Edible €/kg Normalizer & Quality 
       assert.ok(resFood.offers.length > 0);
       assert.ok(resFood.offers.every((o) => o.domain === 'food_human'));
       assert.ok(resFood.facets.domains && typeof resFood.facets.domains.food_human === 'number');
+    });
+  });
+
+  describe('TASK-REAL-06: Room 1 Lexical Taxonomy, Unit Price Guardrails, Quality Lens & Flyer Page Jump', () => {
+    it('prevents substring false positives ("sCREMAto", "verGINe", "MELEgatti", "-te", "Miele" dishwasher, "letto")', () => {
+      // Milk, coffee, spreads & pumpkin soup must NEVER leak into personal_care
+      const milk = { title: 'Granarolo Latte Parzialmente Scremato 1L', category: 'Cura Persona e Igiene', chainId: 'basko' };
+      assert.equal(classifyProductDomain(milk), 'food_human');
+      assert.equal(classifyCanonicalCategory(milk), 'Latticini e Formaggi');
+
+      const coffee = { title: 'Lavazza Caffè Crema e Gusto 2x250g', category: 'Cura Persona e Igiene', chainId: 'coop' };
+      assert.equal(classifyProductDomain(coffee), 'food_human');
+      assert.equal(classifyCanonicalCategory(coffee), 'Colazione e Dolci');
+
+      const zucca = { title: 'Zerbinati Crema Zucca Fresca', category: 'Cura Persona e Igiene', chainId: 'gulliver' };
+      assert.equal(classifyProductDomain(zucca), 'food_human');
+      assert.equal(classifyCanonicalCategory(zucca), 'Frutta e Verdura');
+
+      // Olive oil must NEVER match "gin" -> Acqua e Bevande; Prosecco/Spumante must NEVER match "-te" -> Colazione
+      const evo = { title: 'Dante Olio Extra Vergine Di Oliva 100% Italiano', chainId: 'basko' };
+      assert.equal(classifyCanonicalCategory(evo), 'Dispensa e Pasta');
+
+      const spumante = { title: 'Spumante Prosecco DOC Extra Dry', chainId: 'coop' };
+      assert.equal(classifyCanonicalCategory(spumante), 'Acqua e Bevande');
+
+      // Pandoro Melegatti must NEVER match "mele" -> Frutta e Verdura
+      const pandoro = { title: 'Melegatti Pandoro Classico 1kg', chainId: 'carrefour' };
+      assert.equal(classifyCanonicalCategory(pandoro), 'Pane e Pasticceria');
+
+      // German appliance brand Miele at Unieuro must go to kitchen_cookware, never Colazione e Dolci
+      const mieleDishwasher = { title: 'Miele Lavastoviglie G7281SCVI', brand: 'Miele', chainId: 'unieuro' };
+      assert.equal(classifyProductDomain(mieleDishwasher), 'kitchen_cookware');
+      assert.equal(classifyCanonicalCategory(mieleDishwasher), 'Cura Casa e Bucato');
+
+      // Hair straighteners / dryers go to personal_care, tablecloths / toys go to home_cleaning
+      assert.equal(classifyProductDomain({ title: 'Beper Piastra Capelli Ceramica', chainId: 'carrefour' }), 'personal_care');
+      assert.equal(classifyProductDomain({ title: 'Candy Tovaglia Antimacchia Cane', chainId: 'carrefour' }), 'home_cleaning');
+      assert.equal(classifyProductDomain({ title: 'Casabella Aspirapolvere Rstoys', chainId: 'carrefour' }), 'home_cleaning');
+    });
+
+    it('never interprets "letto" (bedsheets) as "l\'etto" (per 100g) and withholds PTFE badges from textiles/toys/laundry', () => {
+      const bedsheets = {
+        title: 'Bassetti - Completo Letto Trendy Matrimoniale',
+        promoPrice: 26.99,
+        domain: 'home_cleaning'
+      };
+      const pricing = normalizeUnitPricing(bedsheets);
+      assert.equal(pricing.isPerEtto, false);
+      assert.equal(pricing.pricePerKg, null);
+      assert.equal(pricing.formattedNormalizedPrice, null);
+
+      const bedLens = evaluateQualityLens(bedsheets);
+      assert.equal(bedLens.badges.length, 0);
+      assert.equal(bedLens.technicalSpec, null);
+
+      const dishSoap = evaluateQualityLens({ title: 'Svelto Detersivo Piatti Limone', chainId: 'basko' });
+      assert.ok(dishSoap.badges.some((b) => b.label.includes('PTFE')));
+
+      const laundrySoap = evaluateQualityLens({ title: 'Dash Pods Detersivo Lavatrice', chainId: 'basko' });
+      assert.ok(!laundrySoap.badges.some((b) => b.label.includes('PTFE')));
+    });
+
+    it('deduplicates overlapping flyer tiles per store and supports opening FlyerModalCoordinator at offer.pageNumber', () => {
+      const future = '2099-12-31T23:59:59.000Z';
+      const raw = [
+        { id: '1', storeId: 'rapallo-coop-sciesa', title: 'Pasta Rummo 500g', promoPrice: 1.09, validTo: future },
+        { id: '2', storeId: 'rapallo-coop-sciesa', title: 'Pasta Rummo 500g', promoPrice: 1.09, discountPercentage: 35, validTo: future },
+        { id: '3', storeId: 'rapallo-coop-sciesa', title: 'Offerta Scaduta', promoPrice: 0.99, validTo: '2020-01-01T00:00:00.000Z' }
+      ];
+      const deduped = filterActiveAndDeduplicateOffers(raw);
+      assert.equal(deduped.length, 1);
+      assert.equal(deduped[0].id, '2'); // kept richer record with discountPercentage
+
+      const coord = new FlyerModalCoordinator({ id: 'fly-1', pageCount: 16, pages: [] });
+      assert.equal(coord.open().currentPage, 1);
+      assert.equal(coord.open(7).currentPage, 7);
     });
   });
 });

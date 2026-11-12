@@ -15,9 +15,10 @@ export class FlyerModalCoordinator {
     this.scrollSnapAlign = 'center';
   }
 
-  open() {
+  open(initialPage = 1) {
     this.isOpen = true;
-    this.currentPage = 1;
+    const parsed = parseInt(initialPage, 10);
+    this.currentPage = !isNaN(parsed) && parsed >= 1 && parsed <= this.totalPages ? parsed : 1;
     return this.getState();
   }
 

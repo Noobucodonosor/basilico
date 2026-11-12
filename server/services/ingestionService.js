@@ -14,6 +14,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cacheManager } from './cacheManager.js';
+import { classifyCanonicalCategory } from './domainClassifier.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,43 +66,10 @@ const RAPALLO_STORE_SLUGS = {
 
 /**
  * Categorize Italian promotional products into canonical Basilico departments
+ * using strict word-boundary and domain-aware rules from domainClassifier.js (ADR-0013).
  */
 function classifyOfferCategory(title = '', brand = '', chainId = '') {
-  const t = `${title} ${brand}`.toLowerCase();
-  if (chainId === 'tigota' || chainId === 'piume') {
-    if (/shampoo|bagno|doccia|dentifricio|sapone|crema|profum|deodorante|assorbenti|rasoio|viso|capelli|corpo/i.test(t)) {
-      return 'Cura Persona e Igiene';
-    }
-    return 'Cura Casa e Bucato';
-  }
-  if (/detersivo|ammorbidente|lavatrice|lavastoviglie|candeggina|carta igienica|asciugatutto|pulitore|sgrassatore|pavimenti|bricchetti|piatti|spugna|sacchi|alluminio|pellicola|led|friggitrice|tv|aspirapolvere|stiro|forno|cucina|padella|pentola|crocchette|gatto|cane|lettiera/i.test(t)) {
-    return 'Cura Casa e Bucato';
-  }
-  if (/shampoo|bagno|doccia|dentifricio|sapone|crema|profum|deodorante|carta igienica|fazzoletti/i.test(t)) {
-    return 'Cura Persona e Igiene';
-  }
-  if (/mele|pere|banane|arance|limoni|mandarini|uva|kiwi|fragole|pesche|albicocche|pomodor|insalata|zucchine|melanzane|peperoni|patate|carote|cipolle|finocchi|broccoli|cavolfiore|spinaci|funghi|verdura|frutta|ananas|avocado|mango/i.test(t)) {
-    return 'Frutta e Verdura';
-  }
-  if (/pollo|tacchino|manzo|bovino|suino|maiale|salsiccia|hamburger|cotoletta|prosciutto|salame|mortadella|bresaola|speck|pancetta|wurstel|pesce|salmone|tonno|orata|branzino|gamberi|mazzancolle|cozze|vongole|calamari|merluzzo|filetti|fettine|macinato|carne|arrosto/i.test(t)) {
-    return 'Carne e Pesce';
-  }
-  if (/latte|yogurt|mozzarella|formaggio|grana|parmigiano|pecorino|gorgonzola|stracchino|ricotta|mascarpone|burro|panna|scamorza|provola|crescenza|certosa|asiago|emmental|brie|taleggio/i.test(t)) {
-    return 'Latticini e Formaggi';
-  }
-  if (/surgelat|gelato|minestrone|piselli|bastoncini|pizza surgelata|patatine/i.test(t)) {
-    return 'Surgelati';
-  }
-  if (/pane|focaccia|grissini|cracker|fette biscottate|taralli|piadina|pan bauletto|torta|croissant|brioche|pasticceria|panettone|pandoro/i.test(t)) {
-    return 'Pane e Pasticceria';
-  }
-  if (/caff[eè]|biscotti|cornetti|marmellata|confettura|miele|cereali|merendine|cioccolat|nutella|wafer|t[eè]\b|camomilla|colazione|frollini/i.test(t)) {
-    return 'Colazione e Dolci';
-  }
-  if (/acqua|vino|prosecco|spumante|birra|coca|pepsi|aranciata|succo|bibita|aperitivo|amaro|liquore|whisky|gin|vodka|bevanda/i.test(t)) {
-    return 'Acqua e Bevande';
-  }
-  return 'Dispensa e Pasta';
+  return classifyCanonicalCategory({ title, brand, chainId });
 }
 
 export class IngestionService {
@@ -1080,12 +1048,17 @@ export class IngestionService {
       ? this.cacheManager.getEnvelope('stores')
       : null;
     const envelopeOrigin = storesEnvelope?.metadata?.dataSource || null;
-    const effectiveSource = this.lastResult?.dataSource || envelopeOrigin || 'seed';
+    const isFallbackOrFailed =
+      this.lastResult?.status === 'cached_fallback' || this.lastResult?.status === 'failed';
+    const isFreshLiveCache = !isCacheExpired && envelopeOrigin === 'live' && !isFallbackOrFailed;
+    const effectiveSource = isFreshLiveCache
+      ? 'live'
+      : (this.lastResult?.dataSource || envelopeOrigin || 'seed');
 
     return {
-      isOnline: effectiveSource === 'live' || envelopeOrigin === 'live',
+      isOnline: (effectiveSource === 'live' || isFreshLiveCache) && !isFallbackOrFailed,
       dataSource: effectiveSource,
-      lastSyncTimestamp: this.lastResult?.completedAt || storesEnvelope?.metadata?.cachedAt || new Date().toISOString(),
+      lastSyncTimestamp: storesEnvelope?.metadata?.cachedAt || this.lastResult?.completedAt || new Date().toISOString(),
       lastResult: this.lastResult,
       storeCount: Array.isArray(stores) && stores.length > 0 ? stores.length : 14,
       flyerCount: Array.isArray(flyers) ? flyers.length : 0,

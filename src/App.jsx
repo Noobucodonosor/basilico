@@ -26,6 +26,23 @@ const DOMAIN_PILLS = [
   { id: 'pet_care', label: 'Animali (Pet)', icon: '🐾' }
 ];
 
+const DOMAIN_ALLOWED_CATEGORIES = {
+  food_human: [
+    'Frutta e Verdura',
+    'Carne e Pesce',
+    'Latticini e Formaggi',
+    'Pane e Pasticceria',
+    'Dispensa e Pasta',
+    'Colazione e Dolci',
+    'Acqua e Bevande',
+    'Surgelati'
+  ],
+  home_cleaning: ['Cura Casa e Bucato'],
+  kitchen_cookware: ['Cura Casa e Bucato'],
+  personal_care: ['Cura Persona e Igiene'],
+  pet_care: ['Cura Casa e Bucato']
+};
+
 export function App() {
   // 1. Initial State from URL
   const initialParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
@@ -46,6 +63,7 @@ export function App() {
 
   const [profiles, setProfiles] = useState([]);
   const [activeProfileId, setActiveProfileId] = useState('dany');
+  const [profilesReady, setProfilesReady] = useState(false);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
   const [localShops, setLocalShops] = useState([]);
   const [selectedCreaFoodId, setSelectedCreaFoodId] = useState(null);
@@ -103,7 +121,8 @@ export function App() {
           if (data.activeProfileId) setActiveProfileId(data.activeProfileId);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setProfilesReady(true));
 
     fetch('/api/stores?includeLocalShops=true')
       .then((r) => (r.ok ? r.json() : null))
@@ -136,10 +155,14 @@ export function App() {
     facets,
     status,
     loading,
+    loadingMore,
     totalOffers,
+    hasMoreOffers,
+    loadMoreOffers,
     syncData,
     refetchOffers
   } = useSupermarketData({
+    ready: profilesReady,
     storeId: selectedStoreId,
     domain: selectedDomain,
     profileId: activeProfileId,
@@ -196,6 +219,21 @@ export function App() {
     setSelectedDomain(null);
     setHideIncompatible(false);
   }, []);
+
+  const handleSelectDomain = useCallback((nextDomain) => {
+    setSelectedDomain(nextDomain);
+    if (nextDomain && selectedCategory) {
+      const allowed = DOMAIN_ALLOWED_CATEGORIES[nextDomain] || [];
+      if (!allowed.includes(selectedCategory)) {
+        setSelectedCategory(null);
+      }
+    }
+  }, [selectedCategory]);
+
+  const visibleCategoriesForDomain = useMemo(() => {
+    if (!selectedDomain) return undefined;
+    return DOMAIN_ALLOWED_CATEGORIES[selectedDomain] || undefined;
+  }, [selectedDomain]);
 
   const handleToggleCategory = useCallback((cat) => {
     setSelectedCategory((prev) => (prev === cat ? null : cat));
@@ -375,7 +413,7 @@ export function App() {
                   <button
                     key={dom.id || 'all'}
                     type="button"
-                    onClick={() => setSelectedDomain(isSelected ? null : dom.id)}
+                    onClick={() => handleSelectDomain(isSelected ? null : dom.id)}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${
                       isSelected
                         ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
@@ -407,13 +445,24 @@ export function App() {
                     )}
                     {activeStore.loyaltyCard && (
                       <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-800 border border-amber-200">
-                        💳 {activeStore.loyaltyCard}
+                        💳{' '}
+                        {typeof activeStore.loyaltyCard === 'string'
+                          ? activeStore.loyaltyCard
+                          : activeStore.loyaltyCard?.name || 'Carta Fedeltà'}
+                        {typeof activeStore.loyaltyCard === 'object' && activeStore.loyaltyCard?.requiredForPromo
+                          ? ' (richiesta per promo)'
+                          : ''}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5 truncate max-w-md">
+                  <p className="text-xs text-slate-500 mt-0.5 truncate max-w-xl">
                     {activeStore.address}
-                    {activeStore.logistics ? ` • 🚶 ${activeStore.logistics.walkMinutesFromCenter} min a piedi` : ''}
+                    {activeStore.logistics?.distanceKmFromHarbor != null
+                      ? ` • 📍 ${activeStore.logistics.distanceKmFromHarbor} km dal Porto`
+                      : ''}
+                    {activeStore.logistics?.avgVisitMinutes != null
+                      ? ` • ⏱️ ~${activeStore.logistics.avgVisitMinutes} min visita`
+                      : ''}
                   </p>
                 </div>
 
@@ -468,6 +517,7 @@ export function App() {
             {/* Category Filter Pills */}
             <section>
               <CategoryFilters
+                categories={visibleCategoriesForDomain}
                 selectedCategory={selectedCategory}
                 onToggleCategory={handleToggleCategory}
                 categoryCounts={facets?.categories || {}}
@@ -500,16 +550,33 @@ export function App() {
               ) : (
                 <OfferGrid
                   offers={offers}
+                  totalOffers={totalOffers}
+                  hasMoreOffers={hasMoreOffers}
+                  loadingMore={loadingMore}
+                  onLoadMore={loadMoreOffers}
                   loading={loading}
-                  allFlyers={flyers}
                   onAddToShoppingList={handleAddToShoppingList}
                   onOpenCreaFood={(creaId) => {
                     setSelectedCreaFoodId(creaId);
                     setActiveRoom('room-2-crea');
                   }}
                   onOpenFlyer={(item) => {
-                    const storeFlyer = flyers.find((f) => f.storeId === item?.storeId) || flyers[0] || item;
-                    if (storeFlyer) setActiveFlyer(storeFlyer);
+                    const exactFlyer =
+                      (item?.flyerId && flyers.find((f) => String(f.id) === String(item.flyerId))) ||
+                      flyers.find(
+                        (f) =>
+                          f.storeId === item?.storeId ||
+                          (Array.isArray(f.storeIds) && f.storeIds.includes(item?.storeId))
+                      ) ||
+                      flyers[0] ||
+                      null;
+                    if (exactFlyer) {
+                      setActiveFlyer({
+                        ...exactFlyer,
+                        initialPage: Number(item?.pageNumber) >= 1 ? Number(item.pageNumber) : 1,
+                        highlightOfferId: item?.id || null
+                      });
+                    }
                   }}
                   onResetFilters={handleClearFilters}
                 />
@@ -578,7 +645,7 @@ export function App() {
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <KitchenCareView
             onNavigateToStoreDomain={(domainId) => {
-              setSelectedDomain(domainId);
+              handleSelectDomain(domainId);
               setSelectedStoreId(null);
               setActiveRoom('room-1-negozi');
             }}

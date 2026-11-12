@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+const DEFAULT_PAGE_SIZE = 60;
+
 export function useSupermarketData(filterOptions = {}) {
   const [stores, setStores] = useState([]);
   const [offers, setOffers] = useState([]);
@@ -10,14 +12,18 @@ export function useSupermarketData(filterOptions = {}) {
     isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
     dataSource: 'live',
     lastSyncTimestamp: new Date().toISOString(),
-    storeCount: 5
+    storeCount: 14
   });
 
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [totalOffers, setTotalOffers] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const abortControllerRef = useRef(null);
+  const pageSize = Math.min(100, Math.max(1, Number(filterOptions.limit) || DEFAULT_PAGE_SIZE));
 
   // 1. Fetch Store Directory & System Status
   const fetchMetadata = useCallback(async () => {
@@ -41,7 +47,7 @@ export function useSupermarketData(filterOptions = {}) {
     }
   }, []);
 
-  // 2. Fetch Flyers (optional filter by storeId)
+  // 2. Fetch Flyers (always load full flyer list or store-specific list)
   const fetchFlyers = useCallback(async (storeId) => {
     try {
       const url = storeId ? `/api/flyers?storeId=${encodeURIComponent(storeId)}` : '/api/flyers';
@@ -55,17 +61,7 @@ export function useSupermarketData(filterOptions = {}) {
     }
   }, []);
 
-  // 3. Fetch Offers with filtering, sorting, pagination
-  const fetchOffers = useCallback(async () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    setLoading(true);
-    setError(null);
-
+  const buildOfferQueryParams = useCallback((pageToLoad = 1) => {
     const queryParams = new URLSearchParams();
     if (filterOptions.storeId) queryParams.set('storeId', filterOptions.storeId);
     if (filterOptions.domain) queryParams.set('domain', filterOptions.domain);
@@ -75,8 +71,35 @@ export function useSupermarketData(filterOptions = {}) {
     if (filterOptions.category) queryParams.set('category', filterOptions.category);
     if (filterOptions.minDiscount) queryParams.set('minDiscount', filterOptions.minDiscount);
     if (filterOptions.sortBy) queryParams.set('sortBy', filterOptions.sortBy);
-    if (filterOptions.page) queryParams.set('page', filterOptions.page);
-    queryParams.set('limit', filterOptions.limit || 1000);
+    queryParams.set('page', String(pageToLoad));
+    queryParams.set('limit', String(pageSize));
+    return queryParams;
+  }, [
+    filterOptions.storeId,
+    filterOptions.domain,
+    filterOptions.profileId,
+    filterOptions.hideIncompatible,
+    filterOptions.q,
+    filterOptions.category,
+    filterOptions.minDiscount,
+    filterOptions.sortBy,
+    pageSize
+  ]);
+
+  // 3. Fetch First Page of Offers on filter change
+  const fetchOffers = useCallback(async () => {
+    if (filterOptions.ready === false) return;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setLoading(true);
+    setError(null);
+
+    const queryParams = buildOfferQueryParams(1);
 
     try {
       const res = await fetch(`/api/offers?${queryParams.toString()}`, {
@@ -90,6 +113,8 @@ export function useSupermarketData(filterOptions = {}) {
       const data = await res.json();
       setOffers(data.offers || []);
       setTotalOffers(data.totalOffers || 0);
+      setCurrentPage(data.page || 1);
+      setTotalPages(data.totalPages || 0);
       if (data.categories) setCategories(data.categories);
       if (data.facets) setFacets(data.facets);
     } catch (err) {
@@ -98,20 +123,45 @@ export function useSupermarketData(filterOptions = {}) {
         setStatus((prev) => ({ ...prev, isOnline: false }));
       }
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
     }
-  }, [
-    filterOptions.storeId,
-    filterOptions.domain,
-    filterOptions.profileId,
-    filterOptions.hideIncompatible,
-    filterOptions.q,
-    filterOptions.category,
-    filterOptions.minDiscount,
-    filterOptions.sortBy,
-    filterOptions.page,
-    filterOptions.limit
-  ]);
+  }, [buildOfferQueryParams, filterOptions.ready]);
+
+  // 4. Load next page and append without losing scroll position
+  const loadMoreOffers = useCallback(async () => {
+    if (loading || loadingMore || currentPage >= totalPages) return;
+    const nextPage = currentPage + 1;
+    setLoadingMore(true);
+    try {
+      const queryParams = buildOfferQueryParams(nextPage);
+      const res = await fetch(`/api/offers?${queryParams.toString()}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: Failed to load more offers`);
+      }
+      const data = await res.json();
+      const incoming = Array.isArray(data.offers) ? data.offers : [];
+      setOffers((prev) => {
+        const seen = new Set(prev.map((o) => o.id));
+        const merged = [...prev];
+        for (const item of incoming) {
+          if (!seen.has(item.id)) {
+            seen.add(item.id);
+            merged.push(item);
+          }
+        }
+        return merged;
+      });
+      setCurrentPage(data.page || nextPage);
+      setTotalPages(data.totalPages || totalPages);
+      setTotalOffers(data.totalOffers ?? totalOffers);
+    } catch (err) {
+      console.warn('[useSupermarketData] Load more warning:', err.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loading, loadingMore, currentPage, totalPages, buildOfferQueryParams, totalOffers]);
 
   // Initial metadata load
   useEffect(() => {
@@ -171,6 +221,8 @@ export function useSupermarketData(filterOptions = {}) {
     }
   }, [fetchMetadata, fetchOffers, fetchFlyers, filterOptions.storeId]);
 
+  const hasMoreOffers = offers.length < totalOffers && currentPage < totalPages;
+
   return {
     stores,
     offers,
@@ -180,8 +232,14 @@ export function useSupermarketData(filterOptions = {}) {
     status,
     setStatus,
     loading,
+    loadingMore,
     error,
     totalOffers,
+    currentPage,
+    totalPages,
+    pageSize,
+    hasMoreOffers,
+    loadMoreOffers,
     syncData,
     refetchOffers: fetchOffers
   };

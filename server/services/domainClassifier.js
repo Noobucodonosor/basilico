@@ -1,12 +1,12 @@
 /**
- * Basilico — Multi-Domain Taxonomy Classifier (ADR-0007, Level 1.4)
+ * Basilico — Multi-Domain Taxonomy & Canonical Category Classifier (ADR-0007, ADR-0013)
  * Location: server/services/domainClassifier.js
  *
  * Strictly partitions every commercial product/offer into one of 5 closed domains:
  *  - 'food_human'       : Alimenti e bevande per consumo umano (unico dominio ammesso in CREA/Ricette/Dieta)
- *  - 'home_cleaning'    : Cura casa, detersivi, chimica superfici, spugne, carta casa
+ *  - 'home_cleaning'    : Cura casa, detersivi, chimica superfici, spugne, carta casa, bazar/tessile/giocattoli
  *  - 'kitchen_cookware' : Pentole, padelle, coltelli, elettrodomestici e attrezzatura cucina
- *  - 'personal_care'    : Igiene e cura della persona (shampoo, dentifricio, cosmetica)
+ *  - 'personal_care'    : Igiene e cura della persona (shampoo, dentifricio, cosmetica, cura capelli)
  *  - 'pet_care'         : Alimenti e accessori per animali domestici (Arcaplanet, crocchette, lettiera)
  */
 
@@ -26,18 +26,36 @@ export const DOMAIN_LABELS = {
   pet_care: 'Pet & Animali'
 };
 
-const PET_REGEX = /\b(cane|cani|gatto|gatti|crocchett\w*|lettiera|antiparassitar\w*|guinzagli\w*|cuccia|purina|whiskas|felix|friskies|monge|royal canin|sheba|cesar|gourmet gold|almo nature|trainer|acana|orijen|vitakraft|migliorcane|migliorgatto|bocconcini per|umido gatto|umido cane|arcaplanet)\b/i;
+export const FOOD_PRODUCT_CATEGORIES = [
+  'Frutta e Verdura',
+  'Carne e Pesce',
+  'Latticini e Formaggi',
+  'Pane e Pasticceria',
+  'Dispensa e Pasta',
+  'Colazione e Dolci',
+  'Acqua e Bevande',
+  'Surgelati'
+];
 
-const COOKWARE_TECH_REGEX = /\b(padell\w*|pentol\w*|casseruol\w*|tegame|wok|bistecchiera|coperchi\w*|coltell\w*|tagliere|mortaio|frullator\w*|impastatrice|friggitrice|forno|microonde|tostapane|bollitore|bilancia|caffettiera|moka|aspirapolvere|ferro da stiro|lavatrice|lavastoviglie|frigorifero|televisore|smart tv|smartphone|notebook|tablet|auricolar\w*|batteria di pentole|antiaderente|induzione|lagostina|ballarini|tescoma|moneta|pyrex|bormioli|tognana|ariete|de'longhi|delonghi|moulinex|philips|rowenta|braun|dyson|samsung|lg|xiaomi|apple|iphone)\b/i;
+function stripAccents(str = '') {
+  return String(str)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
 
-const PERSONAL_CARE_REGEX = /\b(shampoo|balsamo capelli|bagnoschiuma|bagnodoccia|docciaschiuma|dentifrici\w*|spazzolin\w*|collutorio|filo interdentale|elmex|emoform|deodorant\w*|profum\w*|eau de parfum|eau de toilette|parfum|body mist|body spray|after shave|crema viso|crema corpo|crema mani|maschera viso|siero viso|struccant\w*|fondotinta|mascara|rossetto|bronzer|terra abbronzante|cosmetics|lattafa|calvin klein|burberry|laura biagiotti|davidoff|syoss|palette\s+oleo|alama\s+repair|tesori d['’]?oriente|fria\b|breeze\b|dove\b|assorbent\w*|salvaslip|pannolin\w*|pannolon\w*|lines\s+specialist|rasoi\w*|schiuma da barba|dopobarba|sapone liquido|sapone intimo|detergente intimo|fazzolett\w*|carta igienica|cotone idrofilo|cerotti|solare|protezione solare|tinta capelli)\b/i;
+const PET_STRICT_FOOD_OR_BRAND_REGEX = /\b(crocchett\w*|lettiera|antiparassitar\w*|guinzagli\w*|cuccia|purina|whiskas|felix|friskies|monge|royal canin|sheba|cesar|gourmet gold|almo nature|trainer|acana|orijen|vitakraft|migliorcane|migliorgatto|bocconcini per (?:cane|cani|gatto|gatti)|umido (?:gatto|cane)|cibo per (?:cani|gatti)|snack (?:cane|gatto)|arcaplanet)\b/i;
+const PET_ANIMAL_NOUN_REGEX = /\b(cane|cani|gatto|gatti)\b/i;
 
-const HOME_CLEANING_REGEX = /\b(detersiv\w*|ammorbident\w*|sgrassator\w*|candeggina|anticalcare|disincrostant\w*|igienizzant\w*|disinfettant\w*|lavapavimenti|pulitore|brillantante|cura lavastoviglie|curalavatrice|tabs lavastoviglie|capsule lavatrice|bucato|smacchiator\w*|spugn\w*|pagliett\w*|panno|microfibra|mocio|scopa|sacchi nettezza|sacchi spazzatura|asciugatutto|rotoloni|pellicola|alluminio cucina|carta forno|insetticida|profumatore ambiente|deumidificatore|chanteclair|finish|fairy|svelto|napisan|lysoform|ace\b|viakal|cif\b|bref|pril|dash|dixan|omino bianco|coccolino|vernel|lenor|winni's|quasar|ajax|vetril|mastro lindo|wc net|duck|scottex|(?:rotoloni|carta(?:\s+casa)?|fazzoletti|tovaglioli)\s+regina|regina\s+(?:rotoloni|asciugoni|blitz|carta)|foxy)\b/i;
+const TOYS_BAZAR_TEXTILES_REGEX = /\b(completo letto|lenzuol\w*|trapunt\w*|piumin\w*\s+letto|copriletto|feder[ae]|cuscin\w*|asciugaman\w*|accappatoi\w*|tappet\w*|tovagli\w*(?!\s*carta)|canovacci\w*|presin\w*|bassetti|caleffi|gabel|pantalon\w*|magliett\w*|felp[ae]|giacc[ae]|pigiam\w*|calzin\w*|collant|mutand\w*|reggiseno|pantofol\w*|ciabatt\w*|scarp\w*\s+(?:uomo|donna|bambin\w*|sport\w*)|peluche|giocattol\w*|rocco giocattoli|rstoys|imctoys|imc toys|re\.el toys|zuru|globo\b|spin master|clementoni|ravensburger|lisciani|giochi uniti|hasbro|mattel|lego\b|playmobil|barbie|pokemon|nintendo|beyblade|hot wheels|squishmallows|radiocomand\w*|filoguidat\w*|costruzioni|mattoncini|bambol\w*|fashion doll|traxfigure|scacchi|air hockey|gioco\s+della|gioco\s+da\s+tavolo|goliath|grinch|gnom[oi]|follett[oi]|fermaporta|stopper|pupazz\w*|orso natale|addobb\w*|albero di natale|candel[ae]|diffusor\w*\s+(?:di\s+)?(?:fragranza|ambiente|bastoncini)|svegli[ae]|majestic|pile\s+(?:stilo|ministilo|alcaline)|batterie\s+(?:stilo|alcaline)|lampadin\w*|terriccio|concime|piant[ae]\s+(?:fiorit\w*|verd\w*|vaso)|orchide\w*|ciclam\w*|stendibiancheria|asse da stiro)\b/i;
 
-// Non-food household textiles, apparel, toys, stationery, batteries, gardening (mapped to home_cleaning, never food_human)
-const GENERAL_HOUSEHOLD_NONFOOD_REGEX = /\b(completo letto|lenzuol\w*|trapunt\w*|piumin\w*\s+letto|copriletto|feder[ae]|cuscin\w*|asciugaman\w*|accappatoi\w*|tappet\w*|bassetti|caleffi|gabel|pantalon\w*|magliett\w*|felp[ae]|giacc[ae]|pigiam\w*|calzin\w*|collant|mutand\w*|reggiseno|pantofol\w*|ciabatt\w*|scarp\w*\s+(?:uomo|donna|bambin\w*|sport\w*)|peluche|giocattol\w*|rocco giocattoli|hasbro|mattel|lego\b|playmobil|barbie|gioco\s+della|gioco\s+da\s+tavolo|goliath|grinch|addobb\w*|albero di natale|pile\s+(?:stilo|ministilo|alcaline)|batterie\s+(?:stilo|alcaline)|lampadin\w*|terriccio|concime)\b/i;
+const PERSONAL_CARE_REGEX = /\b(shampoo|balsamo(?:\s+capelli|\s+rigenera|\s+nutriente)?|maschera capelli|tinta capelli|piastra capelli|asciugacapelli|spazzola asciugacapelli|phon\b|sauna facciale|specchio trucco|bagnoschiuma|bagnodoccia|docciaschiuma|dentifrici\w*|spazzolin\w*|collutorio|filo interdentale|oral care|oral[\s-]?b|elmex|emoform|sensodyne|mentadent|colgate|az\s+ricerca|deodorant\w*|profum\w*(?!\s+ambiente|\s+bucato)|eau de parfum|eau de toilette|parfum|body mist|body spray|acqua profumata|olio profumato|after shave|crema\s+(?:viso|corpo|mani|piedi|idratante|nutriente|antirughe|solare|depilatoria)|pasta lenitiva|maschera viso|siero viso|contorno occhi|acqua micellare|latte detergente|struccant\w*|fondotinta|mascara|rossetto|bronzer|terra abbronzante|cosmetics|lattafa|calvin klein|burberry|laura biagiotti|davidoff|syoss|pantene|garnier|gliss|sunsilk|elviv\w*|nivea|neutro roberts|neutro med|borotalco|chilly|saugella|intima roberts|lactacyd|palette\s+oleo|alama\s+repair|tesori d['’]?oriente|fria\b|breeze\b|dove\b|assorbent\w*|salvaslip|pannolin\w*|pannolon\w*|lines\b|tampax|rasoi\w*|gillette|wilkinson|schiuma da barba|dopobarba|sapone\s+(?:liquido|mani|intimo|solido)|detergente\s+(?:intimo|viso|corpo|mani)|fazzolett\w*|carta igienica|cotone idrofilo|dischetti cotone|cerotti|protezione solare)\b/i;
 
-const EXPLICIT_FOOD_GUARD_REGEX = /\b(pasta|spaghetti|penne|fusilli|riso|farina|pane|focaccia|pizz[ae]|pinsa|piatti pronti|patatin\w*|al forno|da forno|forno a legna|cotto al forno|lasagn\w*|cannellon\w*|polpett\w*|cotolett\w*|biscott\w*|canestrell\w*|pasticceria|frollini|cornett\w*|brioche|caffe|miele\s+(?:millefiori|d['’]?acacia|di\s+castagno|italiano)|latte|latterie|yogurt|mozzarella|ricotta|formaggio|canestrato|parmigiano|grana|burro|uova|pollo|tacchino|manzo|bovino|suino|salsiccia|prosciutto|salame|mortadella|bresaola|tonno|salmone|merluzzo|orata|branzino|gamber\w*|cozze|vongole|olio|aceto|pomodor\w*|passata|ceci|fagioli|lenticchie|piselli|insalata|zucchine|melanzane|patate|carote|cipolle|mele|pere|banane|arance|limoni|acqua minerale|vino|birra|succo)\b/i;
+const HOME_CLEANING_REGEX = /\b(detersiv\w*|ammorbident\w*|sgrassator\w*|candeggina|anticalcare|disincrostant\w*|igienizzant\w*|disinfettant\w*|lavapavimenti|pulitore|brillantante|cura\s*lavastoviglie|curalavatrice|calgon|tabs lavastoviglie|capsule lavatrice|bucato|smacchiator\w*|acchiappacolore|spugn\w*(?!\s+di\s+mare)|pagliett\w*|panno\b|panni\s+(?:cattura\w*|pavimenti|microfibra|polvere)|microfibra|mocio|scopa\b|sacchi\s+(?:nettezza|spazzatura|immondizia|pattumiera)|asciugatutto|rotoloni|carta\s+(?:casa|cucina|forno|assorbente)|tovaglioli(?:\s+carta)?|piatti\s+(?:carta|plastica|monouso|biodegradabil\w*)|bicchieri\s+(?:carta|plastica|monouso)|pellicola(?:\s+trasparente|\s+alimenti|\s+cucina)?|alluminio(?:\s+cucina|\s+rotolo)?|bricchett\w*|pellet\b|insetticida|profumator\w*\s+(?:ambiente|armadi|bucato)|deumidificator\w*|chanteclair|finish\b|fairy\b|svelto\b|napisan|lysoform|ace\b|viakal|cif\b|bref\b|pril\b|dash\b|dixan|omino bianco|coccolino|vernel|lenor|winni['’]?s|quasar|ajax|vetril|mastro lindo|wc net|duck\b|scottex|(?:rotoloni|carta(?:\s+casa)?|fazzoletti|tovaglioli|asciugoni)\s+regina|regina\s+(?:rotoloni|asciugoni|blitz|carta|tovaglioli)|foxy|nicky)\b/i;
+
+const COOKWARE_TECH_REGEX = /\b(padell\w*|pentol\w*|casseruol\w*|tegame|wok\b|bistecchiera|coperchi\w*|coltell\w*(?!\s+prosciutto)|tagliere(?!\s+(?:italiano|salumi|formaggi|degustazione|misto|rustico))|mortaio|pirofil\w*|stampo\s+(?:forno|torta|plumcake|crostata)|batteria di pentole|antiaderente|induzione|frullator\w*|impastatrice|planetaria|friggitrice|forno(?:\s+elettrico|\s+microonde|\s+incasso)|microonde|tostapane|bollitore|bilancia(?:\s+cucina|\s+pesapersona)?|caffettiera|moka\b|macchina\s+(?:caffe|espresso)|aspirapolvere|scopa elettrica|robot\s+(?:cucina|aspirapolvere)|ferro da stiro|lavatrice|lavastoviglie|asciugatrice|frigorifero|congelatore|condizionatore|televisore|smart tv|\btv\s+(?:led|oled|qled|\d{2})|smartphone|notebook|laptop|tablet|stampante|auricolar\w*|cuffie\s+bluetooth|lagostina|ballarini|tescoma|moneta\b|pyrex|bormioli|tognana|ariete|de['’]?longhi|delonghi|moulinex|philips|rowenta|braun|dyson|samsung|lg\b|xiaomi|apple\b|iphone|whirlpool|bosch|electrolux|beko|candy\s+(?:lavatrice|asciugatrice|lavastoviglie|frigo|forno|piano)|miele\s+(?:lavatrice|lavastoviglie|asciugatrice|aspirapolvere|forno|g\d{3,}))\b/i;
+
+const EXPLICIT_FOOD_GUARD_REGEX = /\b(pasta|spaghetti|penne|fusilli|rigatoni|farfalle|mezze maniche|lasagn\w*|cannellon\w*|ravioli|tortellini|gnocchi|trofie|pansott\w*|riso|risott\w*|farina|semola|polenta|cous\s*cous|pane|focaccia|pizz[ae]|pinsa|piadina|grissini|cracker\w*|tarall\w*|fette biscottate|baguette|panino|panini|piatti pronti|zuppa|vellutata|crema\s+(?:di\s+)?(?:zucca|asparagi|funghi|ceci|lenticchie|piselli|verdure|carciofi|tartufo|nocciole|pistacchio|spalmabile|pasticcera|catalana|mascarpone|latte)|crema\s+e\s+gusto|patatin\w*|al forno|da forno|forno a legna|cotto al forno|polpett\w*|cotolett\w*|biscott\w*|canestrell\w*|amarett\w*|ricciarell\w*|pasticceria|frollini|cornett\w*|croissant|brioche|panettone|pandoro|colomba|torta|crostata|cioccolat\w*|nutella|spalmabil\w*|marmellat\w*|confettur\w*|wafer|merendin\w*|cereali|muesli|caffe|espresso|cialde|capsule\s+(?:caffe|compatibili)|t[eè]\s+(?:verde|nero|deteinato|limone|pesca|classico)|infuso|camomilla|miele(?:\s+(?:millefiori|d['’]?acacia|di\s+castagno|italiano|bio|eucalipto|agrumi|sulla|tiglio))?|latte(?:\s+(?:intero|parzialmente|scremato|uht|fresco|alta|vegetale|mandorla|avena|soia))?|scremat\w*|latterie|yogurt|kefir|skyr|mozzarella|ricotta|formagg\w*|canestrato|parmigiano|grana|pecorino|gorgonzola|stracchino|crescenza|robiola|mascarpone|scamorz\w*|provol\w*|sottilett\w*|burro|panna(?:\s+cucina|\s+fresca|\s+montata|\s+uht)?|uov[ao]|pollo|tacchino|manzo|bovino|vitello|suino|maiale|coniglio|agnello|salsicci\w*|hamburger|wurstel|prosciutt\w*|salame|mortadella|bresaola|speck|pancetta|guanciale|coppa|culatello|lardo|affettat\w*|tagliere\s+italiano|tonno|sgombro|salmone|merluzzo|nasello|platessa|baccala|stoccafisso|verdesca|pesce\s+spada|orata|branzino|spigola|trota|alici|acciughe|sardine|gamber\w*|mazzancoll\w*|scampi|cozze|vongole|calamar\w*|seppi\w*|polpo|frutti di mare|surgelat\w*|gelat\w*|minestrone|olio(?:\s+extra\s*vergine|\s+evo|\s+oliva|\s+semi)?|aceto(?!\s+pulizie)|pomodor\w*|passata|pelati|polpa|pesto|sugo|salsa|maionese|ketchup|senape|olive|capperi|carciofin\w*|sottoli\w*|ceci|fagioli|lenticchie|piselli|mais|insalat\w*|rucola|valerian\w*|spinaci|erbette|bietol\w*|zucchin\w*|melanzan\w*|peperon\w*|patat[ae]|carot[ae]|cipoll[ae]|aglio|finocch\w*|broccol\w*|cavolfior\w*|cavol\w*|zucca|funghi|asparagi|carciofi|mele\b|pere\b|banan\w*|bananito|aranc[ae]|mandarin\w*|clementin\w*|limon[ei]|limes|pompelm\w*|uva\b|kiwi|fragol\w*|mirtill\w*|lampon\w*|more\b|pesch[ae]|albicocch\w*|prugn\w*|susin\w*|ciliegi[ae]|cachi|ananas|avocado|mango|papaya|passion fruit|zenzero|castagn\w*|marron[ei]|noci\b|mandorl\w*|nocciol\w*|pistacch\w*|pinoli|anacardi|arachidi|datteri|fichi|acqua(?:\s+minerale|\s+naturale|\s+frizzante|\s+effervescente)?|vino|prosecco|spumante|champagne|franciacorta|barolo|chianti|amarone|vermentino|pigato|birra|succo|spremuta|aranciata|chinotto|cola|bibita|aperitivo|amaro|fernet|grappa|liquore|liqueur|limoncello|whisky|rum\b|gin\b|vodka)\b/i;
 
 /**
  * Deterministically classifies an offer or product into one of the 5 closed domains.
@@ -54,43 +72,151 @@ export function classifyProductDomain(item = {}) {
   const title = String(item.title || '').trim();
   const brand = String(item.brand || '').trim();
   const category = String(item.category || '').trim();
-  const chainId = String(item.chainId || item.storeId || '').toLowerCase();
-  const combined = `${title} ${brand}`.toLowerCase();
+  const chainId = stripAccents(item.chainId || item.storeId || '');
+  const combined = stripAccents(`${title} ${brand}`);
+  const hasExplicitPersonalCare = PERSONAL_CARE_REGEX.test(combined);
+  const hasExplicitHomeCleaning = HOME_CLEANING_REGEX.test(combined);
+  const hasExplicitFood =
+    EXPLICIT_FOOD_GUARD_REGEX.test(combined) &&
+    !hasExplicitPersonalCare &&
+    !hasExplicitHomeCleaning;
 
-  // 1. Pet store or explicit pet product
-  if (chainId.includes('arcaplanet') || PET_REGEX.test(combined)) {
+  // 1. Pet store or explicit pet food/brand
+  if (chainId.includes('arcaplanet') || PET_STRICT_FOOD_OR_BRAND_REGEX.test(combined)) {
     return 'pet_care';
   }
 
-  // 2. Personal care & hygiene
-  if (category === 'Cura Persona e Igiene' || PERSONAL_CARE_REGEX.test(combined)) {
-    return 'personal_care';
-  }
-
-  // 3. Home cleaning, detergents & general household non-food (checked BEFORE cookware/appliances so "Detersivo Lavatrice" -> home_cleaning)
-  if (HOME_CLEANING_REGEX.test(combined) || GENERAL_HOUSEHOLD_NONFOOD_REGEX.test(combined)) {
-    return 'home_cleaning';
-  }
-
-  // 4. Electronics / Cookware store or explicit cookware/appliance item (unless clearly food like "olio per friggere")
-  if (chainId.includes('unieuro') || chainId.includes('casalinghi')) {
-    if (!EXPLICIT_FOOD_GUARD_REGEX.test(combined) || COOKWARE_TECH_REGEX.test(combined)) {
-      return 'kitchen_cookware';
+  // 2. Electronics / Unieuro store: appliances (including Miele dishwashers, Candy washers) -> kitchen_cookware
+  if (chainId.includes('unieuro')) {
+    if (hasExplicitPersonalCare && !COOKWARE_TECH_REGEX.test(combined)) {
+      return 'personal_care';
     }
-  }
-  if (COOKWARE_TECH_REGEX.test(combined) && !EXPLICIT_FOOD_GUARD_REGEX.test(combined)) {
+    if (hasExplicitHomeCleaning && !COOKWARE_TECH_REGEX.test(combined)) {
+      return 'home_cleaning';
+    }
     return 'kitchen_cookware';
   }
 
-  if (category === 'Cura Casa e Bucato' || chainId.includes('tigota') || chainId.includes('piume')) {
-    if (EXPLICIT_FOOD_GUARD_REGEX.test(combined) && !HOME_CLEANING_REGEX.test(combined) && !PERSONAL_CARE_REGEX.test(combined)) {
+  // 3. Explicit personal care & hygiene (checked BEFORE food so scented products like "Shampoo Mandorla / Sapone Miele" stay personal_care)
+  if (hasExplicitPersonalCare && !/\b(latte\s+(?:intero|parzialmente|scremato|uht|fresco)|caffe|crema\s+e\s+gusto|crema\s+(?:spalmabile|pasticcera|di\s+zucca|zucca))\b/i.test(combined)) {
+    return 'personal_care';
+  }
+
+  // 4. Explicit home cleaning & detergents (checked BEFORE food so "Svelto Detersivo Piatti Limone / Aceto" stays home_cleaning)
+  if (hasExplicitHomeCleaning && !/\b(piatti\s+pronti|pasta\b|olio\s+extra\s*vergine|aceto\s+(?:balsamico|di\s+vino|di\s+mele))\b/i.test(combined)) {
+    return 'home_cleaning';
+  }
+
+  // 5. Toys, textiles, apparel, candles, home bazar (checked BEFORE pet animal nouns like "Tovaglia Cane" and BEFORE cookware so "Globo Cucina / Rstoys Aspirapolvere" toys don't leak into cookware/pet/food)
+  if (TOYS_BAZAR_TEXTILES_REGEX.test(combined) && !hasExplicitFood) {
+    return 'home_cleaning';
+  }
+
+  // 6. Generic pet animal nouns ("Ciotola Cane", "Biscotti Cane") when not bazar/textile/food brand
+  if (PET_ANIMAL_NOUN_REGEX.test(combined) && !hasExplicitFood) {
+    return 'pet_care';
+  }
+
+  // 7. Legacy category fallbacks guarded against food false-positives ("Latte Scremato", "Caffè Crema e Gusto")
+  if (category === 'Cura Persona e Igiene' && !hasExplicitFood) {
+    return 'personal_care';
+  }
+
+  // 7. Casalinghi store or explicit cookware/appliance item (unless clearly food like "pizza da forno" or "Tagliere Italiano" salumi)
+  if (chainId.includes('casalinghi')) {
+    if (!hasExplicitFood || COOKWARE_TECH_REGEX.test(combined)) {
+      return 'kitchen_cookware';
+    }
+  }
+  if (COOKWARE_TECH_REGEX.test(combined) && !hasExplicitFood) {
+    return 'kitchen_cookware';
+  }
+
+  // 8. Drugstores (Tigotà / PiùMe) or legacy Cura Casa category
+  if (chainId.includes('tigota') || chainId.includes('piume')) {
+    if (PERSONAL_CARE_REGEX.test(combined)) return 'personal_care';
+    if (hasExplicitFood && !HOME_CLEANING_REGEX.test(combined) && !TOYS_BAZAR_TEXTILES_REGEX.test(combined)) {
       return 'food_human';
     }
     return 'home_cleaning';
   }
+  if (category === 'Cura Casa e Bucato' && !hasExplicitFood) {
+    return 'home_cleaning';
+  }
 
-  // 5. Default for grocery supermarket categories
+  // 9. Default for grocery supermarket categories
   return 'food_human';
+}
+
+// Strict word-boundary food department matchers (used to classify and sanitize polluted categories)
+const CAT_SURGELATI_REGEX = /\b(surgelat\w*|gelat\w*|minestrone|bastoncini|pizza surgelata|piselli fini|findus|orogel|bofrost|frosta|sammontana|algida|magnum|cornetto algida)\b/i;
+const CAT_BEVANDE_REGEX = /\b(acqua(?:\s+minerale|\s+naturale|\s+frizzante|\s+effervescente|\s+oligominerale)?|sant['’]?anna|levissima|lete\b|ferrarelle|uliveto|rocchetta|san benedetto|vino|prosecco|spumante|champagne|franciacorta|barolo|chianti|amarone|vermentino|pigato|lambrusco|montepulciano|primitivo|falanghina|muller thurgau|birra|heineken|moretti|peroni|ichnusa|ceres|corona|beck['’]?s|coca[\s-]?cola|pepsi|fanta|sprite|aranciata|chinotto|limonata|tonica|succo|succhi|spremuta|nettare|estathe|fuze\s*tea|bibita|energy drink|red bull|monster\b|gatorade|aperol|campari|aperitivo|amaro|fernet|montenegro|jagermeister|grappa|limoncello|liquore|liqueur|baileys|disaronno|cointreau|whisky|whiskey|bourbon|scotch|rum\b|gin\b|vodka|tequila|brandy|cognac|bevanda\s+(?:di\s+)?(?:soia|avena|mandorla|riso|cocco))\b/i;
+const CAT_LATTICINI_REGEX = /\b(latte(?:\s+(?:intero|parzialmente|scremato|uht|fresco|alta|microfiltrato|parmalat|granarolo|tigullio|arborea|sterilgarda))?|latterie|yogurt|kefir|skyr|actimel|activia|danacol|mozzarella|bocconcini di mozzarella|ciliegine|burrata|stracciatella|ricotta|formagg\w*|grana\s+padano|parmigiano|pecorino|gorgonzola|stracchino|crescenza|squacquerone|robiola|presinseua|mascarpone|scamorz\w*|provol\w*|caciocavallo|asiago|fontina|taleggio|brie\b|camembert|emmental|leerdammer|edamer|gouda|cheddar|feta\b|primo\s*sale|fiocchi di latte|sottilett\w*|philadelphia|spalmabile\s+fresco|certosa|burro|panna(?:\s+cucina|\s+fresca|\s+montata|\s+spray|\s+uht)?|besciamella)\b/i;
+const CAT_CARNE_PESCE_REGEX = /\b(pollo|tacchino|manzo|bovino|vitello|vitellone|scottona|suino|maiale|coniglio|agnello|salsicci\w*|luganega|hamburger|svizzere|polpett\w*|cotolett\w*|spiedin\w*|arrosto|lonza|braciol\w*|costine|macinato|fettine|straccetti|carpaccio|tartare|prosciutt\w*|salame|salamino|mortadella|bresaola|speck|pancetta|guanciale|coppa\b|culatello|lardo|porchetta|wurstel|affettat\w*|salumi|tagliere\s+italiano|pesce|salmone|tonno\s+(?:fresco|trancio|filetto)|orata|branzino|spigola|trota|rombo|sogliola|merluzzo|nasello|platessa|baccala|stoccafisso|verdesca|pesce\s+spada|alici|acciughe|sardine|sgombro|gamber\w*|mazzancoll\w*|scampi|cozze|vongole|calamar\w*|totani|moscardini|seppi\w*|polpo|frutti di mare|surimi)\b/i;
+const CAT_ORTOFRUTTA_REGEX = /\b(mele\b|mela\b|pere\b|pera\b|banan\w*|bananito|aranc[ae]|mandarin\w*|clementin\w*|limon[ei]|limes|pompelm\w*|uva\b|kiwi|fragol\w*|mirtill\w*|lampon\w*|more\b|pesch[ae]|albicocch\w*|prugn\w*|susin\w*|ciliegi[ae]|cachi|melograno|ananas|avocado|mango|papaya|passion fruit|zenzero|castagn\w*|marron[ei]|pomodor(?:o|i|ini)|ciliegino|datterino|insalat\w*|lattug\w*|rucola|valerian\w*|misticanza|spinaci|erbette|bietol\w*|zucchin\w*|melanzan\w*|peperon\w*|patat[ae](?!\s+(?:fritte|forno|chips))|carot[ae]|cipoll[ae]|scalogno|aglio|porri|sedano|finocch\w*|broccol\w*|cavolfior\w*|cavol\w*|verza|zucca|crema\s+(?:di\s+)?zucca|vellutata|zuppa\s+fresca|funghi\s+(?:freschi|champignon|pleurotus|porcini)|asparagi|carciofi(?!\s+(?:olio|vasetto|sott'olio))|radicchio|cetriol\w*|ravanell\w*|frutta\s+fresca|verdura\s+fresca)\b/i;
+const CAT_COLAZIONE_DOLCI_REGEX = /\b(caff[eè]|espresso|lavazza|illy|kimbo|borbone| Pellini|segafredo|nescafe|orzo\s+solubile|ginseng|t[eè]\b|infuso|tisana|camomilla|biscott\w*|frollini|canestrell\w*|amarett\w*|ricciarell\w*|cantucci|savoiardi|wafer|ringo\b|gocciole|pan di stelle|mulino bianco|balocco|gentilini|galbusera|misura\b|cornett\w*|croissant|plumcake|merendin\w*|buondi|fiesta\b|kinder|ferrero|nutella|crema\s+spalmabile|spalmabile\s+(?:nocciola|cacao|pistacchio)|cioccolat\w*|pralin\w*|gianduiott\w*|torron\w*|caramell\w*|gommose|marmellat\w*|confettur\w*|miele\b|cereali\s+colazione|corn\s*flakes|muesli|granola|fette biscottate)\b/i;
+const CAT_PANE_PASTICCERIA_REGEX = /\b(pane\b|pan\s+bauletto|pancarre|panini|baguette|ciabatta\s+pane|focaccia|pinsa|piadina|grissini|cracker\w*|tarall\w*|schiacciatin\w*|crostini|bruschett\w*|friselle|pasticceria|treccia\s+crema|sfogliat\w*|bign[eè]|cannol\w*|tiramisu|profiteroles|torta|crostata|strudel|panettone|pandoro|melegatti|bauli|motta|paluani|maina|colomba)\b/i;
+const CANNED_TOMATO_OR_PANTRY_GUARD = /\b(passata|polpa|pelati|concentrato|sugo|pesto|sott['’]?olio|in\s+scatola|tonno\s+(?:all['’]?olio|al\s+naturale|rio\s+mare|nostromo|mareblu|palmera|asdomar|callipo)|patatine|chips)\b/i;
+
+/**
+ * Assigns a clean, domain-consistent canonical department category with strict word boundaries.
+ * Eliminates legacy substring pollution (e.g. "-te\b" -> Colazione, "verGINe" -> Bevande, "sCREMAto" -> Cura Persona).
+ */
+export function classifyCanonicalCategory(item = {}, precomputedDomain = null) {
+  const domain = precomputedDomain || classifyProductDomain(item);
+
+  if (domain === 'personal_care') {
+    return 'Cura Persona e Igiene';
+  }
+  if (domain === 'home_cleaning' || domain === 'kitchen_cookware' || domain === 'pet_care') {
+    return 'Cura Casa e Bucato';
+  }
+
+  // domain === 'food_human'
+  const rawTitle = `${item.title || ''} ${item.brand || ''}`;
+  const text = stripAccents(rawTitle);
+  const existingCat = String(item.category || '').trim();
+
+  // Check explicit food departments in priority order with strict word boundaries
+  if (CAT_SURGELATI_REGEX.test(text)) {
+    return 'Surgelati';
+  }
+  if (CANNED_TOMATO_OR_PANTRY_GUARD.test(text) && !/\b(pizza|gelato|surgelat)\b/i.test(text)) {
+    return 'Dispensa e Pasta';
+  }
+  if (CAT_BEVANDE_REGEX.test(text) && !/\b(aceto|olio|biscott|cioccolat|torta|panettone|pandoro|salmone)\b/i.test(text)) {
+    return 'Acqua e Bevande';
+  }
+  if (CAT_COLAZIONE_DOLCI_REGEX.test(text) && !/\b(latte\s+(?:intero|parzialmente|scremato|uht|fresco)|crema\s+di\s+zucca|vellutata)\b/i.test(text)) {
+    return 'Colazione e Dolci';
+  }
+  if (CAT_PANE_PASTICCERIA_REGEX.test(text)) {
+    return 'Pane e Pasticceria';
+  }
+  if (CAT_LATTICINI_REGEX.test(text)) {
+    return 'Latticini e Formaggi';
+  }
+  if (CAT_CARNE_PESCE_REGEX.test(text)) {
+    return 'Carne e Pesce';
+  }
+  if (CAT_ORTOFRUTTA_REGEX.test(text)) {
+    return 'Frutta e Verdura';
+  }
+
+  // If the item already had a valid food category that wasn't one of the legacy polluted buckets, preserve it;
+  // Note: legacy `Colazione e Dolci` ("-te\b"), `Acqua e Bevande` ("verGINe"), `Frutta e Verdura` ("MELEgatti"),
+  // `Cura Persona e Igiene` ("sCREMAto") and `Cura Casa e Bucato` ("Piatti Pronti") MUST NOT be blindly preserved
+  // if they failed the strict regexes above!
+  if (
+    existingCat === 'Latticini e Formaggi' ||
+    existingCat === 'Carne e Pesce' ||
+    existingCat === 'Pane e Pasticceria' ||
+    existingCat === 'Surgelati'
+  ) {
+    return existingCat;
+  }
+
+  return 'Dispensa e Pasta';
 }
 
 /**
@@ -103,6 +229,8 @@ export function isHumanFoodOffer(item = {}) {
 export default {
   VALID_PRODUCT_DOMAINS,
   DOMAIN_LABELS,
+  FOOD_PRODUCT_CATEGORIES,
   classifyProductDomain,
+  classifyCanonicalCategory,
   isHumanFoodOffer
 };

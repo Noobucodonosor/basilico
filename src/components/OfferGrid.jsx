@@ -3,12 +3,15 @@ import { OfferCard } from './OfferCard.jsx';
 
 export function OfferGrid({
   offers = [],
+  totalOffers = 0,
+  hasMoreOffers = false,
+  loadingMore = false,
+  onLoadMore,
   loading = false,
   onOpenFlyer,
   onOpenCreaFood,
   onAddToShoppingList,
-  onResetFilters,
-  allFlyers = []
+  onResetFilters
 }) {
   if (loading) {
     return (
@@ -46,22 +49,52 @@ export function OfferGrid({
     );
   }
 
+  const effectiveTotal = totalOffers > 0 ? totalOffers : offers.length;
+  const remainingCount = Math.max(0, effectiveTotal - offers.length);
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-4">
-      {offers.map((offer) => (
-        <OfferCard
-          key={offer.id}
-          offer={offer}
-          onOpenCreaFood={onOpenCreaFood}
-          onAddToShoppingList={onAddToShoppingList}
-          onOpenFlyer={(item) => {
-            if (onOpenFlyer) {
-              const matchedFlyer = allFlyers.find((f) => f.storeId === item.storeId) || allFlyers[0] || item;
-              onOpenFlyer(matchedFlyer);
-            }
-          }}
-        />
-      ))}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between text-xs text-slate-500 px-0.5">
+        <span>
+          Visualizzate <strong className="text-slate-800">{offers.length}</strong> di{' '}
+          <strong className="text-slate-800">{effectiveTotal}</strong> offerte attive
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-1">
+        {offers.map((offer) => (
+          <OfferCard
+            key={offer.id}
+            offer={offer}
+            onOpenCreaFood={onOpenCreaFood}
+            onAddToShoppingList={onAddToShoppingList}
+            onOpenFlyer={(item) => {
+              if (onOpenFlyer) {
+                onOpenFlyer(item);
+              }
+            }}
+          />
+        ))}
+      </div>
+
+      {hasMoreOffers && onLoadMore && (
+        <div className="pt-2 pb-4 flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={onLoadMore}
+            disabled={loadingMore}
+            className="px-6 py-2.5 bg-slate-900 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-colors disabled:opacity-60 cursor-pointer inline-flex items-center gap-2"
+          >
+            {loadingMore ? (
+              <span>Caricamento offerte...</span>
+            ) : (
+              <span>
+                Mostra altre offerte (+{Math.min(60, remainingCount)} di {remainingCount} rimanenti)
+              </span>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

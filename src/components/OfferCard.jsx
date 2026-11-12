@@ -145,11 +145,11 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
       </div>
 
       {/* Track 4: Footer (Validity + Quick Add to Shopping List + Flyer Action) */}
-      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5 text-xs">
-        <span className="text-[11px] text-slate-500 truncate" title={validityText || ''}>
+      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-1 text-xs">
+        <span className="text-[11px] text-slate-500 whitespace-nowrap truncate" title={validityText || ''}>
           {validityText || 'Offerta attiva'}
         </span>
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           {onAddToShoppingList && !offer.isNamelessTile && (
             <button
               type="button"
@@ -162,7 +162,7 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
                   packSizeGrams:
                     offer.drainedWeightGrams ||
                     offer.packWeightGrams ||
-                    offer.referencePackEstimate?.estimatedGrossGrams ||
+                    offer.referencePackEstimate?.estimatedPackGrams ||
                     300,
                   preferredChain: offer.storeName || brand,
                   storeId: offer.storeId || null,
@@ -171,7 +171,7 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
                 });
                 setAddedToList(true);
               }}
-              className={`px-2 py-0.5 rounded font-bold text-[10px] border transition-colors cursor-pointer ${
+              className={`px-1.5 py-0.5 rounded font-bold text-[10px] border transition-colors cursor-pointer ${
                 addedToList
                   ? 'bg-emerald-700 text-white border-emerald-700'
                   : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
@@ -185,8 +185,9 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
             type="button"
             onClick={() => onOpenFlyer && onOpenFlyer(offer)}
             className="text-emerald-700 font-semibold hover:text-emerald-800 text-[11px] shrink-0 hover:underline cursor-pointer"
+            title={offer.pageNumber ? `Apri volantino a pagina ${offer.pageNumber}` : 'Apri volantino promozionale'}
           >
-            Sfoglia volantino →
+            {offer.pageNumber ? `Pag. ${offer.pageNumber} →` : 'Volantino →'}
           </button>
         </div>
       </div>
