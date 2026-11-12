@@ -96,7 +96,7 @@ export function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
           <div className="mt-2 text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-md flex items-center gap-2">
             <span aria-hidden="true">📍</span>
             <span>
-              <strong>Doro Tigullio:</strong> Punto vendita regionale a Santa Margherita Ligure al servizio del bacino Rapallo Nord / Tigullio.
+              <strong>{currentTab.fullName || currentTab.name}:</strong> Punto vendita a servizio del bacino di Rapallo / Tigullio.
             </span>
           </div>
         )}

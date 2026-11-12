@@ -205,7 +205,12 @@ export class SqliteCacheStore {
     this._stmtHas = this.db.prepare('SELECT 1 FROM cache_entries WHERE key = ?');
     this._stmtClear = this.db.prepare('DELETE FROM cache_entries');
     this._stmtKeys = this.db.prepare('SELECT key FROM cache_entries');
-    this._stmtPrune = this.db.prepare('DELETE FROM cache_entries WHERE expires_at < ?');
+    this._stmtListExpiry = this.db.prepare('SELECT key, expires_at, stale_grace_seconds FROM cache_entries');
+    this._stmtPrune = this.db.prepare(`
+      DELETE FROM cache_entries
+      WHERE unixepoch(expires_at) IS NULL
+         OR (unixepoch(expires_at) + COALESCE(stale_grace_seconds, 0)) < unixepoch(?)
+    `);
   }
 
   get(key) {
@@ -275,9 +280,23 @@ export class SqliteCacheStore {
     return this._stmtKeys.all().map(r => r.key);
   }
 
-  pruneExpired(cutoffIsoString = new Date().toISOString()) {
-    const result = this._stmtPrune.run(cutoffIsoString);
-    return result.changes;
+  pruneExpired(cutoffIsoString = new Date().toISOString(), { honorGrace = false } = {}) {
+    const cutoffMs = new Date(cutoffIsoString).getTime();
+    if (Number.isNaN(cutoffMs)) return 0;
+    const rows = this._stmtListExpiry.all();
+    let deleted = 0;
+    for (const row of rows) {
+      const expiresAtMs = new Date(row.expires_at).getTime();
+      const graceMs = honorGrace ? (Number(row.stale_grace_seconds) || 0) * 1000 : 0;
+      if (Number.isNaN(expiresAtMs) || (expiresAtMs + graceMs) < cutoffMs) {
+        deleted += this._stmtDelete.run(row.key).changes;
+      }
+    }
+    return deleted;
+  }
+
+  cleanupExpired(cutoffIsoString = new Date().toISOString()) {
+    return this.pruneExpired(cutoffIsoString, { honorGrace: true });
   }
 
   close() {
@@ -301,13 +320,14 @@ export class CacheManager {
    * @param {string} [options.sqlitePath] - Custom SQLite file path (default: <cacheDir>/cache.db)
    */
   constructor(options = {}) {
-    this.cacheDir = options.cacheDir || path.resolve(process.cwd(), 'data', 'cache');
-    this.defaultTtlSeconds = options.defaultTtlSeconds ?? 21600; // 6 hours
-    this.defaultStaleGraceSeconds = options.defaultStaleGraceSeconds ?? 604800; // 7 days
-    this.backendType = options.backend || 'json';
+    const opts = typeof options === 'string' ? { cacheDir: options } : (options || {});
+    this.cacheDir = opts.cacheDir || path.resolve(process.cwd(), 'data', 'cache');
+    this.defaultTtlSeconds = opts.defaultTtlSeconds ?? 21600; // 6 hours
+    this.defaultStaleGraceSeconds = opts.defaultStaleGraceSeconds ?? 604800; // 7 days
+    this.backendType = opts.backend || 'json';
 
     if (this.backendType === 'sqlite') {
-      const dbPath = options.sqlitePath || path.join(this.cacheDir, 'cache.db');
+      const dbPath = opts.sqlitePath || path.join(this.cacheDir, 'cache.db');
       this.store = new SqliteCacheStore(dbPath);
     } else {
       this.store = new JsonDiskStore(this.cacheDir);
@@ -379,6 +399,9 @@ export class CacheManager {
     const includeMeta = options.includeMeta === true;
     const now = Date.now();
     const expiresAt = new Date(envelope.metadata.expiresAt).getTime();
+    if (Number.isNaN(expiresAt)) {
+      return null;
+    }
     const staleGraceMs = (envelope.metadata.staleGraceSeconds ?? this.defaultStaleGraceSeconds) * 1000;
     const expiredCutoff = expiresAt + staleGraceMs;
 
@@ -393,13 +416,14 @@ export class CacheManager {
     }
 
     if (includeMeta) {
+      const cachedAtMs = new Date(envelope.metadata.cachedAt).getTime();
       return {
         data: envelope.data,
         metadata: {
           ...envelope.metadata,
           isStale: now > expiresAt,
           isExpired: now > expiredCutoff,
-          ageSeconds: Math.floor((now - new Date(envelope.metadata.cachedAt).getTime()) / 1000)
+          ageSeconds: Number.isNaN(cachedAtMs) ? 0 : Math.floor((now - cachedAtMs) / 1000)
         }
       };
     }
@@ -420,7 +444,11 @@ export class CacheManager {
     if (!envelope || !envelope.metadata || !envelope.metadata.expiresAt) {
       return false;
     }
-    return Date.now() >= new Date(envelope.metadata.expiresAt).getTime();
+    const expiresAt = new Date(envelope.metadata.expiresAt).getTime();
+    if (Number.isNaN(expiresAt)) {
+      return true;
+    }
+    return Date.now() >= expiresAt;
   }
 
   isExpired(key, allowGrace = true) {
@@ -437,6 +465,9 @@ export class CacheManager {
       return true;
     }
     const expiresAt = new Date(envelope.metadata.expiresAt).getTime();
+    if (Number.isNaN(expiresAt)) {
+      return true;
+    }
     const graceMs = allowGrace ? (envelope.metadata.staleGraceSeconds ?? this.defaultStaleGraceSeconds) * 1000 : 0;
     return Date.now() > (expiresAt + graceMs);
   }
@@ -461,19 +492,39 @@ export class CacheManager {
     const cachedAtMs = new Date(envelope.metadata.cachedAt).getTime();
     const expiresAtMs = new Date(envelope.metadata.expiresAt).getTime();
     const graceMs = (envelope.metadata.staleGraceSeconds ?? this.defaultStaleGraceSeconds) * 1000;
+    const invalidExpiry = Number.isNaN(expiresAtMs);
 
     return {
       key,
       exists: true,
-      isStale: now >= expiresAtMs,
-      isExpired: now > (expiresAtMs + graceMs),
+      isStale: invalidExpiry ? true : now >= expiresAtMs,
+      isExpired: invalidExpiry ? true : now > (expiresAtMs + graceMs),
       cachedAt: envelope.metadata.cachedAt,
       expiresAt: envelope.metadata.expiresAt,
-      ageSeconds: Math.floor((now - cachedAtMs) / 1000),
+      ageSeconds: Number.isNaN(cachedAtMs) ? null : Math.floor((now - cachedAtMs) / 1000),
       ttlSeconds: envelope.metadata.ttlSeconds,
       staleGraceSeconds: envelope.metadata.staleGraceSeconds,
       dataSource: envelope.metadata.dataSource || 'cache'
     };
+  }
+
+  cleanupExpired(cutoffIsoString = new Date().toISOString()) {
+    if (typeof this.store.cleanupExpired === 'function') {
+      return this.store.cleanupExpired(cutoffIsoString);
+    }
+    const cutoffMs = new Date(cutoffIsoString).getTime();
+    if (Number.isNaN(cutoffMs)) return 0;
+    let deleted = 0;
+    for (const key of this.keys()) {
+      const envelope = this.getEnvelope(key);
+      if (!envelope || !envelope.metadata) continue;
+      const expiresAtMs = new Date(envelope.metadata.expiresAt).getTime();
+      const graceMs = (envelope.metadata.staleGraceSeconds ?? this.defaultStaleGraceSeconds) * 1000;
+      if (Number.isNaN(expiresAtMs) || (expiresAtMs + graceMs) < cutoffMs) {
+        if (this.delete(key)) deleted++;
+      }
+    }
+    return deleted;
   }
 
   has(key) {
@@ -506,6 +557,12 @@ export class CacheManager {
 
   keysSync() {
     return this.keys();
+  }
+
+  close() {
+    if (this.store && typeof this.store.close === 'function') {
+      this.store.close();
+    }
   }
 }
 

@@ -375,9 +375,13 @@ export class CreaService {
       effectiveEdibleGramsRaw = customGrams;
     }
 
-    // If user asks for 100g of COOKED product (or cooked portion from raw weight):
-    // When state === 'cooked_from_raw', we report both resulting cooked weight and nutrient density per 100g cooked
-    const scaleFactor = (effectiveEdibleGramsRaw / 100) / (options.per100gCooked ? yieldMult : 1.0);
+    // Apply / yieldMult ONLY when explicitly viewing 100g of COOKED product (mode === '100g_edible' && per100gCooked);
+    // NEVER divide total portion nutrients when mode is 'portion_larn', 'custom_grams', or '100g_gross'!
+    const normalizePer100gCooked =
+      mode === '100g_edible' &&
+      state === 'cooked_from_raw' &&
+      Boolean(options.per100gCooked);
+    const scaleFactor = (effectiveEdibleGramsRaw / 100) / (normalizePer100gCooked ? yieldMult : 1.0);
     const resultingCookedWeightGrams = Number((effectiveEdibleGramsRaw * yieldMult).toFixed(1));
     const applyThermalRetention = state === 'cooked_from_raw' && Boolean(food.yieldFactor?.isRaw);
     const baseFatG = food.keyMetrics?.fatG || 0;
@@ -386,11 +390,8 @@ export class CreaService {
     const computedSections = {};
     let totalValuesCount = 0;
 
-    for (const secName of CREA_SECTION_ORDER) {
-      const rows = food.sections[secName] || [];
-      if (rows.length === 0) continue;
-
-      computedSections[secName] = rows.map((row) => {
+    const computeRowsForSection = (secName, rows) =>
+      rows.map((row) => {
         totalValuesCount++;
         const parsed = parseCreaValue(row.v100);
         const isRelative = isRelativeFractionComponent(secName, row.c);
@@ -436,28 +437,17 @@ export class CreaService {
           bibliographicRef: row.ref
         };
       });
+
+    for (const secName of CREA_SECTION_ORDER) {
+      const rows = food.sections[secName] || [];
+      if (rows.length === 0) continue;
+      computedSections[secName] = computeRowsForSection(secName, rows);
     }
 
-    // Include any section not in CREA_SECTION_ORDER (defensive completeness)
+    // Include any section not in CREA_SECTION_ORDER (defensive completeness with identical scaling & thermal retention)
     for (const [secName, rows] of Object.entries(food.sections || {})) {
       if (!computedSections[secName] && rows.length > 0) {
-        computedSections[secName] = rows.map((row) => {
-          totalValuesCount++;
-          const parsed = parseCreaValue(row.v100);
-          return {
-            component: row.c,
-            value100gRaw: row.v100,
-            portionRaw: row.vp,
-            computedValue: parsed.numeric,
-            displayValue: parsed.isTrace ? 'tr' : (parsed.numeric !== null ? String(parsed.numeric) : 'n.d.'),
-            isTrace: parsed.isTrace,
-            isNull: parsed.isNull,
-            isRelativeFraction: false,
-            vnrPct: null,
-            sourceCode: row.src,
-            bibliographicRef: row.ref
-          };
-        });
+        computedSections[secName] = computeRowsForSection(secName, rows);
       }
     }
 
@@ -478,6 +468,7 @@ export class CreaService {
         resultingCookedWeightGrams,
         scaleFactor: Number(scaleFactor.toFixed(4)),
         state,
+        per100gCooked: normalizePer100gCooked,
         thermalRetentionApplied: applyThermalRetention
       },
       keyMetrics: food.keyMetrics,
@@ -501,7 +492,7 @@ export class CreaService {
 
     let results = this._foods.map((f) => {
       const compatibility = userProfileService.checkItemCompatibility(
-        { title: f.name, category: f.category, domain: 'food_human' },
+        { title: f.name, category: f.category || '', domain: 'food_human' },
         profileId
       );
       return {

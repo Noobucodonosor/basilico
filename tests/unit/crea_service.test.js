@@ -166,4 +166,95 @@ describe('ADR-0008 / TASK-M2-01: CREA Scientific Nutrition Engine & Head-Noun Of
     const ranked = matcher.rankOffersByNutrientPerEuro(allEnriched, { metric: 'proteinGPerEuro', hideIncompatible: true });
     assert.ok(ranked.length >= 80, `Expected >=80 real Rapallo offers in Nutrients/Euro ranking, got ${ranked.length}`);
   });
+
+  it('7. M-P0-06: never divides portion_larn or custom_grams kcal by yieldMult when cooked_from_raw (80g raw pasta -> 192g cooked stays ~273 kcal)', () => {
+    const pasta = creaService.searchAndRankFoods({ q: 'Pasta di semola', limit: 3 }).foods[0];
+    const larnCooked = creaService.computeNutritionalSheet(pasta.id, {
+      mode: 'portion_larn',
+      state: 'cooked_from_raw',
+      per100gCooked: true
+    });
+    assert.equal(larnCooked.calculationContext.resultingCookedWeightGrams, 192);
+    const larnKcal = larnCooked.sections['MACRO NUTRIENTI'].find((r) => r.component === 'Energia (kcal)').computedValue;
+    assert.ok(larnKcal > 250 && larnKcal < 300, `80g raw pasta cooked must preserve ~273 kcal, got ${larnKcal}`);
+
+    const per100Cooked = creaService.computeNutritionalSheet(pasta.id, {
+      mode: '100g_edible',
+      state: 'cooked_from_raw',
+      per100gCooked: true
+    });
+    const per100CookedKcal = per100Cooked.sections['MACRO NUTRIENTI'].find((r) => r.component === 'Energia (kcal)').computedValue;
+    assert.ok(per100CookedKcal > 130 && per100CookedKcal < 160, `100g of cooked pasta should be ~142 kcal, got ${per100CookedKcal}`);
+  });
+
+  it('8. M-P0-08: filters all official CREA "Formaggi e latticini" cheeses when includeExcluded=false for both dany and barca', () => {
+    const danyCheeses = creaService.searchAndRankFoods({
+      profileId: 'dany',
+      includeExcluded: false,
+      category: 'Formaggi e latticini'
+    });
+    const barcaCheeses = creaService.searchAndRankFoods({
+      profileId: 'barca',
+      includeExcluded: false,
+      category: 'Formaggi e latticini'
+    });
+    const cheeseKeywords = /formagg|pecorin|parmigian|grana|mozzarell|ricott|stracchin|gorgonzol|scamorz|provol|caciott|asiago|taleggi|robiol|brie|feta|mascarpon|crescenz|caprin|camembert|cheddar|edam|fontin|caciocavall|primo sale|fiocchi di latte|quark|formaggin|sottilett|roquefort|vezzena/i;
+    const leakedDany = danyCheeses.foods.filter((f) => cheeseKeywords.test(f.name));
+    const leakedBarca = barcaCheeses.foods.filter((f) => cheeseKeywords.test(f.name));
+    assert.equal(leakedDany.length, 0, `Dany leaked cheeses: ${leakedDany.map((f) => f.name).join(', ')}`);
+    assert.equal(leakedBarca.length, 0, `Barca leaked cheeses: ${leakedBarca.map((f) => f.name).join(', ')}`);
+  });
+
+  it('9. M-P1-07 & M-P1-09: maps canned tuna, passata, caciotta & butcher burgers to exact CREA items, exposes packWeightGrams, and invalidates enrichOfferRecord memo on override', () => {
+    const tonno = matcher.matchOfferToCrea({
+      id: 'test-tonno-pinna',
+      title: "Eurospin - Tonno Pinna Gialla All'Olio Di Oliva 3x80g",
+      brand: 'Eurospin',
+      domain: 'food_human',
+      category: 'Dispensa e Pasta'
+    });
+    assert.ok(tonno);
+    assert.equal(tonno.creaFoodName, "Tonno sott'olio, sgocciolato");
+
+    const passata = matcher.matchOfferToCrea({
+      id: 'test-passata-mutti',
+      title: 'Mutti - Passata Di Pomodoro 700g',
+      brand: 'Mutti',
+      domain: 'food_human',
+      category: 'Dispensa e Pasta'
+    });
+    assert.ok(passata);
+    assert.equal(passata.creaFoodName, 'Pomodori, passata');
+
+    const caciotta = matcher.matchOfferToCrea({
+      id: 'test-caciotta-bruna',
+      title: 'Bruna - Caciotta Fresca 300g',
+      brand: 'Bruna',
+      domain: 'food_human',
+      category: 'Latticini e Formaggi'
+    });
+    assert.ok(caciotta);
+    assert.equal(caciotta.creaFoodName, 'Caciotta mista');
+
+    const burger = matcher.matchOfferToCrea({
+      id: 'test-burger-bovino',
+      title: 'Hamburger Di Bovino Adulto Scelto 200g',
+      domain: 'food_human',
+      category: 'Carne e Pesce'
+    });
+    assert.ok(burger);
+    assert.ok(!burger.creaFoodName.toLowerCase().includes('panino'), `Butcher burger must not match fast-food panino: ${burger.creaFoodName}`);
+
+    const enrichedPassata = enrichOfferRecord({
+      id: 'test-npe-weights',
+      title: 'Mutti - Passata Di Pomodoro 700g',
+      brand: 'Mutti',
+      promoPrice: 1.19,
+      domain: 'food_human',
+      category: 'Dispensa e Pasta'
+    });
+    const npe = matcher.computeOfferNutrientsPerEuro(enrichedPassata);
+    assert.equal(npe.packWeightGrams, 700);
+    assert.equal(npe.drainedWeightGrams, 700);
+  });
 });

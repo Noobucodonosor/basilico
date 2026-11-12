@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import AisleChecklistModal from './AisleChecklistModal.jsx';
 
 const DAY_MODE_OPTIONS = [
@@ -7,20 +7,22 @@ const DAY_MODE_OPTIONS = [
   { id: 'eat_out', label: '🍽️ Fuori a Pranzo/Cena' }
 ];
 
-export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
+const DEFAULT_DAY_MODES = [
+  'land_day',
+  'land_day',
+  'land_day',
+  'land_day',
+  'boat_day',
+  'boat_day',
+  'land_day'
+];
+
+export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, onPantryUpdated }) {
   const [models, setModels] = useState([]);
   const [selectedModelId, setSelectedModelId] = useState('promo_driven_neodiet');
   const [budgetEur, setBudgetEur] = useState(80);
   const [servings, setServings] = useState(1);
-  const [dayModes, setDayModes] = useState([
-    'land_day',
-    'land_day',
-    'land_day',
-    'land_day',
-    'boat_day',
-    'boat_day',
-    'land_day'
-  ]);
+  const [dayModes, setDayModes] = useState(DEFAULT_DAY_MODES);
 
   const [plan, setPlan] = useState(null);
   const [shoppingList, setShoppingList] = useState(null);
@@ -31,32 +33,102 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
   const [manualItemPrice, setManualItemPrice] = useState('2.50');
   const [statusToast, setStatusToast] = useState('');
 
+  const generateAbortRef = useRef(null);
+  const budgetDebounceRef = useRef(null);
+
   useEffect(() => {
-    fetch('/api/planner/models')
+    const ctrl = new AbortController();
+    fetch('/api/planner/models', { signal: ctrl.signal })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.models) setModels(data.models);
+      })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, []);
+
+  // Hydrate persisted plan + shopping list on mount / profile switch via GET /api/planner/current
+  // (NEVER fires POST /api/planner/generate on mount, preserving promo items, checked flags & swaps!)
+  useEffect(() => {
+    const ctrl = new AbortController();
+    setLoading(true);
+    const profParam = activeProfileId ? `?profileId=${encodeURIComponent(activeProfileId)}` : '';
+
+    fetch(`/api/planner/current${profParam}`, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return;
+        if (data.plan) {
+          setPlan(data.plan);
+          if (data.plan.model?.id) setSelectedModelId(data.plan.model.id);
+          if (Number.isFinite(Number(data.plan.budgetEur)) && Number(data.plan.budgetEur) > 0) {
+            setBudgetEur(Number(data.plan.budgetEur));
+          }
+          if (Number.isFinite(Number(data.plan.servings)) && Number(data.plan.servings) > 0) {
+            setServings(Number(data.plan.servings));
+          }
+          if (Array.isArray(data.plan.days) && data.plan.days.length > 0) {
+            setDayModes(data.plan.days.map((d) => d.dayMode || 'land_day'));
+          }
+        }
+        if (data.shoppingList) {
+          setShoppingList(data.shoppingList);
+          if (onShoppingListChange) {
+            onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!ctrl.signal.aborted) {
+          setLoading(false);
+        }
       });
+
+    return () => {
+      ctrl.abort();
+    };
+  }, [activeProfileId, onShoppingListChange]);
+
+  // Cleanup any in-flight generation / debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+      if (generateAbortRef.current) generateAbortRef.current.abort();
+    };
   }, []);
 
   const generatePlan = useCallback(
-    (overrideModes = null) => {
+    (overrides = {}) => {
+      if (generateAbortRef.current) {
+        generateAbortRef.current.abort();
+      }
+      const ctrl = new AbortController();
+      generateAbortRef.current = ctrl;
+
+      const nextModelId = overrides.modelId ?? selectedModelId;
+      const nextServings = overrides.servings ?? servings;
+      const rawBudget = overrides.budgetEur ?? budgetEur;
+      const nextBudget = Number.isFinite(Number(rawBudget)) && Number(rawBudget) > 0 ? Number(rawBudget) : 65;
+      const nextModes = overrides.dayModes ?? dayModes;
+
       setLoading(true);
       fetch('/api/planner/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: ctrl.signal,
         body: JSON.stringify({
-          modelId: selectedModelId,
+          modelId: nextModelId,
           daysCount: 7,
-          servings,
-          budgetEur: Number(budgetEur) || 65,
-          dayModes: overrideModes || dayModes,
+          servings: nextServings,
+          budgetEur: nextBudget,
+          dayModes: nextModes,
           profileId: activeProfileId || 'dany'
         })
       })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
-          if (data) {
+          if (data && !ctrl.signal.aborted) {
             setPlan(data.plan);
             setShoppingList(data.shoppingList);
             if (onShoppingListChange) {
@@ -64,20 +136,48 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
             }
           }
         })
-        .finally(() => setLoading(false));
+        .catch(() => {})
+        .finally(() => {
+          if (!ctrl.signal.aborted) {
+            setLoading(false);
+          }
+        });
     },
     [selectedModelId, servings, budgetEur, dayModes, activeProfileId, onShoppingListChange]
   );
 
-  useEffect(() => {
-    generatePlan();
-  }, [generatePlan]);
+  const handleSelectModel = (modelId) => {
+    if (modelId === selectedModelId) return;
+    setSelectedModelId(modelId);
+    if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+    generatePlan({ modelId });
+  };
+
+  const handleServingsChange = (nextServings) => {
+    const safeServings = Math.max(1, Math.min(8, Number(nextServings) || 1));
+    setServings(safeServings);
+    if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+    generatePlan({ servings: safeServings });
+  };
+
+  const handleBudgetInputChange = (rawVal) => {
+    setBudgetEur(rawVal);
+    if (budgetDebounceRef.current) {
+      clearTimeout(budgetDebounceRef.current);
+    }
+    const parsed = Number(rawVal);
+    if (!Number.isFinite(parsed) || parsed < 15) return;
+    budgetDebounceRef.current = setTimeout(() => {
+      generatePlan({ budgetEur: parsed });
+    }, 400);
+  };
 
   const handleDayModeChange = (idx, newMode) => {
     const updated = [...dayModes];
     updated[idx] = newMode;
     setDayModes(updated);
-    generatePlan(updated);
+    if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+    generatePlan({ dayModes: updated });
   };
 
   const handleSwapMeal = async (dayIndex, slot) => {
@@ -142,13 +242,15 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
   const handleAddManualItem = async (e) => {
     e.preventDefault();
     if (!manualItemName.trim()) return;
+    const parsedPrice = Number(String(manualItemPrice || '2.5').replace(',', '.'));
+    const safePrice = Number.isFinite(parsedPrice) && parsedPrice > 0 ? parsedPrice : 2.5;
     const res = await fetch('/api/shopping-list/items', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: manualItemName,
         domain: manualItemDomain,
-        unitPriceEur: Number(manualItemPrice) || 2.5
+        unitPriceEur: safePrice
       })
     });
     if (res.ok) {
@@ -170,6 +272,9 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
       setShoppingList(data.shoppingList);
       if (onShoppingListChange) {
         onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
+      }
+      if (onPantryUpdated) {
+        onPantryUpdated();
       }
       setStatusToast(
         `✅ Spesa completata: ${data.loadedCount} confezioni intere caricate automaticamente nella tua Dispensa a 3 Luoghi!`
@@ -239,7 +344,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
                 min="20"
                 max="300"
                 value={budgetEur}
-                onChange={(e) => setBudgetEur(Number(e.target.value))}
+                onChange={(e) => handleBudgetInputChange(e.target.value)}
                 className="w-20 text-xs font-extrabold border border-slate-300 rounded-lg px-2 py-1 text-slate-900"
               />
             </label>
@@ -247,7 +352,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
               <span>Persone:</span>
               <select
                 value={servings}
-                onChange={(e) => setServings(Number(e.target.value))}
+                onChange={(e) => handleServingsChange(e.target.value)}
                 className="text-xs font-extrabold border border-slate-300 rounded-lg px-2 py-1 text-slate-900"
               >
                 {[1, 2, 3, 4].map((n) => (
@@ -257,6 +362,13 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
                 ))}
               </select>
             </label>
+            <button
+              type="button"
+              onClick={() => generatePlan()}
+              className="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
+            >
+              🔄 Rigenera Piano
+            </button>
           </div>
         </div>
 
@@ -267,7 +379,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
               <button
                 key={m.id}
                 type="button"
-                onClick={() => setSelectedModelId(m.id)}
+                onClick={() => handleSelectModel(m.id)}
                 className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                   isSel
                     ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
@@ -287,18 +399,18 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
         </div>
       </section>
 
-      {loading || !plan ? (
+      {loading && !plan ? (
         <div className="p-8 text-center text-sm text-slate-500">
-          Generazione piano settimanale a confezioni intere zero-spreco...
+          Caricamento piano settimanale a confezioni intere zero-spreco...
         </div>
-      ) : (
+      ) : !plan ? null : (
         <>
           {/* Summary KPI Bar */}
           <section className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
               <div className="text-[11px] font-bold text-slate-500 uppercase">Scontrino Cassa Confezioni Intere</div>
               <div className="text-xl font-extrabold text-emerald-700 mt-1">
-                €{plan.ledger.totalCheckoutCashEur.toFixed(2)}
+                €{Number(plan.ledger.totalCheckoutCashEur || 0).toFixed(2)}
               </div>
               <div className="text-[11px] text-slate-500">
                 Budget: €{plan.budgetEur} ({plan.withinBudget ? '✓ Rispettato' : 'Soglia minima'})
@@ -308,7 +420,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
             <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
               <div className="text-[11px] font-bold text-slate-500 uppercase">Valore Grammi Puri Consumati</div>
               <div className="text-xl font-extrabold text-slate-900 mt-1">
-                €{plan.ledger.totalPureConsumedValueEur.toFixed(2)}
+                €{Number(plan.ledger.totalPureConsumedValueEur || 0).toFixed(2)}
               </div>
               <div className="text-[11px] text-slate-500">Il resto rientra tracciato in Dispensa</div>
             </div>
@@ -316,17 +428,17 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
             <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
               <div className="text-[11px] font-bold text-slate-500 uppercase">Equivalente Menu Ristoranti</div>
               <div className="text-xl font-extrabold text-indigo-800 mt-1">
-                €{plan.ledger.totalMenuEquivalentEur.toFixed(2)}
+                €{Number(plan.ledger.totalMenuEquivalentEur || 0).toFixed(2)}
               </div>
               <div className="text-[11px] text-emerald-700 font-bold">
-                Risparmio Arbitraggio: €{plan.ledger.totalArbitrageSavingsEur.toFixed(2)}
+                Risparmio Arbitraggio: €{Number(plan.ledger.totalArbitrageSavingsEur || 0).toFixed(2)}
               </div>
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
               <div className="text-[11px] font-bold text-slate-500 uppercase">Freschi Aperti Prioritizzati</div>
               <div className="text-xl font-extrabold text-amber-700 mt-1">
-                {plan.openedPerishablesPrioritized.length} confezioni
+                {(plan.openedPerishablesPrioritized || []).length} confezioni
               </div>
               <div className="text-[11px] text-slate-500">Consumati nei primi giorni entro T_open</div>
             </div>
@@ -411,8 +523,8 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
                           </div>
                           <div className="text-xs font-extrabold text-slate-900">{day.lunch.dish.title}</div>
                           <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-slate-500">
-                            <span>Porzione: €{day.lunch.dish.costAndArbitrage.purePortionCostEur.toFixed(2)}</span>
-                            <span>• {day.lunch.dish.nutritionPerServing.energyKcal} kcal</span>
+                            <span>Porzione: €{Number(day.lunch.dish.costAndArbitrage?.purePortionCostEur || 0).toFixed(2)}</span>
+                            <span>• {day.lunch.dish.nutritionPerServing?.energyKcal || 0} kcal</span>
                             {day.lunch.consumesOpenedPerishable && (
                               <span className="px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-bold">
                                 ⏱️ Svuota Fresco Aperto
@@ -439,8 +551,8 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
                           </div>
                           <div className="text-xs font-extrabold text-slate-900">{day.dinner.dish.title}</div>
                           <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-slate-500">
-                            <span>Porzione: €{day.dinner.dish.costAndArbitrage.purePortionCostEur.toFixed(2)}</span>
-                            <span>• {day.dinner.dish.nutritionPerServing.energyKcal} kcal</span>
+                            <span>Porzione: €{Number(day.dinner.dish.costAndArbitrage?.purePortionCostEur || 0).toFixed(2)}</span>
+                            <span>• {day.dinner.dish.nutritionPerServing?.energyKcal || 0} kcal</span>
                             {day.dinner.sharedPackCount > 0 && (
                               <span className="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-bold">
                                 🔗 {day.dinner.sharedPackCount} conf. concatenate
@@ -468,7 +580,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {plan.ledger.wholePackItems.slice(0, 12).map((wp) => (
+              {(plan.ledger.wholePackItems || []).slice(0, 12).map((wp) => (
                 <div
                   key={wp.key}
                   className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1.5"
@@ -476,7 +588,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
                   <div className="flex items-center justify-between">
                     <span className="font-extrabold text-slate-900">{wp.name}</span>
                     <span className="font-extrabold text-emerald-800">
-                      {wp.packsToBuy} conf. × {wp.packSizeGrams}g = €{wp.checkoutCostEur.toFixed(2)}
+                      {wp.packsToBuy} conf. × {wp.packSizeGrams}g = €{Number(wp.checkoutCostEur || 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="text-[11px] text-slate-600">
@@ -535,10 +647,10 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }
                       <span className="text-xs font-bold text-slate-600">🚶 ~{sim.estimatedTotalMinutes} min</span>
                     </div>
                     <div className="text-lg font-extrabold text-emerald-800">
-                      €{sim.estimatedTotalEur.toFixed(2)}
+                      €{Number(sim.estimatedTotalEur || 0).toFixed(2)}
                       {sim.savingsVsSingleEur > 0 && (
                         <span className="ml-2 text-xs font-bold text-emerald-600">
-                          (Risparmi €{sim.savingsVsSingleEur.toFixed(2)})
+                          (Risparmi €{Number(sim.savingsVsSingleEur || 0).toFixed(2)})
                         </span>
                       )}
                     </div>

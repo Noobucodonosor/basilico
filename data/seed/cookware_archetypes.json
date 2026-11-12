@@ -63,10 +63,10 @@
     "id": "teglia_forno",
     "name": "Teglia / Pirofila Rettangolare da Forno (Rame Stagnato / Gres)",
     "category": "bakeware",
-    "material": "acciaio_inox_18_10",
+    "material": "rame_stagnato_gres",
     "inductionCompatible": false,
-    "maxTempC": 260,
-    "unlockedDishesCount": 49,
+    "maxTempC": 230,
+    "unlockedDishesCount": 48,
     "physicalJustification": "Distribuzione uniforme dell'energia termica convettiva e radiativa (180-220°C) per farinata, focaccia, pesce al forno alla ligure e torte di verdura.",
     "rapalloSource": "Casalinghi & Ferramenta Rapallo / Eurospin",
     "referencePriceEuro": 14.90

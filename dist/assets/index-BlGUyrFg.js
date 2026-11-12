@@ -20012,6 +20012,7 @@ function Header({
   status,
   isOnline = true,
   dataSource = "live",
+  activeRoom = "room-1-negozi",
   activeStoreName,
   mobileSearchOpen,
   isMobileSearchOpen,
@@ -20063,7 +20064,7 @@ function Header({
         {
           type: "button",
           onClick: onOpenCounterPriceModal,
-          className: "inline-flex sm:hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer shrink-0",
+          className: "inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer shrink-0",
           title: "Registra un prezzo visto al banco in pescheria, macelleria o scaffale",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: "🏷️" }),
@@ -20167,7 +20168,7 @@ function Header({
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
+      activeRoom === "room-1-negozi" && onToggleMobileSearch && /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
           type: "button",
@@ -20346,8 +20347,11 @@ function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
     currentTab?.isRegionalServing && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-md flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: "📍" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Doro Tigullio:" }),
-        " Punto vendita regionale a Santa Margherita Ligure al servizio del bacino Rapallo Nord / Tigullio."
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+          currentTab.fullName || currentTab.name,
+          ":"
+        ] }),
+        " Punto vendita a servizio del bacino di Rapallo / Tigullio."
       ] })
     ] })
   ] }) });
@@ -20768,11 +20772,17 @@ function OfferGrid({
 function EmptyState({
   searchQuery = "",
   selectedCategory = null,
+  selectedDomain = null,
   selectedStoreName = null,
+  hideIncompatible = false,
   onClearFilters,
   onApplyQuery
 }) {
-  const hasActiveFilters = Boolean(searchQuery.trim() || selectedCategory);
+  const hasDomainFilter = Boolean(selectedDomain && selectedDomain !== "all");
+  const hasFilters = Boolean(
+    searchQuery.trim() || selectedCategory || hasDomainFilter || hideIncompatible || selectedStoreName
+  );
+  const showFoodSuggestions = !hasDomainFilter || selectedDomain === "food_human";
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center py-16 px-4 text-center bg-white rounded-2xl border border-slate-200 shadow-xs my-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-8 h-8", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       "path",
@@ -20812,9 +20822,18 @@ function EmptyState({
         selectedCategory,
         '"'
       ] }),
+      selectedStoreName && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        " per ",
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-900", children: selectedStoreName })
+      ] }),
       "."
+    ] }) : hasDomainFilter && selectedStoreName ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      "Non ci sono offerte attive per ",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-900", children: selectedStoreName }),
+      " ",
+      "nel dominio merceologico selezionato."
     ] }) : "Al momento non ci sono offerte attive disponibili per i filtri selezionati." }),
-    onApplyQuery && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-center gap-2 mb-6", children: [
+    onApplyQuery && showFoodSuggestions && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-center gap-2 mb-6", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-slate-400 mr-1", children: "Ricerche frequenti a Rapallo:" }),
       ["Pasta", "Caffè", "Olio", "Latte", "Biscotti"].map((term) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
@@ -20827,7 +20846,7 @@ function EmptyState({
         term
       ))
     ] }),
-    hasActiveFilters && onClearFilters && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    hasFilters && onClearFilters && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "button",
       {
         type: "button",
@@ -20970,6 +20989,7 @@ function FlyerCarousel({
   onPageChange,
   zoomLevel = 1,
   onZoomToggle,
+  onZoomChange,
   flyerTitle = "Volantino Rapallo",
   storeName = "Supermercato",
   flyerOffers = [],
@@ -20978,10 +20998,19 @@ function FlyerCarousel({
   const scrollerRef = reactExports.useRef(null);
   const [isSwiping, setIsSwiping] = reactExports.useState(false);
   const [failedPages, setFailedPages] = reactExports.useState({});
+  const [pinchZoom, setPinchZoom] = reactExports.useState(zoomLevel);
   const touchStateRef = reactExports.useRef({
     initialDist: 0,
     initialZoom: 1
   });
+  reactExports.useEffect(() => {
+    setPinchZoom(zoomLevel);
+  }, [zoomLevel]);
+  const firstPageKey = pages[0] || "";
+  reactExports.useEffect(() => {
+    setFailedPages({});
+    setPinchZoom(1);
+  }, [flyerTitle, firstPageKey, pages.length]);
   reactExports.useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
@@ -21019,6 +21048,7 @@ function FlyerCarousel({
       return () => scroller.removeEventListener("scrollsnapchange", onSnapChange);
     }
   }, [currentPage, onPageChange]);
+  const effectiveZoom = pinchZoom || zoomLevel || 1;
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
       const dist = Math.hypot(
@@ -21026,9 +21056,25 @@ function FlyerCarousel({
         e.touches[0].clientY - e.touches[1].clientY
       );
       touchStateRef.current.initialDist = dist;
-      touchStateRef.current.initialZoom = zoomLevel;
+      touchStateRef.current.initialZoom = effectiveZoom;
     } else {
       setIsSwiping(true);
+    }
+  };
+  const handleTouchMove = (e) => {
+    if (e.touches.length === 2 && touchStateRef.current.initialDist > 0) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (dist > 0) {
+        const nextZoom = Math.min(
+          3,
+          Math.max(1, Number((touchStateRef.current.initialZoom * (dist / touchStateRef.current.initialDist)).toFixed(2)))
+        );
+        setPinchZoom(nextZoom);
+        onZoomChange?.(nextZoom);
+      }
     }
   };
   const handleTouchEnd = () => {
@@ -21044,14 +21090,15 @@ function FlyerCarousel({
       ref: scrollerRef,
       onScroll: handleScroll,
       onTouchStart: handleTouchStart,
+      onTouchMove: handleTouchMove,
       onTouchEnd: handleTouchEnd,
       "data-scroll-snap-type": "x mandatory",
       style: {
-        scrollSnapType: zoomLevel > 1 ? "none" : "x mandatory",
+        scrollSnapType: effectiveZoom > 1 ? "none" : "x mandatory",
         WebkitOverflowScrolling: "touch",
         overscrollBehavior: "contain"
       },
-      className: `w-full h-full flex overflow-x-auto overflow-y-hidden ${zoomLevel > 1 ? "" : "snap-x snap-mandatory scroll-snap-x-mandatory"} scroll-smooth overscroll-contain no-scrollbar scrollbar-none select-none`,
+      className: `w-full h-full flex overflow-x-auto overflow-y-hidden ${effectiveZoom > 1 ? "" : "snap-x snap-mandatory scroll-snap-x-mandatory"} scroll-smooth overscroll-contain no-scrollbar scrollbar-none select-none`,
       children: pages.map((url, idx) => {
         const pageNum = idx + 1;
         const isCurrent = pageNum === currentPage;
@@ -21142,10 +21189,15 @@ function FlyerCarousel({
             ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                onDoubleClick: onZoomToggle,
+                onDoubleClick: () => {
+                  const toggled = effectiveZoom > 1 ? 1 : 2;
+                  setPinchZoom(toggled);
+                  onZoomChange?.(toggled);
+                  onZoomToggle?.();
+                },
                 className: "relative max-w-full max-h-full flex items-center justify-center transition-transform duration-200 ease-out cursor-zoom-in",
                 style: {
-                  transform: isCurrent ? `scale(${zoomLevel})` : "scale(1)",
+                  transform: isCurrent ? `scale(${effectiveZoom})` : "scale(1)",
                   transformOrigin: "center center"
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -21645,27 +21697,79 @@ function SyncStatusModal({ isOpen, progress, onClose }) {
   );
 }
 
-function CounterPriceModal({ isOpen, onClose, stores = [], defaultStoreId = null, onSaved }) {
+const DEFAULT_RAPALLO_LOCAL_SHOPS = [
+  { id: "rapallo-pescheria-mercato", name: "Mercato Ittico & Pescherie - Rapallo", icon: "🐟" },
+  { id: "rapallo-macelleria-centro", name: "Macelleria Storica - Centro Rapallo", icon: "🥩" },
+  { id: "rapallo-panificio-pastificio", name: "Panificio & Focacceria Ligure - Rapallo", icon: "🥖" },
+  { id: "rapallo-ortofrutta-tigullio", name: "Ortofrutta Locale - Rapallo", icon: "🥬" },
+  { id: "rapallo-casalinghi-centro", name: "Casalinghi & Pentole - Centro Storico Rapallo", icon: "🍳" }
+];
+const SHOP_ICON_BY_ID = {
+  "rapallo-pescheria-mercato": "🐟",
+  "rapallo-macelleria-centro": "🥩",
+  "rapallo-panificio-pastificio": "🥖",
+  "rapallo-panificio-focacceria": "🥖",
+  "rapallo-ortofrutta-tigullio": "🥬",
+  "rapallo-casalinghi-centro": "🍳"
+};
+function CounterPriceModal({
+  isOpen,
+  onClose,
+  stores = [],
+  localShops = [],
+  defaultStoreId = null,
+  onSaved
+}) {
+  const effectiveLocalShops = reactExports.useMemo(() => {
+    const base = Array.isArray(localShops) && localShops.length > 0 ? localShops : DEFAULT_RAPALLO_LOCAL_SHOPS;
+    const byId = new Map(base.map((s) => [s.id, s]));
+    if (!byId.has("rapallo-ortofrutta-tigullio")) {
+      byId.set("rapallo-ortofrutta-tigullio", {
+        id: "rapallo-ortofrutta-tigullio",
+        name: "Ortofrutta Locale - Rapallo",
+        icon: "🥬"
+      });
+    }
+    if (defaultStoreId === "rapallo-panificio-focacceria" && !byId.has("rapallo-panificio-focacceria")) {
+      byId.set("rapallo-panificio-focacceria", {
+        id: "rapallo-panificio-focacceria",
+        name: "Panificio & Focacceria Ligure - Rapallo",
+        icon: "🥖"
+      });
+    }
+    return Array.from(byId.values());
+  }, [localShops, defaultStoreId]);
+  const fallbackStoreId = effectiveLocalShops[0]?.id || "rapallo-pescheria-mercato";
   const [title, setTitle] = reactExports.useState("");
   const [brand, setBrand] = reactExports.useState("");
   const [price, setPrice] = reactExports.useState("");
   const [unitString, setUnitString] = reactExports.useState("1 kg");
-  const [storeId, setStoreId] = reactExports.useState(defaultStoreId || "pescheria-locale-rapallo");
+  const [storeId, setStoreId] = reactExports.useState(defaultStoreId || fallbackStoreId);
   const [notes, setNotes] = reactExports.useState("");
   const [submitting, setSubmitting] = reactExports.useState(false);
   const [error, setError] = reactExports.useState(null);
-  React.useEffect(() => {
-    if (defaultStoreId) {
-      setStoreId(defaultStoreId);
-    }
-  }, [defaultStoreId, isOpen]);
+  reactExports.useEffect(() => {
+    if (!isOpen) return;
+    setStoreId(defaultStoreId || fallbackStoreId);
+  }, [defaultStoreId, isOpen, fallbackStoreId]);
+  reactExports.useEffect(() => {
+    if (!isOpen) return void 0;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose?.();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
   if (!isOpen) return null;
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
-      const selectedStore = stores.find((s) => s.id === storeId);
+      const selectedStore = effectiveLocalShops.find((s) => s.id === storeId) || stores.find((s) => s.id === storeId);
       const res = await fetch("/api/prices/observe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -21776,11 +21880,11 @@ function CounterPriceModal({ isOpen, onClose, stores = [], defaultStoreId = null
                   onChange: (e) => setStoreId(e.target.value),
                   className: "w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500",
                   children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "pescheria-locale-rapallo", children: "🐟 Pescheria / Mercato Rapallo" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "macelleria-locale-rapallo", children: "🥩 Macelleria / Polleria Rapallo" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "panificio-pastificio-rapallo", children: "🥖 Panificio / Pastificio Fresco" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "ortofrutta-locale-rapallo", children: "🥬 Ortofrutta Locale Rapallo" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "casalinghi-ferramenta-rapallo", children: "🍳 Casalinghi / Ferramenta Rapallo" }),
+                    effectiveLocalShops.map((shop) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: shop.id, children: [
+                      shop.icon || SHOP_ICON_BY_ID[shop.id] || "🧺",
+                      " ",
+                      shop.name
+                    ] }, shop.id)),
                     stores.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: s.id, children: [
                       "🏪 ",
                       s.name
@@ -21941,7 +22045,13 @@ function OfflineNotice({
   );
 }
 
-function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
+function CreaFoodModal({
+  foodId,
+  activeProfileId = "dany",
+  isOpen,
+  onClose,
+  onSelectOfferStore
+}) {
   const [sheet, setSheet] = reactExports.useState(null);
   const [loading, setLoading] = reactExports.useState(false);
   const [mode, setMode] = reactExports.useState("100g_edible");
@@ -21950,19 +22060,47 @@ function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
   const [per100gCooked, setPer100gCooked] = reactExports.useState(false);
   const [activeSection, setActiveSection] = reactExports.useState("ALL");
   reactExports.useEffect(() => {
-    if (!isOpen || !foodId) return;
+    setMode("100g_edible");
+    setCustomGrams(100);
+    setCookingState("as_is");
+    setPer100gCooked(false);
+    setActiveSection("ALL");
+  }, [foodId]);
+  reactExports.useEffect(() => {
+    if (!isOpen) return void 0;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose?.();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+  reactExports.useEffect(() => {
+    if (!isOpen || !foodId) return void 0;
+    const controller = new AbortController();
     setLoading(true);
+    const effectivePer100gCooked = mode === "100g_edible" && cookingState === "cooked_from_raw" && per100gCooked;
     const params = new URLSearchParams({
       mode,
       grams: String(customGrams || 100),
       state: cookingState,
-      per100gCooked: String(per100gCooked)
+      per100gCooked: String(effectivePer100gCooked)
     });
-    fetch(`/api/crea/foods/${encodeURIComponent(foodId)}?${params.toString()}`).then((r) => r.ok ? r.json() : null).then((data) => {
-      if (data) setSheet(data);
+    if (activeProfileId) {
+      params.set("profileId", activeProfileId);
+    }
+    fetch(`/api/crea/foods/${encodeURIComponent(foodId)}?${params.toString()}`, {
+      signal: controller.signal
+    }).then((r) => r.ok ? r.json() : null).then((data) => {
+      if (data && !controller.signal.aborted) setSheet(data);
     }).catch(() => {
-    }).finally(() => setLoading(false));
-  }, [foodId, isOpen, mode, customGrams, cookingState, per100gCooked]);
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
+    });
+    return () => controller.abort();
+  }, [foodId, activeProfileId, isOpen, mode, customGrams, cookingState, per100gCooked]);
   if (!isOpen || !foodId) return null;
   const sectionNames = sheet?.sections ? Object.keys(sheet.sections) : [];
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -22024,7 +22162,12 @@ function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
                 "button",
                 {
                   type: "button",
-                  onClick: () => setMode(opt.id),
+                  onClick: () => {
+                    setMode(opt.id);
+                    if (opt.id !== "100g_edible") {
+                      setPer100gCooked(false);
+                    }
+                  },
                   className: `px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${mode === opt.id ? "bg-emerald-700 text-white border-emerald-700" : "bg-white text-slate-700 border-slate-300 hover:bg-emerald-50"}`,
                   children: opt.label
                 },
@@ -22043,26 +22186,40 @@ function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
                 }
               )
             ] }),
-            sheet?.yieldFactor && sheet.yieldFactor.multiplier !== 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 cursor-pointer", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "checkbox",
-                  checked: cookingState === "cooked_from_raw",
-                  onChange: (e) => {
-                    const checked = e.target.checked;
-                    setCookingState(checked ? "cooked_from_raw" : "as_is");
-                    setPer100gCooked(checked);
-                  },
-                  className: "rounded border-amber-400 text-amber-600"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                "🔥 Converti in Cotto (Resa Y=",
-                sheet.yieldFactor.multiplier,
-                "x)"
+            sheet?.yieldFactor && sheet.yieldFactor.multiplier !== 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 cursor-pointer", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "checkbox",
+                    checked: cookingState === "cooked_from_raw",
+                    onChange: (e) => {
+                      const checked = e.target.checked;
+                      setCookingState(checked ? "cooked_from_raw" : "as_is");
+                      if (!checked) setPer100gCooked(false);
+                    },
+                    className: "rounded border-amber-400 text-amber-600"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                  "🔥 Converti in Cotto (Resa Y=",
+                  sheet.yieldFactor.multiplier,
+                  "x)"
+                ] })
+              ] }),
+              cookingState === "cooked_from_raw" && mode === "100g_edible" && /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 border-l border-amber-300 pl-2 cursor-pointer", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "input",
+                  {
+                    type: "checkbox",
+                    checked: per100gCooked,
+                    onChange: (e) => setPer100gCooked(e.target.checked),
+                    className: "rounded border-amber-400 text-amber-600"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "per 100 g di cotto" })
               ] })
-            ] }) })
+            ] })
           ] }),
           sheet?.calculationContext && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between text-[11px] text-slate-600", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
@@ -22072,14 +22229,16 @@ function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
                 " g"
               ] }),
               sheet.yieldFactor?.multiplier !== 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-                " → Peso cotto risultante nel piatto: ",
+                " ",
+                "→ Peso cotto risultante nel piatto: ",
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
                   sheet.calculationContext.resultingCookedWeightGrams,
                   " g"
                 ] }),
                 " (",
                 sheet.yieldFactor.method,
-                ")"
+                ")",
+                sheet.calculationContext.per100gCooked && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1 text-amber-800 font-bold", children: "• Valori riferiti a 100 g di cotto" })
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
@@ -22126,48 +22285,60 @@ function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
           sheet?.totalValuesCount || "",
           " valori chimico-nutrizionali CREA..."
         ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          sheet?.matchingRapalloOffers?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-emerald-900", children: [
-              "🏪 Offerte Attive a Rapallo collegate a questo alimento CREA (",
-              sheet.matchingRapalloOffers.length,
-              "):"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-2", children: sheet.matchingRapalloOffers.map((off) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                className: "p-2.5 rounded-lg bg-white border border-emerald-200 flex items-center justify-between gap-2 text-xs",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900 truncate", children: off.title }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-500", children: [
-                      off.brand,
-                      " • ",
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
-                        "€ ",
-                        Number(off.promoPrice).toFixed(2)
+          (() => {
+            const visibleOffers = (sheet?.matchingRapalloOffers || []).filter(
+              (off) => off.profileCompatibility?.action !== "hide"
+            );
+            if (visibleOffers.length === 0) return null;
+            return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-emerald-900", children: [
+                "🏪 Offerte Attive a Rapallo collegate a questo alimento CREA (",
+                visibleOffers.length,
+                "):"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-2", children: visibleOffers.map((off) => {
+                const flagged = off.profileCompatibility && off.profileCompatibility.isCompatible === false;
+                return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: `p-2.5 rounded-lg bg-white border flex items-center justify-between gap-2 text-xs ${flagged ? "border-amber-300 opacity-85" : "border-emerald-200"}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold text-slate-900 truncate", children: [
+                          off.title,
+                          flagged && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "ml-1.5 text-[10px] text-amber-700 font-bold", children: "⚠️ Profilo" })
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-500", children: [
+                          off.brand,
+                          " • ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                            "€ ",
+                            Number(off.promoPrice).toFixed(2)
+                          ] }),
+                          " (",
+                          off.formattedNormalizedPrice || off.unitPrice || "prezzo cassa",
+                          ")"
+                        ] })
                       ] }),
-                      " (",
-                      off.formattedNormalizedPrice || off.unitPrice,
-                      ")"
-                    ] })
-                  ] }),
-                  onSelectOfferStore && /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "button",
-                    {
-                      type: "button",
-                      onClick: () => {
-                        onClose();
-                        onSelectOfferStore(off.storeId, off.title);
-                      },
-                      className: "px-2 py-1 bg-emerald-700 text-white rounded text-[11px] font-bold shrink-0 cursor-pointer",
-                      children: "Vai in Stanza 1 →"
-                    }
-                  )
-                ]
-              },
-              off.id
-            )) })
-          ] }),
+                      onSelectOfferStore && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => {
+                            onClose();
+                            onSelectOfferStore(off.storeId, off.title);
+                          },
+                          className: "px-2 py-1 bg-emerald-700 text-white rounded text-[11px] font-bold shrink-0 cursor-pointer",
+                          children: "Vai in Stanza 1 →"
+                        }
+                      )
+                    ]
+                  },
+                  off.id
+                );
+              }) })
+            ] });
+          })(),
           sectionNames.filter((sec) => activeSection === "ALL" || activeSection === sec).map((secName) => {
             const rows = sheet.sections[secName] || [];
             return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-200 rounded-xl overflow-hidden", children: [
@@ -22222,17 +22393,18 @@ function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
 }
 
 const COMPARE_METRICS = [
-  { key: "kcal", label: "Energia (kcal/100g)", unit: "kcal" },
-  { key: "proteinG", label: "Proteine (g/100g)", unit: "g" },
-  { key: "fatG", label: "Lipidi (g/100g)", unit: "g" },
-  { key: "carbsG", label: "Carboidrati (g/100g)", unit: "g" },
-  { key: "fiberG", label: "Fibre (g/100g)", unit: "g" },
-  { key: "ironMg", label: "Ferro (mg/100g)", unit: "mg" },
-  { key: "calciumMg", label: "Calcio (mg/100g)", unit: "mg" },
-  { key: "potassiumMg", label: "Potassio (mg/100g)", unit: "mg" },
-  { key: "magnesiumMg", label: "Magnesio (mg/100g)", unit: "mg" },
-  { key: "vitaminCMg", label: "Vitamina C (mg/100g)", unit: "mg" },
-  { key: "waterG", label: "Acqua (g/100g)", unit: "g" }
+  { key: "kcal", label: "Energia (kcal/100g)", unit: "kcal", highlightMax: false },
+  { key: "proteinG", label: "Proteine (g/100g)", unit: "g", highlightMax: true },
+  { key: "fatG", label: "Lipidi (g/100g)", unit: "g", highlightMax: false },
+  { key: "carbsG", label: "Carboidrati (g/100g)", unit: "g", highlightMax: false },
+  { key: "fiberG", label: "Fibre (g/100g)", unit: "g", highlightMax: true },
+  { key: "omega3G", label: "Omega-3 Totali (g/100g)", unit: "g", highlightMax: true },
+  { key: "ironMg", label: "Ferro (mg/100g)", unit: "mg", highlightMax: true },
+  { key: "calciumMg", label: "Calcio (mg/100g)", unit: "mg", highlightMax: true },
+  { key: "potassiumMg", label: "Potassio (mg/100g)", unit: "mg", highlightMax: true },
+  { key: "magnesiumMg", label: "Magnesio (mg/100g)", unit: "mg", highlightMax: true },
+  { key: "vitaminCMg", label: "Vitamina C (mg/100g)", unit: "mg", highlightMax: true },
+  { key: "waterG", label: "Acqua (g/100g)", unit: "g", highlightMax: false }
 ];
 function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspectFood }) {
   if (!items || items.length === 0) return null;
@@ -22303,7 +22475,7 @@ function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspectFood }
               /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "py-1.5 px-3 font-medium text-slate-700", children: m.label }),
               items.map((it) => {
                 const v = it.keyMetrics?.[m.key];
-                const isBest = v !== null && v !== void 0 && v > 0 && v === maxVal && items.length > 1;
+                const isBest = m.highlightMax && v !== null && v !== void 0 && v > 0 && v === maxVal && items.length > 1;
                 return /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "td",
                   {
@@ -22357,6 +22529,8 @@ const PAGE_SIZE = 100;
 function CreaExplorerView({
   activeProfileId = "dany",
   initialFoodId = null,
+  onCloseInitialFood,
+  onCloseFoodModal,
   onNavigateToOfferStore,
   onAddToShoppingList
 }) {
@@ -22379,9 +22553,7 @@ function CreaExplorerView({
   const [npeRankings, setNpeRankings] = reactExports.useState([]);
   const [npeLoading, setNpeLoading] = reactExports.useState(false);
   reactExports.useEffect(() => {
-    if (initialFoodId) {
-      setActiveModalFoodId(initialFoodId);
-    }
+    setActiveModalFoodId(initialFoodId || null);
   }, [initialFoodId]);
   reactExports.useEffect(() => {
     setPage(1);
@@ -22816,6 +22988,7 @@ function CreaExplorerView({
                       domain: "food_human",
                       source: "promo_flyer",
                       unitPriceEur: item.promoPrice,
+                      packSizeGrams: item.packWeightGrams || item.drainedWeightGrams || void 0,
                       preferredChain: item.storeName,
                       storeId: item.storeId || null,
                       onPromo: true,
@@ -22845,8 +23018,13 @@ function CreaExplorerView({
       CreaFoodModal,
       {
         foodId: activeModalFoodId,
+        activeProfileId,
         isOpen: Boolean(activeModalFoodId),
-        onClose: () => setActiveModalFoodId(null),
+        onClose: () => {
+          setActiveModalFoodId(null);
+          onCloseInitialFood?.();
+          onCloseFoodModal?.();
+        },
         onSelectOfferStore: onNavigateToOfferStore
       }
     )
@@ -22855,18 +23033,56 @@ function CreaExplorerView({
 
 const SAMPLE_RECEIPT_TEXT = "PASSATA MUTTI 700G 1,69\nTONNO RIO MARE 3X80G 3,99\nSCONTO SOCIO -0,50\nTOTALE EURO 5,18";
 const LOCAL_ARTISAN_SHOPS = [
-  { id: "pescheria-locale-rapallo", name: "🐟 Pescheria / Mercato Rapallo" },
-  { id: "macelleria-locale-rapallo", name: "🥩 Macelleria / Polleria Rapallo" },
-  { id: "panificio-pastificio-rapallo", name: "🥖 Panificio / Pastificio Rapallo" }
+  { id: "rapallo-pescheria-mercato", name: "🐟 Pescheria / Mercato Coperto Rapallo" },
+  { id: "rapallo-macelleria-centro", name: "🥩 Macelleria / Polleria Storica Rapallo" },
+  { id: "rapallo-panificio-pastificio", name: "🥖 Panificio / Pastificio Fresco Ligure" },
+  { id: "rapallo-casalinghi-centro", name: "🍳 Ferramenta & Casalinghi Rapallo Centro" }
 ];
+function computeDeterministicHash(input = "") {
+  let h = 2166136261;
+  const str = String(input);
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+}
 function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
   const [storeId, setStoreId] = reactExports.useState(() => stores[0]?.id || "rapallo-basko-colombo");
   const [rawText, setRawText] = reactExports.useState("");
+  const [sessionSeed, setSessionSeed] = reactExports.useState(() => `init-${Date.now().toString(36)}`);
   const [declaredTotal, setDeclaredTotal] = reactExports.useState("6,58");
   const [lines, setLines] = reactExports.useState([
-    { title: "Spaghetti di Semola Rummo 500 g", lineTotal: "1,49", targetZone: "dry_pantry", addToPantry: true },
-    { title: "Filetti di Acciughe del Mar Ligure 300 g", lineTotal: "3,89", targetZone: "fridge_freezer", addToPantry: true },
-    { title: "Ceci Lessati al Vapore 400 g", lineTotal: "1,20", targetZone: "boat_cooler", addToPantry: true }
+    {
+      title: "Spaghetti di Semola Rummo 500 g",
+      lineTotal: "1,49",
+      quantity: 1,
+      packWeightGrams: 500,
+      packVolumeMl: null,
+      unitString: "500 g",
+      targetZone: "dry_pantry",
+      addToPantry: true
+    },
+    {
+      title: "Filetti di Acciughe del Mar Ligure 300 g",
+      lineTotal: "3,89",
+      quantity: 1,
+      packWeightGrams: 300,
+      packVolumeMl: null,
+      unitString: "300 g",
+      targetZone: "fridge_freezer",
+      addToPantry: true
+    },
+    {
+      title: "Ceci Lessati al Vapore 400 g",
+      lineTotal: "1,20",
+      quantity: 1,
+      packWeightGrams: 400,
+      packVolumeMl: null,
+      unitString: "400 g",
+      targetZone: "boat_cooler",
+      addToPantry: true
+    }
   ]);
   const [discounts, setDiscounts] = reactExports.useState([]);
   const [submitting, setSubmitting] = reactExports.useState(false);
@@ -22879,7 +23095,7 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
       { id: "rapallo-coop-sciesa", name: "Coop Rapallo (Via Sciesa)" },
       { id: "rapallo-gulliver-mameli", name: "Gulliver Rapallo (Corso Mameli)" },
       { id: "rapallo-carrefour-assereto", name: "Carrefour Market (Via Assereto)" },
-      { id: "rapallo-tigota-italia", name: "Tigotà Rapallo (Corso Italia)" }
+      { id: "rapallo-tigota-lamarmora", name: "Tigotà Rapallo (Via Lamarmora)" }
     ];
     for (const s of base) {
       if (!s?.id || seen.has(s.id)) continue;
@@ -22915,14 +23131,20 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
   if (!isOpen) return null;
   const handleParseRawText = async (overrideText = null) => {
     const effectiveText = typeof overrideText === "string" ? overrideText : rawText.trim() ? rawText : SAMPLE_RECEIPT_TEXT;
-    if (!rawText.trim()) {
+    if (!rawText.trim() || typeof overrideText === "string") {
       setRawText(effectiveText);
     }
+    setError(null);
     try {
+      const selectedStore = uniqueGdoStores.find((s) => s.id === storeId) || uniqueArtisanShops.find((s) => s.id === storeId);
       const res = await fetch("/api/receipts/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawText: effectiveText, storeId })
+        body: JSON.stringify({
+          rawText: effectiveText,
+          storeId,
+          storeName: selectedStore ? selectedStore.name : storeId
+        })
       });
       const data = await res.json();
       if (res.ok && data.lines) {
@@ -22930,6 +23152,10 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
           data.lines.map((l) => ({
             title: l.title,
             lineTotal: l.lineTotalEuro.toFixed(2).replace(".", ","),
+            quantity: l.quantity || 1,
+            packWeightGrams: l.packWeightGrams || null,
+            packVolumeMl: l.packVolumeMl || null,
+            unitString: l.unitString || null,
             targetZone: l.targetZone || "dry_pantry",
             addToPantry: l.addToPantry !== false
           }))
@@ -22940,9 +23166,11 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
             amount: d.amountEuro.toFixed(2).replace(".", ",")
           }))
         );
+        const nextTotalStr = data.declaredTotalEuro > 0 ? data.declaredTotalEuro.toFixed(2).replace(".", ",") : declaredTotal;
         if (data.declaredTotalEuro > 0) {
-          setDeclaredTotal(data.declaredTotalEuro.toFixed(2).replace(".", ","));
+          setDeclaredTotal(nextTotalStr);
         }
+        setSessionSeed(`ocr-${computeDeterministicHash(`${storeId}|${effectiveText.trim()}|${nextTotalStr}`)}`);
       }
     } catch (_) {
     }
@@ -22953,24 +23181,36 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
     setError(null);
     setSubmitting(true);
     try {
-      const selectedStore = stores.find((s) => s.id === storeId);
+      const selectedStore = uniqueGdoStores.find((s) => s.id === storeId) || uniqueArtisanShops.find((s) => s.id === storeId);
+      const normalizedPayloadLines = lines.map((l) => ({
+        title: l.title,
+        lineTotal: toCents(l.lineTotal) / 100,
+        quantity: Number(l.quantity) > 0 ? Number(l.quantity) : 1,
+        ...l.packWeightGrams ? { packWeightGrams: Number(l.packWeightGrams) } : {},
+        ...l.packVolumeMl ? { packVolumeMl: Number(l.packVolumeMl) } : {},
+        ...l.unitString ? { unitString: l.unitString } : {},
+        targetZone: l.targetZone,
+        addToPantry: l.addToPantry
+      }));
+      const normalizedPayloadDiscounts = discounts.map((d) => ({
+        label: d.label,
+        amount: Math.abs(toCents(d.amount)) / 100
+      }));
+      const deterministicId = `rcpt-${computeDeterministicHash(`${storeId}|${sessionSeed}|${reconciliation.declaredCents}`)}`;
+      const deterministicRevisionKey = `rev-${computeDeterministicHash(
+        `${reconciliation.declaredCents}|${JSON.stringify(normalizedPayloadLines)}|${JSON.stringify(normalizedPayloadDiscounts)}`
+      )}`;
       const res = await fetch("/api/receipts/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          id: deterministicId,
+          revisionKey: deterministicRevisionKey,
           storeId,
           storeName: selectedStore ? selectedStore.name : storeId,
           declaredTotal: reconciliation.declaredCents / 100,
-          lines: lines.map((l) => ({
-            title: l.title,
-            lineTotal: toCents(l.lineTotal) / 100,
-            targetZone: l.targetZone,
-            addToPantry: l.addToPantry
-          })),
-          discounts: discounts.map((d) => ({
-            label: d.label,
-            amount: Math.abs(toCents(d.amount)) / 100
-          }))
+          lines: normalizedPayloadLines,
+          discounts: normalizedPayloadDiscounts
         })
       });
       const body = await res.json();
@@ -23087,7 +23327,16 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
                   type: "button",
                   onClick: () => setLines((prev) => [
                     ...prev,
-                    { title: "", lineTotal: "0,00", targetZone: "dry_pantry", addToPantry: true }
+                    {
+                      title: "",
+                      lineTotal: "0,00",
+                      quantity: 1,
+                      packWeightGrams: null,
+                      packVolumeMl: null,
+                      unitString: null,
+                      targetZone: "dry_pantry",
+                      addToPantry: true
+                    }
                   ]),
                   className: "px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer",
                   children: "+ Aggiungi riga"
@@ -23103,7 +23352,11 @@ function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
                   value: line.title,
                   onChange: (e) => {
                     const val = e.target.value;
-                    setLines((prev) => prev.map((it, i) => i === idx ? { ...it, title: val } : it));
+                    setLines(
+                      (prev) => prev.map(
+                        (it, i) => i === idx ? { ...it, title: val, packWeightGrams: null, packVolumeMl: null, unitString: null } : it
+                      )
+                    );
                   },
                   className: "col-span-5 border border-slate-300 rounded px-2 py-1.5 bg-white"
                 }
@@ -23279,7 +23532,7 @@ const ZONE_META = {
     badgeClass: "bg-indigo-100 text-indigo-900 border-indigo-200"
   }
 };
-function PantryAndReceiptsView({ stores = [] }) {
+function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
   const [pantryData, setPantryData] = reactExports.useState({
     items: [],
     byZone: { dry_pantry: [], fridge_freezer: [], boat_cooler: [] },
@@ -23314,6 +23567,7 @@ function PantryAndReceiptsView({ stores = [] }) {
       if (res.ok) {
         const updated = await res.json();
         setPantryData(updated);
+        if (onPantryUpdated) onPantryUpdated();
       }
     } catch (_) {
     }
@@ -23321,13 +23575,15 @@ function PantryAndReceiptsView({ stores = [] }) {
   const handleQuickAdd = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
+    const parsedWeight = Number(String(newWeight || "250").replace(",", "."));
+    const safeWeight = Number.isFinite(parsedWeight) && parsedWeight > 0 ? Math.round(parsedWeight) : 250;
     try {
       const res = await fetch("/api/pantry/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: newTitle.trim(),
-          initialWeightGrams: parseInt(newWeight || "250", 10),
+          initialWeightGrams: safeWeight,
           zone: newZone,
           status: "closed"
         })
@@ -23336,6 +23592,7 @@ function PantryAndReceiptsView({ stores = [] }) {
         const updated = await res.json();
         setPantryData(updated);
         setNewTitle("");
+        if (onPantryUpdated) onPantryUpdated();
       }
     } catch (_) {
     }
@@ -23640,7 +23897,10 @@ function PantryAndReceiptsView({ stores = [] }) {
         isOpen: isReceiptModalOpen,
         onClose: () => setIsReceiptModalOpen(false),
         stores,
-        onConfirmed: () => fetchPantryAndReceipts()
+        onConfirmed: () => {
+          fetchPantryAndReceipts();
+          if (onPantryUpdated) onPantryUpdated();
+        }
       }
     )
   ] });
@@ -23713,12 +23973,18 @@ function KitchenCareView({ onNavigateToStoreDomain, onAddToShoppingList }) {
   const loadAll = reactExports.useCallback(async () => {
     setLoading(true);
     try {
-      const [stateRes, resetRes] = await Promise.all([
-        fetch("/api/kitchen/state").then((r) => r.ok ? r.json() : null),
-        fetch("/api/kitchen/reset-protocol").then((r) => r.ok ? r.json() : null)
-      ]);
-      if (stateRes) setKitchenState(stateRes);
-      if (resetRes) setResetData(resetRes);
+      const stateRes = await fetch("/api/kitchen/state").then((r) => r.ok ? r.json() : null);
+      if (stateRes) {
+        setKitchenState(stateRes);
+        const activeToolIds = (stateRes.effectiveTools || []).map((t) => t.id).join(",");
+        const resetRes = await fetch(
+          `/api/kitchen/reset-protocol?tools=${encodeURIComponent(activeToolIds)}`
+        ).then((r) => r.ok ? r.json() : null);
+        if (resetRes) setResetData(resetRes);
+      } else {
+        const resetRes = await fetch("/api/kitchen/reset-protocol").then((r) => r.ok ? r.json() : null);
+        if (resetRes) setResetData(resetRes);
+      }
     } catch (_) {
     }
     setLoading(false);
@@ -23736,8 +24002,9 @@ function KitchenCareView({ onNavigateToStoreDomain, onAddToShoppingList }) {
       if (res.ok) {
         const updated = await res.json();
         setKitchenState(updated);
+        const activeToolIds = (updated.effectiveTools || []).map((t) => t.id).join(",");
         const resetRes = await fetch(
-          `/api/kitchen/reset-protocol?tools=${encodeURIComponent((updated.ownedToolIds || []).join(","))}`
+          `/api/kitchen/reset-protocol?tools=${encodeURIComponent(activeToolIds)}`
         );
         if (resetRes.ok) {
           setResetData(await resetRes.json());
@@ -24163,15 +24430,29 @@ const HEAT_SOURCE_LABELS = {
   electric_radiant: "🟠 Piastra Elettrica Radiante",
   boat_no_stove: "⛵ Cambusa Barca / Borsa Termica (Zero Fornelli)"
 };
-function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClose, onLabNoteSaved }) {
+function CookingModeModal({
+  dishId,
+  initialServings = 1,
+  activeProfileId,
+  onClose,
+  onLabNoteSaved,
+  onPantryConsumed
+}) {
   const [session, setSession] = reactExports.useState(null);
-  const [heatSource, setHeatSource] = reactExports.useState("gas");
+  const [selectedHeatSource, setSelectedHeatSource] = reactExports.useState(null);
   const [loading, setLoading] = reactExports.useState(true);
   const [checkedIngredients, setCheckedIngredients] = reactExports.useState({});
   const [activeTimers, setActiveTimers] = reactExports.useState({});
   const [isLabModalOpen, setIsLabModalOpen] = reactExports.useState(false);
   const [pantryConsumeResult, setPantryConsumeResult] = reactExports.useState(null);
   const [consumingPantry, setConsumingPantry] = reactExports.useState(false);
+  const effectiveHeatSource = selectedHeatSource || session?.heatSource || "gas";
+  reactExports.useEffect(() => {
+    setSelectedHeatSource(null);
+    setActiveTimers({});
+    setCheckedIngredients({});
+    setPantryConsumeResult(null);
+  }, [dishId]);
   const handleConsumeFromPantry = async () => {
     if (!session?.dish || consumingPantry) return;
     setConsumingPantry(true);
@@ -24188,7 +24469,9 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
         })
       });
       if (res.ok) {
-        setPantryConsumeResult(await res.json());
+        const result = await res.json();
+        setPantryConsumeResult(result);
+        if (onPantryConsumed) onPantryConsumed(result);
       }
     } catch (_) {
     }
@@ -24197,25 +24480,39 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
   reactExports.useEffect(() => {
     if (!dishId) return;
     setLoading(true);
-    fetch(
-      `/api/recipes/${encodeURIComponent(dishId)}/cooking-session?heatSource=${encodeURIComponent(
-        heatSource
-      )}&servings=${initialServings}&profileId=${encodeURIComponent(activeProfileId || "dany")}`
-    ).then((r) => r.ok ? r.json() : null).then((data) => {
+    const params = new URLSearchParams({
+      servings: String(initialServings),
+      profileId: activeProfileId || "dany"
+    });
+    if (selectedHeatSource) {
+      params.set("heatSource", selectedHeatSource);
+    }
+    fetch(`/api/recipes/${encodeURIComponent(dishId)}/cooking-session?${params.toString()}`).then((r) => r.ok ? r.json() : null).then((data) => {
       if (data) {
         setSession(data);
-        const timersInit = {};
-        (data.scientificSteps || []).forEach((s) => {
-          timersInit[s.stepNumber] = {
-            remaining: s.durationSeconds || 120,
-            running: false,
-            total: s.durationSeconds || 120
-          };
+        setActiveTimers((prev) => {
+          const next = {};
+          (data.scientificSteps || []).forEach((s) => {
+            const defaultDur = s.durationSeconds || 120;
+            const existing = prev[s.stepNumber];
+            if (existing) {
+              next[s.stepNumber] = {
+                ...existing,
+                total: defaultDur
+              };
+            } else {
+              next[s.stepNumber] = {
+                remaining: defaultDur,
+                running: false,
+                total: defaultDur
+              };
+            }
+          });
+          return next;
         });
-        setActiveTimers(timersInit);
       }
     }).finally(() => setLoading(false));
-  }, [dishId, heatSource, initialServings, activeProfileId]);
+  }, [dishId, selectedHeatSource, initialServings, activeProfileId]);
   reactExports.useEffect(() => {
     const id = setInterval(() => {
       setActiveTimers((prev) => {
@@ -24237,12 +24534,19 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
     return () => clearInterval(id);
   }, []);
   if (!dishId) return null;
-  const toggleTimer = (stepNum) => {
+  const toggleTimer = (stepNum, fallbackSeconds = 120) => {
     setActiveTimers((prev) => {
-      const cur = prev[stepNum] || { remaining: 120, total: 120, running: false };
+      const cur = prev[stepNum] || { remaining: fallbackSeconds, total: fallbackSeconds, running: false };
+      if (cur.running) {
+        return {
+          ...prev,
+          [stepNum]: { ...cur, running: false }
+        };
+      }
+      const nextRemaining = cur.remaining <= 0 ? cur.total || fallbackSeconds : cur.remaining;
       return {
         ...prev,
-        [stepNum]: { ...cur, running: !cur.running }
+        [stepNum]: { ...cur, remaining: nextRemaining, running: true }
       };
     });
   };
@@ -24291,8 +24595,8 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
                 "select",
                 {
                   "aria-label": "Seleziona Piano Cottura",
-                  value: heatSource,
-                  onChange: (e) => setHeatSource(e.target.value),
+                  value: effectiveHeatSource,
+                  onChange: (e) => setSelectedHeatSource(e.target.value),
                   className: "text-xs font-bold bg-slate-800 text-white border border-slate-700 rounded-lg px-3 py-2 cursor-pointer",
                   children: Object.entries(HEAT_SOURCE_LABELS).map(([k, label]) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: k, children: label }, k))
                 }
@@ -24451,7 +24755,7 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
                             "button",
                             {
                               type: "button",
-                              onClick: () => toggleTimer(st.stepNumber),
+                              onClick: () => toggleTimer(st.stepNumber, st.durationSeconds || 120),
                               className: `px-2.5 py-1 rounded text-[11px] font-extrabold text-white cursor-pointer ${timer.running ? "bg-amber-600" : "bg-emerald-600 hover:bg-emerald-700"}`,
                               children: timer.running ? "Pausa" : "Avvia"
                             }
@@ -24513,7 +24817,7 @@ function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClos
           {
             isOpen: isLabModalOpen,
             dish: session?.dish,
-            heatSource,
+            heatSource: effectiveHeatSource,
             onClose: () => setIsLabModalOpen(false),
             onSaved: (entry) => {
               if (onLabNoteSaved) onLabNoteSaved(entry);
@@ -24539,7 +24843,7 @@ const MEAL_CONTEXT_PILLS = [
   { id: "lunch_home", label: "🏠 Pranzo a Terra" },
   { id: "sunday_lab", label: "🔬 Laboratorio Domenicale" }
 ];
-function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
+function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUpdated }) {
   const [activeViewTab, setActiveViewTab] = reactExports.useState("catalog");
   const [sourceType, setSourceType] = reactExports.useState("all");
   const [restaurantId, setRestaurantId] = reactExports.useState("all");
@@ -24591,15 +24895,25 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
     fetchCatalog();
   }, [fetchCatalog]);
   const fetchPareto8020 = reactExports.useCallback(() => {
-    fetch("/api/recipes/8020?topK=12").then((r) => r.ok ? r.json() : null).then((data) => {
+    const params = new URLSearchParams({
+      topK: "12",
+      profileId: activeProfileId || "dany"
+    });
+    fetch(`/api/recipes/8020?${params.toString()}`).then((r) => r.ok ? r.json() : null).then((data) => {
       if (data) setParetoData(data);
     });
-  }, []);
+  }, [activeProfileId]);
   const fetchLabNotes = reactExports.useCallback(() => {
     fetch("/api/recipes/lab-notes").then((r) => r.ok ? r.json() : null).then((data) => {
       if (data && Array.isArray(data.entries)) setLabEntries(data.entries);
     });
   }, []);
+  reactExports.useEffect(() => {
+    fetchLabNotes();
+  }, [fetchLabNotes]);
+  reactExports.useEffect(() => {
+    setParetoData(null);
+  }, [activeProfileId]);
   reactExports.useEffect(() => {
     if (activeViewTab === "pareto_8020" && !paretoData) {
       fetchPareto8020();
@@ -24619,7 +24933,8 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
         restaurantName: customRestaurant || "Ristorante del Tigullio",
         menuPriceEuro: Number(customPrice) || 22,
         ingredientsText: customIngredients || customTitle,
-        servings
+        servings,
+        profileId: activeProfileId || "dany"
       })
     });
     if (res.ok) {
@@ -24827,6 +25142,36 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
         "Calcolo Arbitraggio Live e Distinta Base (BOM) su ",
         catalogData.totalDishesInCatalog,
         " piatti..."
+      ] }) : catalogData.dishes.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl", children: "🍽️" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-extrabold text-slate-900", children: "Nessun piatto trovato per i filtri selezionati" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600 max-w-lg mx-auto", children: restaurantId !== "all" ? 'Questo locale del Tigullio non ha ancora schede piatto nel filtro attivo (oppure sono escluse dai filtri correnti). Puoi azzerare i filtri o usare il tab "De-costruisci Menu" per analizzare un piatto dal suo menu.' : "Prova ad ampliare la ricerca o azzerare i filtri attivi." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-center gap-2 pt-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => {
+                setRestaurantId("all");
+                setSourceType("all");
+                setMealContext("all");
+                setSearchQuery("");
+                setExcludeIncompatible(false);
+              },
+              className: "px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer",
+              children: "Mostra tutti i ristoranti e piatti"
+            }
+          ),
+          restaurantId !== "all" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => setActiveViewTab("deconstruct"),
+              className: "px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer",
+              children: "🧪 De-costruisci un piatto di questo locale"
+            }
+          )
+        ] })
       ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: catalogData.dishes.map((dish) => {
         const isExpanded = expandedBomDishId === dish.id;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -24902,13 +25247,19 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-indigo-700 font-bold", children: "Arbitraggio Casa" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm font-extrabold text-indigo-800", children: [
-                      "-€",
-                      dish.costAndArbitrage.arbitrageSavingsEur.toFixed(2),
-                      " (",
-                      dish.costAndArbitrage.arbitrageSavingsPct,
-                      "%)"
-                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "div",
+                      {
+                        className: `text-sm font-extrabold ${dish.costAndArbitrage.arbitrageSavingsEur >= 0 ? "text-indigo-800" : "text-amber-700"}`,
+                        children: [
+                          dish.costAndArbitrage.arbitrageSavingsEur >= 0 ? `-€${dish.costAndArbitrage.arbitrageSavingsEur.toFixed(2)}` : `+€${Math.abs(dish.costAndArbitrage.arbitrageSavingsEur).toFixed(2)}`,
+                          " ",
+                          "(",
+                          dish.costAndArbitrage.arbitrageSavingsPct,
+                          "%)"
+                        ]
+                      }
+                    ),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-emerald-700 font-semibold", children: [
                       dish.costAndArbitrage.onPromoIngredientsCount,
                       " ingr. in promo"
@@ -25221,7 +25572,11 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
         initialServings: servings,
         activeProfileId,
         onClose: () => setActiveCookingDishId(null),
-        onLabNoteSaved: () => fetchLabNotes()
+        onLabNoteSaved: () => fetchLabNotes(),
+        onPantryConsumed: () => {
+          fetchCatalog();
+          if (onPantryUpdated) onPantryUpdated();
+        }
       }
     )
   ] });
@@ -25317,23 +25672,23 @@ function AisleChecklistModal({
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold uppercase", children: "Subtotale Alimentari" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-base font-extrabold text-emerald-800", children: [
                 "€",
-                shoppingList.subtotals.foodSubtotalEur.toFixed(2)
+                Number(shoppingList.subtotals.foodSubtotalEur || 0).toFixed(2)
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold uppercase", children: "Casa & Sottolavello" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-base font-extrabold text-sky-800", children: [
                 "€",
-                shoppingList.subtotals.homeAndKitchenSubtotalEur.toFixed(2)
+                Number(shoppingList.subtotals.homeAndKitchenSubtotalEur || 0).toFixed(2)
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold uppercase", children: "Nel Carrello / Totale" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-base font-extrabold text-slate-900", children: [
                 "€",
-                shoppingList.subtotals.checkedTotalEur.toFixed(2),
+                Number(shoppingList.subtotals.checkedTotalEur || 0).toFixed(2),
                 " / €",
-                shoppingList.subtotals.grandTotalEur.toFixed(2)
+                Number(shoppingList.subtotals.grandTotalEur || 0).toFixed(2)
               ] })
             ] })
           ] }),
@@ -25411,7 +25766,15 @@ function AisleChecklistModal({
                     ),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-extrabold", children: item.name }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-500", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-500", children: item.domain && item.domain !== "food_human" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                          item.packsToBuy,
+                          " ",
+                          item.packsToBuy === 1 ? "pezzo" : "pezzi"
+                        ] }),
+                        " • Insegna: ",
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: item.preferredChain })
+                      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                         /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
                           item.packsToBuy,
                           " conf. intere"
@@ -25424,13 +25787,13 @@ function AisleChecklistModal({
                         item.residualReturnedToPantryGrams > 0 ? ` → +${item.residualReturnedToPantryGrams}g rientrano in Dispensa` : "",
                         ") • Insegna: ",
                         /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: item.preferredChain })
-                      ] })
+                      ] }) })
                     ] })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm font-extrabold text-emerald-800", children: [
                       "€",
-                      item.lineTotalEur.toFixed(2)
+                      Number(item.lineTotalEur || 0).toFixed(2)
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx(
                       "button",
@@ -25469,20 +25832,21 @@ const DAY_MODE_OPTIONS = [
   { id: "boat_day", label: "⛵ Giornata in Barca (Borsa Termica)" },
   { id: "eat_out", label: "🍽️ Fuori a Pranzo/Cena" }
 ];
-function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
+const DEFAULT_DAY_MODES = [
+  "land_day",
+  "land_day",
+  "land_day",
+  "land_day",
+  "boat_day",
+  "boat_day",
+  "land_day"
+];
+function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, onPantryUpdated }) {
   const [models, setModels] = reactExports.useState([]);
   const [selectedModelId, setSelectedModelId] = reactExports.useState("promo_driven_neodiet");
   const [budgetEur, setBudgetEur] = reactExports.useState(80);
   const [servings, setServings] = reactExports.useState(1);
-  const [dayModes, setDayModes] = reactExports.useState([
-    "land_day",
-    "land_day",
-    "land_day",
-    "land_day",
-    "boat_day",
-    "boat_day",
-    "land_day"
-  ]);
+  const [dayModes, setDayModes] = reactExports.useState(DEFAULT_DAY_MODES);
   const [plan, setPlan] = reactExports.useState(null);
   const [shoppingList, setShoppingList] = reactExports.useState(null);
   const [loading, setLoading] = reactExports.useState(true);
@@ -25491,45 +25855,128 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
   const [manualItemDomain, setManualItemDomain] = reactExports.useState("food_human");
   const [manualItemPrice, setManualItemPrice] = reactExports.useState("2.50");
   const [statusToast, setStatusToast] = reactExports.useState("");
+  const generateAbortRef = reactExports.useRef(null);
+  const budgetDebounceRef = reactExports.useRef(null);
   reactExports.useEffect(() => {
-    fetch("/api/planner/models").then((r) => r.ok ? r.json() : null).then((data) => {
+    const ctrl = new AbortController();
+    fetch("/api/planner/models", { signal: ctrl.signal }).then((r) => r.ok ? r.json() : null).then((data) => {
       if (data?.models) setModels(data.models);
+    }).catch(() => {
     });
+    return () => ctrl.abort();
+  }, []);
+  reactExports.useEffect(() => {
+    const ctrl = new AbortController();
+    setLoading(true);
+    const profParam = activeProfileId ? `?profileId=${encodeURIComponent(activeProfileId)}` : "";
+    fetch(`/api/planner/current${profParam}`, { signal: ctrl.signal }).then((r) => r.ok ? r.json() : null).then((data) => {
+      if (!data) return;
+      if (data.plan) {
+        setPlan(data.plan);
+        if (data.plan.model?.id) setSelectedModelId(data.plan.model.id);
+        if (Number.isFinite(Number(data.plan.budgetEur)) && Number(data.plan.budgetEur) > 0) {
+          setBudgetEur(Number(data.plan.budgetEur));
+        }
+        if (Number.isFinite(Number(data.plan.servings)) && Number(data.plan.servings) > 0) {
+          setServings(Number(data.plan.servings));
+        }
+        if (Array.isArray(data.plan.days) && data.plan.days.length > 0) {
+          setDayModes(data.plan.days.map((d) => d.dayMode || "land_day"));
+        }
+      }
+      if (data.shoppingList) {
+        setShoppingList(data.shoppingList);
+        if (onShoppingListChange) {
+          onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
+        }
+      }
+    }).catch(() => {
+    }).finally(() => {
+      if (!ctrl.signal.aborted) {
+        setLoading(false);
+      }
+    });
+    return () => {
+      ctrl.abort();
+    };
+  }, [activeProfileId, onShoppingListChange]);
+  reactExports.useEffect(() => {
+    return () => {
+      if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+      if (generateAbortRef.current) generateAbortRef.current.abort();
+    };
   }, []);
   const generatePlan = reactExports.useCallback(
-    (overrideModes = null) => {
+    (overrides = {}) => {
+      if (generateAbortRef.current) {
+        generateAbortRef.current.abort();
+      }
+      const ctrl = new AbortController();
+      generateAbortRef.current = ctrl;
+      const nextModelId = overrides.modelId ?? selectedModelId;
+      const nextServings = overrides.servings ?? servings;
+      const rawBudget = overrides.budgetEur ?? budgetEur;
+      const nextBudget = Number.isFinite(Number(rawBudget)) && Number(rawBudget) > 0 ? Number(rawBudget) : 65;
+      const nextModes = overrides.dayModes ?? dayModes;
       setLoading(true);
       fetch("/api/planner/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: ctrl.signal,
         body: JSON.stringify({
-          modelId: selectedModelId,
+          modelId: nextModelId,
           daysCount: 7,
-          servings,
-          budgetEur: Number(budgetEur) || 65,
-          dayModes: overrideModes || dayModes,
+          servings: nextServings,
+          budgetEur: nextBudget,
+          dayModes: nextModes,
           profileId: activeProfileId || "dany"
         })
       }).then((r) => r.ok ? r.json() : null).then((data) => {
-        if (data) {
+        if (data && !ctrl.signal.aborted) {
           setPlan(data.plan);
           setShoppingList(data.shoppingList);
           if (onShoppingListChange) {
             onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
           }
         }
-      }).finally(() => setLoading(false));
+      }).catch(() => {
+      }).finally(() => {
+        if (!ctrl.signal.aborted) {
+          setLoading(false);
+        }
+      });
     },
     [selectedModelId, servings, budgetEur, dayModes, activeProfileId, onShoppingListChange]
   );
-  reactExports.useEffect(() => {
-    generatePlan();
-  }, [generatePlan]);
+  const handleSelectModel = (modelId) => {
+    if (modelId === selectedModelId) return;
+    setSelectedModelId(modelId);
+    if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+    generatePlan({ modelId });
+  };
+  const handleServingsChange = (nextServings) => {
+    const safeServings = Math.max(1, Math.min(8, Number(nextServings) || 1));
+    setServings(safeServings);
+    if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+    generatePlan({ servings: safeServings });
+  };
+  const handleBudgetInputChange = (rawVal) => {
+    setBudgetEur(rawVal);
+    if (budgetDebounceRef.current) {
+      clearTimeout(budgetDebounceRef.current);
+    }
+    const parsed = Number(rawVal);
+    if (!Number.isFinite(parsed) || parsed < 15) return;
+    budgetDebounceRef.current = setTimeout(() => {
+      generatePlan({ budgetEur: parsed });
+    }, 400);
+  };
   const handleDayModeChange = (idx, newMode) => {
     const updated = [...dayModes];
     updated[idx] = newMode;
     setDayModes(updated);
-    generatePlan(updated);
+    if (budgetDebounceRef.current) clearTimeout(budgetDebounceRef.current);
+    generatePlan({ dayModes: updated });
   };
   const handleSwapMeal = async (dayIndex, slot) => {
     const res = await fetch("/api/planner/swap-meal", {
@@ -25589,13 +26036,15 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
   const handleAddManualItem = async (e) => {
     e.preventDefault();
     if (!manualItemName.trim()) return;
+    const parsedPrice = Number(String(manualItemPrice || "2.5").replace(",", "."));
+    const safePrice = Number.isFinite(parsedPrice) && parsedPrice > 0 ? parsedPrice : 2.5;
     const res = await fetch("/api/shopping-list/items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: manualItemName,
         domain: manualItemDomain,
-        unitPriceEur: Number(manualItemPrice) || 2.5
+        unitPriceEur: safePrice
       })
     });
     if (res.ok) {
@@ -25616,6 +26065,9 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
       setShoppingList(data.shoppingList);
       if (onShoppingListChange) {
         onShoppingListChange(data.shoppingList?.subtotals?.totalItemsCount || 0);
+      }
+      if (onPantryUpdated) {
+        onPantryUpdated();
       }
       setStatusToast(
         `✅ Spesa completata: ${data.loadedCount} confezioni intere caricate automaticamente nella tua Dispensa a 3 Luoghi!`
@@ -25672,7 +26124,7 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
                 min: "20",
                 max: "300",
                 value: budgetEur,
-                onChange: (e) => setBudgetEur(Number(e.target.value)),
+                onChange: (e) => handleBudgetInputChange(e.target.value),
                 className: "w-20 text-xs font-extrabold border border-slate-300 rounded-lg px-2 py-1 text-slate-900"
               }
             )
@@ -25683,7 +26135,7 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
               "select",
               {
                 value: servings,
-                onChange: (e) => setServings(Number(e.target.value)),
+                onChange: (e) => handleServingsChange(e.target.value),
                 className: "text-xs font-extrabold border border-slate-300 rounded-lg px-2 py-1 text-slate-900",
                 children: [1, 2, 3, 4].map((n) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: n, children: [
                   n,
@@ -25692,7 +26144,16 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
                 ] }, n))
               }
             )
-          ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => generatePlan(),
+              className: "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer",
+              children: "🔄 Rigenera Piano"
+            }
+          )
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3", children: models.map((m) => {
@@ -25701,7 +26162,7 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
           "button",
           {
             type: "button",
-            onClick: () => setSelectedModelId(m.id),
+            onClick: () => handleSelectModel(m.id),
             className: `p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${isSel ? "bg-slate-900 text-white border-slate-900 shadow-sm" : "bg-white text-slate-800 border-slate-200 hover:border-emerald-400"}`,
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 font-extrabold text-xs", children: [
@@ -25715,13 +26176,13 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
         );
       }) })
     ] }),
-    loading || !plan ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-8 text-center text-sm text-slate-500", children: "Generazione piano settimanale a confezioni intere zero-spreco..." }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    loading && !plan ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-8 text-center text-sm text-slate-500", children: "Caricamento piano settimanale a confezioni intere zero-spreco..." }) : !plan ? null : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "grid grid-cols-1 sm:grid-cols-4 gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-bold text-slate-500 uppercase", children: "Scontrino Cassa Confezioni Intere" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xl font-extrabold text-emerald-700 mt-1", children: [
             "€",
-            plan.ledger.totalCheckoutCashEur.toFixed(2)
+            Number(plan.ledger.totalCheckoutCashEur || 0).toFixed(2)
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-500", children: [
             "Budget: €",
@@ -25735,7 +26196,7 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-bold text-slate-500 uppercase", children: "Valore Grammi Puri Consumati" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xl font-extrabold text-slate-900 mt-1", children: [
             "€",
-            plan.ledger.totalPureConsumedValueEur.toFixed(2)
+            Number(plan.ledger.totalPureConsumedValueEur || 0).toFixed(2)
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-500", children: "Il resto rientra tracciato in Dispensa" })
         ] }),
@@ -25743,17 +26204,17 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-bold text-slate-500 uppercase", children: "Equivalente Menu Ristoranti" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xl font-extrabold text-indigo-800 mt-1", children: [
             "€",
-            plan.ledger.totalMenuEquivalentEur.toFixed(2)
+            Number(plan.ledger.totalMenuEquivalentEur || 0).toFixed(2)
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-emerald-700 font-bold", children: [
             "Risparmio Arbitraggio: €",
-            plan.ledger.totalArbitrageSavingsEur.toFixed(2)
+            Number(plan.ledger.totalArbitrageSavingsEur || 0).toFixed(2)
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-bold text-slate-500 uppercase", children: "Freschi Aperti Prioritizzati" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xl font-extrabold text-amber-700 mt-1", children: [
-            plan.openedPerishablesPrioritized.length,
+            (plan.openedPerishablesPrioritized || []).length,
             " confezioni"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-500", children: "Consumati nei primi giorni entro T_open" })
@@ -25823,11 +26284,11 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1.5 text-[10px] text-slate-500", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                       "Porzione: €",
-                      day.lunch.dish.costAndArbitrage.purePortionCostEur.toFixed(2)
+                      Number(day.lunch.dish.costAndArbitrage?.purePortionCostEur || 0).toFixed(2)
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                       "• ",
-                      day.lunch.dish.nutritionPerServing.energyKcal,
+                      day.lunch.dish.nutritionPerServing?.energyKcal || 0,
                       " kcal"
                     ] }),
                     day.lunch.consumesOpenedPerishable && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-bold", children: "⏱️ Svuota Fresco Aperto" })
@@ -25850,11 +26311,11 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1.5 text-[10px] text-slate-500", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                       "Porzione: €",
-                      day.dinner.dish.costAndArbitrage.purePortionCostEur.toFixed(2)
+                      Number(day.dinner.dish.costAndArbitrage?.purePortionCostEur || 0).toFixed(2)
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                       "• ",
-                      day.dinner.dish.nutritionPerServing.energyKcal,
+                      day.dinner.dish.nutritionPerServing?.energyKcal || 0,
                       " kcal"
                     ] }),
                     day.dinner.sharedPackCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-bold", children: [
@@ -25875,7 +26336,7 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-900", children: "Zero Spreco & Tracciabilità Confezioni Intere (K_p = ⌈Q_p / S_p⌉)" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-extrabold text-slate-900 mt-1", children: "📦 3. Tracciabilità Confezioni Condivise tra Più Pasti & Rientri Onesti in Dispensa" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: plan.ledger.wholePackItems.slice(0, 12).map((wp) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: (plan.ledger.wholePackItems || []).slice(0, 12).map((wp) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
             className: "p-3 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1.5",
@@ -25887,7 +26348,7 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
                   " conf. × ",
                   wp.packSizeGrams,
                   "g = €",
-                  wp.checkoutCostEur.toFixed(2)
+                  Number(wp.checkoutCostEur || 0).toFixed(2)
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-600", children: [
@@ -25957,10 +26418,10 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange }) {
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-lg font-extrabold text-emerald-800", children: [
                 "€",
-                sim.estimatedTotalEur.toFixed(2),
+                Number(sim.estimatedTotalEur || 0).toFixed(2),
                 sim.savingsVsSingleEur > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "ml-2 text-xs font-bold text-emerald-600", children: [
                   "(Risparmi €",
-                  sim.savingsVsSingleEur.toFixed(2),
+                  Number(sim.savingsVsSingleEur || 0).toFixed(2),
                   ")"
                 ] })
               ] }),
@@ -38325,6 +38786,8 @@ function useSupermarketData(filterOptions = {}) {
   const [totalPages, setTotalPages] = reactExports.useState(1);
 
   const abortControllerRef = reactExports.useRef(null);
+  const loadMoreAbortRef = reactExports.useRef(null);
+  const filterEpochRef = reactExports.useRef(0);
   const pageSize = Math.min(100, Math.max(1, Number(filterOptions.limit) || DEFAULT_PAGE_SIZE));
 
   // 1. Fetch Store Directory & System Status
@@ -38392,8 +38855,16 @@ function useSupermarketData(filterOptions = {}) {
   const fetchOffers = reactExports.useCallback(async () => {
     if (filterOptions.ready === false) return;
 
+    filterEpochRef.current += 1;
+    const currentEpoch = filterEpochRef.current;
+
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
+    }
+    if (loadMoreAbortRef.current) {
+      loadMoreAbortRef.current.abort();
+      loadMoreAbortRef.current = null;
+      setLoadingMore(false);
     }
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -38413,6 +38884,8 @@ function useSupermarketData(filterOptions = {}) {
       }
 
       const data = await res.json();
+      if (controller.signal.aborted || currentEpoch !== filterEpochRef.current) return;
+
       setOffers(data.offers || []);
       setTotalOffers(data.totalOffers || 0);
       setCurrentPage(data.page || 1);
@@ -38420,29 +38893,42 @@ function useSupermarketData(filterOptions = {}) {
       if (data.categories) setCategories(data.categories);
       if (data.facets) setFacets(data.facets);
     } catch (err) {
-      if (err.name !== 'AbortError') {
+      if (err.name !== 'AbortError' && currentEpoch === filterEpochRef.current) {
         setError(err.message);
         setStatus((prev) => ({ ...prev, isOnline: false }));
       }
     } finally {
-      if (!controller.signal.aborted) {
+      if (!controller.signal.aborted && currentEpoch === filterEpochRef.current) {
         setLoading(false);
       }
     }
   }, [buildOfferQueryParams, filterOptions.ready]);
 
-  // 4. Load next page and append without losing scroll position
+  // 4. Load next page and append without losing scroll position (guarded by AbortController + filterEpoch)
   const loadMoreOffers = reactExports.useCallback(async () => {
     if (loading || loadingMore || currentPage >= totalPages) return;
     const nextPage = currentPage + 1;
+    const requestEpoch = filterEpochRef.current;
+
+    if (loadMoreAbortRef.current) {
+      loadMoreAbortRef.current.abort();
+    }
+    const controller = new AbortController();
+    loadMoreAbortRef.current = controller;
+
     setLoadingMore(true);
     try {
       const queryParams = buildOfferQueryParams(nextPage);
-      const res = await fetch(`/api/offers?${queryParams.toString()}`);
+      const res = await fetch(`/api/offers?${queryParams.toString()}`, {
+        signal: controller.signal
+      });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: Failed to load more offers`);
       }
       const data = await res.json();
+      if (controller.signal.aborted || requestEpoch !== filterEpochRef.current) {
+        return;
+      }
       const incoming = Array.isArray(data.offers) ? data.offers : [];
       setOffers((prev) => {
         const seen = new Set(prev.map((o) => o.id));
@@ -38456,14 +38942,24 @@ function useSupermarketData(filterOptions = {}) {
         return merged;
       });
       setCurrentPage(data.page || nextPage);
-      setTotalPages(data.totalPages || totalPages);
+      setTotalPages(data.totalPages ?? totalPages);
       setTotalOffers(data.totalOffers ?? totalOffers);
     } catch (err) {
-      console.warn('[useSupermarketData] Load more warning:', err.message);
+      if (err.name !== 'AbortError') {
+        console.warn('[useSupermarketData] Load more warning:', err.message);
+      }
     } finally {
-      setLoadingMore(false);
+      if (loadMoreAbortRef.current === controller) {
+        loadMoreAbortRef.current = null;
+        setLoadingMore(false);
+      }
     }
   }, [loading, loadingMore, currentPage, totalPages, buildOfferQueryParams, totalOffers]);
+
+  reactExports.useEffect(() => () => {
+    abortControllerRef.current?.abort();
+    loadMoreAbortRef.current?.abort();
+  }, []);
 
   // Initial metadata load
   reactExports.useEffect(() => {
@@ -38576,15 +39072,19 @@ const DOMAIN_ALLOWED_CATEGORIES = {
     "Tessile, Abbigliamento e Bazar Casa"
   ]
 };
+const VALID_ROOM_IDS = new Set(BASILICO_ROOMS.map((r) => r.id));
+function normalizeRoomId(roomId) {
+  return roomId && VALID_ROOM_IDS.has(roomId) ? roomId : "room-1-negozi";
+}
 function App() {
   const initialParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
-  const initialRoom = initialParams.get("room") || "room-1-negozi";
+  const initialRoom = normalizeRoomId(initialParams.get("room"));
   const initialStore = initialParams.get("store") || null;
   const initialDomain = initialParams.get("domain") || null;
   const initialQuery = initialParams.get("q") || "";
   const initialCategory = initialParams.get("category") || null;
   const initialSort = initialParams.get("sortBy") || "discountDesc";
-  const [activeRoom, setActiveRoom] = reactExports.useState(initialRoom);
+  const [activeRoom, setActiveRoomState] = reactExports.useState(initialRoom);
   const [selectedStoreId, setSelectedStoreId] = reactExports.useState(initialStore);
   const [selectedDomain, setSelectedDomain] = reactExports.useState(initialDomain);
   const [searchQuery, setSearchQuery] = reactExports.useState(initialQuery);
@@ -38595,10 +39095,22 @@ function App() {
   const [activeProfileId, setActiveProfileId] = reactExports.useState("dany");
   const [profilesReady, setProfilesReady] = reactExports.useState(false);
   const [isCounterModalOpen, setIsCounterModalOpen] = reactExports.useState(false);
-  const [counterDefaultStoreId, setCounterDefaultStoreId] = reactExports.useState(null);
+  const [counterDefaultStoreId, setCounterDefaultStoreId] = reactExports.useState("");
   const [localShops, setLocalShops] = reactExports.useState([]);
   const [counterObservations, setCounterObservations] = reactExports.useState([]);
   const [selectedCreaFoodId, setSelectedCreaFoodId] = reactExports.useState(null);
+  const setActiveRoom = reactExports.useCallback((nextRoom) => {
+    const normalized = normalizeRoomId(nextRoom);
+    setActiveRoomState((prev) => {
+      if (prev === "room-2-crea" && normalized !== "room-2-crea") {
+        setSelectedCreaFoodId(null);
+      }
+      if (normalized !== "room-1-negozi") {
+        setIsMobileSearchOpen(false);
+      }
+      return normalized;
+    });
+  }, []);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = reactExports.useState(false);
   const [activeFlyer, setActiveFlyer] = reactExports.useState(null);
   const [isBannerDismissed, setIsBannerDismissed] = reactExports.useState(false);
@@ -38712,15 +39224,32 @@ function App() {
   const activeProfile = reactExports.useMemo(() => {
     return profiles.find((p) => p.id === activeProfileId) || null;
   }, [profiles, activeProfileId]);
-  const currentStoreFlyer = reactExports.useMemo(() => {
-    if (!selectedStoreId) return null;
-    return flyers.find((f) => f.storeId === selectedStoreId) || null;
+  const currentStoreFlyers = reactExports.useMemo(() => {
+    if (!selectedStoreId) return [];
+    return flyers.filter(
+      (f) => f.storeId === selectedStoreId || Array.isArray(f.storeIds) && f.storeIds.includes(selectedStoreId)
+    );
   }, [flyers, selectedStoreId]);
+  const handleOpenOfferFlyer = reactExports.useCallback(
+    (item) => {
+      const exactFlyer = item?.flyerId && flyers.find((f) => String(f.id) === String(item.flyerId)) || item?.storeId && flyers.find(
+        (f) => f.storeId === item.storeId || Array.isArray(f.storeIds) && f.storeIds.includes(item.storeId)
+      ) || null;
+      if (exactFlyer) {
+        setActiveFlyer({
+          ...exactFlyer,
+          initialPage: Number(item?.pageNumber) >= 1 ? Number(item.pageNumber) : 1,
+          highlightOfferId: item?.id || null
+        });
+      }
+    },
+    [flyers]
+  );
   const activeFilterCount = reactExports.useMemo(() => {
     let count = 0;
     if (searchQuery.trim().length > 0) count++;
-    if (selectedCategory !== null) count++;
-    if (selectedDomain !== null) count++;
+    if (selectedCategory) count++;
+    if (selectedDomain) count++;
     return count;
   }, [searchQuery, selectedCategory, selectedDomain]);
   const handleClearFilters = reactExports.useCallback(() => {
@@ -38805,7 +39334,6 @@ function App() {
       setActiveFlyer(targetFlyer);
     }
   }, []);
-  const currentRoomMeta = BASILICO_ROOMS.find((r) => r.id === activeRoom) || BASILICO_ROOMS[0];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       OfflineNotice,
@@ -38822,6 +39350,7 @@ function App() {
       Header,
       {
         status,
+        activeRoom,
         activeStoreName,
         isMobileSearchOpen,
         onToggleMobileSearch: () => setIsMobileSearchOpen((prev) => !prev),
@@ -38831,7 +39360,10 @@ function App() {
         profiles,
         activeProfileId,
         onChangeProfile: handleChangeProfile,
-        onOpenCounterPriceModal: () => setIsCounterModalOpen(true),
+        onOpenCounterPriceModal: () => {
+          setCounterDefaultStoreId("");
+          setIsCounterModalOpen(true);
+        },
         shoppingCount,
         onOpenShoppingList: () => setActiveRoom("room-6-pianificatore")
       }
@@ -38866,29 +39398,18 @@ function App() {
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-emerald-200 mt-0.5", children: activeProfile.description })
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 self-end sm:self-center shrink-0", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-100 cursor-pointer", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "checkbox",
-                  checked: hideIncompatible,
-                  onChange: (e) => setHideIncompatible(e.target.checked),
-                  className: "rounded border-emerald-400 text-emerald-500 focus:ring-emerald-400"
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Nascondi prodotti esclusi" })
-            ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 self-end sm:self-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-100 cursor-pointer", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
+              "input",
               {
-                type: "button",
-                onClick: () => setIsCounterModalOpen(true),
-                className: "sm:hidden px-2.5 py-1 text-xs font-bold bg-amber-400 text-slate-900 rounded-lg",
-                children: "🏷️ Prezzo al banco"
+                type: "checkbox",
+                checked: hideIncompatible,
+                onChange: (e) => setHideIncompatible(e.target.checked),
+                className: "rounded border-emerald-400 text-emerald-500 focus:ring-emerald-400"
               }
-            )
-          ] })
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Nascondi prodotti esclusi" })
+          ] }) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar", "aria-label": "Domini merceologici", children: DOMAIN_PILLS.map((dom) => {
           const isSelected = selectedDomain === dom.id;
@@ -38927,25 +39448,22 @@ function App() {
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-start sm:items-end gap-1.5", children: [
-            currentStoreFlyer && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            currentStoreFlyers.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center justify-start sm:justify-end gap-2", children: currentStoreFlyers.map((flyerItem, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "button",
               {
                 type: "button",
-                onClick: () => handleOpenFlyer(currentStoreFlyer),
-                className: "inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer",
+                onClick: () => handleOpenFlyer(flyerItem),
+                className: "inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer",
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-4 h-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                    "Sfoglia volantino (",
-                    currentStoreFlyer.pageCount,
-                    " pag.)"
-                  ] })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-4 h-4 shrink-0", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" }) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: currentStoreFlyers.length > 1 ? `Volantino ${idx + 1}: ${flyerItem.title || "Sfoglia"} (${flyerItem.pageCount} pag.)` : `Sfoglia volantino (${flyerItem.pageCount} pag.)` })
                 ]
-              }
-            ),
-            currentStoreFlyer?.upstreamIndexedCap && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium", children: [
+              },
+              flyerItem.id || idx
+            )) }),
+            currentStoreFlyers.some((f) => f.upstreamIndexedCap) && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium", children: [
               "ℹ️ Nota trasparenza: PromoQui indicizza max ",
-              currentStoreFlyer.upstreamIndexedCap,
+              currentStoreFlyers.find((f) => f.upstreamIndexedCap)?.upstreamIndexedCap,
               " prodotti per volantino (verificato prov. GE)"
             ] })
           ] })
@@ -39013,7 +39531,9 @@ function App() {
           {
             searchQuery,
             selectedCategory,
+            selectedDomain,
             selectedStoreName: activeStore ? activeStore.name : null,
+            hideIncompatible,
             onClearFilters: handleClearFilters,
             onApplyQuery: (term) => setSearchQuery(term)
           }
@@ -39031,18 +39551,7 @@ function App() {
               setSelectedCreaFoodId(creaId);
               setActiveRoom("room-2-crea");
             },
-            onOpenFlyer: (item) => {
-              const exactFlyer = item?.flyerId && flyers.find((f) => String(f.id) === String(item.flyerId)) || flyers.find(
-                (f) => f.storeId === item?.storeId || Array.isArray(f.storeIds) && f.storeIds.includes(item?.storeId)
-              ) || flyers[0] || null;
-              if (exactFlyer) {
-                setActiveFlyer({
-                  ...exactFlyer,
-                  initialPage: Number(item?.pageNumber) >= 1 ? Number(item.pageNumber) : 1,
-                  highlightOfferId: item?.id || null
-                });
-              }
-            },
+            onOpenFlyer: handleOpenOfferFlyer,
             onResetFilters: handleClearFilters
           }
         ) }),
@@ -39061,7 +39570,7 @@ function App() {
               {
                 type: "button",
                 onClick: () => {
-                  setCounterDefaultStoreId(null);
+                  setCounterDefaultStoreId("");
                   setIsCounterModalOpen(true);
                 },
                 className: "px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer shrink-0",
@@ -39110,9 +39619,10 @@ function App() {
                       "€ ",
                       Number(obs.price || 0).toFixed(2).replace(".", ",")
                     ] }),
-                    obs.ediblePricePerKg ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-600", children: [
-                      Number(obs.ediblePricePerKg).toFixed(2).replace(".", ","),
-                      " €/kg"
+                    obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-600", children: [
+                      Number(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg).toFixed(2).replace(".", ","),
+                      " €/",
+                      obs.referenceUnit || "kg"
                     ] }) : null
                   ] })
                 ]
@@ -39122,15 +39632,19 @@ function App() {
           ] })
         ] })
       ] })
-    ] }) : activeRoom === "room-2-crea" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    ] }) : !profilesReady ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-slate-500", children: "Sincronizzazione profilo attivo in corso..." }) : activeRoom === "room-2-crea" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       CreaExplorerView,
       {
         activeProfileId,
         initialFoodId: selectedCreaFoodId,
+        onCloseInitialFood: () => setSelectedCreaFoodId(null),
         onAddToShoppingList: handleAddToShoppingList,
-        onNavigateToOfferStore: (storeId, productTitle) => {
+        onNavigateToOfferStore: (storeId) => {
           setSelectedStoreId(storeId || null);
-          setSearchQuery(productTitle || "");
+          setSelectedDomain("food_human");
+          setSelectedCategory("");
+          setSearchQuery("");
+          setSelectedCreaFoodId(null);
           setActiveRoom("room-1-negozi");
         }
       }
@@ -39138,6 +39652,8 @@ function App() {
       RecipesAndRestaurantsView,
       {
         activeProfileId,
+        onAddToShoppingList: handleAddToShoppingList,
+        onPantryUpdated: refreshShoppingCount,
         onOpenCreaFood: (creaId) => {
           setSelectedCreaFoodId(creaId);
           setActiveRoom("room-2-crea");
@@ -39148,24 +39664,27 @@ function App() {
       {
         onAddToShoppingList: handleAddToShoppingList,
         onNavigateToStoreDomain: (domainId) => {
-          handleSelectDomain(domainId);
+          setSelectedDomain(domainId || null);
+          setSelectedCategory("");
+          setSearchQuery("");
           setSelectedStoreId(null);
           setActiveRoom("room-1-negozi");
         }
       }
-    ) }) : activeRoom === "room-5-dispensa" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(PantryAndReceiptsView, { stores }) }) : activeRoom === "room-6-pianificatore" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    ) }) : activeRoom === "room-5-dispensa" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      PantryAndReceiptsView,
+      {
+        stores,
+        onPantryUpdated: refreshShoppingCount
+      }
+    ) }) : activeRoom === "room-6-pianificatore" ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       PlannerAndShoppingView,
       {
         activeProfileId,
-        onShoppingListChange: setShoppingCount
+        onShoppingListChange: setShoppingCount,
+        onPantryUpdated: refreshShoppingCount
       }
-    ) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-3xl", children: currentRoomMeta.icon }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-extrabold text-slate-900", children: currentRoomMeta.fullTitle }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500", children: currentRoomMeta.subtitle })
-      ] })
-    ] }) }) }),
+    ) }) : null,
     activeFlyer && /* @__PURE__ */ jsxRuntimeExports.jsx(
       FlyerModal,
       {
@@ -39180,6 +39699,7 @@ function App() {
         isOpen: isCounterModalOpen,
         onClose: () => setIsCounterModalOpen(false),
         stores,
+        localShops,
         defaultStoreId: counterDefaultStoreId,
         onSaved: () => {
           refetchOffers();
@@ -39276,4 +39796,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-BRqEBw9y.js.map
+//# sourceMappingURL=index-BlGUyrFg.js.map

@@ -15,6 +15,7 @@ export function FlyerCarousel({
   onPageChange,
   zoomLevel = 1,
   onZoomToggle,
+  onZoomChange,
   flyerTitle = 'Volantino Rapallo',
   storeName = 'Supermercato',
   flyerOffers = [],
@@ -23,11 +24,23 @@ export function FlyerCarousel({
   const scrollerRef = useRef(null);
   const [isSwiping, setIsSwiping] = useState(false);
   const [failedPages, setFailedPages] = useState({});
+  const [pinchZoom, setPinchZoom] = useState(zoomLevel);
 
   const touchStateRef = useRef({
     initialDist: 0,
     initialZoom: 1
   });
+
+  useEffect(() => {
+    setPinchZoom(zoomLevel);
+  }, [zoomLevel]);
+
+  // Reset failed page cache & pinch zoom when switching to another flyer
+  const firstPageKey = pages[0] || '';
+  useEffect(() => {
+    setFailedPages({});
+    setPinchZoom(1);
+  }, [flyerTitle, firstPageKey, pages.length]);
 
   // Programmatically scroll carousel when currentPage changes externally
   useEffect(() => {
@@ -77,6 +90,8 @@ export function FlyerCarousel({
     }
   }, [currentPage, onPageChange]);
 
+  const effectiveZoom = pinchZoom || zoomLevel || 1;
+
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
       const dist = Math.hypot(
@@ -84,9 +99,26 @@ export function FlyerCarousel({
         e.touches[0].clientY - e.touches[1].clientY
       );
       touchStateRef.current.initialDist = dist;
-      touchStateRef.current.initialZoom = zoomLevel;
+      touchStateRef.current.initialZoom = effectiveZoom;
     } else {
       setIsSwiping(true);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches.length === 2 && touchStateRef.current.initialDist > 0) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (dist > 0) {
+        const nextZoom = Math.min(
+          3,
+          Math.max(1, Number((touchStateRef.current.initialZoom * (dist / touchStateRef.current.initialDist)).toFixed(2)))
+        );
+        setPinchZoom(nextZoom);
+        onZoomChange?.(nextZoom);
+      }
     }
   };
 
@@ -104,15 +136,16 @@ export function FlyerCarousel({
       ref={scrollerRef}
       onScroll={handleScroll}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       data-scroll-snap-type="x mandatory"
       style={{
-        scrollSnapType: zoomLevel > 1 ? 'none' : 'x mandatory',
+        scrollSnapType: effectiveZoom > 1 ? 'none' : 'x mandatory',
         WebkitOverflowScrolling: 'touch',
         overscrollBehavior: 'contain'
       }}
       className={`w-full h-full flex overflow-x-auto overflow-y-hidden ${
-        zoomLevel > 1 ? '' : 'snap-x snap-mandatory scroll-snap-x-mandatory'
+        effectiveZoom > 1 ? '' : 'snap-x snap-mandatory scroll-snap-x-mandatory'
       } scroll-smooth overscroll-contain no-scrollbar scrollbar-none select-none`}
     >
       {pages.map((url, idx) => {
@@ -212,10 +245,15 @@ export function FlyerCarousel({
               />
             ) : (
               <div
-                onDoubleClick={onZoomToggle}
+                onDoubleClick={() => {
+                  const toggled = effectiveZoom > 1 ? 1 : 2;
+                  setPinchZoom(toggled);
+                  onZoomChange?.(toggled);
+                  onZoomToggle?.();
+                }}
                 className="relative max-w-full max-h-full flex items-center justify-center transition-transform duration-200 ease-out cursor-zoom-in"
                 style={{
-                  transform: isCurrent ? `scale(${zoomLevel})` : 'scale(1)',
+                  transform: isCurrent ? `scale(${effectiveZoom})` : 'scale(1)',
                   transformOrigin: 'center center'
                 }}
               >

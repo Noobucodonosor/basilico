@@ -193,7 +193,7 @@ export function getFallbackHtml() {
       <span class="badge">Rapallo 16035</span>
       <h1>🌱 Basilico — Supermercati & Volantini</h1>
     </div>
-    <p>Applicazione per il monitoraggio delle offerte e dei volantini dei supermercati di Rapallo (Coop, Carrefour, Conad, Basko, Doro).</p>
+    <p>Applicazione per il monitoraggio delle offerte e dei volantini dei supermercati e negozi reali di Rapallo (Basko, Coop Liguria, Gulliver, Carrefour, Eurospin, Tigotà, Unieuro).</p>
     <div class="status-panel">
       <strong>Stato Server:</strong> Online (Porta attiva)<br/>
       <strong>Modalità:</strong> Backend REST API attivo & UI Shell pronta

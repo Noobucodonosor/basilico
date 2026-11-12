@@ -143,24 +143,15 @@ export class KitchenInventoryService {
       normalizedTools: normalizeDishCookwareIds(d.cookwareRequired || [], d)
     }));
 
-    const countDishesUsingTool = (toolId, fallbackCount) => {
-      if (dishRequirements.length === 0) return fallbackCount || 0;
-      if (toolId === 'casseruola_inox') {
-        const rawCasseruola = dishRequirements.filter(
-          (dr) => dr.rawTools.includes('casseruola') || dr.rawTools.includes('casseruola_inox')
-        ).length;
-        return rawCasseruola || fallbackCount || 0;
-      }
-      const dynCount = dishRequirements.filter((dr) => dr.normalizedTools.includes(toolId)).length;
-      return dynCount > 0 ? dynCount : fallbackCount || 0;
-    };
+    const countDishesUsingTool = (toolId) =>
+      dishRequirements.filter((dr) => dr.normalizedTools.includes(toolId)).length;
 
     const effectiveTools = [];
     const disqualifiedTools = [];
     const missingCandidates = [];
 
     for (const arch of archetypes) {
-      const dynamicToolDishesCount = countDishesUsingTool(arch.id, arch.unlockedDishesCount);
+      const dynamicToolDishesCount = countDishesUsingTool(arch.id);
       const isOwned = state.ownedToolIds.includes(arch.id);
       if (isOwned) {
         if (isInduction && arch.category === 'cookware' && !arch.inductionCompatible) {
@@ -184,7 +175,9 @@ export class KitchenInventoryService {
           });
         }
       } else {
-        const stoveCompatible = !(isInduction && arch.category === 'cookware' && !arch.inductionCompatible);
+        const stoveCompatible =
+          !(isInduction && arch.category === 'cookware' && !arch.inductionCompatible) &&
+          !(isBoat && arch.id === 'teglia_forno');
         if (stoveCompatible) {
           missingCandidates.push({
             ...arch,

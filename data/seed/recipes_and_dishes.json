@@ -121,7 +121,7 @@
     ],
     "bom": [
       {
-        "creaId": "000080",
+        "creaId": "000800",
         "name": "Spaghetti di semola trafilati al bronzo",
         "rawGramsPerServing": 90,
         "yieldFactor": 2.4,
@@ -129,7 +129,7 @@
         "notes": "Rilascio controllato di amilosio superficiale"
       },
       {
-        "creaId": "005240",
+        "creaId": "006680",
         "name": "Passata / Pomodori pelati italiani",
         "rawGramsPerServing": 180,
         "yieldFactor": 0.85,
@@ -175,7 +175,7 @@
         "notes": "Maillard unilaterale sulla pelle asciugata (175°C) e cuore rosa a 52°C"
       },
       {
-        "creaId": "008070",
+        "creaId": "008540",
         "name": "Mandorle dolci secche tostate",
         "rawGramsPerServing": 20,
         "yieldFactor": 1,
@@ -15848,7 +15848,7 @@
         "notes": "Proteina magrissima ad alta digeribilità in mare"
       },
       {
-        "creaId": "005300",
+        "creaId": "005320",
         "name": "Finocchi freschi e ortaggi croccanti a fettine",
         "rawGramsPerServing": 160,
         "yieldFactor": 1,
@@ -15976,7 +15976,7 @@
         "notes": "Mollica alveolata che non si inumidisce"
       },
       {
-        "creaId": "106850",
+        "creaId": "110020",
         "name": "Bresaola / affettato magro proteico",
         "rawGramsPerServing": 80,
         "yieldFactor": 1,
@@ -16622,7 +16622,7 @@
     ],
     "bom": [
       {
-        "creaId": "000080",
+        "creaId": "000800",
         "name": "Pasta corta di semola trafilata al bronzo",
         "rawGramsPerServing": 75,
         "yieldFactor": 2.4,

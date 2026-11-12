@@ -16,12 +16,18 @@ export function KitchenCareView({ onNavigateToStoreDomain, onAddToShoppingList }
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [stateRes, resetRes] = await Promise.all([
-        fetch('/api/kitchen/state').then((r) => (r.ok ? r.json() : null)),
-        fetch('/api/kitchen/reset-protocol').then((r) => (r.ok ? r.json() : null))
-      ]);
-      if (stateRes) setKitchenState(stateRes);
-      if (resetRes) setResetData(resetRes);
+      const stateRes = await fetch('/api/kitchen/state').then((r) => (r.ok ? r.json() : null));
+      if (stateRes) {
+        setKitchenState(stateRes);
+        const activeToolIds = (stateRes.effectiveTools || []).map((t) => t.id).join(',');
+        const resetRes = await fetch(
+          `/api/kitchen/reset-protocol?tools=${encodeURIComponent(activeToolIds)}`
+        ).then((r) => (r.ok ? r.json() : null));
+        if (resetRes) setResetData(resetRes);
+      } else {
+        const resetRes = await fetch('/api/kitchen/reset-protocol').then((r) => (r.ok ? r.json() : null));
+        if (resetRes) setResetData(resetRes);
+      }
     } catch (_) {}
     setLoading(false);
   }, []);
@@ -40,8 +46,9 @@ export function KitchenCareView({ onNavigateToStoreDomain, onAddToShoppingList }
       if (res.ok) {
         const updated = await res.json();
         setKitchenState(updated);
+        const activeToolIds = (updated.effectiveTools || []).map((t) => t.id).join(',');
         const resetRes = await fetch(
-          `/api/kitchen/reset-protocol?tools=${encodeURIComponent((updated.ownedToolIds || []).join(','))}`
+          `/api/kitchen/reset-protocol?tools=${encodeURIComponent(activeToolIds)}`
         );
         if (resetRes.ok) {
           setResetData(await resetRes.json());

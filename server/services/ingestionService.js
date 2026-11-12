@@ -268,6 +268,143 @@ export class IngestionService {
   }
 
   /**
+   * Transform raw PromoQui topOffers / flyerGibs into canonical Rapallo Offer records
+   */
+  normalizeLiveOffers(rawOffers = [], stores = [], flyers = []) {
+    if (!Array.isArray(rawOffers) || rawOffers.length === 0) return [];
+
+    const now = new Date();
+    const defaultValidFrom = now.toISOString();
+    const defaultValidTo = new Date(now.getTime() + 14 * 86400000).toISOString();
+    const storeList = Array.isArray(stores) ? stores : [];
+    const flyerList = Array.isArray(flyers) ? flyers : [];
+    const storeById = new Map(storeList.map((s) => [s.id, s]));
+    const flyerById = new Map(flyerList.map((f) => [String(f.id), f]));
+    const hasRealRapalloStores = storeList.some((s) => String(s?.id || '').startsWith('rapallo-'));
+
+    const seenIds = new Set();
+    const normalized = [];
+
+    for (let idx = 0; idx < rawOffers.length; idx++) {
+      const raw = rawOffers[idx];
+      if (!raw || typeof raw !== 'object') continue;
+
+      const rawPriceCandidate =
+        raw.promoPrice ??
+        raw.discountPrice ??
+        raw.price ??
+        raw.settings?.price_extended?.digits ??
+        String(raw.settings?.price || '').replace(/[^0-9.,]/g, '').replace(',', '.');
+      const parsedPromo = typeof rawPriceCandidate === 'number'
+        ? rawPriceCandidate
+        : parseFloat(String(rawPriceCandidate || '').replace(',', '.'));
+      if (!Number.isFinite(parsedPromo) || parsedPromo <= 0) continue;
+
+      const promoPrice = Math.round(parsedPromo * 100) / 100;
+
+      const rawOrigCandidate =
+        raw.originalPrice ??
+        raw.settings?.starting_price?.digits ??
+        null;
+      const parsedOrig = rawOrigCandidate !== null && rawOrigCandidate !== undefined && rawOrigCandidate !== ''
+        ? parseFloat(String(rawOrigCandidate).replace(',', '.'))
+        : NaN;
+      const hasRealOriginalPrice = Number.isFinite(parsedOrig) && parsedOrig > promoPrice;
+      const originalPrice = hasRealOriginalPrice ? Math.round(parsedOrig * 100) / 100 : null;
+      const discountPercentage = hasRealOriginalPrice
+        ? Math.round(((originalPrice - promoPrice) / originalPrice) * 100)
+        : (Number.isFinite(Number(raw.discountPercentage)) && Number(raw.discountPercentage) > 0
+            ? Math.round(Number(raw.discountPercentage))
+            : null);
+      const discountLabel = discountPercentage && discountPercentage > 0 ? `-${discountPercentage}%` : null;
+
+      const flyerId = raw.flyerId ? String(raw.flyerId) : (raw.flyer_id ? String(raw.flyer_id) : null);
+      const linkedFlyer = flyerId ? flyerById.get(flyerId) : null;
+
+      let resolvedStore = raw.storeId ? storeById.get(raw.storeId) : null;
+      let chainId = raw.chainId || null;
+      if (!resolvedStore && linkedFlyer?.storeId) {
+        resolvedStore = storeById.get(linkedFlyer.storeId) || null;
+        chainId = chainId || linkedFlyer.chainId || null;
+      }
+      if (!resolvedStore) {
+        const retailerHint = raw.storeName || raw.retailerName || raw.retailer_name || raw.chainId || '';
+        const matched = this.matchStore(retailerHint, storeList);
+        if (matched?.store) {
+          resolvedStore = matched.store;
+          chainId = chainId || matched.chainId || matched.store.chainId;
+        }
+      }
+
+      const storeId = resolvedStore?.id || raw.storeId || linkedFlyer?.storeId || null;
+      if (!storeId) continue;
+      if (hasRealRapalloStores && String(storeId).startsWith('store-')) continue;
+
+      const storeName = resolvedStore?.brand || resolvedStore?.name || raw.storeName || linkedFlyer?.storeName || 'Supermercato Rapallo';
+      const resolvedChainId = chainId || resolvedStore?.chainId || 'other';
+      const title = String(raw.title || raw.name || 'Prodotto in Offerta').trim();
+      if (!title) continue;
+
+      const brand = String(raw.brand || raw.settings?.brand || storeName).trim();
+      const offerId = String(raw.id || `${storeId}-${flyerId || 'live'}-${idx}`);
+      if (seenIds.has(offerId)) continue;
+      seenIds.add(offerId);
+
+      const validFrom = raw.validFrom || raw.validityStart || linkedFlyer?.validFrom || defaultValidFrom;
+      const validTo = raw.validTo || raw.validityEnd || linkedFlyer?.validTo || defaultValidTo;
+
+      const domain = classifyProductDomain({
+        title,
+        brand,
+        category: raw.category,
+        domain: raw.domain,
+        chainId: resolvedChainId,
+        storeId
+      });
+      const category = classifyCanonicalCategory(
+        { title, brand, category: raw.category, chainId: resolvedChainId, storeId },
+        domain
+      );
+
+      const rawUnitSuffix = raw.settings?.price_suffix ? String(raw.settings.price_suffix).trim() : null;
+      const unitPrice = raw.unitPrice || (rawUnitSuffix ? `${promoPrice.toFixed(2).replace('.', ',')} € ${rawUnitSuffix}` : null);
+      const pageNumber = Math.max(1, parseInt(raw.pageNumber ?? raw.settings?.flyer_page ?? 1, 10) || 1);
+      const imageUrl = raw.imageUrl || raw.settings?.image_url || raw.image || linkedFlyer?.coverImageUrl || null;
+
+      normalized.push({
+        id: offerId,
+        storeId,
+        chainId: resolvedChainId,
+        storeName,
+        brand,
+        flyerId,
+        pageNumber,
+        title,
+        description: raw.description
+          ? String(raw.description).trim()
+          : `${brand} — ${resolvedStore?.name || storeName}`,
+        price: promoPrice,
+        promoPrice,
+        discountPrice: promoPrice,
+        originalPrice,
+        discountPercentage,
+        discountLabel,
+        unitPrice,
+        domain,
+        category,
+        imageUrl,
+        validFrom,
+        validTo,
+        validityStart: validFrom,
+        validityEnd: validTo,
+        isHighlight: Boolean(discountPercentage && discountPercentage >= 30)
+      });
+    }
+
+    return normalized;
+  }
+
+  /**
    * Load bundled offline seed dataset from data/seed/
    */
   async loadSeedData() {
@@ -450,13 +587,21 @@ export class IngestionService {
       }
       const allFlyers = Array.from(mergedFlyersMap.values());
 
-      // PromoQui landing page often has empty topOffers; combine with seed/cache offers
+      // PromoQui landing page often has empty topOffers; normalize live offers into canonical schema or combine with cache/seed
+      const normalizedLiveOffers = this.normalizeLiveOffers(liveData.rawOffers, baseStores, allFlyers);
       let liveOffers = [];
-      if (liveData.rawOffers && liveData.rawOffers.length > 0) {
-        liveOffers = liveData.rawOffers;
+      let offersDataSource = 'live';
+      if (normalizedLiveOffers.length > 0) {
+        liveOffers = normalizedLiveOffers;
       } else {
         const fallbackOffers = this._unwrapData(this.cacheManager.get('offers'));
-        liveOffers = (fallbackOffers && fallbackOffers.length > 0) ? fallbackOffers : seedData.offers;
+        if (Array.isArray(fallbackOffers) && fallbackOffers.length > 0) {
+          liveOffers = fallbackOffers;
+          offersDataSource = 'cache';
+        } else {
+          liveOffers = seedData.offers;
+          offersDataSource = 'seed';
+        }
       }
 
       const updatedStores = this.recalculateStoreCounts(baseStores, allFlyers, liveOffers);
@@ -464,10 +609,10 @@ export class IngestionService {
       // Persist to CacheManager
       this.cacheManager.set('stores', updatedStores, CACHE_TTL_SECONDS, { dataSource: 'live' });
       this.cacheManager.set('flyers', allFlyers, CACHE_TTL_SECONDS, { dataSource: 'live' });
-      this.cacheManager.set('offers', liveOffers, CACHE_TTL_SECONDS, { dataSource: 'live' });
+      this.cacheManager.set('offers', liveOffers, CACHE_TTL_SECONDS, { dataSource: offersDataSource });
 
       const completedAt = new Date().toISOString();
-      const status = (liveData.rawOffers?.length > 0) ? 'success' : 'partial_success';
+      const status = normalizedLiveOffers.length > 0 ? 'success' : 'partial_success';
 
       const result = {
         status,
@@ -922,46 +1067,103 @@ export class IngestionService {
       }
     }
 
-    const updatedStores = this.recalculateStoreCounts(baseStores, allFlyers, allOffers);
-    const dataSource = liveSuccessCount > 0 ? 'live' : 'seed';
-    const status = liveSuccessCount === totalStores
-      ? 'success'
-      : (liveSuccessCount > 0 ? 'partial_success' : 'cached_fallback');
+    const deduplicatedOffersMap = new Map();
+    for (const off of allOffers) {
+      if (off && off.id && !deduplicatedOffersMap.has(off.id)) {
+        deduplicatedOffersMap.set(off.id, off);
+      }
+    }
+    const deduplicatedOffers = Array.from(deduplicatedOffersMap.values());
 
-    this.cacheManager.set('stores', updatedStores, CACHE_TTL_SECONDS, { dataSource });
-    this.cacheManager.set('flyers', allFlyers, CACHE_TTL_SECONDS, { dataSource });
-    this.cacheManager.set('offers', allOffers, CACHE_TTL_SECONDS, { dataSource });
+    if (liveSuccessCount > 0 && deduplicatedOffers.length > 0) {
+      const updatedStores = this.recalculateStoreCounts(baseStores, allFlyers, deduplicatedOffers);
+      const dataSource = 'live';
+      const status = liveSuccessCount === totalStores ? 'success' : 'partial_success';
+
+      this.cacheManager.set('stores', updatedStores, CACHE_TTL_SECONDS, { dataSource });
+      this.cacheManager.set('flyers', allFlyers, CACHE_TTL_SECONDS, { dataSource });
+      this.cacheManager.set('offers', deduplicatedOffers, CACHE_TTL_SECONDS, { dataSource });
+
+      const completedAt = new Date().toISOString();
+      const result = {
+        status,
+        mode: 'deep',
+        startedAt,
+        completedAt,
+        durationMs: Date.now() - startTime,
+        storesProcessed: updatedStores.length,
+        totalFlyers: allFlyers.length,
+        totalOffers: deduplicatedOffers.length,
+        dataSource,
+        errors
+      };
+
+      this._updateProgress({
+        active: false,
+        phase: 'completed',
+        title: 'Deep Sync dei 14 Negozi Completato con Successo!',
+        currentStore: `Tutti i ${updatedStores.length} negozi di Rapallo aggiornati`,
+        completedStores: updatedStores.length,
+        totalStores: updatedStores.length,
+        flyersFound: allFlyers.length,
+        offersFound: deduplicatedOffers.length,
+        percent: 100,
+        completedAt
+      }, `🎉 Deep Sync concluso in ${((Date.now() - startTime) / 1000).toFixed(1)}s: ${updatedStores.length} negozi, ${allFlyers.length} volantini e ${deduplicatedOffers.length} offerte pronte!`);
+
+      this.cacheManager.set('sync_status', result, CACHE_TTL_SECONDS);
+      this.lastResult = result;
+      return result;
+    }
+
+    // Defensive Offline/Zero-Yield Guard: NEVER overwrite valid cache with empty arrays!
+    const existingFlyers = this._unwrapData(this.cacheManager.get('flyers'));
+    const existingOffers = this._unwrapData(this.cacheManager.get('offers'));
+    const hasValidCache =
+      Array.isArray(existingOffers) && existingOffers.length > 0 &&
+      Array.isArray(existingFlyers) && existingFlyers.length > 0;
+
+    const preservedFlyers = hasValidCache ? existingFlyers : seedData.flyers;
+    const preservedOffers = hasValidCache ? existingOffers : seedData.offers;
+    const preservedStores = this.recalculateStoreCounts(baseStores, preservedFlyers, preservedOffers);
+    const fallbackSource = hasValidCache ? 'cache' : 'seed';
+
+    if (!hasValidCache && preservedOffers.length > 0) {
+      this.cacheManager.set('stores', preservedStores, CACHE_TTL_SECONDS, { dataSource: 'seed' });
+      this.cacheManager.set('flyers', preservedFlyers, CACHE_TTL_SECONDS, { dataSource: 'seed' });
+      this.cacheManager.set('offers', preservedOffers, CACHE_TTL_SECONDS, { dataSource: 'seed' });
+    }
 
     const completedAt = new Date().toISOString();
-    const result = {
-      status,
+    const fallbackResult = {
+      status: 'cached_fallback',
       mode: 'deep',
       startedAt,
       completedAt,
       durationMs: Date.now() - startTime,
-      storesProcessed: updatedStores.length,
-      totalFlyers: allFlyers.length,
-      totalOffers: allOffers.length,
-      dataSource,
+      storesProcessed: preservedStores.length,
+      totalFlyers: preservedFlyers.length,
+      totalOffers: preservedOffers.length,
+      dataSource: fallbackSource,
       errors
     };
 
     this._updateProgress({
       active: false,
       phase: 'completed',
-      title: 'Deep Sync dei 14 Negozi Completato con Successo!',
-      currentStore: `Tutti i ${updatedStores.length} negozi di Rapallo aggiornati`,
-      completedStores: updatedStores.length,
-      totalStores: updatedStores.length,
-      flyersFound: allFlyers.length,
-      offersFound: allOffers.length,
+      title: 'Deep Sync Offline — Cache Locale Preservata',
+      currentStore: `Dati preservati (${preservedOffers.length} offerte attive)`,
+      completedStores: preservedStores.length,
+      totalStores: preservedStores.length,
+      flyersFound: preservedFlyers.length,
+      offersFound: preservedOffers.length,
       percent: 100,
       completedAt
-    }, `🎉 Deep Sync concluso in ${((Date.now() - startTime) / 1000).toFixed(1)}s: ${updatedStores.length} negozi, ${allFlyers.length} volantini e ${allOffers.length} offerte pronte!`);
+    }, `⚠ Deep Sync senza nuovi dati live (${liveSuccessCount}/${totalStores} risposte): preservate ${preservedOffers.length} offerte da ${fallbackSource}.`);
 
-    this.cacheManager.set('sync_status', result, CACHE_TTL_SECONDS);
-    this.lastResult = result;
-    return result;
+    this.cacheManager.set('sync_status', fallbackResult, CACHE_TTL_SECONDS);
+    this.lastResult = fallbackResult;
+    return fallbackResult;
   }
 
   /**

@@ -6,7 +6,7 @@
  *   sum(lineTotalCents) - sum(discountCents) === declaredTotalCents (delta === 0 cents)
  *
  * Upon confirmation, triggers two decoupled effects:
- *   1. Effect A (Shared Price Catalog): records each line's real price in `priceHistoryService`
+ *   1. Effect A (Shared Price Catalog): records each line's real price (> 0) in `priceHistoryService`
  *      for that Rapallo store (feeding ordinary off-flyer price benchmarks and "È un vero sconto?").
  *   2. Effect B (Personal Pantry): idempotently transfers selected food lines into `pantryService`.
  */
@@ -23,14 +23,50 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DEFAULT_RECEIPTS_PATH = path.resolve(__dirname, '../../data/cache/user_receipts.json');
 
+function throwBadRequest(message) {
+  const err = new Error(message);
+  err.status = 400;
+  throw err;
+}
+
+function parseLocaleDecimal(amount) {
+  if (typeof amount === 'number') return amount;
+  if (typeof amount === 'string') {
+    const cleaned = amount.trim().replace(',', '.');
+    if (!cleaned) return NaN;
+    if (!/^[+-]?\d+(?:\.\d+)?$/.test(cleaned)) return NaN;
+    return Number(cleaned);
+  }
+  return Number(amount);
+}
+
 export function toCents(amount) {
-  const num = typeof amount === 'string' ? parseFloat(amount.replace(',', '.')) : Number(amount);
+  const num = parseLocaleDecimal(amount);
   if (!Number.isFinite(num)) return 0;
   return Math.round(num * 100);
 }
 
 export function fromCents(cents) {
-  return Number((cents / 100).toFixed(2));
+  const safeCents = Number.isFinite(Number(cents)) ? Number(cents) : 0;
+  return Number((safeCents / 100).toFixed(2));
+}
+
+function parseStrictNonNegativeCents(val, fieldName, fallbackCents = 0) {
+  if (val === undefined || val === null || val === '') return fallbackCents;
+  const num = parseLocaleDecimal(val);
+  if (!Number.isFinite(num) || num < 0) {
+    throwBadRequest(`Importo non valido per ${fieldName}: inserire un valore numerico >= 0`);
+  }
+  return Math.round(num * 100);
+}
+
+function parseStrictPositiveNumber(val, fieldName, fallbackVal = null) {
+  if (val === undefined || val === null || val === '') return fallbackVal;
+  const num = parseLocaleDecimal(val);
+  if (!Number.isFinite(num) || num <= 0) {
+    throwBadRequest(`Valore numerico non valido per ${fieldName}: inserire un numero > 0`);
+  }
+  return num;
 }
 
 /**
@@ -39,30 +75,84 @@ export function fromCents(cents) {
 export function validateReceiptCentReconciliation(receiptPayload = {}) {
   const rawLines = Array.isArray(receiptPayload.lines) ? receiptPayload.lines : [];
   const rawDiscounts = Array.isArray(receiptPayload.discounts) ? receiptPayload.discounts : [];
-  const declaredTotalCents = toCents(receiptPayload.declaredTotal ?? receiptPayload.total ?? 0);
+  const rawDeclared = receiptPayload.declaredTotal ?? receiptPayload.total;
+  const declaredTotalCents = parseStrictNonNegativeCents(rawDeclared, 'declaredTotal', 0);
 
   const normalizedLines = rawLines.map((line, idx) => {
-    const qty = Math.max(1, Number(line.quantity || 1));
-    const unitPriceCents = line.unitPrice != null ? toCents(line.unitPrice) : null;
-    const lineTotalCents = line.lineTotal != null
-      ? toCents(line.lineTotal)
-      : (unitPriceCents !== null ? Math.round(unitPriceCents * qty) : toCents(line.price || 0));
+    const qty = parseStrictPositiveNumber(line.quantity, `lines[${idx}].quantity`, 1);
+    const hasUnitPrice = line.unitPrice !== undefined && line.unitPrice !== null && line.unitPrice !== '';
+    const hasLineTotal =
+      (line.lineTotal !== undefined && line.lineTotal !== null && line.lineTotal !== '') ||
+      (line.lineTotalEuro !== undefined && line.lineTotalEuro !== null && line.lineTotalEuro !== '');
+    const rawLineTotalVal = line.lineTotal ?? line.lineTotalEuro;
+    const hasPrice = line.price !== undefined && line.price !== null && line.price !== '';
+
+    const unitPriceCents = hasUnitPrice
+      ? parseStrictNonNegativeCents(line.unitPrice, `lines[${idx}].unitPrice`, 0)
+      : null;
+    const lineTotalCents = hasLineTotal
+      ? parseStrictNonNegativeCents(rawLineTotalVal, `lines[${idx}].lineTotal`, 0)
+      : unitPriceCents !== null
+        ? Math.round(unitPriceCents * qty)
+        : hasPrice
+          ? parseStrictNonNegativeCents(line.price, `lines[${idx}].price`, 0)
+          : 0;
+
+    const explicitPackWeight = parseStrictPositiveNumber(
+      line.packWeightGrams,
+      `lines[${idx}].packWeightGrams`,
+      null
+    );
+    const explicitCounterWeight = parseStrictPositiveNumber(
+      line.explicitWeightGrams,
+      `lines[${idx}].explicitWeightGrams`,
+      null
+    );
+    const explicitPackVolume = parseStrictPositiveNumber(
+      line.packVolumeMl,
+      `lines[${idx}].packVolumeMl`,
+      null
+    );
 
     const domain = line.domain || classifyProductDomain({ title: line.title || '', category: line.category || '' });
     const metrics = extractPackMetrics({ title: `${line.title || ''} ${line.unitString || ''}` });
 
+    const resolvedVolumeMl =
+      explicitPackVolume !== null
+        ? Math.round(explicitPackVolume)
+        : metrics.packVolumeMl
+          ? Math.round(metrics.packVolumeMl * qty)
+          : null;
+
+    const perUnitVolumeMl =
+      resolvedVolumeMl !== null
+        ? Math.max(1, Math.round(resolvedVolumeMl / qty))
+        : null;
+
+    const resolvedPackGrams =
+      explicitPackWeight !== null
+        ? Math.round(explicitPackWeight)
+        : explicitCounterWeight !== null
+          ? Math.round(explicitCounterWeight * (line.explicitWeightIsTotal ? 1 : qty))
+          : metrics.packWeightGrams
+            ? Math.round(metrics.packWeightGrams * qty)
+            : resolvedVolumeMl !== null
+              ? resolvedVolumeMl
+              : Math.round(250 * qty);
+
+    const perUnitWeightGrams = Math.max(1, Math.round(resolvedPackGrams / qty));
+
     const unitString =
-      line.unitString ||
-      (line.explicitWeightGrams
-        ? `${line.explicitWeightGrams} g`
-        : metrics.packWeightGrams
-          ? `${metrics.packWeightGrams} g`
-          : '1 pz');
-    const resolvedPackGrams = line.explicitWeightGrams
-      ? Number(line.explicitWeightGrams)
-      : metrics.packWeightGrams
-        ? metrics.packWeightGrams * qty
-        : 250 * qty;
+      (line.unitString && String(line.unitString).trim()) ||
+      (explicitCounterWeight !== null
+        ? `${Math.round(explicitCounterWeight)} g`
+        : explicitPackWeight !== null
+          ? `${perUnitWeightGrams} g`
+          : metrics.packWeightGrams
+            ? `${metrics.packWeightGrams} g`
+            : perUnitVolumeMl !== null
+              ? `${perUnitVolumeMl} ml`
+              : '1 pz');
 
     return {
       lineIndex: idx + 1,
@@ -71,18 +161,26 @@ export function validateReceiptCentReconciliation(receiptPayload = {}) {
       quantity: qty,
       unitString,
       packWeightGrams: resolvedPackGrams,
-      packVolumeMl: metrics.packVolumeMl ? metrics.packVolumeMl * qty : null,
+      packVolumeMl: resolvedVolumeMl,
       lineTotalCents,
       lineTotalEuro: fromCents(lineTotalCents),
       unitPriceEuro: fromCents(Math.round(lineTotalCents / qty)),
       domain,
-      targetZone: line.targetZone || inferDefaultZone(line.title || '', ''),
+      targetZone: line.targetZone || inferDefaultZone(line.title || '', line.category || ''),
       addToPantry: line.addToPantry !== false && domain === 'food_human'
     };
   });
 
   const normalizedDiscounts = rawDiscounts.map((d, idx) => {
-    const amountCents = Math.abs(toCents(d.amount ?? d.value ?? 0));
+    const rawDisc = d.amount ?? d.amountEuro ?? d.value;
+    let amountCents = 0;
+    if (rawDisc !== undefined && rawDisc !== null && rawDisc !== '') {
+      const parsed = parseLocaleDecimal(rawDisc);
+      if (!Number.isFinite(parsed)) {
+        throwBadRequest(`Importo sconto non valido per discounts[${idx}].amount`);
+      }
+      amountCents = Math.abs(Math.round(parsed * 100));
+    }
     return {
       discountIndex: idx + 1,
       label: String(d.label || 'Sconto / Buono').trim(),
@@ -117,6 +215,23 @@ export function validateReceiptCentReconciliation(receiptPayload = {}) {
   };
 }
 
+function sanitizeLoadedReceipt(raw = {}) {
+  const safeNum = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
+  return {
+    ...raw,
+    id: String(raw.id || `rcpt-${Date.now()}`),
+    storeId: String(raw.storeId || 'rapallo-basko-colombo'),
+    storeName: String(raw.storeName || raw.storeId || 'Basko Rapallo'),
+    declaredTotalEuro: safeNum(raw.declaredTotalEuro, 0),
+    discountsTotalEuro: safeNum(raw.discountsTotalEuro, 0),
+    linesCount: safeNum(raw.linesCount, Array.isArray(raw.lines) ? raw.lines.length : 0),
+    pantryItemsAddedCount: safeNum(raw.pantryItemsAddedCount, 0),
+    priceObservationsCount: safeNum(raw.priceObservationsCount, 0),
+    lines: Array.isArray(raw.lines) ? raw.lines : [],
+    discounts: Array.isArray(raw.discounts) ? raw.discounts : []
+  };
+}
+
 export class ReceiptService {
   constructor(options = {}) {
     this.storagePath = options.storagePath || process.env.BASILICO_RECEIPTS_PATH || DEFAULT_RECEIPTS_PATH;
@@ -131,7 +246,7 @@ export class ReceiptService {
       if (fs.existsSync(this.storagePath)) {
         const parsed = JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
         if (Array.isArray(parsed)) {
-          this._receipts = parsed;
+          this._receipts = parsed.filter(Boolean).map((r) => sanitizeLoadedReceipt(r));
           return this._receipts;
         }
       }
@@ -144,7 +259,7 @@ export class ReceiptService {
     try {
       const dir = path.dirname(this.storagePath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      const tmp = `${this.storagePath}.tmp.${process.pid}.${Date.now()}`;
+      const tmp = `${this.storagePath}.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}`;
       fs.writeFileSync(tmp, JSON.stringify(this._receipts, null, 2), 'utf8');
       fs.renameSync(tmp, this.storagePath);
     } catch (_) {}
@@ -158,15 +273,16 @@ export class ReceiptService {
    * Parses raw receipt text (from OCR or pasted slip) into a draft receipt ready for cent-reconciliation.
    * Filters out fiscal/payment/VAT/footer lines and supports multipliers ("2 X") & counter weights ("0,340 kg").
    */
-  parseRawReceiptText(rawText = '', storeId = 'basko-rapallo-colombo', storeName = 'Basko Rapallo') {
+  parseRawReceiptText(rawText = '', storeId = 'rapallo-basko-colombo', storeName = 'Basko Rapallo') {
     const lines = [];
     const discounts = [];
     let declaredTotal = 0;
     let pendingQty = null;
     let pendingWeightGrams = null;
 
+    // Note: match cashier register numbers (`^cassa\s*(?:\d+|n\.|nr|:|$)`) WITHOUT eating "CASSA ACQUA ..."
     const NON_ITEM_FISCAL_REGEX =
-      /^(?:subtotale|totale\s+merce|contant[ei]|resto\b|pagamento|bancomat|pagobancomat|carta\s+(?:di\s+)?(?:credito|debito|fedelt\w*)|contactless|pos\b|di\s+cui\s+iva|aliquota|riepilogo\s+iva|iva\s+\d+|imponibile|imposta|documento\s+commerciale|scontrino|cassa\b|operatore|data\b|ora\b|punti\b|saldo\s+punti|prima\s+card|arrivederci|grazie|p\.?\s*iva|partita\s+iva|cod\.?\s*fisc|aut\.?\s*n)/i;
+      /^(?:subtotale|totale\s+(?:merce|iva|imposta|sconti|complessivo)|contant[ei]|resto\b|pagamento|bancomat|pagobancomat|carta\s+(?:di\s+)?(?:credito|debito|fedelt\w*)|contactless|pos\b|di\s+cui\s+iva|iva\s+di\s+cui|aliquota|riepilogo\s+iva|iva\s+\d+|imponibile|imposta|documento\s+commerciale|scontrino|cassa\s*(?:\d+|n\.?\b|nr\.?\b|:|$)|operatore|data\b|ora\b|punti\b|saldo\s+punti|prima\s+card|arrivederci|grazie|p\.?\s*iva|partita\s+iva|cod\.?\s*fisc|aut\.?\s*n)/i;
 
     const textLines = String(rawText || '')
       .split(/\r?\n/)
@@ -178,9 +294,9 @@ export class ReceiptService {
       const row = rawRow.replace(/\s+(?:IVA\s*\d+%?|[A-D]\*?|#\d+)$/i, '').trim();
       if (!row) continue;
 
-      // 1. Check total line ("TOTALE EURO 14,50", "TOTALE COMPLESSIVO € 14,50", "IMPORTO DOVUTO 14.50")
+      // 1. Check total line ("TOTALE EURO 14,50", "TOTALE COMPLESSIVO EURO 14,50", "TOTALE COMPLESSIVO € 14,50", "IMPORTO DOVUTO 14.50")
       const totMatch = row.match(
-        /^(?:totale(?:\s+euro|\s+complessivo|\s+documento)?|importo\s+(?:pagato|dovuto))\s*[:€]?\s*(?:€\s*)?(\d+[.,]\d{2})$/i
+        /^(?:totale(?:\s+complessivo)?(?:\s+euro|\s+documento)?|importo\s+(?:pagato|dovuto))\s*[:€]?\s*(?:(?:euro|eur|€)\s*)?(\d+[.,]\d{2})$/i
       );
       if (totMatch) {
         declaredTotal = parseFloat(totMatch[1].replace(',', '.'));
@@ -227,6 +343,7 @@ export class ReceiptService {
         const lineTotal = parseFloat(itemMatch[2].replace(',', '.'));
         let qty = pendingQty || 1;
         let explicitWeightGrams = pendingWeightGrams || null;
+        const explicitWeightIsTotal = pendingWeightGrams !== null;
 
         const inlinePrefixQty = cleanTitle.match(/^(\d{1,2})\s*[xX*]\s+(.+)$/);
         if (inlinePrefixQty) {
@@ -240,9 +357,12 @@ export class ReceiptService {
           }
         }
 
-        const inlineKgMatch = cleanTitle.match(/\b(\d+[.,]\d{2,3})\s*kg\b/i);
+        const inlineKgMatch = cleanTitle.match(/\b(\d+[.,]\d{1,3})\s*kg\b/i);
         if (inlineKgMatch && !explicitWeightGrams) {
-          explicitWeightGrams = Math.round(parseFloat(inlineKgMatch[1].replace(',', '.')) * 1000);
+          // Only use inline weight as per-item explicitWeightGrams if extractPackMetrics won't handle multipack "6x1,5kg"
+          if (!/\d+\s*[xX*]\s*\d+(?:[.,]\d+)?\s*kg\b/i.test(cleanTitle)) {
+            explicitWeightGrams = Math.round(parseFloat(inlineKgMatch[1].replace(',', '.')) * 1000);
+          }
         }
 
         // Guard against pure numeric/date garbage titles
@@ -251,7 +371,8 @@ export class ReceiptService {
             title: cleanTitle,
             lineTotal,
             quantity: qty,
-            explicitWeightGrams
+            explicitWeightGrams,
+            explicitWeightIsTotal
           });
         }
 
@@ -276,7 +397,8 @@ export class ReceiptService {
 
   /**
    * Confirms and commits a receipt ONLY if `deltaCents === 0`.
-   * Executes Effect A (price history feed) and Effect B (idempotent pantry transfer).
+   * Enforces strict `(id, revisionKey)` idempotency BEFORE Effect A (price history feed)
+   * and Effect B (pantry transfer), preserving original `pantryItemsAddedCount` (`SPEC-05`).
    */
   confirmReceipt(payload = {}) {
     const validation = validateReceiptCentReconciliation(payload);
@@ -287,37 +409,64 @@ export class ReceiptService {
       throw err;
     }
 
-    const receiptId = payload.id || `rcpt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    const storeId = String(payload.storeId || 'basko-rapallo-colombo').trim();
-    const storeName = String(payload.storeName || storeId).trim();
-    const purchasedAt = payload.purchasedAt || new Date().toISOString();
-    const revisionKey = payload.revisionKey || 'v1';
+    const receiptId = payload.id ? String(payload.id).trim() : `rcpt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    const revisionKey = String(payload.revisionKey || 'v1').trim();
+    const expectedTransferRev = `${receiptId}:${revisionKey}`;
 
-    // Effect A: Record ordinary / receipt observed prices in Rapallo price history
-    const recordedObservations = [];
-    for (const line of validation.lines) {
-      const obs = this.priceHistoryService.recordObservation({
-        title: line.title,
-        brand: line.brand,
-        price: line.unitPriceEuro,
-        unitString: line.unitString,
-        storeId,
-        storeName,
-        channel: 'receipt_verified',
-        observedAt: purchasedAt
-      });
-      recordedObservations.push(obs);
+    // SPEC-05 Top-of-Function Strict Idempotency Check:
+    // Never duplicate priceHistory observations or overwrite pantryItemsAddedCount on retry!
+    const all = this._load();
+    const existingReceipt = all.find(
+      (r) => r.id === receiptId && (r.revisionKey === revisionKey || r.pantryTransferRevision === expectedTransferRev)
+    );
+    if (existingReceipt) {
+      return {
+        receipt: existingReceipt,
+        reconciliation: validation,
+        pantryTransfer: {
+          alreadyApplied: true,
+          revisionKey: existingReceipt.pantryTransferRevision || expectedTransferRev,
+          addedItems: []
+        },
+        recordedObservationsCount: 0
+      };
     }
 
-    // Effect B: Idempotent transfer of selected food lines into 3-zone Pantry
+    const storeId = String(payload.storeId || 'rapallo-basko-colombo').trim();
+    const storeName = String(payload.storeName || storeId).trim();
+    const purchasedAt = payload.purchasedAt || new Date().toISOString();
+
+    // Effect B first (atomic idempotency check in pantryService as secondary guard)
     const pantryTransfer = this.pantryService.transferReceiptLinesToPantry(
       receiptId,
       revisionKey,
       validation.lines
     );
 
+    // Effect A: Record ordinary / receipt observed prices (> 0) in Rapallo price history
+    const recordedObservations = [];
+    if (!pantryTransfer.alreadyApplied) {
+      for (const line of validation.lines) {
+        if (line.lineTotalCents <= 0 || line.unitPriceEuro <= 0) {
+          continue; // Allow €0.00 free promo/gift lines without throwing 400 in priceHistoryService
+        }
+        const obs = this.priceHistoryService.recordObservation({
+          title: line.title,
+          brand: line.brand,
+          price: line.unitPriceEuro,
+          unitString: line.unitString,
+          storeId,
+          storeName,
+          channel: 'receipt_verified',
+          observedAt: purchasedAt
+        });
+        recordedObservations.push(obs);
+      }
+    }
+
     const savedReceipt = {
       id: receiptId,
+      revisionKey,
       storeId,
       storeName,
       purchasedAt,
@@ -331,7 +480,6 @@ export class ReceiptService {
       priceObservationsCount: recordedObservations.length
     };
 
-    const all = this._load();
     const existingIdx = all.findIndex((r) => r.id === receiptId);
     if (existingIdx >= 0) {
       all[existingIdx] = savedReceipt;

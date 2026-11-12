@@ -12,6 +12,7 @@ import {
   matchBomIngredientToOffer,
   resolveIngredientPackSpec
 } from '../../server/services/recipeAndArbitrageService.js';
+import { creaService } from '../../server/services/creaService.js';
 
 test('RecipeAndArbitrageService — Certified Catalog Integrity (234 Dishes & 32 Tigullio Restaurants)', () => {
   const svc = new RecipeAndArbitrageService({
@@ -161,4 +162,106 @@ test('RecipeAndArbitrageService — Strict BOM Matcher, Granular Packs, 3-Tier Z
     archetypesSeen.add(sess.cookingArchetype);
   }
   assert.ok(archetypesSeen.size >= 5, `Expected at least 5 distinct cooking archetypes across sample dishes, got ${archetypesSeen.size}`);
+});
+
+test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (CREA Integrity, Semantic BOM Guards, 3-Tier Sweet Dairy, Sort-Before-Slice, Cold Desserts)', async () => {
+  const svc = new RecipeAndArbitrageService({
+    labNotebookPath: path.join(os.tmpdir(), `basilico-lab-reg-${Date.now()}.json`)
+  });
+
+  const dishes = svc.getDishesSeed();
+
+  // M-P0-09: 100% of BOM creaId references across all 264 dishes must exist in CREA database
+  for (const d of dishes) {
+    for (const b of d.bom || []) {
+      const food = creaService.getFoodById(b.creaId);
+      assert.ok(food, `Dish ${d.id} BOM "${b.name}" has invalid creaId "${b.creaId}"`);
+    }
+  }
+  const cracco = dishes.find((d) => d.id === 'starred-cracco-spaghetto-pomodoro-studio');
+  assert.equal(cracco.bom[0].creaId, '000800', 'Spaghetti must use Pasta di semola 000800, never Miglio 000080');
+  assert.equal(cracco.bom[1].creaId, '006680', 'Pelati/Passata must use 006680, never Cicoria 005240');
+
+  // M-P0-07 & M-P1-20: Canned fish `all'olio` pack spec, semantic guards & weightless multipack cap
+  assert.equal(resolveIngredientPackSpec("Rio Mare - Tonno All'Olio Di Oliva").family, 'canned_fish');
+
+  const adversarialOffers = [
+    { id: 'mutti-passata', title: 'Mutti - Passata Di Pomodoro 700g', brand: 'Mutti', domain: 'food_human', promoPrice: 1.29 },
+    { id: 'alpli-fiocchi', title: 'Alplì - Fiocchi Di Latte Classici', brand: 'Alplì', domain: 'food_human', promoPrice: 0.99, profileCompatibility: { isCompatible: false } },
+    { id: 'novi-crema', title: 'Novi - Crema Spalmabile Nocciole', brand: 'Novi', domain: 'food_human', promoPrice: 2.99 },
+    { id: 'tacchino-petto', title: 'Petto Di Tacchino A Fette', brand: '', domain: 'food_human', promoPrice: 3.49 },
+    { id: 'life-disidratata', title: 'Life - Frutta Disidratata Mix', brand: 'Life', domain: 'food_human', promoPrice: 1.99 },
+    { id: 'champignon', title: 'Funghi Champignon Affettati', brand: '', domain: 'food_human', promoPrice: 1.49 },
+    { id: 'riomare-olio', title: "Rio Mare - Tonno All'Olio Di Oliva", brand: 'Rio Mare', domain: 'food_human', promoPrice: 6.69 }
+  ];
+
+  assert.equal(matchBomIngredientToOffer({ name: 'Spicchi di agrume / mela fresca pelata a vivo', creaId: '007130' }, adversarialOffers), null);
+  assert.equal(matchBomIngredientToOffer({ name: 'Mandorle dolci secche pelate', creaId: '008540' }, adversarialOffers), null);
+  assert.equal(matchBomIngredientToOffer({ name: "Fiocchi d'avena integrali", creaId: '003030' }, adversarialOffers), null);
+  assert.equal(matchBomIngredientToOffer({ name: 'Crema di latte / panna fresca', creaId: '140100' }, adversarialOffers), null);
+  assert.equal(matchBomIngredientToOffer({ name: 'Petto di pollo fresco a bocconcini', creaId: '106500' }, adversarialOffers), null);
+  assert.equal(matchBomIngredientToOffer({ name: 'Frutta fresca di stagione', creaId: '007130' }, adversarialOffers), null);
+  assert.equal(matchBomIngredientToOffer({ name: 'Funghi porcini freschi', creaId: '006030' }, adversarialOffers), null);
+  assert.equal(matchBomIngredientToOffer({ name: 'Tonno al naturale sgocciolato', creaId: '123550' }, adversarialOffers), null);
+
+  const oilTunaDish = dishes.find((d) => d.id === 'base-barca-insalata-mare-ceci');
+  const eval669 = await svc.evaluateDish(oilTunaDish, {
+    profileId: 'dany',
+    activeOffers: [adversarialOffers.at(-1)]
+  });
+  const tunaLine = eval669.bom.find((b) => /tonno/i.test(b.name));
+  assert.ok(tunaLine.euroPerKg < 25, `Weightless €6.69 multipack must never inflate to €41.81/kg (got ${tunaLine.euroPerKg})`);
+
+  // M-P0-08 & M-P1-13: Sweet ricotta/mascarpone/semifreddo desserts excluded honestly (never savory potato!) & isSubstitutedComposite preserved
+  const cassata = dishes.find((d) => d.id === 'tigullio-dish-227');
+  const schiumone = dishes.find((d) => d.id === 'tigullio-dish-179');
+  for (const pid of ['dany', 'barca']) {
+    const evCassata = await svc.evaluateDish(cassata, { profileId: pid });
+    assert.equal(evCassata.isExcludedByProfileIdentity, true);
+    assert.equal(evCassata.hasProfileSubstitution, false);
+    const evSchiumone = await svc.evaluateDish(schiumone, { profileId: pid });
+    assert.equal(evSchiumone.isExcludedByProfileIdentity, true);
+    assert.equal(evSchiumone.hasProfileSubstitution, false);
+  }
+
+  const dishWithParmigiano = dishes.find((d) => d.id === 'tigullio-dish-2');
+  const evParm = await svc.evaluateDish(dishWithParmigiano, { profileId: 'dany' });
+  assert.ok(evParm.bom.some((b) => b.isSubstitutedComposite === true), 'Substituted composite BOM flag must be preserved');
+
+  // M-P1-05: 80/20 respects profileId & computes unlockedDishesCount before .slice(0, 30)
+  const paretoDany = await svc.computeMaxCoverage8020({ topK: 15, profileId: 'dany' });
+  assert.ok(
+    !paretoDany.paretoBasket.some((i) =>
+      /\b(burrata|parmigiano|pecorino|mascarpone|ricotta|mozzarella|gorgonzola|stracchino|crescenza|formaggi\w*)\b/i.test(
+        i.name
+      )
+    )
+  );
+  assert.equal(paretoDany.unlockedDishesCount, paretoDany.paretoBasket.at(-1).cumulativeUnlockedDishesCount);
+
+  // M-P1-10: deconstructCustomMenuDish splits comma-separated ingredients BEFORE normalizing
+  const customDish = await svc.deconstructCustomMenuDish({
+    title: 'Trenette Test Rapallo',
+    menuPriceEuro: 18,
+    ingredientsText: 'pasta di semola, patate, fagiolini, pinoli',
+    profileId: 'dany'
+  });
+  assert.equal(customDish.bom.length, 4);
+  assert.ok(!customDish.bom.some((b) => b.creaId === '120010'));
+
+  // M-P1-11 & M-P1-14: Global sort before pagination, strict boatSafeCold, Semifreddi cold archetype & Frittata non-fried
+  const top5Cheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 5 });
+  const allCheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 350 });
+  assert.equal(top5Cheapest.dishes[0].id, allCheapest.dishes[0].id);
+
+  const boatOnly = await svc.queryDishes({ mealContext: 'boat_cooler', limit: 100 });
+  assert.ok(boatOnly.dishes.every((d) => d.boatSafeCold === true), 'boat_cooler filter must strictly enforce boatSafeCold');
+
+  const semifreddiSess = await svc.getScientificCookingSession('tigullio-dish-228', { profileId: 'ospiti' });
+  assert.equal(semifreddiSess.cookingArchetype, 'cold_emulsion_or_frozen_dessert');
+
+  const frittataDish = dishes.find((d) => d.id === 'base-single-frittata-zucchine-basilico-no-formaggio');
+  const evalFrittata = await svc.evaluateDish(frittataDish, { profileId: 'dany' });
+  assert.notEqual(evalFrittata.dishFamily, 'fried_dish', 'Frittata must never be classified as deep-fried');
+  assert.equal(evalFrittata.lightDinnerSuitable, true);
 });

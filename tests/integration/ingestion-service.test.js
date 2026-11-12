@@ -495,5 +495,109 @@ describe('IngestionService Integration Tests', () => {
       assert.equal(pennyOffers.totalOffers, 1);
       assert.equal(pennyOffers.offers[0].category, 'Giocattoli, Natale e Tempo Libero');
     });
+
+    it('M-P0-01 & M-P2-08: offline deepSync() never overwrites valid cached offers/flyers with [], sync() normalizes rawOffers, and CacheManager handles string path + SQLite staleGraceSeconds + NaN expiry', async () => {
+      // 1. Prime cache with seed data, then run offline deepSync() -> must preserve cached offers & flyers
+      const seedData = await service.loadSeedData();
+      await cache.set('stores', seedData.stores, { source: 'live' });
+      await cache.set('flyers', seedData.flyers, { source: 'live' });
+      await cache.set('offers', seedData.offers, { source: 'live' });
+
+      const offlineDeepService = new IngestionService({ cacheManager: cache });
+      offlineDeepService.fetchWithTimeout = async () => {
+        throw new Error('ENOTFOUND www.promoqui.it');
+      };
+
+      const offlineRes = await offlineDeepService.deepSync();
+      assert.equal(offlineRes.status, 'cached_fallback');
+      const preservedOffers = await cache.get('offers');
+      const preservedFlyers = await cache.get('flyers');
+      assert.ok(Array.isArray(preservedOffers));
+      assert.equal(preservedOffers.length, seedData.offers.length, 'Offline deepSync must NOT clobber cached offers with []');
+      assert.equal(preservedFlyers.length, seedData.flyers.length, 'Offline deepSync must NOT clobber cached flyers with []');
+
+      // 2. sync(true) normalizes raw PromoQui topOffers into canonical Rapallo offer schema
+      const liveSyncDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-sync-norm-'));
+      try {
+        const stringCache = new CacheManager(liveSyncDir); // string constructor support
+        const liveSyncService = new IngestionService({ cacheManager: stringCache });
+        const futureIso = '2099-12-31T23:59:59.000Z';
+        liveSyncService.fetchLiveAggregator = async () => ({
+          rawFlyers: [
+            {
+              id: 'fly-coop-live',
+              retailerName: 'Coop Liguria',
+              title: 'Speciale Soci Rapallo',
+              start_date: '2026-11-01T00:00:00.000Z',
+              end_date: futureIso,
+              pageCount: 4
+            }
+          ],
+          rawOffers: [
+            {
+              id: 'raw-top-1',
+              flyerId: 'fly-coop-live',
+              retailerName: 'Coop Liguria',
+              title: 'Olio Extra Vergine 1L',
+              brand: 'Coop',
+              settings: {
+                price_extended: { digits: '6.49' },
+                starting_price: { digits: '8.99' },
+                flyer_page: '2'
+              }
+            }
+          ]
+        });
+
+        const syncRes = await liveSyncService.sync(true);
+        assert.equal(syncRes.status, 'success');
+        const queried = await liveSyncService.getOffers({ storeId: 'rapallo-coop-sciesa' });
+        assert.equal(queried.totalOffers, 1);
+        assert.equal(queried.offers[0].promoPrice, 6.49);
+        assert.equal(queried.offers[0].originalPrice, 8.99);
+        assert.equal(queried.offers[0].domain, 'food_human');
+        assert.equal(queried.offers[0].validTo, futureIso);
+      } finally {
+        fs.rmSync(liveSyncDir, { recursive: true, force: true });
+      }
+
+      // 3. M-P2-08: SQLite cleanupExpired honors staleGraceSeconds and CacheManager rejects NaN expiresAt
+      const sqliteDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-sqlite-grace-'));
+      try {
+        const sqliteCache = new CacheManager({
+          cacheDir: sqliteDir,
+          backend: 'sqlite',
+          defaultTtlSeconds: 1,
+          defaultStaleGraceSeconds: 3600
+        });
+        await sqliteCache.set('grace_key', [{ id: 1 }], { ttlSeconds: 1, staleGraceSeconds: 3600 });
+        const removedWithinGrace = sqliteCache.cleanupExpired(Date.now() + 5000);
+        assert.equal(removedWithinGrace, 0, 'Row inside staleGraceSeconds must NOT be pruned');
+        const removedPastGrace = sqliteCache.cleanupExpired(Date.now() + 4000 * 1000);
+        assert.equal(removedPastGrace, 1, 'Row past expiresAt + staleGraceSeconds must be pruned');
+        sqliteCache.close();
+
+        const nanDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-nan-exp-'));
+        const nanCache = new CacheManager({ cacheDir: nanDir, backend: 'json' });
+        fs.writeFileSync(
+          path.join(nanDir, 'corrupt_exp.json'),
+          JSON.stringify({
+            metadata: {
+              key: 'corrupt_exp',
+              cachedAt: new Date().toISOString(),
+              expiresAt: 'not-a-valid-iso-date',
+              staleGraceSeconds: 60
+            },
+            data: [{ bad: true }]
+          })
+        );
+        const nanRead = await nanCache.get('corrupt_exp', { allowStale: true });
+        assert.equal(nanRead, null, 'Invalid NaN expiresAt must be treated as expired, never immortal');
+        assert.equal(nanCache.isExpired('corrupt_exp'), true);
+        fs.rmSync(nanDir, { recursive: true, force: true });
+      } finally {
+        fs.rmSync(sqliteDir, { recursive: true, force: true });
+      }
+    });
   });
 });

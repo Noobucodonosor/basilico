@@ -271,4 +271,113 @@ describe('TASK-M1-01: Multi-Domain Taxonomy, Edible €/kg Normalizer & Quality 
       assert.equal(coord.open(7).currentPage, 7);
     });
   });
+
+  describe('TASK-SWARM-01 Regressions: M-P0-05, M-P1-02, M-P1-06, M-P1-08', () => {
+    it('M-P0-05: routes Vileda/mops, coffee machines, LED/lights/speakers/poinsettia/candles, hyphenated cosmetics, Rigoni di Asiago jam & Pecorino wine cleanly even when pre-tagged as food_human', () => {
+      assert.equal(
+        classifyProductDomain({ title: 'Vileda - Sistema Di Pulizia Turbo Smart', domain: 'food_human', chainId: 'basko' }),
+        'home_cleaning'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Telefunken - Macchina Del Caffè Espresso', domain: 'food_human', chainId: 'penny' }),
+        'kitchen_cookware'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Catena Luminosa 100 LED Bianco Caldo', domain: 'food_human', chainId: 'penny' }),
+        'bazar_seasonal'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Tower Speaker Bluetooth', domain: 'food_human', chainId: 'unieuro' }),
+        'bazar_seasonal'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Poinsettia Vaso 14cm', domain: 'food_human', chainId: 'penny' }),
+        'bazar_seasonal'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Candele Profumate In Vaso Di Vetro', domain: 'food_human', chainId: 'tigota' }),
+        'bazar_seasonal'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Shampoo Rigene- rante Capelli Secchi 250ml', domain: 'food_human', chainId: 'tigota' }),
+        'personal_care'
+      );
+      assert.equal(
+        classifyProductDomain({ title: 'Palette - Oleo Intense Colorazione', domain: 'food_human', chainId: 'tigota' }),
+        'personal_care'
+      );
+
+      const rigoniJam = { title: 'Rigoni Di Asiago - Confetture Bio Albicocca 250g', brand: 'Rigoni di Asiago', chainId: 'coop' };
+      assert.equal(classifyProductDomain(rigoniJam), 'food_human');
+      assert.equal(classifyCanonicalCategory(rigoniJam), 'Colazione e Dolci');
+
+      const pecorinoWine = { title: 'Spinelli - Montepulciano DOC O Pecorino IGT Valdifara 75 cl', chainId: 'basko' };
+      assert.equal(classifyProductDomain(pecorinoWine), 'food_human');
+      assert.equal(classifyCanonicalCategory(pecorinoWine), 'Acqua e Bevande');
+    });
+
+    it('M-P1-02: computes orthogonal facets in OfferService.processQuery so sibling domains/categories/stores never zero out', () => {
+      const seedOffers = offerService.getSeedOffersSync();
+
+      const byDomain = offerService.processQuery({ domain: 'home_cleaning' }, seedOffers);
+      assert.ok((byDomain.facets.domains.food_human || 0) > 0, 'Selecting home_cleaning must preserve food_human facet count');
+
+      const byCategory = offerService.processQuery({ domain: 'food_human', category: 'Frutta e Verdura' }, seedOffers);
+      assert.ok((byCategory.facets.categories['Dispensa e Pasta'] || 0) > 0, 'Selecting one category must preserve sibling category counts');
+
+      const byStore = offerService.processQuery({ domain: 'food_human', storeId: 'rapallo-coop-sciesa' }, seedOffers);
+      const otherStoreHasCount = Object.entries(byStore.facets.stores || {}).some(
+        ([sid, cnt]) => sid !== 'rapallo-coop-sciesa' && cnt > 0
+      );
+      assert.ok(otherStoreHasCount, 'Selecting one store must preserve sibling store counts');
+    });
+
+    it('M-P1-06: blocks €/L on appliances/fridges, skips multi-item gift baskets, and guards Pecorino wine & Zucca Castagna', () => {
+      const fridge = normalizeUnitPricing({
+        title: 'LG Frigorifero Side by Side 635 L Inox',
+        promoPrice: 1399.0,
+        domain: 'kitchen_cookware'
+      });
+      assert.equal(fridge.packVolumeMl, null);
+      assert.equal(fridge.pricePerLiter, null);
+      assert.equal(fridge.formattedNormalizedPrice, null);
+
+      const wine = normalizeUnitPricing({
+        title: 'Spinelli - Pecorino IGT Valdifara 75 cl',
+        promoPrice: 4.49,
+        domain: 'food_human'
+      });
+      assert.equal(wine.referencePackEstimate, null);
+      assert.equal(wine.packVolumeMl, 750);
+
+      const zucca = normalizeUnitPricing({
+        title: 'Zucca Castagna',
+        promoPrice: 1.99,
+        domain: 'food_human'
+      });
+      assert.notEqual(zucca.referencePackEstimate?.estimatedPackGrams, 500, 'Zucca Castagna must not trigger chestnut 500g pack estimate');
+      assert.equal(zucca.referencePackEstimate?.estimatedPackGrams, 1000, 'Zucca Castagna maps to 1kg sfuso vegetable');
+
+      const giftBasket = normalizeUnitPricing({
+        title: 'Cesto Regalo Natale (Panettone 750g + Spumante 750ml + Torrone 150g)',
+        promoPrice: 24.9,
+        domain: 'food_human'
+      });
+      assert.equal(giftBasket.packWeightGrams, null);
+      assert.equal(giftBasket.packVolumeMl, null);
+      assert.equal(giftBasket.pricePerKg, null);
+      assert.equal(giftBasket.referencePackEstimate, null);
+    });
+
+    it('M-P1-08: classifies Ace laundry detergent under Cura Bucato before alkaline kitchen bleach/degreaser branch', () => {
+      const aceLaundry = evaluateQualityLens({
+        title: 'Ace - Detersivo Lavatrice Liquido Classico 38 Lavaggi',
+        brand: 'Ace',
+        chainId: 'tigota'
+      });
+      assert.equal(aceLaundry.domain, 'home_cleaning');
+      assert.ok(aceLaundry.badges.some((b) => b.label.includes('Cura Bucato')));
+      assert.equal(aceLaundry.technicalSpec, null);
+    });
+  });
 });

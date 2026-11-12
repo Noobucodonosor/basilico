@@ -23,6 +23,8 @@ export function useSupermarketData(filterOptions = {}) {
   const [totalPages, setTotalPages] = useState(1);
 
   const abortControllerRef = useRef(null);
+  const loadMoreAbortRef = useRef(null);
+  const filterEpochRef = useRef(0);
   const pageSize = Math.min(100, Math.max(1, Number(filterOptions.limit) || DEFAULT_PAGE_SIZE));
 
   // 1. Fetch Store Directory & System Status
@@ -90,8 +92,16 @@ export function useSupermarketData(filterOptions = {}) {
   const fetchOffers = useCallback(async () => {
     if (filterOptions.ready === false) return;
 
+    filterEpochRef.current += 1;
+    const currentEpoch = filterEpochRef.current;
+
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
+    }
+    if (loadMoreAbortRef.current) {
+      loadMoreAbortRef.current.abort();
+      loadMoreAbortRef.current = null;
+      setLoadingMore(false);
     }
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -111,6 +121,8 @@ export function useSupermarketData(filterOptions = {}) {
       }
 
       const data = await res.json();
+      if (controller.signal.aborted || currentEpoch !== filterEpochRef.current) return;
+
       setOffers(data.offers || []);
       setTotalOffers(data.totalOffers || 0);
       setCurrentPage(data.page || 1);
@@ -118,29 +130,42 @@ export function useSupermarketData(filterOptions = {}) {
       if (data.categories) setCategories(data.categories);
       if (data.facets) setFacets(data.facets);
     } catch (err) {
-      if (err.name !== 'AbortError') {
+      if (err.name !== 'AbortError' && currentEpoch === filterEpochRef.current) {
         setError(err.message);
         setStatus((prev) => ({ ...prev, isOnline: false }));
       }
     } finally {
-      if (!controller.signal.aborted) {
+      if (!controller.signal.aborted && currentEpoch === filterEpochRef.current) {
         setLoading(false);
       }
     }
   }, [buildOfferQueryParams, filterOptions.ready]);
 
-  // 4. Load next page and append without losing scroll position
+  // 4. Load next page and append without losing scroll position (guarded by AbortController + filterEpoch)
   const loadMoreOffers = useCallback(async () => {
     if (loading || loadingMore || currentPage >= totalPages) return;
     const nextPage = currentPage + 1;
+    const requestEpoch = filterEpochRef.current;
+
+    if (loadMoreAbortRef.current) {
+      loadMoreAbortRef.current.abort();
+    }
+    const controller = new AbortController();
+    loadMoreAbortRef.current = controller;
+
     setLoadingMore(true);
     try {
       const queryParams = buildOfferQueryParams(nextPage);
-      const res = await fetch(`/api/offers?${queryParams.toString()}`);
+      const res = await fetch(`/api/offers?${queryParams.toString()}`, {
+        signal: controller.signal
+      });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: Failed to load more offers`);
       }
       const data = await res.json();
+      if (controller.signal.aborted || requestEpoch !== filterEpochRef.current) {
+        return;
+      }
       const incoming = Array.isArray(data.offers) ? data.offers : [];
       setOffers((prev) => {
         const seen = new Set(prev.map((o) => o.id));
@@ -154,14 +179,24 @@ export function useSupermarketData(filterOptions = {}) {
         return merged;
       });
       setCurrentPage(data.page || nextPage);
-      setTotalPages(data.totalPages || totalPages);
+      setTotalPages(data.totalPages ?? totalPages);
       setTotalOffers(data.totalOffers ?? totalOffers);
     } catch (err) {
-      console.warn('[useSupermarketData] Load more warning:', err.message);
+      if (err.name !== 'AbortError') {
+        console.warn('[useSupermarketData] Load more warning:', err.message);
+      }
     } finally {
-      setLoadingMore(false);
+      if (loadMoreAbortRef.current === controller) {
+        loadMoreAbortRef.current = null;
+        setLoadingMore(false);
+      }
     }
   }, [loading, loadingMore, currentPage, totalPages, buildOfferQueryParams, totalOffers]);
+
+  useEffect(() => () => {
+    abortControllerRef.current?.abort();
+    loadMoreAbortRef.current?.abort();
+  }, []);
 
   // Initial metadata load
   useEffect(() => {

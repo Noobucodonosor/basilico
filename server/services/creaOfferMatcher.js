@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { creaService } from './creaService.js';
-import { normalizeSearchToken } from './offerService.js';
+import { normalizeSearchToken, bumpEnrichmentEpoch } from './offerService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,15 +47,16 @@ const NON_EDIBLE_OR_DEHYDRATED_MISMATCH_REGEX =
 
 const LEADING_ARTICLES = new Set(['il', 'lo', 'la', 'i', 'gli', 'le', 'l', 'un', 'uno', 'una']);
 
-// High-precision canonical dictionary mapping common Italian commercial grocery head patterns to official CREA IDs
+// High-precision canonical dictionary mapping common Italian commercial grocery head patterns to official CREA names
 const CANONICAL_HEAD_PATTERNS = [
   { regex: /^(?:pasta\s+(?:di\s+semola|integrale)?|spaghetti|penne|fusilli|rigatoni|mezze\s+maniche|farfalle|linguine|bucatini|maccheroni|trofie|orecchiette)\b/, creaQuery: 'Pasta di semola' },
   { regex: /^(?:riso\s+(?:carnaroli|arborio|roma|vialone|basmati|parboiled|originario)|riso)\b/, creaQuery: 'Riso, brillato' },
   { regex: /^(?:farina\s+di\s+grano\s+tenero|farina\s+tipo\s*00?|farina)\b/, creaQuery: 'Farina di grano tenero, tipo 00' },
-  { regex: /^(?:passata\s+di\s+pomodoro|passata\s+classica|passata\s+vellutata|passata\s+rustica|polpa\s+di\s+pomodoro|pomodori\s+pelati|pelati)\b/, creaQuery: 'Pomodori, pelati' },
-  { regex: /^(?:olio\s+extra\s*vergine\s+(?:di\s+oliva|d\s*oliva)|olio\s+evo)\b/, creaQuery: 'Olio di oliva, extra vergine' },
-  { regex: /^(?:tonno\s+(?:all\s*olio|in\s+olio|leggero)|tranci\s+di\s+tonno|filetti\s+di\s+tonno)\b/, creaQuery: 'Tonno, sott\'olio, sgocciolato' },
-  { regex: /^(?:tonno\s+al\s+naturale)\b/, creaQuery: 'Tonno, in salamoia, sgocciolato' },
+  { regex: /^(?:passata\s+di\s+pomodoro|passata\s+classica|passata\s+vellutata|passata\s+rustica|passata\s+extraref\w*|passata\b.*\bpomodor\w*)\b/, creaQuery: 'Pomodori, passata' },
+  { regex: /^(?:polpa\s+di\s+pomodoro|pomodori\s+pelati|datterini\s+pelati|pelati)\b/, creaQuery: 'Pomodori, pelati in scatola' },
+  { regex: /^(?:olio\s+extra\s*vergine(?:\s+(?:di\s+oliva|d\s*oliva))?|olio\s+evo)\b/, creaQuery: 'Olio di oliva extra vergine' },
+  { regex: /^(?:tonno\b.*\b(?:al\s+naturale|in\s+salamoia|all\s*acqua))\b/, creaQuery: 'Tonno in salamoia, sgocciolato' },
+  { regex: /^(?:tonno\b.*\b(?:all\s*olio|in\s+olio|sott\s*olio|leggero)|(?:tranci|filetti)\s+di\s+tonno)\b/, creaQuery: 'Tonno sott\'olio, sgocciolato' },
   { regex: /^(?:salmone\s+affumicato|salmone\s+norvegese)\b/, creaQuery: 'Salmone, affumicato' },
   { regex: /^(?:salmone\s+fresco|trancio\s+di\s+salmone|filetto\s+di\s+salmone|salmone)\b/, creaQuery: 'Salmone' },
   { regex: /^(?:filett[oi]\s+di\s+baccala|baccala\s+dissalato|baccala\s+ammollato|baccala)\b/, creaQuery: 'Merluzzo o nasello, baccalà, ammollato' },
@@ -71,14 +72,17 @@ const CANONICAL_HEAD_PATTERNS = [
   { regex: /^(?:cozze)\b/, creaQuery: 'Cozza o mitilo' },
   { regex: /^(?:vongole)\b/, creaQuery: 'Vongola' },
   { regex: /^(?:pollo\s+a\s+busto|pollo\s+intero|busto\s+di\s+pollo)\b/, creaQuery: 'Pollo, intero, con pelle, crudo' },
+  { regex: /^(?:hamburger|burger|svizzer[ae])\b.*\b(?:tacchino)\b/, creaQuery: 'Tacchino, fesa, crudo' },
+  { regex: /^(?:hamburger|burger|svizzer[ae])\b.*\b(?:pollo)\b/, creaQuery: 'Pollo, petto, crudo' },
+  { regex: /^(?:hamburger|burger|svizzer[ae])\b.*\b(?:suino|maiale|salsiccia)\b/, creaQuery: 'Suino, bistecca, crudo' },
   { regex: /^(?:petto\s+di\s+pollo|fette\s+di\s+pollo|filetti\s+di\s+pollo|pollo)\b/, creaQuery: 'Pollo, petto, crudo' },
   { regex: /^(?:fesa\s+di\s+tacchino|petto\s+di\s+tacchino|tacchino)\b/, creaQuery: 'Tacchino, fesa, crudo' },
-  { regex: /^(?:bresaola)\b/, creaQuery: 'Bresaola della Valtellina' },
+  { regex: /^(?:bresaola)\b/, creaQuery: 'Bresaola della Valtellina IGP' },
   { regex: /^(?:prosciutto\s+crudo)\b/, creaQuery: 'Prosciutto crudo' },
   { regex: /^(?:gran\s+tenerone\s+prosciutto\s+cotto|prosciutto\s+cotto)\b/, creaQuery: 'Prosciutto cotto' },
   { regex: /^(?:speck)\b/, creaQuery: 'Speck' },
   { regex: /^(?:salame)\b/, creaQuery: 'Salame Milano' },
-  { regex: /^(?:macinato\s+di\s+bovino|polpa\s+di\s+bovino|fettine\s+(?:scelte\s+)?di\s+bovino|hamburger\s+di\s+bovino|tagliata\s+bovino|battuta\s+di\s+bovino|manzo|bovino|scottona)\b/, creaQuery: 'Bovino adulto o vitellone, fesa, crudo' },
+  { regex: /^(?:macinato\s+di\s+bovino|polpa\s+di\s+bovino|fettine\s+(?:scelte\s+)?di\s+bovino|tagliata\s+(?:di\s+)?bovino|battuta\s+di\s+bovino|(?:hamburger|svizzer[ae])\b(?!.*\b(?:fast\s*food|panino|vegetal\w*|veggie|soia|ceci|spinaci|verdure|pesce|salmone|merluzzo)\b)|manzo|bovino|scottona)\b/, creaQuery: 'Bovino adulto o vitellone, fesa, crudo' },
   { regex: /^(?:uova\s+fresche|uova)\b/, creaQuery: 'Uova di gallina, intero' },
   { regex: /^(?:latte\s+parzialmente\s+scremato|latte\s+uht|latte\s+alta\s+digeribilita|latte\s+zymil)\b/, creaQuery: 'Latte di vacca, UHT, parzialmente scremato' },
   { regex: /^(?:latte\s+intero|latte\s+fresco)\b/, creaQuery: 'Latte di vacca, pastorizzato, intero' },
@@ -87,9 +91,12 @@ const CANONICAL_HEAD_PATTERNS = [
   { regex: /^(?:mozzarella|fior\s+di\s+latte|bocconcini\s+di\s+mozzarella)\b/, creaQuery: 'Mozzarella di vacca' },
   { regex: /^(?:parmigiano\s+reggiano)\b/, creaQuery: 'Parmigiano Reggiano DOP' },
   { regex: /^(?:grana\s+padano)\b/, creaQuery: 'Grana Padano DOP' },
-  { regex: /^(?:pecorino)\b/, creaQuery: 'Pecorino' },
+  { regex: /^(?:pecorino)(?!\s+(?:igt|doc|docg))\b/, creaQuery: 'Pecorino' },
   { regex: /^(?:ricotta)\b/, creaQuery: 'Ricotta di vacca' },
-  { regex: /^(?:stracchino|crescenza|robiola|caciotta|asiago)\b/, creaQuery: 'Stracchino' },
+  { regex: /^(?:caciotta|caciottina)\b/, creaQuery: 'Caciotta mista' },
+  { regex: /^(?:robiola)\b/, creaQuery: 'Robiola' },
+  { regex: /^(?:asiago)\b/, creaQuery: 'Latteria' },
+  { regex: /^(?:stracchino|crescenza|squacquerone)\b/, creaQuery: 'Stracchino' },
   { regex: /^(?:mascarpone)\b/, creaQuery: 'Mascarpone' },
   { regex: /^(?:gorgonzola)\b/, creaQuery: 'Gorgonzola' },
   { regex: /^(?:burro)\b/, creaQuery: 'Burro' },
@@ -137,6 +144,12 @@ export class CreaOfferMatcher {
   constructor(options = {}) {
     this.overridesPath = options.overridesPath || process.env.BASILICO_CREA_OVERRIDES_PATH || DEFAULT_OVERRIDES_PATH;
     this._overrides = null;
+    this._mutationVersion = 1;
+  }
+
+  getMutationVersion() {
+    this._loadOverrides();
+    return this._mutationVersion;
   }
 
   _loadOverrides() {
@@ -174,6 +187,8 @@ export class CreaOfferMatcher {
     const key = normalizeSearchToken(String(offerIdOrTitle));
     const overrides = this._loadOverrides();
     overrides[key] = String(creaFoodId);
+    this._mutationVersion++;
+    bumpEnrichmentEpoch();
     this._saveOverrides();
     return { key, creaFoodId: food.id, creaFoodName: food.name };
   }
@@ -185,7 +200,7 @@ export class CreaOfferMatcher {
   _stripBrandFromTitle(title = '', brand = '') {
     let normTitle = normalizeSearchToken(title);
     const normBrand = normalizeSearchToken(brand);
-    if (normBrand && normTitle.startsWith(`${normBrand} `)) {
+    while (normBrand && normTitle.startsWith(`${normBrand} `)) {
       normTitle = normTitle.slice(normBrand.length).trim();
     }
     // Strip leading numeric count only when NOT immediately followed by a weight/volume unit
@@ -231,8 +246,14 @@ export class CreaOfferMatcher {
     const stripped = this._stripBrandFromTitle(offer.title || '', offer.brand || '');
     if (!stripped) return null;
 
-    // Exclude non-eaten dry infusions (coffee grounds, tea bags) and dehydrated/candied fruit mismatches
+    // Exclude non-eaten dry infusions (coffee grounds, tea bags), dehydrated/candied fruit mismatches, and alcoholic wines/spirits
     if (NON_EDIBLE_OR_DEHYDRATED_MISMATCH_REGEX.test(offer.title || '')) {
+      return null;
+    }
+    if (
+      (offer.category === 'Acqua e Bevande' || /\b(igt|doc|docg|vino|spumante|prosecco|montepulciano|valdifara|75\s*cl|750\s*ml)\b/i.test(offer.title || '')) &&
+      !/\b(acqua|latte|succo|bevanda\s+(?:di\s+)?(?:soia|avena|mandorla|riso))\b/i.test(offer.title || '')
+    ) {
       return null;
     }
 
@@ -279,8 +300,12 @@ export class CreaOfferMatcher {
       return null;
     }
 
-    // 4. Match against CREA food core head (first word before comma)
+    // 4. Match against CREA food core head (first word before comma), excluding Fast-food restaurant items unless explicit
+    const isExplicitFastFood = /\bfast\s*food\b/i.test(stripped);
     const candidates = allFoods.filter((f) => {
+      if (!isExplicitFastFood && (/fast[\s-]*food/i.test(f.category || '') || /\bfast\s*food\b/i.test(f.normName))) {
+        return false;
+      }
       const coreHead = normalizeSearchToken(f.name.split(',')[0]).split(' ')[0];
       return coreHead === candidateHead;
     });
@@ -351,6 +376,8 @@ export class CreaOfferMatcher {
       storeId: offer.storeId,
       storeName: offer.storeName || offer.brand,
       promoPrice: offer.promoPrice,
+      packWeightGrams: offer.packWeightGrams ?? estimatedPack?.estimatedPackGrams ?? null,
+      drainedWeightGrams: offer.drainedWeightGrams ?? estimatedPack?.estimatedEdibleGrams ?? null,
       trueEdibleEuroPerKg,
       isEstimatedPackSize,
       priceBasisLabel,

@@ -17,7 +17,7 @@ const MEAL_CONTEXT_PILLS = [
   { id: 'sunday_lab', label: '🔬 Laboratorio Domenicale' }
 ];
 
-export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
+export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUpdated }) {
   const [activeViewTab, setActiveViewTab] = useState('catalog'); // 'catalog' | 'pareto_8020' | 'deconstruct' | 'lab_notebook'
   const [sourceType, setSourceType] = useState('all');
   const [restaurantId, setRestaurantId] = useState('all');
@@ -79,12 +79,16 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
   }, [fetchCatalog]);
 
   const fetchPareto8020 = useCallback(() => {
-    fetch('/api/recipes/8020?topK=12')
+    const params = new URLSearchParams({
+      topK: '12',
+      profileId: activeProfileId || 'dany'
+    });
+    fetch(`/api/recipes/8020?${params.toString()}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data) setParetoData(data);
       });
-  }, []);
+  }, [activeProfileId]);
 
   const fetchLabNotes = useCallback(() => {
     fetch('/api/recipes/lab-notes')
@@ -93,6 +97,14 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
         if (data && Array.isArray(data.entries)) setLabEntries(data.entries);
       });
   }, []);
+
+  useEffect(() => {
+    fetchLabNotes();
+  }, [fetchLabNotes]);
+
+  useEffect(() => {
+    setParetoData(null);
+  }, [activeProfileId]);
 
   useEffect(() => {
     if (activeViewTab === 'pareto_8020' && !paretoData) {
@@ -114,7 +126,8 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
         restaurantName: customRestaurant || 'Ristorante del Tigullio',
         menuPriceEuro: Number(customPrice) || 22,
         ingredientsText: customIngredients || customTitle,
-        servings
+        servings,
+        profileId: activeProfileId || 'dany'
       })
     });
     if (res.ok) {
@@ -331,6 +344,42 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
             <div className="p-8 text-center text-sm text-slate-500">
               Calcolo Arbitraggio Live e Distinta Base (BOM) su {catalogData.totalDishesInCatalog} piatti...
             </div>
+          ) : catalogData.dishes.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-3">
+              <div className="text-2xl">🍽️</div>
+              <div className="text-sm font-extrabold text-slate-900">
+                Nessun piatto trovato per i filtri selezionati
+              </div>
+              <p className="text-xs text-slate-600 max-w-lg mx-auto">
+                {restaurantId !== 'all'
+                  ? 'Questo locale del Tigullio non ha ancora schede piatto nel filtro attivo (oppure sono escluse dai filtri correnti). Puoi azzerare i filtri o usare il tab "De-costruisci Menu" per analizzare un piatto dal suo menu.'
+                  : 'Prova ad ampliare la ricerca o azzerare i filtri attivi.'}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRestaurantId('all');
+                    setSourceType('all');
+                    setMealContext('all');
+                    setSearchQuery('');
+                    setExcludeIncompatible(false);
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
+                >
+                  Mostra tutti i ristoranti e piatti
+                </button>
+                {restaurantId !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveViewTab('deconstruct')}
+                    className="px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                  >
+                    🧪 De-costruisci un piatto di questo locale
+                  </button>
+                )}
+              </div>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {catalogData.dishes.map((dish) => {
@@ -397,9 +446,15 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                         </div>
                         <div>
                           <div className="text-[10px] text-indigo-700 font-bold">Arbitraggio Casa</div>
-                          <div className="text-sm font-extrabold text-indigo-800">
-                            -€{dish.costAndArbitrage.arbitrageSavingsEur.toFixed(2)} (
-                            {dish.costAndArbitrage.arbitrageSavingsPct}%)
+                          <div
+                            className={`text-sm font-extrabold ${
+                              dish.costAndArbitrage.arbitrageSavingsEur >= 0 ? 'text-indigo-800' : 'text-amber-700'
+                            }`}
+                          >
+                            {dish.costAndArbitrage.arbitrageSavingsEur >= 0
+                              ? `-€${dish.costAndArbitrage.arbitrageSavingsEur.toFixed(2)}`
+                              : `+€${Math.abs(dish.costAndArbitrage.arbitrageSavingsEur).toFixed(2)}`}{' '}
+                            ({dish.costAndArbitrage.arbitrageSavingsPct}%)
                           </div>
                           <div className="text-[10px] text-emerald-700 font-semibold">
                             {dish.costAndArbitrage.onPromoIngredientsCount} ingr. in promo
@@ -691,6 +746,10 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
           activeProfileId={activeProfileId}
           onClose={() => setActiveCookingDishId(null)}
           onLabNoteSaved={() => fetchLabNotes()}
+          onPantryConsumed={() => {
+            fetchCatalog();
+            if (onPantryUpdated) onPantryUpdated();
+          }}
         />
       )}
     </div>

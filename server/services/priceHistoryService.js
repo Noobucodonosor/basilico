@@ -10,7 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalizeSearchToken } from './offerService.js';
+import { normalizeSearchToken, bumpEnrichmentEpoch } from './offerService.js';
 import { normalizeUnitPricing } from './unitPriceExtractor.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -366,6 +366,12 @@ export class PriceHistoryService {
   constructor(options = {}) {
     this.storagePath = options.storagePath || process.env.BASILICO_PRICE_HISTORY_PATH || DEFAULT_HISTORY_PATH;
     this._observations = null;
+    this._mutationVersion = 1;
+  }
+
+  getMutationVersion() {
+    this._load();
+    return this._mutationVersion;
   }
 
   _load() {
@@ -464,6 +470,8 @@ export class PriceHistoryService {
 
     const list = this._load();
     list.unshift(obs);
+    this._mutationVersion++;
+    bumpEnrichmentEpoch();
     this._save();
     return obs;
   }

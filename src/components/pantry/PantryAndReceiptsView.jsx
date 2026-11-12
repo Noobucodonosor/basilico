@@ -22,7 +22,7 @@ const ZONE_META = {
   }
 };
 
-export function PantryAndReceiptsView({ stores = [] }) {
+export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
   const [pantryData, setPantryData] = useState({
     items: [],
     byZone: { dry_pantry: [], fridge_freezer: [], boat_cooler: [] },
@@ -67,6 +67,7 @@ export function PantryAndReceiptsView({ stores = [] }) {
       if (res.ok) {
         const updated = await res.json();
         setPantryData(updated);
+        if (onPantryUpdated) onPantryUpdated();
       }
     } catch (_) {}
   };
@@ -74,13 +75,15 @@ export function PantryAndReceiptsView({ stores = [] }) {
   const handleQuickAdd = async (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
+    const parsedWeight = Number(String(newWeight || '250').replace(',', '.'));
+    const safeWeight = Number.isFinite(parsedWeight) && parsedWeight > 0 ? Math.round(parsedWeight) : 250;
     try {
       const res = await fetch('/api/pantry/items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newTitle.trim(),
-          initialWeightGrams: parseInt(newWeight || '250', 10),
+          initialWeightGrams: safeWeight,
           zone: newZone,
           status: 'closed'
         })
@@ -89,6 +92,7 @@ export function PantryAndReceiptsView({ stores = [] }) {
         const updated = await res.json();
         setPantryData(updated);
         setNewTitle('');
+        if (onPantryUpdated) onPantryUpdated();
       }
     } catch (_) {}
   };
@@ -368,7 +372,10 @@ export function PantryAndReceiptsView({ stores = [] }) {
         isOpen={isReceiptModalOpen}
         onClose={() => setIsReceiptModalOpen(false)}
         stores={stores}
-        onConfirmed={() => fetchPantryAndReceipts()}
+        onConfirmed={() => {
+          fetchPantryAndReceipts();
+          if (onPantryUpdated) onPantryUpdated();
+        }}
       />
     </div>
   );

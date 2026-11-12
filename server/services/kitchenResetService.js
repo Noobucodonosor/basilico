@@ -98,6 +98,42 @@ const MATERIAL_PROTOCOLS = {
       'Asciugare con panno in microfibra pulito.'
     ],
     requiredCleaningKeys: ['panno_microfibra']
+  },
+  rame_puro: {
+    materialLabel: 'Rame Puro Non Rivestito / Terracotta Tradizionale',
+    cooldownMinutes: 10,
+    thermalShockWarning:
+      'CHIMICA DEL RAME (Cu) & POROSITÀ TERRACOTTA: Sul rame nudo evitare ossidazione verde (verderame / acetato-carbonato rameico Cu2+ solubile negli acidi alimentari); sulla terracotta evitare shock termici bruschi e ammollo prolungato con tensioattivi profumati assorbiti dai micropori.',
+    prohibitions: [
+      'DIVIETO ASSOLUTO di candeggina/cloro, sgrassatori caustici e anticalcare chimici aggressivi',
+      'DIVIETO di lavastoviglie e ammollo prolungato in acqua saponata (specialmente per terracotta porosa)',
+      'Mai cuocere o conservare cibi acidi (pomodoro, limone, vino) su rame nudo ossidato'
+    ],
+    steps: [
+      'Lasciare raffreddare gradualmente lontano da superfici bagnate o fredde per prevenire cricche termiche.',
+      'Lavare rapidamente a mano con acqua tiepida, spugna morbida in cellulosa e pochissimo detergente neutro (solo acqua calda e spazzola morbida su terracotta non smaltata).',
+      'Solo per l\'esterno del rame ossidato: lucidare delicatamente con pasta naturale di sale fino e succo di limone, risciacquando subito a fondo.',
+      'Asciugare immediatamente con panno in microfibra e far aerare prima di riporre.'
+    ],
+    requiredCleaningKeys: ['spugna_delicata', 'detersivo_piatti', 'panno_microfibra']
+  },
+  rame_stagnato_gres: {
+    materialLabel: 'Rame Stagnato Ligure (Testo da Farinata) / Pirofila in Gres',
+    cooldownMinutes: 8,
+    thermalShockWarning:
+      'TUTELA STAGNATURA ALIMENTARE (Sn, T_fus = 232°C) & GRES VETRIFICATO: Lo strato interno di stagno vergine è tenero (durezza Mohs 1.5) e teme qualsiasi abrasivo; il gres teme lo shock termico da acqua fredda su pirofila rovente.',
+    prohibitions: [
+      'DIVIETO ASSOLUTO di pagliette metalliche, spugne verdi abrasive o polveri raschianti sullo stagno interno',
+      'DIVIETO di sgrassatori alcalini caustici, anticalcare acidi e lavastoviglie sul rame stagnato',
+      'Non versare acqua fredda nella teglia/pirofila appena estratta dal forno a 220°C'
+    ],
+    steps: [
+      'Attendere che il testo in rame stagnato o la pirofila in gres scenda sotto i 55°C.',
+      'Ammorbidire eventuali residui di farinata o arrosti con sola acqua tiepida per alcuni minuti.',
+      'Lavare delicatamente con detersivo piatti a pH neutro (6.5–7.5) e il lato in cellulosa morbida della spugna antigraffio.',
+      'Asciugare accuratamente con panno in microfibra (sul testo da farinata stendere un velo protettivo d\'olio con carta assorbente).'
+    ],
+    requiredCleaningKeys: ['spugna_delicata', 'detersivo_piatti', 'panno_microfibra']
   }
 };
 
@@ -176,6 +212,9 @@ const CLEANING_FUNCTION_MATCHERS = {
 const GENUINE_KITCHEN_CLEANING_OFFER_REGEX =
   /\b(detersiv\w*|ammorbident\w*|sgrassator\w*|candeggina|anticalcare|disincrostant\w*|igienizzant\w*|lavastoviglie|curalavatrice|stoviglie|spugn\w*|microfibra|vileda|asciugatutto|scottex|pellicola|domopak|alluminio\s+cucina|carta\s+forno|nelsen|svelto|fairy|finish|chanteclair|viakal|ace\b|cif\b)\b/i;
 
+const PERSONAL_BATH_EXCLUSION_REGEX =
+  /\b(spugna\s+bagno|bagno\s+soft|corpo|doccia|viso|capelli|cotoneve|esfoliant\w*|shampoo|balsamo|tinta|oleo\s+intense|dentifric\w*|deodorant\w*|profum\w*|parfum)\b/i;
+
 export class KitchenResetService {
   constructor() {
     this._catalog = null;
@@ -192,13 +231,12 @@ export class KitchenResetService {
     const raw = await offerService.getRawOffers();
     return raw
       .map((o) => enrichOfferRecord(o))
-      .filter(
-        (o) =>
-          o &&
-          o.domain === 'home_cleaning' &&
-          !o.isNamelessTile &&
-          GENUINE_KITCHEN_CLEANING_OFFER_REGEX.test(`${o.title || ''} ${o.brand || ''}`)
-      );
+      .filter((o) => {
+        if (!o || o.domain !== 'home_cleaning' || o.isNamelessTile) return false;
+        const txt = `${o.title || ''} ${o.brand || ''}`;
+        if (PERSONAL_BATH_EXCLUSION_REGEX.test(txt)) return false;
+        return GENUINE_KITCHEN_CLEANING_OFFER_REGEX.test(txt);
+      });
   }
 
   matchOffersForSupplyKey(key, activeCleaningOffers = []) {

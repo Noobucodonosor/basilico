@@ -18,7 +18,12 @@ import { fileURLToPath } from 'node:url';
 import { classifyProductDomain } from '../server/services/domainClassifier.js';
 import { extractPackMetrics } from '../server/services/unitPriceExtractor.js';
 import { evaluateQualityLens } from '../server/services/qualityLensService.js';
-import { offerService, enrichOfferRecord, normalizeSearchToken } from '../server/services/offerService.js';
+import {
+  offerService,
+  enrichOfferRecord,
+  filterActiveAndDeduplicateOffers,
+  normalizeSearchToken
+} from '../server/services/offerService.js';
 import { creaService } from '../server/services/creaService.js';
 import { creaOfferMatcher } from '../server/services/creaOfferMatcher.js';
 import {
@@ -34,7 +39,7 @@ import {
   ReceiptService,
   validateReceiptCentReconciliation
 } from '../server/services/receiptService.js';
-import { mealPlannerService } from '../server/services/mealPlannerService.js';
+import { MealPlannerService, mealPlannerService } from '../server/services/mealPlannerService.js';
 import { ShoppingListService } from '../server/services/shoppingListService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -68,26 +73,26 @@ export async function runAllDomainEvals(options = {}) {
   // =========================================================================
   {
     const checks = [];
-    const foodQuery = await offerService.getOffers({ domain: 'food_human', limit: 100 });
-    const foodItems = foodQuery.offers || [];
+    const rawOffers = await offerService.getRawOffers();
+    const dedupedActiveOffers = filterActiveAndDeduplicateOffers(rawOffers).map((o) => enrichOfferRecord(o));
+    const foodItems = dedupedActiveOffers.filter((o) => o && o.domain === 'food_human' && !o.isNamelessTile);
 
     const nonFoodLeakRx =
-      /\b(bassetti|caleffi|beper|mattel|hasbro|piastra\s+capelli|arricciacapelli|asciugacapelli|phon\b|candel[ae]\b|tovagli[ae]\b|lenzuol[aoie]\b|trapunt\w*|accappatoi\w*|lavastoviglie\s+miele|detersiv\w*)\b/i;
+      /\b(bassetti|caleffi|beper|mattel|hasbro|piastra\s+capelli|arricciacapelli|asciugacapelli|phon\b|candel[ae]\b|tovagli[ae]\b|lenzuol[aoie]\b|trapunt\w*|accappatoi\w*|lavastoviglie\s+miele|detersiv\w*|vileda\b|turbo\s+smart|lavapaviment\w*|macchina\s+del\s+caff[eè]|caten[ae]\s+luminos\w*|tower\s+speaker|lampad[ae]\s+led|personaggio\s+parlante|poinsettia)\b/i;
     const leakedInFood = foodItems.filter((o) =>
       nonFoodLeakRx.test(`${o.title || ''} ${o.brand || ''}`)
     );
     checks.push({
       id: 'R1-LEXICAL-FOOD-PURITY',
-      label: 'Zero tessili casa, giocattoli, phon o detersivi nel dominio Cibo & Bevande',
+      label: 'Zero tessili casa, giocattoli, elettronica, piante, mocio o detersivi nell\'intero dominio Cibo & Bevande',
       passed: leakedInFood.length === 0,
       detail:
         leakedInFood.length === 0
-          ? `0 intrusi su ${foodItems.length} offerte alimentari attive`
+          ? `0 intrusi su tutte le ${foodItems.length} offerte alimentari attive`
           : `Trovati intrusi: ${leakedInFood.map((x) => x.title).slice(0, 3).join(', ')}`
     });
 
-    const careQuery = await offerService.getOffers({ domain: 'personal_care', limit: 100 });
-    const careItems = careQuery.offers || [];
+    const careItems = dedupedActiveOffers.filter((o) => o && o.domain === 'personal_care' && !o.isNamelessTile);
     const foodInCareRx =
       /\b(grana\s+padano|parmigiano|mozzarella|prosciutto|salame|lavazza|kimbo|knorr|zuppa|minestrone|tonno\s+rio\s+mare)\b/i;
     const leakedInCare = careItems.filter((o) =>
@@ -133,27 +138,34 @@ export async function runAllDomainEvals(options = {}) {
       detail: `Shampoo PTFE=${hasPtfeBadgeOnShampoo}, Svelto Limone=${sveltoDomain}`
     });
 
-    const allFoodPage = await offerService.getOffers({ domain: 'food_human', page: 1, limit: 100 });
+    const hasAnyCurrentlyActive = rawOffers.some((o) => {
+      const end = o?.validityEnd || o?.validTo;
+      if (!end) return true;
+      const endTime = new Date(end).getTime();
+      return Number.isNaN(endTime) || endTime >= Date.now();
+    });
     const seenKeys = new Set();
     let exactDupes = 0;
     let expiredCount = 0;
     const todayIso = new Date().toISOString().slice(0, 10);
-    for (const item of allFoodPage.offers || []) {
-      const k = `${item.storeId || item.chainId}::${normalizeSearchToken(item.title)}::${Number(item.promoPrice).toFixed(2)}`;
+    for (const item of foodItems) {
+      const priceVal = Number(item.promoPrice ?? item.discountPrice ?? item.price ?? 0).toFixed(2);
+      const k = `${item.storeId || item.chainId}::${normalizeSearchToken(item.title)}::${priceVal}`;
       if (seenKeys.has(k)) exactDupes++;
       seenKeys.add(k);
-      if (item.validTo && String(item.validTo).slice(0, 10) < todayIso && !allFoodPage.showingFallbackRecent) {
+      const endStr = item.validityEnd || item.validTo;
+      if (hasAnyCurrentlyActive && endStr && String(endStr).slice(0, 10) < todayIso) {
         expiredCount++;
       }
     }
     checks.push({
       id: 'R1-DEDUP-AND-VALID-DATES',
-      label: 'Zero card duplicate identiche (negozio+titolo+prezzo) e zero offerte scadute non dichiarate',
+      label: 'Zero card duplicate identiche (negozio+titolo+prezzo) e zero offerte scadute non dichiarate su tutto il corpus food_human',
       passed: exactDupes === 0 && expiredCount === 0,
-      detail: `Duplicati=${exactDupes}, Scadute=${expiredCount} su ${(allFoodPage.offers || []).length} card`
+      detail: `Duplicati=${exactDupes}, Scadute=${expiredCount} su tutte le ${foodItems.length} card food_human`
     });
 
-    const fullEnriched = (await offerService.getRawOffers()).map((o) => enrichOfferRecord(o));
+    const fullEnriched = rawOffers.map((o) => enrichOfferRecord(o));
     const xmasInCookware = fullEnriched.filter(
       (o) =>
         o.domain === 'kitchen_cookware' &&
@@ -372,6 +384,30 @@ export async function runAllDomainEvals(options = {}) {
       detail: `11p=${michelin11?.prepMinutes}m/€${michelin11?.costAndArbitrage?.purePortionCostEur}, 7p=${michelin7?.prepMinutes}m/€${michelin7?.costAndArbitrage?.purePortionCostEur}, Cappon=${capponMagro?.prepMinutes}m`
     });
 
+    const seedDishes = recipeAndArbitrageService.getDishesSeed();
+    const unresolvedCreaRefs = [];
+    let totalBomCreaRefs = 0;
+    for (const dish of seedDishes) {
+      for (const bomItem of dish.bom || []) {
+        if (bomItem?.creaId) {
+          totalBomCreaRefs++;
+          const resolved = creaService.getFoodById(bomItem.creaId);
+          if (!resolved) {
+            unresolvedCreaRefs.push(`${dish.id}:${bomItem.creaId}(${bomItem.name})`);
+          }
+        }
+      }
+    }
+    checks.push({
+      id: 'R3-CREA-REFERENTIAL-INTEGRITY',
+      label: 'Integrità referenziale BOM <-> CREA: 100% dei creaId nei piatti risolve a un alimento CREA reale non nullo',
+      passed: totalBomCreaRefs > 0 && unresolvedCreaRefs.length === 0,
+      detail:
+        unresolvedCreaRefs.length === 0
+          ? `${totalBomCreaRefs}/${totalBomCreaRefs} riferimenti BOM->CREA verificati su ${seedDishes.length} piatti`
+          : `creaId orfani (${unresolvedCreaRefs.length}): ${unresolvedCreaRefs.slice(0, 4).join(', ')}`
+    });
+
     recordSuite(3, 'Ricette, Ristoranti & Fornelli', 'specs/03-ricette.spec.md', 30, checks);
   }
 
@@ -407,15 +443,17 @@ export async function runAllDomainEvals(options = {}) {
 
       isolatedKitchen.updateKitchenConfig({
         heatSource: 'induction',
-        ownedToolIds: ['padella_antiaderente', 'pentola', 'mortaio']
+        ownedToolIds: ['pentola_rame_non_induzione', 'padella_acciaio_inox', 'casseruola_inox']
       });
       const indState = isolatedKitchen.getKitchenState();
-      const nonFerroDisqualified = indState.disqualifiedTools.length > 0 || archetypes.some((a) => a.category === 'cookware' && !a.inductionCompatible);
+      const nonFerroDisqualified = indState.disqualifiedTools.some(
+        (t) => t.id === 'pentola_rame_non_induzione'
+      );
       checks.push({
         id: 'R4-INDUCTION-FERROMAGNETIC-PHYSICS',
-        label: 'Verifica ferromagnetica attiva per piani a Induzione',
+        label: 'Verifica ferromagnetica attiva per piani a Induzione (pentola_rame_non_induzione intercettata in disqualifiedTools)',
         passed: nonFerroDisqualified,
-        detail: `Strumenti non ferromagnetici intercettati correttamente`
+        detail: `Disqualificati su induzione: [${indState.disqualifiedTools.map((t) => t.id).join(', ')}]`
       });
     } finally {
       try {
@@ -533,7 +571,14 @@ export async function runAllDomainEvals(options = {}) {
   // =========================================================================
   {
     const checks = [];
-    const modelsToTest = ['balanced_daily', 'ligurian_traditional', 'high_protein_sport', 'pescetarian_sea'];
+    const modelsToTest = [
+      'balanced_daily',
+      'ligurian_traditional',
+      'promo_driven_neodiet',
+      'high_protein_sport',
+      'pescetarian_sea',
+      'tigullio_gourmet_home'
+    ];
     let duplicateMealsAcrossModels = 0;
     let familyCapViolations = 0;
     let boatViolations = 0;
@@ -541,68 +586,86 @@ export async function runAllDomainEvals(options = {}) {
     let missingBreakfasts = 0;
     let samplePlan = null;
 
-    for (const modelId of modelsToTest) {
-      const plan = await mealPlannerService.generateWeeklyPlan({
-        modelId,
-        daysCount: 7,
-        servings: 1,
-        profileId: 'dany',
-        dayModes: ['land_day', 'land_day', 'boat_day', 'land_day', 'land_day', 'boat_day', 'land_day']
-      });
-      if (!samplePlan) samplePlan = plan;
+    const tmpPlanPath = path.join(os.tmpdir(), `basilico-eval-plan-${process.pid}-${Date.now()}.json`);
+    const tmpShopPath = path.join(os.tmpdir(), `basilico-eval-shop-${process.pid}-${Date.now()}.json`);
+    try {
+      const isolatedPlanner = new MealPlannerService({ storagePath: tmpPlanPath });
 
-      const seenIds = new Set();
-      const famCounter = new Map();
+      for (const modelId of modelsToTest) {
+        const plan = await (isolatedPlanner.generateWeeklyPlan
+          ? isolatedPlanner.generateWeeklyPlan({
+              modelId,
+              daysCount: 7,
+              servings: 1,
+              profileId: 'dany',
+              dayModes: ['land_day', 'land_day', 'boat_day', 'land_day', 'land_day', 'boat_day', 'land_day']
+            })
+          : mealPlannerService.generateWeeklyPlan({
+              modelId,
+              daysCount: 7,
+              servings: 1,
+              profileId: 'dany',
+              dayModes: ['land_day', 'land_day', 'boat_day', 'land_day', 'land_day', 'boat_day', 'land_day']
+            }));
+        if (!samplePlan) samplePlan = plan;
 
-      for (const day of plan.days || []) {
-        if (!day.breakfast || !day.breakfast.title) missingBreakfasts++;
-        if (day.dayMode === 'boat_day' && day.lunch?.dish && !day.lunch.dish.boatSafeCold) {
-          boatViolations++;
-        }
-        for (const slot of [day.lunch, day.dinner]) {
-          const d = slot?.dish;
-          if (!d) continue;
-          if (seenIds.has(d.id)) duplicateMealsAcrossModels++;
-          seenIds.add(d.id);
-          const fam = d.dishFamily || 'other';
-          famCounter.set(fam, (famCounter.get(fam) || 0) + 1);
+        const seenMealKeys = new Set();
+        const famCounter = new Map();
 
-          if (modelId === 'pescetarian_sea') {
-            const txt = `${d.title} ${(d.bom || []).map((b) => b.name).join(' ')}`;
-            if (/\b(pollo|tacchino|manzo|vitello|bovino|maiale|salsiccia|prosciutto|bresaola|pancetta|coniglio)\b/i.test(txt)) {
-              pescetarianMeatViolations++;
+        for (const day of plan.days || []) {
+          if (!day.breakfast || !day.breakfast.title) {
+            missingBreakfasts++;
+          } else {
+            const bfKey = day.breakfast.id || day.breakfast.dishId || normalizeSearchToken(day.breakfast.title);
+            if (seenMealKeys.has(bfKey)) duplicateMealsAcrossModels++;
+            seenMealKeys.add(bfKey);
+          }
+
+          if (day.dayMode === 'boat_day' && day.lunch?.dish && !day.lunch.dish.boatSafeCold) {
+            boatViolations++;
+          }
+          for (const slot of [day.lunch, day.dinner]) {
+            const d = slot?.dish;
+            if (!d) continue;
+            if (seenMealKeys.has(d.id)) duplicateMealsAcrossModels++;
+            seenMealKeys.add(d.id);
+            const fam = d.dishFamily || 'other';
+            famCounter.set(fam, (famCounter.get(fam) || 0) + 1);
+
+            if (modelId === 'pescetarian_sea') {
+              const txt = `${d.title} ${(d.bom || []).map((b) => b.name).join(' ')}`;
+              if (/\b(pollo|tacchino|manzo|vitello|bovino|maiale|salsiccia|prosciutto|bresaola|pancetta|coniglio)\b/i.test(txt)) {
+                pescetarianMeatViolations++;
+              }
             }
           }
         }
+
+        for (const [fam, count] of famCounter.entries()) {
+          const expectedCap =
+            ['pesto_pasta', 'walnut_filled_pasta', 'fried_dish', 'pizza_focaccia', 'raw_crudo'].includes(fam)
+              ? 1
+              : modelId === 'pescetarian_sea' && ['baked_or_pan_fish', 'shellfish_cephalopods'].includes(fam)
+                ? 3
+                : 2;
+          if (count > expectedCap) familyCapViolations++;
+        }
       }
 
-      for (const [fam, count] of famCounter.entries()) {
-        const expectedCap =
-          ['pesto_pasta', 'walnut_filled_pasta', 'fried_dish', 'pizza_focaccia', 'raw_crudo'].includes(fam)
-            ? 1
-            : modelId === 'pescetarian_sea' && ['baked_or_pan_fish', 'shellfish_cephalopods'].includes(fam)
-              ? 3
-              : 2;
-        if (count > expectedCap) familyCapViolations++;
-      }
-    }
+      checks.push({
+        id: 'R6-ZERO-DUPLICATE-MEALS-AND-FAMILY-CAPS',
+        label: 'Varietà umana su tutti i 6 modelli Neo-Dieta: 21/21 pasti unici (0 colazioni/piatti ripetuti) e max 2 volte/settimana per famiglia',
+        passed: duplicateMealsAcrossModels === 0 && familyCapViolations === 0 && missingBreakfasts === 0,
+        detail: `Modelli=${modelsToTest.length}, Duplicati(21 pasti)=${duplicateMealsAcrossModels}, Sforamenti famiglia=${familyCapViolations}, Colazioni mancanti=${missingBreakfasts}`
+      });
 
-    checks.push({
-      id: 'R6-ZERO-DUPLICATE-MEALS-AND-FAMILY-CAPS',
-      label: 'Varietà umana su 4 modelli Neo-Dieta: 0 piatti ripetuti su 14 pasti e max 2 volte/settimana per famiglia',
-      passed: duplicateMealsAcrossModels === 0 && familyCapViolations === 0 && missingBreakfasts === 0,
-      detail: `Duplicati=${duplicateMealsAcrossModels}, Sforamenti famiglia=${familyCapViolations}, Colazioni mancanti=${missingBreakfasts}`
-    });
+      checks.push({
+        id: 'R6-BOAT-COLD-AND-PESCETARIAN-STRICT',
+        label: 'Giorni Barca 100% freddi senza fornello e zero carne nel modello Pescetariano di Mare',
+        passed: boatViolations === 0 && pescetarianMeatViolations === 0,
+        detail: `Violazioni Barca=${boatViolations}, Violazioni Pescetariane=${pescetarianMeatViolations}`
+      });
 
-    checks.push({
-      id: 'R6-BOAT-COLD-AND-PESCETARIAN-STRICT',
-      label: 'Giorni Barca 100% freddi senza fornello e zero carne nel modello Pescetariano di Mare',
-      passed: boatViolations === 0 && pescetarianMeatViolations === 0,
-      detail: `Violazioni Barca=${boatViolations}, Violazioni Pescetariane=${pescetarianMeatViolations}`
-    });
-
-    const tmpShopPath = path.join(os.tmpdir(), `basilico-eval-shop-${process.pid}.json`);
-    try {
       const isolatedShop = new ShoppingListService({ storagePath: tmpShopPath });
       const synced = isolatedShop.syncFromWeeklyPlan(samplePlan);
       const sims = synced.storeSimulations || [];
@@ -636,6 +699,9 @@ export async function runAllDomainEvals(options = {}) {
         detail: `Alternative Mela=${planBAlts.map((a) => a.title).join(', ')}`
       });
     } finally {
+      try {
+        if (fs.existsSync(tmpPlanPath)) fs.unlinkSync(tmpPlanPath);
+      } catch (_) {}
       try {
         if (fs.existsSync(tmpShopPath)) fs.unlinkSync(tmpShopPath);
       } catch (_) {}

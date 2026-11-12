@@ -4,6 +4,7 @@ export function Header({
   status,
   isOnline = true,
   dataSource = 'live',
+  activeRoom = 'room-1-negozi',
   activeStoreName,
   mobileSearchOpen,
   isMobileSearchOpen,
@@ -73,7 +74,7 @@ export function Header({
                 <button
                   type="button"
                   onClick={onOpenCounterPriceModal}
-                  className="inline-flex sm:hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer shrink-0"
                   title="Registra un prezzo visto al banco in pescheria, macelleria o scaffale"
                 >
                   <span aria-hidden="true">🏷️</span>
@@ -175,18 +176,20 @@ export function Header({
               </button>
             )}
 
-            {/* Compact Search Button on Mobile (complies with Contract 10.4) */}
-            <button
-              type="button"
-              onClick={onToggleMobileSearch}
-              className="sm:hidden p-2 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-              aria-label="Cerca prodotti"
-              aria-expanded={Boolean(isOpen)}
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
+            {/* Compact Search Button on Mobile (complies with Contract 10.4; Room 1 only) */}
+            {activeRoom === 'room-1-negozi' && onToggleMobileSearch && (
+              <button
+                type="button"
+                onClick={onToggleMobileSearch}
+                className="sm:hidden p-2 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                aria-label="Cerca prodotti"
+                aria-expanded={Boolean(isOpen)}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       </div>

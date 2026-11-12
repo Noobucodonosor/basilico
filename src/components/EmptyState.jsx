@@ -7,11 +7,21 @@ import React from 'react';
 export function EmptyState({
   searchQuery = '',
   selectedCategory = null,
+  selectedDomain = null,
   selectedStoreName = null,
+  hideIncompatible = false,
   onClearFilters,
   onApplyQuery
 }) {
-  const hasActiveFilters = Boolean(searchQuery.trim() || selectedCategory);
+  const hasDomainFilter = Boolean(selectedDomain && selectedDomain !== 'all');
+  const hasFilters = Boolean(
+    searchQuery.trim() ||
+    selectedCategory ||
+    hasDomainFilter ||
+    hideIncompatible ||
+    selectedStoreName
+  );
+  const showFoodSuggestions = !hasDomainFilter || selectedDomain === 'food_human';
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-white rounded-2xl border border-slate-200 shadow-xs my-6">
@@ -44,15 +54,23 @@ export function EmptyState({
         ) : selectedCategory ? (
           <>
             Non ci sono promozioni attive al momento nella categoria{' '}
-            <span className="font-semibold text-slate-900">"{selectedCategory}"</span>.
+            <span className="font-semibold text-slate-900">"{selectedCategory}"</span>
+            {selectedStoreName && (
+              <> per <span className="font-semibold text-slate-900">{selectedStoreName}</span></>
+            )}.
+          </>
+        ) : hasDomainFilter && selectedStoreName ? (
+          <>
+            Non ci sono offerte attive per <span className="font-semibold text-slate-900">{selectedStoreName}</span>{' '}
+            nel dominio merceologico selezionato.
           </>
         ) : (
           'Al momento non ci sono offerte attive disponibili per i filtri selezionati.'
         )}
       </p>
 
-      {/* Suggestion Chips */}
-      {onApplyQuery && (
+      {/* Suggestion Chips (shown only when compatible with food domain) */}
+      {onApplyQuery && showFoodSuggestions && (
         <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
           <span className="text-xs text-slate-400 mr-1">Ricerche frequenti a Rapallo:</span>
           {['Pasta', 'Caffè', 'Olio', 'Latte', 'Biscotti'].map((term) => (
@@ -68,7 +86,7 @@ export function EmptyState({
         </div>
       )}
 
-      {hasActiveFilters && onClearFilters && (
+      {hasFilters && onClearFilters && (
         <button
           type="button"
           onClick={onClearFilters}

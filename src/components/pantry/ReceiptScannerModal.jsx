@@ -4,19 +4,58 @@ const SAMPLE_RECEIPT_TEXT =
   'PASSATA MUTTI 700G 1,69\nTONNO RIO MARE 3X80G 3,99\nSCONTO SOCIO -0,50\nTOTALE EURO 5,18';
 
 const LOCAL_ARTISAN_SHOPS = [
-  { id: 'pescheria-locale-rapallo', name: '🐟 Pescheria / Mercato Rapallo' },
-  { id: 'macelleria-locale-rapallo', name: '🥩 Macelleria / Polleria Rapallo' },
-  { id: 'panificio-pastificio-rapallo', name: '🥖 Panificio / Pastificio Rapallo' }
+  { id: 'rapallo-pescheria-mercato', name: '🐟 Pescheria / Mercato Coperto Rapallo' },
+  { id: 'rapallo-macelleria-centro', name: '🥩 Macelleria / Polleria Storica Rapallo' },
+  { id: 'rapallo-panificio-pastificio', name: '🥖 Panificio / Pastificio Fresco Ligure' },
+  { id: 'rapallo-casalinghi-centro', name: '🍳 Ferramenta & Casalinghi Rapallo Centro' }
 ];
+
+function computeDeterministicHash(input = '') {
+  let h = 2166136261;
+  const str = String(input);
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+}
 
 export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed }) {
   const [storeId, setStoreId] = useState(() => stores[0]?.id || 'rapallo-basko-colombo');
   const [rawText, setRawText] = useState('');
+  const [sessionSeed, setSessionSeed] = useState(() => `init-${Date.now().toString(36)}`);
   const [declaredTotal, setDeclaredTotal] = useState('6,58');
   const [lines, setLines] = useState([
-    { title: 'Spaghetti di Semola Rummo 500 g', lineTotal: '1,49', targetZone: 'dry_pantry', addToPantry: true },
-    { title: 'Filetti di Acciughe del Mar Ligure 300 g', lineTotal: '3,89', targetZone: 'fridge_freezer', addToPantry: true },
-    { title: 'Ceci Lessati al Vapore 400 g', lineTotal: '1,20', targetZone: 'boat_cooler', addToPantry: true }
+    {
+      title: 'Spaghetti di Semola Rummo 500 g',
+      lineTotal: '1,49',
+      quantity: 1,
+      packWeightGrams: 500,
+      packVolumeMl: null,
+      unitString: '500 g',
+      targetZone: 'dry_pantry',
+      addToPantry: true
+    },
+    {
+      title: 'Filetti di Acciughe del Mar Ligure 300 g',
+      lineTotal: '3,89',
+      quantity: 1,
+      packWeightGrams: 300,
+      packVolumeMl: null,
+      unitString: '300 g',
+      targetZone: 'fridge_freezer',
+      addToPantry: true
+    },
+    {
+      title: 'Ceci Lessati al Vapore 400 g',
+      lineTotal: '1,20',
+      quantity: 1,
+      packWeightGrams: 400,
+      packVolumeMl: null,
+      unitString: '400 g',
+      targetZone: 'boat_cooler',
+      addToPantry: true
+    }
   ]);
   const [discounts, setDiscounts] = useState([]);
   const [submitting, setSubmitting] = useState(false);
@@ -33,7 +72,7 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
             { id: 'rapallo-coop-sciesa', name: 'Coop Rapallo (Via Sciesa)' },
             { id: 'rapallo-gulliver-mameli', name: 'Gulliver Rapallo (Corso Mameli)' },
             { id: 'rapallo-carrefour-assereto', name: 'Carrefour Market (Via Assereto)' },
-            { id: 'rapallo-tigota-italia', name: 'Tigotà Rapallo (Corso Italia)' }
+            { id: 'rapallo-tigota-lamarmora', name: 'Tigotà Rapallo (Via Lamarmora)' }
           ];
     for (const s of base) {
       if (!s?.id || seen.has(s.id)) continue;
@@ -73,15 +112,23 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
   if (!isOpen) return null;
 
   const handleParseRawText = async (overrideText = null) => {
-    const effectiveText = typeof overrideText === 'string' ? overrideText : (rawText.trim() ? rawText : SAMPLE_RECEIPT_TEXT);
-    if (!rawText.trim()) {
+    const effectiveText =
+      typeof overrideText === 'string' ? overrideText : rawText.trim() ? rawText : SAMPLE_RECEIPT_TEXT;
+    if (!rawText.trim() || typeof overrideText === 'string') {
       setRawText(effectiveText);
     }
+    setError(null);
     try {
+      const selectedStore =
+        uniqueGdoStores.find((s) => s.id === storeId) || uniqueArtisanShops.find((s) => s.id === storeId);
       const res = await fetch('/api/receipts/parse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawText: effectiveText, storeId })
+        body: JSON.stringify({
+          rawText: effectiveText,
+          storeId,
+          storeName: selectedStore ? selectedStore.name : storeId
+        })
       });
       const data = await res.json();
       if (res.ok && data.lines) {
@@ -89,6 +136,10 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
           data.lines.map((l) => ({
             title: l.title,
             lineTotal: l.lineTotalEuro.toFixed(2).replace('.', ','),
+            quantity: l.quantity || 1,
+            packWeightGrams: l.packWeightGrams || null,
+            packVolumeMl: l.packVolumeMl || null,
+            unitString: l.unitString || null,
             targetZone: l.targetZone || 'dry_pantry',
             addToPantry: l.addToPantry !== false
           }))
@@ -99,9 +150,12 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
             amount: d.amountEuro.toFixed(2).replace('.', ',')
           }))
         );
+        const nextTotalStr =
+          data.declaredTotalEuro > 0 ? data.declaredTotalEuro.toFixed(2).replace('.', ',') : declaredTotal;
         if (data.declaredTotalEuro > 0) {
-          setDeclaredTotal(data.declaredTotalEuro.toFixed(2).replace('.', ','));
+          setDeclaredTotal(nextTotalStr);
         }
+        setSessionSeed(`ocr-${computeDeterministicHash(`${storeId}|${effectiveText.trim()}|${nextTotalStr}`)}`);
       }
     } catch (_) {}
   };
@@ -112,24 +166,39 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
     setError(null);
     setSubmitting(true);
     try {
-      const selectedStore = stores.find((s) => s.id === storeId);
+      const selectedStore =
+        uniqueGdoStores.find((s) => s.id === storeId) || uniqueArtisanShops.find((s) => s.id === storeId);
+      const normalizedPayloadLines = lines.map((l) => ({
+        title: l.title,
+        lineTotal: toCents(l.lineTotal) / 100,
+        quantity: Number(l.quantity) > 0 ? Number(l.quantity) : 1,
+        ...(l.packWeightGrams ? { packWeightGrams: Number(l.packWeightGrams) } : {}),
+        ...(l.packVolumeMl ? { packVolumeMl: Number(l.packVolumeMl) } : {}),
+        ...(l.unitString ? { unitString: l.unitString } : {}),
+        targetZone: l.targetZone,
+        addToPantry: l.addToPantry
+      }));
+      const normalizedPayloadDiscounts = discounts.map((d) => ({
+        label: d.label,
+        amount: Math.abs(toCents(d.amount)) / 100
+      }));
+
+      const deterministicId = `rcpt-${computeDeterministicHash(`${storeId}|${sessionSeed}|${reconciliation.declaredCents}`)}`;
+      const deterministicRevisionKey = `rev-${computeDeterministicHash(
+        `${reconciliation.declaredCents}|${JSON.stringify(normalizedPayloadLines)}|${JSON.stringify(normalizedPayloadDiscounts)}`
+      )}`;
+
       const res = await fetch('/api/receipts/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          id: deterministicId,
+          revisionKey: deterministicRevisionKey,
           storeId,
           storeName: selectedStore ? selectedStore.name : storeId,
           declaredTotal: reconciliation.declaredCents / 100,
-          lines: lines.map((l) => ({
-            title: l.title,
-            lineTotal: toCents(l.lineTotal) / 100,
-            targetZone: l.targetZone,
-            addToPantry: l.addToPantry
-          })),
-          discounts: discounts.map((d) => ({
-            label: d.label,
-            amount: Math.abs(toCents(d.amount)) / 100
-          }))
+          lines: normalizedPayloadLines,
+          discounts: normalizedPayloadDiscounts
         })
       });
       const body = await res.json();
@@ -263,7 +332,16 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
                 onClick={() =>
                   setLines((prev) => [
                     ...prev,
-                    { title: '', lineTotal: '0,00', targetZone: 'dry_pantry', addToPantry: true }
+                    {
+                      title: '',
+                      lineTotal: '0,00',
+                      quantity: 1,
+                      packWeightGrams: null,
+                      packVolumeMl: null,
+                      unitString: null,
+                      targetZone: 'dry_pantry',
+                      addToPantry: true
+                    }
                   ])
                 }
                 className="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"
@@ -280,7 +358,13 @@ export function ReceiptScannerModal({ isOpen, onClose, stores = [], onConfirmed 
                   value={line.title}
                   onChange={(e) => {
                     const val = e.target.value;
-                    setLines((prev) => prev.map((it, i) => (i === idx ? { ...it, title: val } : it)));
+                    setLines((prev) =>
+                      prev.map((it, i) =>
+                        i === idx
+                          ? { ...it, title: val, packWeightGrams: null, packVolumeMl: null, unitString: null }
+                          : it
+                      )
+                    );
                   }}
                   className="col-span-5 border border-slate-300 rounded px-2 py-1.5 bg-white"
                 />

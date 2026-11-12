@@ -15,11 +15,72 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalizeSearchToken } from './offerService.js';
+import { normalizeSearchToken, bumpEnrichmentEpoch } from './offerService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DEFAULT_PROFILES_PATH = path.resolve(__dirname, '..', '..', 'data', 'cache', 'user_profiles.json');
+
+export const ZERO_FORMAGGI_EXCLUDED_INGREDIENTS = [
+  'formaggio',
+  'formaggi',
+  'mozzarella',
+  'fior di latte',
+  'parmigiano',
+  'grana padano',
+  'pecorino',
+  'gorgonzola',
+  'stracchino',
+  'crescenza',
+  'squacquerone',
+  'taleggio',
+  'scamorza',
+  'scamorzine',
+  'provola',
+  'provolone',
+  'ricotta',
+  'mascarpone',
+  'burrata',
+  'feta',
+  'brie',
+  'camembert',
+  'fontina',
+  'asiago',
+  'emmental',
+  'emmenthal',
+  'groviera',
+  'leerdammer',
+  'maasdammer',
+  'edam',
+  'edamer',
+  'gouda',
+  'cheddar',
+  'roquefort',
+  'vezzena',
+  'latteria',
+  'italico',
+  'dolce verde',
+  'butirro',
+  'burrini',
+  'cacioricotta',
+  'caciocavallo',
+  'caciotta',
+  'caciottina',
+  'primo sale',
+  'primosale',
+  'fiocchi di latte',
+  'fiocchi di formaggio',
+  'quark',
+  'caprino',
+  'robiola',
+  'certosa',
+  'galbanino',
+  'sottilette',
+  'formaggino',
+  'philadelphia',
+  'prescinseua',
+  'presinseua'
+];
 
 export const DEFAULT_USER_PROFILES = [
   {
@@ -29,40 +90,9 @@ export const DEFAULT_USER_PROFILES = [
     isDefault: true,
     dietaryRegime: 'omnivore',
     filterMode: 'soft_flag', // 'hard_ban' or 'soft_flag'
-    excludedCategories: [],
+    excludedCategories: ['Formaggi e latticini'],
     excludedAllergens: [],
-    excludedIngredients: [
-      'formaggio',
-      'formaggi',
-      'mozzarella',
-      'parmigiano',
-      'grana padano',
-      'pecorino',
-      'gorgonzola',
-      'stracchino',
-      'crescenza',
-      'taleggio',
-      'scamorza',
-      'provola',
-      'provolone',
-      'ricotta',
-      'mascarpone',
-      'burrata',
-      'feta',
-      'brie',
-      'fontina',
-      'asiago',
-      'emmental',
-      'caciotta',
-      'fiocchi di latte',
-      'robiola',
-      'certosa',
-      'galbanino',
-      'sottilette',
-      'philadelphia',
-      'prescinseua',
-      'presinseua'
-    ],
+    excludedIngredients: [...ZERO_FORMAGGI_EXCLUDED_INGREDIENTS],
     allowedExceptions: ['latte', 'yogurt greco', 'burro chiarificato'],
     logisticsMode: 'land_kitchen',
     preferredMaxStores: 2
@@ -74,26 +104,9 @@ export const DEFAULT_USER_PROFILES = [
     isDefault: false,
     dietaryRegime: 'omnivore',
     filterMode: 'hard_ban',
-    excludedCategories: ['Surgelati'],
+    excludedCategories: ['Surgelati', 'Formaggi e latticini'],
     excludedAllergens: [],
-    excludedIngredients: [
-      'formaggio',
-      'formaggi',
-      'mozzarella',
-      'parmigiano',
-      'grana padano',
-      'pecorino',
-      'gorgonzola',
-      'stracchino',
-      'crescenza',
-      'ricotta',
-      'burrata',
-      'scamorza',
-      'prescinseua',
-      'presinseua',
-      'surgelato',
-      'gelato'
-    ],
+    excludedIngredients: [...ZERO_FORMAGGI_EXCLUDED_INGREDIENTS, 'surgelato', 'gelato'],
     allowedExceptions: [],
     logisticsMode: 'boat_cooler',
     preferredMaxStores: 1
@@ -124,6 +137,27 @@ export class UserProfileService {
   constructor(options = {}) {
     this.storagePath = options.storagePath || process.env.BASILICO_PROFILES_PATH || DEFAULT_PROFILES_PATH;
     this._state = null;
+    this._mutationVersion = 1;
+  }
+
+  getMutationVersion() {
+    return this._mutationVersion;
+  }
+
+  _bumpVersion() {
+    this._mutationVersion++;
+    bumpEnrichmentEpoch();
+  }
+
+  _upgradeBuiltinZeroCheeseProfiles(profiles = []) {
+    return profiles.map((p) => {
+      if ((p.id === 'dany' || p.id === 'barca') && Array.isArray(p.excludedIngredients) && p.excludedIngredients.includes('formaggio')) {
+        const mergedIngs = Array.from(new Set([...p.excludedIngredients, ...ZERO_FORMAGGI_EXCLUDED_INGREDIENTS]));
+        const mergedCats = Array.from(new Set([...(p.excludedCategories || []), 'Formaggi e latticini']));
+        return { ...p, excludedIngredients: mergedIngs, excludedCategories: mergedCats };
+      }
+      return p;
+    });
   }
 
   _load() {
@@ -132,7 +166,10 @@ export class UserProfileService {
       if (fs.existsSync(this.storagePath)) {
         const raw = JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
         if (raw && Array.isArray(raw.profiles) && raw.profiles.length > 0) {
-          this._state = raw;
+          this._state = {
+            ...raw,
+            profiles: this._upgradeBuiltinZeroCheeseProfiles(raw.profiles)
+          };
           return this._state;
         }
       }
@@ -141,7 +178,11 @@ export class UserProfileService {
     }
     this._state = {
       activeProfileId: 'dany',
-      profiles: DEFAULT_USER_PROFILES.map((p) => ({ ...p }))
+      profiles: DEFAULT_USER_PROFILES.map((p) => ({
+        ...p,
+        excludedCategories: [...(p.excludedCategories || [])],
+        excludedIngredients: [...(p.excludedIngredients || [])]
+      }))
     };
     return this._state;
   }
@@ -187,6 +228,7 @@ export class UserProfileService {
       throw err;
     }
     state.activeProfileId = found.id;
+    this._bumpVersion();
     this._save();
     return this.getProfilesState();
   }
@@ -217,6 +259,7 @@ export class UserProfileService {
     } else {
       state.profiles.push(updated);
     }
+    this._bumpVersion();
     this._save();
     return updated;
   }
@@ -239,6 +282,7 @@ export class UserProfileService {
     if (payload.activeProfileId && sanitized.some((p) => p.id === payload.activeProfileId)) {
       this._state.activeProfileId = payload.activeProfileId;
     }
+    this._bumpVersion();
     this._save();
     return this.getProfilesState();
   }
@@ -262,16 +306,49 @@ export class UserProfileService {
       };
     }
 
-    const haystack = normalizeSearchToken(`${item.title || item.name || ''} ${item.brand || ''} ${item.subcategory || ''}`);
+    const rawTitle = String(item.title || item.name || '').trim();
+    const normBrand = normalizeSearchToken(item.brand || '');
+    let strippedTitle = normalizeSearchToken(rawTitle);
+    // Strip leading brand prefix (e.g. "Rigoni Di Asiago - Confetture Bio" -> "confetture bio") so brand geography never triggers cheese exclusions!
+    while (normBrand && strippedTitle.startsWith(`${normBrand} `)) {
+      strippedTitle = strippedTitle.slice(normBrand.length).trim();
+    }
+    // Also strip known brand prefixes even if item.brand wasn't populated
+    strippedTitle = strippedTitle.replace(/^rigoni\s+di\s+asiago\s+/, '').trim();
+
+    const haystack = normalizeSearchToken(`${strippedTitle} ${item.subcategory || ''}`);
     const category = String(item.category || '').trim();
+
+    const isWineOrBeverage =
+      category === 'Acqua e Bevande' ||
+      /\b(igt|doc|docg|vino|spumante|prosecco|montepulciano|valdifara|cantina|birra|liquore|grappa|75\s*cl|750\s*ml)\b/i.test(rawTitle);
+    const isFruitJamOrSpread = /\b(confettur\w*|marmellat\w*|miele|nocciolata)\b/i.test(rawTitle);
+    const shouldSkipAmbiguousCheeseToken = (normIng) => {
+      if (isWineOrBeverage && (normIng === 'pecorino' || normIng === 'asiago' || normIng === 'dolce verde')) {
+        return true;
+      }
+      if (isFruitJamOrSpread && normIng === 'asiago') {
+        return true;
+      }
+      return false;
+    };
+
     const reasons = [];
     const matchedExclusions = [];
 
-    // Check explicit allowed exceptions first, unless an explicit excludedIngredient also matches
-    const hasExplicitExcludedIngredient = (profile.excludedIngredients || []).some((ing) => {
-      const normIng = normalizeSearchToken(ing);
-      return normIng && new RegExp(`\\b${normIng}\\b`, 'i').test(haystack);
-    });
+    // Check explicit allowed exceptions first, unless an explicit excludedIngredient or cheese category also matches
+    const isCreaCheeseCategory =
+      category === 'Formaggi e latticini' &&
+      ((profile.excludedCategories || []).includes('Formaggi e latticini') ||
+        (profile.excludedIngredients || []).some((ing) => normalizeSearchToken(ing) === 'formaggio'));
+
+    const hasExplicitExcludedIngredient =
+      isCreaCheeseCategory ||
+      (profile.excludedIngredients || []).some((ing) => {
+        const normIng = normalizeSearchToken(ing);
+        if (!normIng || shouldSkipAmbiguousCheeseToken(normIng)) return false;
+        return new RegExp(`\\b${normIng}\\b`, 'i').test(haystack);
+      });
 
     const isException = !hasExplicitExcludedIngredient && (profile.allowedExceptions || []).some((exc) => {
       const normExc = normalizeSearchToken(exc);
@@ -283,12 +360,16 @@ export class UserProfileService {
       if (category && (profile.excludedCategories || []).includes(category)) {
         reasons.push(`Categoria esclusa: ${category}`);
         matchedExclusions.push(category);
+      } else if (isCreaCheeseCategory) {
+        reasons.push(`Categoria esclusa: ${category}`);
+        matchedExclusions.push('formaggio');
       }
 
       // 2. Dietary regime check
       const regimeForbidden = REGIME_FORBIDDEN_KEYWORDS[profile.dietaryRegime] || [];
       for (const kw of regimeForbidden) {
         const normKw = normalizeSearchToken(kw);
+        if (shouldSkipAmbiguousCheeseToken(normKw)) continue;
         const regex = new RegExp(`\\b${normKw}\\b`, 'i');
         if (regex.test(haystack)) {
           reasons.push(`Regime ${profile.dietaryRegime}: contiene "${kw}"`);
@@ -300,7 +381,7 @@ export class UserProfileService {
       // 3. Excluded ingredients check
       for (const ing of profile.excludedIngredients || []) {
         const normIng = normalizeSearchToken(ing);
-        if (!normIng) continue;
+        if (!normIng || shouldSkipAmbiguousCheeseToken(normIng)) continue;
         const regex = new RegExp(`\\b${normIng}\\b`, 'i');
         if (regex.test(haystack)) {
           reasons.push(`Escluso dal profilo (${profile.name}): "${ing}"`);

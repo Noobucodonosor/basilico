@@ -11,24 +11,30 @@
  *     - 'pescetarian_sea' (Pescetariana & Mare del Golfo)
  *     - 'tigullio_gourmet_home' (Esplorazione Ristoranti del Tigullio a Casa)
  *  2. Physical Day Modes ('boat_day', 'land_day', 'eat_out') with strict cold-safety (`boatSafeCold`) on boat lunches
- *  3. Real Breakfast Recipes (`course === 'colazione'`) rotated across the week with verified CREA BOMs included in the ledger
+ *  3. Real Breakfast Recipes (`course === 'colazione'`) rotated with 0 duplicates across all 7 days (21/21 unique meals)
  *  4. Human Anti-Monotony & Culinary Structure:
- *     - Zero duplicate dishes by `id` OR `canonicalTwinKey` across the week
- *     - Strict `dishFamily` weekly cap (max 2 meals/week per family, at least 2 days apart — never 5 days of pesto!)
+ *     - Zero duplicate dishes by `id` OR `canonicalTwinKey` across the week (Breakfast + Lunch + Dinner)
+ *     - Strict `dishFamily` weekly cap & non-adjacent day spacing (`!prevDayFamilies.has(fam)`)
  *     - Lunch != Dinner balance (savory main lunch + light protein/veg `lightDinnerSuitable` dinner, zero desserts as meals)
  *     - Perishable-only residual pack chaining (never chains on shelf-stable olive oil, salt, or dry pasta)
- *  5. Whole-Pack Chaining ($K_p = \lceil Q_p / S_p \rceil$) with honest residual pantry return
- *  6. Constraint-preserving Whole-Recipe Budget Substitution (never removes single BOM ingredients and never introduces duplicates)
+ *  5. Whole-Pack Chaining ($K_p = \lceil Q_p / S_p \rceil$) with multi-pack pantry aggregation & zero double-spend
+ *  6. Constraint-preserving Whole-Recipe Budget Substitution + Persistent Active Plan (`data/cache/weekly_plan.json`)
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   recipeAndArbitrageService,
-  resolveIngredientPackSpec,
-  findCompatiblePantryItem
+  resolveIngredientPackSpec
 } from './recipeAndArbitrageService.js';
-import { pantryService } from './pantryService.js';
+import { pantryService, isPantryItemCompatibleWithBom } from './pantryService.js';
 import { normalizeSearchToken } from './offerService.js';
 import { userProfileService } from './userProfileService.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DEFAULT_PLAN_PATH = path.resolve(__dirname, '../../data/cache/weekly_plan.json');
 
 export const NEO_DIETA_MODELS = [
   {
@@ -90,6 +96,8 @@ const PERISHABLE_PACK_FAMILIES = new Set([
   'meat_poultry',
   'fresh_pasta',
   'vegetables_fruit',
+  'fresh_vegetables',
+  'fresh_fruit',
   'yogurt_single',
   'smoked_cured',
   'canned_fish'
@@ -114,12 +122,68 @@ function getFamilyWeeklyCap(family = '', modelId = '') {
 }
 
 export class MealPlannerService {
-  constructor() {
+  constructor(options = {}) {
+    this.storagePath = options.storagePath || process.env.BASILICO_PLAN_PATH || DEFAULT_PLAN_PATH;
+    this.pantryService = options.pantryService || pantryService;
     this._lastGeneratedPlan = null;
+    this._swapHistory = new Map();
   }
 
   getModels() {
     return NEO_DIETA_MODELS;
+  }
+
+  _loadPersistedPlan() {
+    if (this._lastGeneratedPlan) return this._lastGeneratedPlan;
+    try {
+      if (fs.existsSync(this.storagePath)) {
+        const parsed = JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+        if (parsed && Array.isArray(parsed.days) && parsed.ledger) {
+          this._lastGeneratedPlan = parsed;
+          return this._lastGeneratedPlan;
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  _savePersistedPlan(plan) {
+    this._lastGeneratedPlan = plan;
+    try {
+      const dir = path.dirname(this.storagePath);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const tmp = `${this.storagePath}.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}`;
+      fs.writeFileSync(tmp, JSON.stringify(plan, null, 2), 'utf8');
+      fs.renameSync(tmp, this.storagePath);
+    } catch (_) {}
+  }
+
+  /**
+   * Returns the persisted active weekly plan if present (and matching `profileId` when requested),
+   * or generates an initial plan ONLY if none exists yet (`M-P1-01`).
+   */
+  async getCurrentOrGeneratePlan(options = {}) {
+    const requestedProfileId = options.profileId || null;
+    const existing = this._loadPersistedPlan();
+    if (existing && (!requestedProfileId || existing.profileId === requestedProfileId)) {
+      return {
+        plan: existing,
+        wasGenerated: false
+      };
+    }
+
+    const generated = await this.generateWeeklyPlan({
+      modelId: existing?.model?.id || options.modelId || 'promo_driven_neodiet',
+      daysCount: existing?.daysCount || options.daysCount || 7,
+      servings: existing?.servings || options.servings || 1,
+      budgetEur: existing?.budgetEur || options.budgetEur || 80,
+      dayModes: existing?.days ? existing.days.map((d) => d.dayMode) : options.dayModes,
+      profileId: requestedProfileId || userProfileService.getProfileById().id
+    });
+    return {
+      plan: generated,
+      wasGenerated: true
+    };
   }
 
   _isEligibleMainMeal(dish, modelId) {
@@ -251,6 +315,8 @@ export class MealPlannerService {
   /**
    * Aggregates all BOM ingredients across the planned week (including real Breakfasts, Lunches & Dinners)
    * into whole supermarket packages: $K_p = \lceil (Q_p - \text{inPantry}_p) / S_p \rceil$.
+   * Sums ALL matching pantry packages (`opened` prioritized first) while tracking a shared
+   * `Map<pantryItemId, remainingGrams>` so a single pantry package is NEVER double-spent across two BOM keys!
    */
   _computeWholePackLedger(daysPlan, pantryItems = []) {
     const ledgerMap = new Map();
@@ -260,14 +326,13 @@ export class MealPlannerService {
       for (const b of dish.bom) {
         const key = b.creaId || normalizeSearchToken(b.name);
         if (!ledgerMap.has(key)) {
-          const pantryMatch = findCompatiblePantryItem(b, pantryItems);
-
           const spec = resolveIngredientPackSpec(b.name);
           const packSizeGrams = b.packSizeGrams || spec.packGrams;
           const euroPerKg = b.euroPerKg || spec.euroPerKg;
 
           ledgerMap.set(key, {
             key,
+            bomRef: b,
             creaId: b.creaId || null,
             name: b.name,
             domain: 'food_human',
@@ -278,8 +343,8 @@ export class MealPlannerService {
                 ? Number(b.matchedOffer.price)
                 : Number(((euroPerKg * packSizeGrams) / 1000).toFixed(2)),
             matchedOffer: b.matchedOffer || null,
-            availableInPantryGrams: pantryMatch ? Number(pantryMatch.remainingWeightGrams) : 0,
-            isOpenedInPantry: pantryMatch ? pantryMatch.status === 'opened' : false,
+            availableInPantryGrams: 0,
+            isOpenedInPantry: false,
             totalRequiredGrams: 0,
             usedInMeals: []
           });
@@ -302,7 +367,7 @@ export class MealPlannerService {
     let totalMenuEquivalentEur = 0;
 
     for (const day of daysPlan) {
-      if (day.breakfast?.dish) {
+      if (day.dayMode !== 'eat_out' && day.breakfast?.dish) {
         accumulateSlot(day, 'breakfast', day.breakfast.dish);
         totalMenuEquivalentEur += Number(day.breakfast.dish.costAndArbitrage?.totalMenuPriceEur || 0);
       }
@@ -316,12 +381,49 @@ export class MealPlannerService {
       }
     }
 
+    // Track remaining grams per physical pantry package across all ledger entries (no double-spend!)
+    const pantryRemainingById = new Map();
+    for (const p of pantryItems || []) {
+      if (!p || !p.id) continue;
+      const rem = Number(p.remainingWeightGrams);
+      if (Number.isFinite(rem) && rem > 0) {
+        pantryRemainingById.set(p.id, rem);
+      }
+    }
+
+    // Allocate pantry stock: entries with explicit `creaId` claim exact matches first, followed by lexical BOM keys
+    const orderedEntries = [...ledgerMap.values()].sort((a, b) => (b.creaId ? 1 : 0) - (a.creaId ? 1 : 0));
+
     const wholePackItems = [];
     let totalCheckoutCashEur = 0;
     let totalPureConsumedValueEur = 0;
 
-    for (const entry of ledgerMap.values()) {
-      const fromPantryGrams = Math.min(entry.totalRequiredGrams, entry.availableInPantryGrams);
+    for (const entry of orderedEntries) {
+      const matchingPantryPacks = (pantryItems || [])
+        .filter((p) => {
+          const rem = pantryRemainingById.get(p?.id) || 0;
+          if (rem <= 0) return false;
+          return isPantryItemCompatibleWithBom(entry.bomRef, { ...p, remainingWeightGrams: rem });
+        })
+        .sort((x, y) => (x.status === 'opened' ? -1 : 1) - (y.status === 'opened' ? -1 : 1));
+
+      const availableInPantryGrams = Number(
+        matchingPantryPacks.reduce((acc, p) => acc + (pantryRemainingById.get(p.id) || 0), 0).toFixed(1)
+      );
+      const isOpenedInPantry = matchingPantryPacks.some((p) => p.status === 'opened');
+
+      let needToCoverFromPantry = entry.totalRequiredGrams;
+      let fromPantryGrams = 0;
+      for (const p of matchingPantryPacks) {
+        if (needToCoverFromPantry <= 0) break;
+        const avail = pantryRemainingById.get(p.id) || 0;
+        if (avail <= 0) continue;
+        const take = Number(Math.min(avail, needToCoverFromPantry).toFixed(1));
+        pantryRemainingById.set(p.id, Number(Math.max(0, avail - take).toFixed(1)));
+        fromPantryGrams = Number((fromPantryGrams + take).toFixed(1));
+        needToCoverFromPantry = Number(Math.max(0, needToCoverFromPantry - take).toFixed(1));
+      }
+
       const netToBuyGrams = Math.max(0, Number((entry.totalRequiredGrams - fromPantryGrams).toFixed(1)));
       const packsToBuy = netToBuyGrams > 0 ? Math.ceil(netToBuyGrams / entry.packSizeGrams) : 0;
       const totalPurchasedGrams = packsToBuy * entry.packSizeGrams;
@@ -336,8 +438,11 @@ export class MealPlannerService {
       totalCheckoutCashEur += checkoutCostEur;
       totalPureConsumedValueEur += pureConsumedCostEur;
 
+      const { bomRef: _omitBomRef, ...publicEntry } = entry;
       wholePackItems.push({
-        ...entry,
+        ...publicEntry,
+        availableInPantryGrams,
+        isOpenedInPantry,
         fromPantryGrams,
         netToBuyGrams,
         packsToBuy,
@@ -367,6 +472,32 @@ export class MealPlannerService {
     const modelId = NEO_DIETA_MODELS.some((m) => m.id === options.modelId)
       ? options.modelId
       : 'promo_driven_neodiet';
+
+    if (options.daysCount !== undefined && options.daysCount !== null && options.daysCount !== '') {
+      const parsedDays = Number(options.daysCount);
+      if (!Number.isFinite(parsedDays) || parsedDays <= 0) {
+        const err = new Error('daysCount non valido: inserire un numero > 0');
+        err.status = 400;
+        throw err;
+      }
+    }
+    if (options.servings !== undefined && options.servings !== null && options.servings !== '') {
+      const parsedServings = Number(options.servings);
+      if (!Number.isFinite(parsedServings) || parsedServings <= 0) {
+        const err = new Error('servings non valido: inserire un numero > 0');
+        err.status = 400;
+        throw err;
+      }
+    }
+    if (options.budgetEur !== undefined && options.budgetEur !== null && options.budgetEur !== '') {
+      const parsedBudget = Number(options.budgetEur);
+      if (!Number.isFinite(parsedBudget) || parsedBudget <= 0) {
+        const err = new Error('budgetEur non valido: inserire un importo > 0');
+        err.status = 400;
+        throw err;
+      }
+    }
+
     const daysCount = Math.max(1, Math.min(14, Number(options.daysCount) || 7));
     const servings = Math.max(1, Math.min(8, Number(options.servings) || 1));
     const budgetEur = Number(options.budgetEur) > 0 ? Number(options.budgetEur) : 80;
@@ -374,7 +505,7 @@ export class MealPlannerService {
 
     const customDayModes = Array.isArray(options.dayModes) ? options.dayModes : null;
 
-    const pantryState = pantryService.getPantryState();
+    const pantryState = this.pantryService.getPantryState();
     const openedItems = pantryState.openedPriorityAlerts || [];
     const openedTokens = openedItems
       .map((i) => normalizeSearchToken(i.title).split(' ').find((w) => w.length >= 4))
@@ -387,7 +518,7 @@ export class MealPlannerService {
     });
     const allEvaluated = catalogRes.dishes || [];
 
-    // 1. Real Home Breakfast Pool (course === 'colazione', preferring real home single breakfasts over café menu headers)
+    // 1. Real Breakfast Pool (`course === 'colazione'`, deduplicated by id & canonicalTwinKey, >= 7 distinct breakfasts!)
     const allBreakfasts = allEvaluated.filter((d) => {
       if (d.course !== 'colazione' || d.isExcludedByProfileIdentity) return false;
       if (/^colazion[ei]$/i.test((d.title || '').trim())) return false;
@@ -397,12 +528,27 @@ export class MealPlannerService {
       }
       return true;
     });
-    const homeBreakfasts = allBreakfasts.filter((d) => d.sourceType === 'base_single_school');
-    let breakfastPool = homeBreakfasts.length >= 4 ? homeBreakfasts : allBreakfasts;
+
+    const orderedBreakfastCandidates = [
+      ...allBreakfasts.filter((d) => d.sourceType === 'base_single_school'),
+      ...allBreakfasts.filter((d) => d.sourceType !== 'base_single_school')
+    ];
+
     if (modelId === 'high_protein_sport') {
-      breakfastPool = [...breakfastPool].sort(
+      orderedBreakfastCandidates.sort(
         (a, b) => (b.nutritionPerServing?.proteinG || 0) - (a.nutritionPerServing?.proteinG || 0)
       );
+    }
+
+    const seenBfIds = new Set();
+    const seenBfTwins = new Set();
+    const breakfastPool = [];
+    for (const bf of orderedBreakfastCandidates) {
+      if (!bf || seenBfIds.has(bf.id)) continue;
+      if (bf.canonicalTwinKey && seenBfTwins.has(bf.canonicalTwinKey)) continue;
+      seenBfIds.add(bf.id);
+      if (bf.canonicalTwinKey) seenBfTwins.add(bf.canonicalTwinKey);
+      breakfastPool.push(bf);
     }
 
     // 2. Savory Lunch & Dinner Pools with strict cold-boat and light-dinner separation
@@ -415,10 +561,15 @@ export class MealPlannerService {
     const usedDishIds = new Set();
     const usedTwinKeys = new Set();
     const familyCounts = new Map();
-    const familyLastDay = new Map();
+    const daySelectedFamilies = new Map();
     const unallocatedPerishableGrams = new Map();
 
-    const canUseCandidate = (cand, dIdx, sameDayLunchFamily = null, relaxSpacing = false) => {
+    const getPrevDayFamilies = (dIdx) => daySelectedFamilies.get(dIdx - 1) || new Set();
+
+    // Pass 0: strict cap + strict 2-day spacing
+    // Pass 1: relax weekly cap by +1 (except cap=1 signature families), STILL strictly enforcing `!prevDayFamilies.has(fam)`!
+    // Pass 2: emergency fallback (still strictly no duplicate ID / twinKey / sameDayFamily / double-primo)
+    const canUseCandidate = (cand, dIdx, sameDayLunchFamily = null, passLevel = 0) => {
       if (!cand) return false;
       if (usedDishIds.has(cand.id)) return false;
       if (cand.canonicalTwinKey && usedTwinKeys.has(cand.canonicalTwinKey)) return false;
@@ -429,52 +580,54 @@ export class MealPlannerService {
       const count = familyCounts.get(fam) || 0;
       const cap = getFamilyWeeklyCap(fam, modelId);
       if (cap <= 1 && count >= 1) return false;
-      if (!relaxSpacing && count >= cap) return false;
 
-      const lastDay = familyLastDay.get(fam);
-      if (!relaxSpacing && lastDay !== undefined && dIdx - lastDay < 2) return false;
+      const prevFamilies = getPrevDayFamilies(dIdx);
+      if (passLevel === 0) {
+        if (count >= cap) return false;
+        if (prevFamilies.has(fam)) return false;
+      } else if (passLevel === 1) {
+        if (prevFamilies.has(fam)) return false;
+        if (count >= cap + 1) return false;
+      }
 
       return true;
     };
 
-    const recordSelectedDish = (dish, dIdx) => {
+    const recordSelectedDish = (dish, dIdx, trackFamilySpacing = true) => {
       if (!dish) return;
       usedDishIds.add(dish.id);
       if (dish.canonicalTwinKey) usedTwinKeys.add(dish.canonicalTwinKey);
-      const fam = dish.dishFamily || 'mediterranean_vegetable';
-      familyCounts.set(fam, (familyCounts.get(fam) || 0) + 1);
-      familyLastDay.set(fam, dIdx);
+      if (trackFamilySpacing) {
+        const fam = dish.dishFamily || 'mediterranean_vegetable';
+        familyCounts.set(fam, (familyCounts.get(fam) || 0) + 1);
+        if (!daySelectedFamilies.has(dIdx)) daySelectedFamilies.set(dIdx, new Set());
+        daySelectedFamilies.get(dIdx).add(fam);
+      }
       this._registerMealPerishables(dish, unallocatedPerishableGrams);
     };
 
     const pickBestFromPool = (pool, slot, dIdx, sameDayLunchDish = null) => {
       const sameDayFamily = sameDayLunchDish?.dishFamily || null;
-      const scored = pool
-        .filter((cand) => {
-          // Never schedule double pasta/risotto on the same day!
-          if (slot === 'dinner' && sameDayLunchDish?.course === 'primo' && cand.course === 'primo') {
-            return false;
-          }
-          return canUseCandidate(cand, dIdx, sameDayFamily, false);
-        })
-        .map((d) => ({
-          dish: d,
-          ...this._scoreDishForModel(d, modelId, slot, openedTokens, unallocatedPerishableGrams, dIdx)
-        }))
-        .sort((a, b) => b.score - a.score);
+      const isDoublePrimo = (cand) =>
+        slot === 'dinner' && sameDayLunchDish?.course === 'primo' && cand.course === 'primo';
 
-      if (scored.length > 0) return scored[0];
+      for (const passLevel of [0, 1, 2]) {
+        const scored = pool
+          .filter((cand) => {
+            if (isDoublePrimo(cand)) return false;
+            return canUseCandidate(cand, dIdx, sameDayFamily, passLevel);
+          })
+          .map((d) => ({
+            dish: d,
+            ...this._scoreDishForModel(d, modelId, slot, openedTokens, unallocatedPerishableGrams, dIdx)
+          }))
+          .sort((a, b) => b.score - a.score);
 
-      // Relaxed fallback (still strictly no duplicate ID / twinKey / sameDayFamily)
-      const fallback = pool
-        .filter((cand) => canUseCandidate(cand, dIdx, sameDayFamily, true))
-        .map((d) => ({
-          dish: d,
-          ...this._scoreDishForModel(d, modelId, slot, openedTokens, unallocatedPerishableGrams, dIdx)
-        }))
-        .sort((a, b) => b.score - a.score);
+        if (scored.length > 0) return scored[0];
+      }
 
-      return fallback[0] || { dish: pool[0], consumesOpenedPerishable: false, sharedPackCount: 0 };
+      const unusedAny = pool.find((d) => !usedDishIds.has(d.id)) || pool[0];
+      return { dish: unusedAny, consumesOpenedPerishable: false, sharedPackCount: 0 };
     };
 
     const daysPlan = [];
@@ -483,11 +636,18 @@ export class MealPlannerService {
       const dayName = DAY_NAMES_IT[dIdx % 7];
       const dayMode = customDayModes?.[dIdx] || (dIdx === 4 || dIdx === 5 ? 'boat_day' : 'land_day');
 
-      // Rotate real breakfast recipe across days
+      // Select unique real breakfast recipe (0 duplicates across all 7 days!)
       const chosenBreakfastDish =
-        breakfastPool.length > 0 ? breakfastPool[dIdx % breakfastPool.length] : null;
-      if (chosenBreakfastDish && dayMode !== 'eat_out') {
-        this._registerMealPerishables(chosenBreakfastDish, unallocatedPerishableGrams);
+        breakfastPool.find(
+          (bf) => !usedDishIds.has(bf.id) && (!bf.canonicalTwinKey || !usedTwinKeys.has(bf.canonicalTwinKey))
+        ) || (breakfastPool.length > 0 ? breakfastPool[dIdx % breakfastPool.length] : null);
+
+      if (chosenBreakfastDish) {
+        usedDishIds.add(chosenBreakfastDish.id);
+        if (chosenBreakfastDish.canonicalTwinKey) usedTwinKeys.add(chosenBreakfastDish.canonicalTwinKey);
+        if (dayMode !== 'eat_out') {
+          this._registerMealPerishables(chosenBreakfastDish, unallocatedPerishableGrams);
+        }
       }
 
       const breakfastObj = chosenBreakfastDish
@@ -500,7 +660,7 @@ export class MealPlannerService {
             dish: dayMode === 'eat_out' ? null : chosenBreakfastDish
           }
         : {
-            title: 'Colazione Domestica (Caffè, Fiocchi d\'Avena & Frutta Fresca)',
+            title: `Colazione Domestica Giorno ${dIdx + 1} (Caffè, Fiocchi d'Avena & Frutta Fresca)`,
             kcal: 330,
             proteinG: 12,
             dish: null
@@ -522,11 +682,11 @@ export class MealPlannerService {
       const activeLunchPool =
         dayMode === 'boat_day' && boatLunchPool.length > 0 ? boatLunchPool : landLunchPool;
       const chosenLunch = pickBestFromPool(activeLunchPool, 'lunch', dIdx, null);
-      recordSelectedDish(chosenLunch?.dish, dIdx);
+      recordSelectedDish(chosenLunch?.dish, dIdx, true);
 
       // Select Dinner (light recovery evening dish, distinct family & course from lunch)
       const chosenDinner = pickBestFromPool(effectiveDinnerPool, 'dinner', dIdx, chosenLunch?.dish);
-      recordSelectedDish(chosenDinner?.dish, dIdx);
+      recordSelectedDish(chosenDinner?.dish, dIdx, true);
 
       daysPlan.push({
         dayIndex: dIdx + 1,
@@ -553,12 +713,24 @@ export class MealPlannerService {
       });
     }
 
+    // Helper to gather adjacent-day (dayIndex - 1 and dayIndex + 1) dishFamilies
+    const getAdjacentDayFamilies = (dayIndexOneBased) => {
+      const adj = new Set();
+      for (const neighborIdx of [dayIndexOneBased - 1, dayIndexOneBased + 1]) {
+        const neighborDay = daysPlan.find((d) => d.dayIndex === neighborIdx);
+        if (!neighborDay || neighborDay.dayMode === 'eat_out') continue;
+        if (neighborDay.lunch?.dish?.dishFamily) adj.add(neighborDay.lunch.dish.dishFamily);
+        if (neighborDay.dinner?.dish?.dishFamily) adj.add(neighborDay.dinner.dish.dishFamily);
+      }
+      return adj;
+    };
+
     // Compute initial Whole-Pack Ledger
     let ledger = this._computeWholePackLedger(daysPlan, pantryState.items);
     const budgetSubstitutionsLog = [];
 
     // Step 3: Constraint-Preserving Whole-Recipe Budget Governance
-    // NEVER pops single BOM ingredients AND NEVER violates boat-safety, profile exclusions, or uniqueness!
+    // NEVER pops single BOM ingredients AND NEVER violates boat-safety, profile exclusions, adjacent-day families, or uniqueness!
     let guardIterations = 0;
     while (ledger.totalCheckoutCashEur > budgetEur && guardIterations < 10) {
       guardIterations++;
@@ -583,6 +755,7 @@ export class MealPlannerService {
         const isBoatLunch = slotRef.day.dayMode === 'boat_day' && slotRef.slot === 'lunch';
         const otherMealSameDay =
           slotRef.slot === 'lunch' ? slotRef.day.dinner?.dish : slotRef.day.lunch?.dish;
+        const adjacentFamilies = getAdjacentDayFamilies(slotRef.day.dayIndex);
 
         const candidatePool = (isBoatLunch ? boatLunchPool : slotRef.slot === 'dinner' ? effectiveDinnerPool : landLunchPool)
           .filter((cand) => {
@@ -590,11 +763,14 @@ export class MealPlannerService {
             if (usedDishIds.has(cand.id)) return false;
             if (cand.canonicalTwinKey && usedTwinKeys.has(cand.canonicalTwinKey)) return false;
             if (otherMealSameDay && cand.dishFamily === otherMealSameDay.dishFamily) return false;
-            if (slotRef.slot === 'dinner' && otherMealSameDay?.course === 'primo' && cand.course === 'primo') {
+            if (adjacentFamilies.has(cand.dishFamily)) return false;
+            // Symmetric double-primo check for BOTH lunch and dinner!
+            if (otherMealSameDay?.course === 'primo' && cand.course === 'primo') {
               return false;
             }
-            const famCount = familyCounts.get(cand.dishFamily) || 0;
-            if (famCount >= getFamilyWeeklyCap(cand.dishFamily, modelId)) return false;
+            const effectiveFamCount =
+              (familyCounts.get(cand.dishFamily) || 0) - (cand.dishFamily === slotRef.oldDish.dishFamily ? 1 : 0);
+            if (effectiveFamCount >= getFamilyWeeklyCap(cand.dishFamily, modelId)) return false;
             return (
               cand.costAndArbitrage.checkoutCashCostEur <
               slotRef.oldDish.costAndArbitrage.checkoutCashCostEur - 0.8
@@ -674,35 +850,76 @@ export class MealPlannerService {
       ledger
     };
 
-    this._lastGeneratedPlan = planResult;
+    this._swapHistory.clear();
+    this._savePersistedPlan(planResult);
     return planResult;
   }
 
   /**
    * Swaps a single meal in the current plan with a compatible, non-duplicate alternative (1-click swap).
+   * Rotates cleanly through all valid candidates without 2-dish oscillation, enforces twinKey,
+   * same-day/adjacent-day `dishFamily`, weekly caps, double-`primo` blocking, and updates `withinBudget`.
    */
   async swapMealInPlan(payload = {}) {
-    if (!this._lastGeneratedPlan) {
-      await this.generateWeeklyPlan({});
+    let activePlan = this._loadPersistedPlan();
+    if (!activePlan) {
+      activePlan = await this.generateWeeklyPlan({});
     }
     const dayIndex = Number(payload.dayIndex) || 1;
     const slot = payload.slot === 'dinner' ? 'dinner' : payload.slot === 'breakfast' ? 'breakfast' : 'lunch';
-    const activeModelId = this._lastGeneratedPlan.model?.id || 'promo_driven_neodiet';
+    const activeModelId = activePlan.model?.id || 'promo_driven_neodiet';
+    const explicitExcludes = new Set(
+      Array.isArray(payload.excludeDishIds) ? payload.excludeDishIds.map(String) : []
+    );
 
-    const targetDay = this._lastGeneratedPlan.days.find((d) => d.dayIndex === dayIndex);
+    const targetDay = activePlan.days.find((d) => d.dayIndex === dayIndex);
     if (!targetDay || !targetDay[slot]) {
-      return this._lastGeneratedPlan;
+      return activePlan;
     }
 
-    const currentIds = new Set();
-    for (const d of this._lastGeneratedPlan.days) {
-      if (d.lunch?.dish?.id) currentIds.add(d.lunch.dish.id);
-      if (d.dinner?.dish?.id) currentIds.add(d.dinner.dish.id);
+    const currentSlotDishId =
+      slot === 'breakfast'
+        ? targetDay.breakfast?.dishId || targetDay.breakfast?.dish?.id || null
+        : targetDay[slot]?.dish?.id || null;
+
+    // Track all OTHER meals in the week so we never introduce duplicates by id or canonicalTwinKey
+    const otherUsedIds = new Set();
+    const otherUsedTwins = new Set();
+    const otherFamilyCounts = new Map();
+
+    for (const d of activePlan.days) {
+      const bfDish = d.breakfast?.dish;
+      const bfId = d.breakfast?.dishId || bfDish?.id;
+      if (bfId && !(d.dayIndex === dayIndex && slot === 'breakfast')) {
+        otherUsedIds.add(bfId);
+        if (bfDish?.canonicalTwinKey) otherUsedTwins.add(bfDish.canonicalTwinKey);
+      }
+      for (const s of ['lunch', 'dinner']) {
+        if (d.dayIndex === dayIndex && s === slot) continue;
+        const mDish = d[s]?.dish;
+        if (mDish?.id) {
+          otherUsedIds.add(mDish.id);
+          if (mDish.canonicalTwinKey) otherUsedTwins.add(mDish.canonicalTwinKey);
+          const fam = mDish.dishFamily || 'mediterranean_vegetable';
+          otherFamilyCounts.set(fam, (otherFamilyCounts.get(fam) || 0) + 1);
+        }
+      }
     }
+
+    const adjacentFamilies = new Set();
+    for (const neighborIdx of [dayIndex - 1, dayIndex + 1]) {
+      const neighborDay = activePlan.days.find((d) => d.dayIndex === neighborIdx);
+      if (!neighborDay || neighborDay.dayMode === 'eat_out') continue;
+      if (neighborDay.lunch?.dish?.dishFamily) adjacentFamilies.add(neighborDay.lunch.dish.dishFamily);
+      if (neighborDay.dinner?.dish?.dishFamily) adjacentFamilies.add(neighborDay.dinner.dish.dishFamily);
+    }
+
+    const otherMealSameDay =
+      slot === 'lunch' ? targetDay.dinner?.dish : slot === 'dinner' ? targetDay.lunch?.dish : null;
 
     const catalogRes = await recipeAndArbitrageService.queryDishes({
-      servings: this._lastGeneratedPlan.servings,
-      profileId: this._lastGeneratedPlan.profileId,
+      servings: activePlan.servings,
+      profileId: activePlan.profileId,
       limit: 350
     });
     const allDishes = (catalogRes.dishes || []).filter((d) => !d.isExcludedByProfileIdentity);
@@ -710,29 +927,78 @@ export class MealPlannerService {
     let candidates = [];
     if (slot === 'breakfast') {
       candidates = allDishes.filter((d) => {
-        if (d.course !== 'colazione' || d.id === targetDay.breakfast?.dishId) return false;
+        if (d.course !== 'colazione') return false;
+        if (/^colazion[ei]$/i.test((d.title || '').trim())) return false;
+        if (d.id === currentSlotDishId) return false;
+        if (otherUsedIds.has(d.id)) return false;
+        if (d.canonicalTwinKey && otherUsedTwins.has(d.canonicalTwinKey)) return false;
         if (activeModelId === 'pescetarian_sea') {
           const txt = `${d.title || ''} ${(d.bom || []).map((b) => b.name).join(' ')}`;
           if (MEAT_KEYWORDS_REGEX.test(txt)) return false;
         }
         return true;
       });
-    } else if (targetDay.dayMode === 'boat_day' && slot === 'lunch') {
-      candidates = allDishes.filter(
-        (d) => this._isEligibleMainMeal(d, activeModelId) && d.boatSafeCold && !currentIds.has(d.id)
-      );
-    } else if (slot === 'dinner') {
-      candidates = allDishes.filter(
-        (d) => this._isEligibleMainMeal(d, activeModelId) && d.lightDinnerSuitable && !currentIds.has(d.id)
-      );
     } else {
-      candidates = allDishes.filter(
-        (d) => this._isEligibleMainMeal(d, activeModelId) && !currentIds.has(d.id)
+      const filterMainCandidates = (enforceStrictCapAndAdjacency) =>
+        allDishes.filter((d) => {
+          if (!this._isEligibleMainMeal(d, activeModelId)) return false;
+          if (d.id === currentSlotDishId) return false;
+          if (otherUsedIds.has(d.id)) return false;
+          if (d.canonicalTwinKey && otherUsedTwins.has(d.canonicalTwinKey)) return false;
+          if (targetDay.dayMode === 'boat_day' && slot === 'lunch' && !d.boatSafeCold) return false;
+          if (slot === 'dinner' && !d.lightDinnerSuitable && enforceStrictCapAndAdjacency) return false;
+          if (otherMealSameDay && d.dishFamily === otherMealSameDay.dishFamily) return false;
+          if (otherMealSameDay?.course === 'primo' && d.course === 'primo') return false;
+
+          const fam = d.dishFamily || 'mediterranean_vegetable';
+          const cap = getFamilyWeeklyCap(fam, activeModelId);
+          const count = otherFamilyCounts.get(fam) || 0;
+          if (cap <= 1 && count >= 1) return false;
+          if (enforceStrictCapAndAdjacency) {
+            if (count >= cap) return false;
+            if (adjacentFamilies.has(fam)) return false;
+          }
+          return true;
+        });
+
+      candidates = filterMainCandidates(true);
+      if (candidates.length === 0) {
+        candidates = filterMainCandidates(false);
+      }
+
+      candidates.sort(
+        (a, b) =>
+          this._scoreDishForModel(b, activeModelId, slot, [], new Map(), dayIndex - 1).score -
+          this._scoreDishForModel(a, activeModelId, slot, [], new Map(), dayIndex - 1).score
       );
     }
 
-    const nextDish = candidates[0] || null;
+    if (candidates.length === 0) {
+      return activePlan;
+    }
+
+    // Rotate through all valid candidates using slot history + optional caller `excludeDishIds` (zero A<->B loop!)
+    const slotHistoryKey = `${activePlan.planId}:${dayIndex}:${slot}`;
+    let seenInSlot = this._swapHistory.get(slotHistoryKey);
+    if (!seenInSlot) {
+      seenInSlot = new Set();
+      this._swapHistory.set(slotHistoryKey, seenInSlot);
+    }
+    if (currentSlotDishId) {
+      seenInSlot.add(currentSlotDishId);
+    }
+
+    let unvisited = candidates.filter((d) => !explicitExcludes.has(d.id) && !seenInSlot.has(d.id));
+    if (unvisited.length === 0) {
+      // Full cycle completed: reset slot history (keeping only immediate current dish & explicit excludes)
+      seenInSlot.clear();
+      if (currentSlotDishId) seenInSlot.add(currentSlotDishId);
+      unvisited = candidates.filter((d) => !explicitExcludes.has(d.id) && d.id !== currentSlotDishId);
+    }
+
+    const nextDish = unvisited[0] || candidates[0];
     if (nextDish) {
+      seenInSlot.add(nextDish.id);
       if (slot === 'breakfast') {
         targetDay.breakfast = {
           dishId: nextDish.id,
@@ -740,18 +1006,19 @@ export class MealPlannerService {
           kcal: nextDish.nutritionPerServing?.energyKcal || 340,
           proteinG: nextDish.nutritionPerServing?.proteinG || 14,
           purePortionCostEur: nextDish.costAndArbitrage?.purePortionCostEur || 1.2,
-          dish: nextDish
+          dish: targetDay.dayMode === 'eat_out' ? null : nextDish
         };
       } else {
         targetDay[slot].dish = nextDish;
       }
-      const pantryState = pantryService.getPantryState();
-      this._lastGeneratedPlan.ledger = this._computeWholePackLedger(
-        this._lastGeneratedPlan.days,
-        pantryState.items
-      );
+
+      const pantryState = this.pantryService.getPantryState();
+      activePlan.ledger = this._computeWholePackLedger(activePlan.days, pantryState.items);
+      activePlan.withinBudget = activePlan.ledger.totalCheckoutCashEur <= activePlan.budgetEur;
+      this._savePersistedPlan(activePlan);
     }
-    return this._lastGeneratedPlan;
+
+    return activePlan;
   }
 }
 

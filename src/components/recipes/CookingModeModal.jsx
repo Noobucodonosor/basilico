@@ -9,15 +9,31 @@ const HEAT_SOURCE_LABELS = {
   boat_no_stove: '⛵ Cambusa Barca / Borsa Termica (Zero Fornelli)'
 };
 
-export function CookingModeModal({ dishId, initialServings = 1, activeProfileId, onClose, onLabNoteSaved }) {
+export function CookingModeModal({
+  dishId,
+  initialServings = 1,
+  activeProfileId,
+  onClose,
+  onLabNoteSaved,
+  onPantryConsumed
+}) {
   const [session, setSession] = useState(null);
-  const [heatSource, setHeatSource] = useState('gas');
+  const [selectedHeatSource, setSelectedHeatSource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [activeTimers, setActiveTimers] = useState({});
   const [isLabModalOpen, setIsLabModalOpen] = useState(false);
   const [pantryConsumeResult, setPantryConsumeResult] = useState(null);
   const [consumingPantry, setConsumingPantry] = useState(false);
+
+  const effectiveHeatSource = selectedHeatSource || session?.heatSource || 'gas';
+
+  useEffect(() => {
+    setSelectedHeatSource(null);
+    setActiveTimers({});
+    setCheckedIngredients({});
+    setPantryConsumeResult(null);
+  }, [dishId]);
 
   const handleConsumeFromPantry = async () => {
     if (!session?.dish || consumingPantry) return;
@@ -35,7 +51,9 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
         })
       });
       if (res.ok) {
-        setPantryConsumeResult(await res.json());
+        const result = await res.json();
+        setPantryConsumeResult(result);
+        if (onPantryConsumed) onPantryConsumed(result);
       }
     } catch (_) {}
     setConsumingPantry(false);
@@ -44,28 +62,42 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
   useEffect(() => {
     if (!dishId) return;
     setLoading(true);
-    fetch(
-      `/api/recipes/${encodeURIComponent(dishId)}/cooking-session?heatSource=${encodeURIComponent(
-        heatSource
-      )}&servings=${initialServings}&profileId=${encodeURIComponent(activeProfileId || 'dany')}`
-    )
+    const params = new URLSearchParams({
+      servings: String(initialServings),
+      profileId: activeProfileId || 'dany'
+    });
+    if (selectedHeatSource) {
+      params.set('heatSource', selectedHeatSource);
+    }
+    fetch(`/api/recipes/${encodeURIComponent(dishId)}/cooking-session?${params.toString()}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data) {
           setSession(data);
-          const timersInit = {};
-          (data.scientificSteps || []).forEach((s) => {
-            timersInit[s.stepNumber] = {
-              remaining: s.durationSeconds || 120,
-              running: false,
-              total: s.durationSeconds || 120
-            };
+          setActiveTimers((prev) => {
+            const next = {};
+            (data.scientificSteps || []).forEach((s) => {
+              const defaultDur = s.durationSeconds || 120;
+              const existing = prev[s.stepNumber];
+              if (existing) {
+                next[s.stepNumber] = {
+                  ...existing,
+                  total: defaultDur
+                };
+              } else {
+                next[s.stepNumber] = {
+                  remaining: defaultDur,
+                  running: false,
+                  total: defaultDur
+                };
+              }
+            });
+            return next;
           });
-          setActiveTimers(timersInit);
         }
       })
       .finally(() => setLoading(false));
-  }, [dishId, heatSource, initialServings, activeProfileId]);
+  }, [dishId, selectedHeatSource, initialServings, activeProfileId]);
 
   // Countdown tick for active step timers
   useEffect(() => {
@@ -91,12 +123,19 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
 
   if (!dishId) return null;
 
-  const toggleTimer = (stepNum) => {
+  const toggleTimer = (stepNum, fallbackSeconds = 120) => {
     setActiveTimers((prev) => {
-      const cur = prev[stepNum] || { remaining: 120, total: 120, running: false };
+      const cur = prev[stepNum] || { remaining: fallbackSeconds, total: fallbackSeconds, running: false };
+      if (cur.running) {
+        return {
+          ...prev,
+          [stepNum]: { ...cur, running: false }
+        };
+      }
+      const nextRemaining = cur.remaining <= 0 ? cur.total || fallbackSeconds : cur.remaining;
       return {
         ...prev,
-        [stepNum]: { ...cur, running: !cur.running }
+        [stepNum]: { ...cur, remaining: nextRemaining, running: true }
       };
     });
   };
@@ -146,8 +185,8 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
           <div className="flex flex-wrap items-center justify-end gap-2 self-stretch sm:self-center">
             <select
               aria-label="Seleziona Piano Cottura"
-              value={heatSource}
-              onChange={(e) => setHeatSource(e.target.value)}
+              value={effectiveHeatSource}
+              onChange={(e) => setSelectedHeatSource(e.target.value)}
               className="text-xs font-bold bg-slate-800 text-white border border-slate-700 rounded-lg px-3 py-2 cursor-pointer"
             >
               {Object.entries(HEAT_SOURCE_LABELS).map(([k, label]) => (
@@ -298,7 +337,7 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
                           </span>
                           <button
                             type="button"
-                            onClick={() => toggleTimer(st.stepNumber)}
+                            onClick={() => toggleTimer(st.stepNumber, st.durationSeconds || 120)}
                             className={`px-2.5 py-1 rounded text-[11px] font-extrabold text-white cursor-pointer ${
                               timer.running ? 'bg-amber-600' : 'bg-emerald-600 hover:bg-emerald-700'
                             }`}
@@ -368,7 +407,7 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
       <LabNotebookModal
         isOpen={isLabModalOpen}
         dish={session?.dish}
-        heatSource={heatSource}
+        heatSource={effectiveHeatSource}
         onClose={() => setIsLabModalOpen(false)}
         onSaved={(entry) => {
           if (onLabNoteSaved) onLabNoteSaved(entry);

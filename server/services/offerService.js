@@ -133,16 +133,39 @@ export function getSortComparator(sortBy) {
 
 const _enrichedOfferMemo = new WeakMap();
 const _enrichedOfferByIdMemo = new Map();
+let _enrichmentMutationEpoch = 1;
+
+export function bumpEnrichmentEpoch() {
+  _enrichmentMutationEpoch++;
+  _enrichedOfferByIdMemo.clear();
+  return _enrichmentMutationEpoch;
+}
+
+export function getEnrichmentEpoch() {
+  return _enrichmentMutationEpoch;
+}
 
 /**
  * Enriches an offer record with domain taxonomy, normalized €/kg pricing, and quality lens metadata.
- * Uses both a WeakMap and an ID/title signature Map so repeated disk cache reads are O(1) instant.
+ * Uses both a WeakMap and an ID/title signature Map so repeated disk cache reads are O(1) instant,
+ * while invalidating immediately when price history, CREA manual overrides, or user profiles mutate.
  */
 export function enrichOfferRecord(offer = {}, profileId = null) {
   if (!offer || typeof offer !== 'object') return offer;
 
-  const obsCount = priceHistoryService._observations?.length || 0;
-  const cacheKey = `${profileId || '__default__'}:${obsCount}`;
+  // Ensure lazy singletons are initialized before computing memo key (prevents cold-start :0 vs :N mismatch)
+  priceHistoryService._load?.();
+  userProfileService._load?.();
+  creaOfferMatcher._loadOverrides?.();
+
+  const resolvedProfileKey =
+    typeof profileId === 'object' && profileId !== null
+      ? (profileId.id || '__custom__')
+      : (profileId || userProfileService.getProfilesState?.()?.activeProfileId || '__default__');
+  const phVer = priceHistoryService.getMutationVersion?.() ?? (priceHistoryService._observations?.length || 0);
+  const creaVer = creaOfferMatcher.getMutationVersion?.() ?? 0;
+  const profVer = userProfileService.getMutationVersion?.() ?? 0;
+  const cacheKey = `${resolvedProfileKey}:e${_enrichmentMutationEpoch}:ph${phVer}:cr${creaVer}:pr${profVer}`;
 
   let cachedByProfile = _enrichedOfferMemo.get(offer);
   if (cachedByProfile && cachedByProfile.has(cacheKey)) {
@@ -360,51 +383,21 @@ export class OfferService {
    */
   processQuery(query = {}, offers = []) {
     const profileId = query.profileId || null;
-    let filtered = offers.map((o) => enrichOfferRecord(o, profileId));
+    let baseFiltered = offers.map((o) => enrichOfferRecord(o, profileId));
 
     // Optional profile filtering when hideIncompatible=true or profile has hard_ban enabled and profileId is explicitly requested
     if (query.hideIncompatible === 'true' || query.hideIncompatible === true) {
-      filtered = filtered.filter((o) => o.profileCompatibility?.isCompatible !== false);
+      baseFiltered = baseFiltered.filter((o) => o.profileCompatibility?.isCompatible !== false);
     } else if (profileId && query.enforceProfileBan === 'true') {
-      filtered = filtered.filter((o) => o.profileCompatibility?.action !== 'hide');
+      baseFiltered = baseFiltered.filter((o) => o.profileCompatibility?.action !== 'hide');
     }
 
-    // 0. Domain filtering (food_human, home_cleaning, kitchen_cookware, personal_care, pet_care)
-    if (query.domain && typeof query.domain === 'string' && query.domain.trim()) {
-      const dom = query.domain.trim();
-      filtered = filtered.filter((o) => o.domain === dom);
-    }
-
-    // 1. Store filtering (supports exact ID and rapallo- prefix alias)
-    if (query.storeId && typeof query.storeId === 'string' && query.storeId.trim()) {
-      const sId = query.storeId.trim();
-      filtered = filtered.filter(
-        (o) =>
-          o.storeId === sId ||
-          o.storeId === sId.replace(/^rapallo-/, '') ||
-          `rapallo-${o.storeId}` === sId ||
-          o.chainId === sId
-      );
-    }
-
-    // 2. Category filtering (exact and normalized match)
-    if (query.category && typeof query.category === 'string' && query.category.trim()) {
-      const cat = query.category.trim();
-      const catNorm = normalizeSearchToken(cat);
-      filtered = filtered.filter(
-        (o) =>
-          o.category === cat ||
-          normalizeSearchToken(o.category) === catNorm ||
-          o.categorySlug === cat
-      );
-    }
-
-    // 3. Keyword search (q or query) with accent & case insensitivity
+    // Non-facet base filters: keyword search, minDiscount, maxPrice, onlyActive
     const rawQ = query.q || query.query;
     if (rawQ && typeof rawQ === 'string' && rawQ.trim()) {
       const normalizedQ = normalizeSearchToken(rawQ);
       if (normalizedQ.length > 0) {
-        filtered = filtered.filter((o) => {
+        baseFiltered = baseFiltered.filter((o) => {
           const itemText = o._searchNorm || normalizeSearchToken(
             `${o.title} ${o.brand || ''} ${o.category || ''} ${o.description || ''}`
           );
@@ -413,7 +406,6 @@ export class OfferService {
       }
     }
 
-    // 4. Min discount percentage filter (graceful handling of negative & NaN)
     if (
       query.minDiscount !== undefined &&
       query.minDiscount !== null &&
@@ -422,11 +414,10 @@ export class OfferService {
       const minDisc = parseInt(query.minDiscount, 10);
       if (!isNaN(minDisc)) {
         const clampedDisc = Math.max(0, minDisc);
-        filtered = filtered.filter((o) => (o.discountPercentage || 0) >= clampedDisc);
+        baseFiltered = baseFiltered.filter((o) => (o.discountPercentage || 0) >= clampedDisc);
       }
     }
 
-    // 5. Max price threshold filter
     if (
       query.maxPrice !== undefined &&
       query.maxPrice !== null &&
@@ -434,27 +425,66 @@ export class OfferService {
     ) {
       const maxP = parseFloat(query.maxPrice);
       if (!isNaN(maxP) && maxP >= 0) {
-        filtered = filtered.filter((o) => (o.promoPrice ?? o.discountPrice ?? 0) <= maxP);
+        baseFiltered = baseFiltered.filter((o) => (o.promoPrice ?? o.discountPrice ?? 0) <= maxP);
       }
     }
 
-    // 6. Active date validity filter (optional)
     if (query.onlyActive === true || query.onlyActive === 'true') {
       const now = Date.now();
-      filtered = filtered.filter((o) => {
+      baseFiltered = baseFiltered.filter((o) => {
         const end = o.validityEnd || o.validTo;
         if (!end) return true;
         return new Date(end).getTime() >= now;
       });
     }
 
-    // 7. Sorting
+    // Dimension predicates (orthogonal facet calculation so sibling pills never zero out!)
+    const domFilter = query.domain && typeof query.domain === 'string' ? query.domain.trim() : '';
+    const storeFilter = query.storeId && typeof query.storeId === 'string' ? query.storeId.trim() : '';
+    const catFilter = query.category && typeof query.category === 'string' ? query.category.trim() : '';
+    const catNorm = catFilter ? normalizeSearchToken(catFilter) : '';
+
+    const matchesDomain = (o) => !domFilter || o.domain === domFilter;
+    const matchesStore = (o) =>
+      !storeFilter ||
+      o.storeId === storeFilter ||
+      o.storeId === storeFilter.replace(/^rapallo-/, '') ||
+      `rapallo-${o.storeId}` === storeFilter ||
+      o.chainId === storeFilter;
+    const matchesCategory = (o) =>
+      !catFilter ||
+      o.category === catFilter ||
+      normalizeSearchToken(o.category) === catNorm ||
+      o.categorySlug === catFilter;
+
+    let filtered = baseFiltered.filter((o) => matchesDomain(o) && matchesStore(o) && matchesCategory(o));
+
+    // Orthogonal facets: each dimension reflects baseFiltered + all OTHER active dimensions
+    const domainSlice = domFilter
+      ? baseFiltered.filter((o) => matchesStore(o) && matchesCategory(o))
+      : filtered;
+    const categorySlice = catFilter
+      ? baseFiltered.filter((o) => matchesDomain(o) && matchesStore(o))
+      : filtered;
+    const storeSlice = storeFilter
+      ? baseFiltered.filter((o) => matchesDomain(o) && matchesCategory(o))
+      : filtered;
+
+    const baseFacets = computeFacets(filtered);
+    const facets = {
+      domains: domFilter ? computeFacets(domainSlice).domains : baseFacets.domains,
+      categories: catFilter ? computeFacets(categorySlice).categories : baseFacets.categories,
+      stores: storeFilter ? computeFacets(storeSlice).stores : baseFacets.stores,
+      discountRanges: baseFacets.discountRanges
+    };
+
+    // Sorting
     const comparator = getSortComparator(query.sortBy);
     if (comparator) {
       filtered.sort(comparator);
     }
 
-    // 8. Pagination (1-indexed page, limit clamped to 1..100)
+    // Pagination (1-indexed page, limit clamped to 1..100)
     const page = Math.max(1, parseInt(query.page || '1', 10) || DEFAULT_PAGE);
     const limit = Math.max(
       1,
@@ -464,9 +494,6 @@ export class OfferService {
     // CRITICAL: When totalOffers is 0, totalPages must be 0
     const totalPages = totalOffers === 0 ? 0 : Math.ceil(totalOffers / limit);
     const paginated = filtered.slice((page - 1) * limit, page * limit);
-
-    // 9. Facets calculation
-    const facets = computeFacets(filtered);
 
     return {
       offers: paginated,

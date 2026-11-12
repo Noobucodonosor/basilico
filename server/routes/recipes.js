@@ -41,7 +41,8 @@ router.get('/', async (req, res) => {
 router.get('/8020', async (req, res) => {
   try {
     const result = await recipeAndArbitrageService.computeMaxCoverage8020({
-      topK: req.query.topK
+      topK: req.query.topK,
+      profileId: req.query.profileId
     });
     res.json(result);
   } catch (err) {
@@ -68,7 +69,10 @@ router.get('/lab-notes', (req, res) => {
  */
 router.post('/deconstruct', async (req, res) => {
   try {
-    const dish = await recipeAndArbitrageService.deconstructCustomMenuDish(req.body || {});
+    const dish = await recipeAndArbitrageService.deconstructCustomMenuDish({
+      ...(req.body || {}),
+      profileId: req.body?.profileId || req.query?.profileId
+    });
     res.status(201).json({ dish });
   } catch (err) {
     res.status(err.status || 400).json({ error: err.message });

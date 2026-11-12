@@ -49,17 +49,23 @@ const DOMAIN_ALLOWED_CATEGORIES = {
   ]
 };
 
+const VALID_ROOM_IDS = new Set(BASILICO_ROOMS.map((r) => r.id));
+
+function normalizeRoomId(roomId) {
+  return roomId && VALID_ROOM_IDS.has(roomId) ? roomId : 'room-1-negozi';
+}
+
 export function App() {
   // 1. Initial State from URL
   const initialParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
-  const initialRoom = initialParams.get('room') || 'room-1-negozi';
+  const initialRoom = normalizeRoomId(initialParams.get('room'));
   const initialStore = initialParams.get('store') || null;
   const initialDomain = initialParams.get('domain') || null;
   const initialQuery = initialParams.get('q') || '';
   const initialCategory = initialParams.get('category') || null;
   const initialSort = initialParams.get('sortBy') || 'discountDesc';
 
-  const [activeRoom, setActiveRoom] = useState(initialRoom);
+  const [activeRoom, setActiveRoomState] = useState(initialRoom);
   const [selectedStoreId, setSelectedStoreId] = useState(initialStore);
   const [selectedDomain, setSelectedDomain] = useState(initialDomain);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
@@ -71,10 +77,23 @@ export function App() {
   const [activeProfileId, setActiveProfileId] = useState('dany');
   const [profilesReady, setProfilesReady] = useState(false);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
-  const [counterDefaultStoreId, setCounterDefaultStoreId] = useState(null);
+  const [counterDefaultStoreId, setCounterDefaultStoreId] = useState('');
   const [localShops, setLocalShops] = useState([]);
   const [counterObservations, setCounterObservations] = useState([]);
   const [selectedCreaFoodId, setSelectedCreaFoodId] = useState(null);
+
+  const setActiveRoom = useCallback((nextRoom) => {
+    const normalized = normalizeRoomId(nextRoom);
+    setActiveRoomState((prev) => {
+      if (prev === 'room-2-crea' && normalized !== 'room-2-crea') {
+        setSelectedCreaFoodId(null);
+      }
+      if (normalized !== 'room-1-negozi') {
+        setIsMobileSearchOpen(false);
+      }
+      return normalized;
+    });
+  }, []);
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [activeFlyer, setActiveFlyer] = useState(null);
@@ -218,18 +237,44 @@ export function App() {
     return profiles.find((p) => p.id === activeProfileId) || null;
   }, [profiles, activeProfileId]);
 
-  // Active flyer for selected store
-  const currentStoreFlyer = useMemo(() => {
-    if (!selectedStoreId) return null;
-    return flyers.find((f) => f.storeId === selectedStoreId) || null;
+  // All active flyers for selected store (supports multi-flyer stores: 1st, 2nd, 3rd flyer)
+  const currentStoreFlyers = useMemo(() => {
+    if (!selectedStoreId) return [];
+    return flyers.filter(
+      (f) =>
+        f.storeId === selectedStoreId ||
+        (Array.isArray(f.storeIds) && f.storeIds.includes(selectedStoreId))
+    );
   }, [flyers, selectedStoreId]);
+
+  const handleOpenOfferFlyer = useCallback(
+    (item) => {
+      const exactFlyer =
+        (item?.flyerId && flyers.find((f) => String(f.id) === String(item.flyerId))) ||
+        (item?.storeId &&
+          flyers.find(
+            (f) =>
+              f.storeId === item.storeId ||
+              (Array.isArray(f.storeIds) && f.storeIds.includes(item.storeId))
+          )) ||
+        null;
+      if (exactFlyer) {
+        setActiveFlyer({
+          ...exactFlyer,
+          initialPage: Number(item?.pageNumber) >= 1 ? Number(item.pageNumber) : 1,
+          highlightOfferId: item?.id || null
+        });
+      }
+    },
+    [flyers]
+  );
 
   // 5. Active filter count calculation (Contract 12.4)
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (searchQuery.trim().length > 0) count++;
-    if (selectedCategory !== null) count++;
-    if (selectedDomain !== null) count++;
+    if (selectedCategory) count++;
+    if (selectedDomain) count++;
     return count;
   }, [searchQuery, selectedCategory, selectedDomain]);
 
@@ -330,8 +375,6 @@ export function App() {
     }
   }, []);
 
-  const currentRoomMeta = BASILICO_ROOMS.find((r) => r.id === activeRoom) || BASILICO_ROOMS[0];
-
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
       {/* Offline / Stale Cache Warning Banner */}
@@ -347,6 +390,7 @@ export function App() {
       {/* Responsive Header */}
       <Header
         status={status}
+        activeRoom={activeRoom}
         activeStoreName={activeStoreName}
         isMobileSearchOpen={isMobileSearchOpen}
         onToggleMobileSearch={() => setIsMobileSearchOpen((prev) => !prev)}
@@ -356,7 +400,10 @@ export function App() {
         profiles={profiles}
         activeProfileId={activeProfileId}
         onChangeProfile={handleChangeProfile}
-        onOpenCounterPriceModal={() => setIsCounterModalOpen(true)}
+        onOpenCounterPriceModal={() => {
+          setCounterDefaultStoreId('');
+          setIsCounterModalOpen(true);
+        }}
         shoppingCount={shoppingCount}
         onOpenShoppingList={() => setActiveRoom('room-6-pianificatore')}
       />
@@ -413,13 +460,6 @@ export function App() {
                     />
                     <span>Nascondi prodotti esclusi</span>
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setIsCounterModalOpen(true)}
-                    className="sm:hidden px-2.5 py-1 text-xs font-bold bg-amber-400 text-slate-900 rounded-lg"
-                  >
-                    🏷️ Prezzo al banco
-                  </button>
                 </div>
               </section>
             )}
@@ -487,21 +527,30 @@ export function App() {
                 </div>
 
                 <div className="flex flex-col items-start sm:items-end gap-1.5">
-                  {currentStoreFlyer && (
-                    <button
-                      type="button"
-                      onClick={() => handleOpenFlyer(currentStoreFlyer)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                      <span>Sfoglia volantino ({currentStoreFlyer.pageCount} pag.)</span>
-                    </button>
+                  {currentStoreFlyers.length > 0 && (
+                    <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2">
+                      {currentStoreFlyers.map((flyerItem, idx) => (
+                        <button
+                          key={flyerItem.id || idx}
+                          type="button"
+                          onClick={() => handleOpenFlyer(flyerItem)}
+                          className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer"
+                        >
+                          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                          <span>
+                            {currentStoreFlyers.length > 1
+                              ? `Volantino ${idx + 1}: ${flyerItem.title || 'Sfoglia'} (${flyerItem.pageCount} pag.)`
+                              : `Sfoglia volantino (${flyerItem.pageCount} pag.)`}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   )}
-                  {currentStoreFlyer?.upstreamIndexedCap && (
+                  {currentStoreFlyers.some((f) => f.upstreamIndexedCap) && (
                     <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium">
-                      ℹ️ Nota trasparenza: PromoQui indicizza max {currentStoreFlyer.upstreamIndexedCap} prodotti per volantino (verificato prov. GE)
+                      ℹ️ Nota trasparenza: PromoQui indicizza max {currentStoreFlyers.find((f) => f.upstreamIndexedCap)?.upstreamIndexedCap} prodotti per volantino (verificato prov. GE)
                     </span>
                   )}
                 </div>
@@ -582,7 +631,9 @@ export function App() {
                 <EmptyState
                   searchQuery={searchQuery}
                   selectedCategory={selectedCategory}
+                  selectedDomain={selectedDomain}
                   selectedStoreName={activeStore ? activeStore.name : null}
+                  hideIncompatible={hideIncompatible}
                   onClearFilters={handleClearFilters}
                   onApplyQuery={(term) => setSearchQuery(term)}
                 />
@@ -599,24 +650,7 @@ export function App() {
                     setSelectedCreaFoodId(creaId);
                     setActiveRoom('room-2-crea');
                   }}
-                  onOpenFlyer={(item) => {
-                    const exactFlyer =
-                      (item?.flyerId && flyers.find((f) => String(f.id) === String(item.flyerId))) ||
-                      flyers.find(
-                        (f) =>
-                          f.storeId === item?.storeId ||
-                          (Array.isArray(f.storeIds) && f.storeIds.includes(item?.storeId))
-                      ) ||
-                      flyers[0] ||
-                      null;
-                    if (exactFlyer) {
-                      setActiveFlyer({
-                        ...exactFlyer,
-                        initialPage: Number(item?.pageNumber) >= 1 ? Number(item.pageNumber) : 1,
-                        highlightOfferId: item?.id || null
-                      });
-                    }
-                  }}
+                  onOpenFlyer={handleOpenOfferFlyer}
                   onResetFilters={handleClearFilters}
                 />
               )}
@@ -637,7 +671,7 @@ export function App() {
                   <button
                     type="button"
                     onClick={() => {
-                      setCounterDefaultStoreId(null);
+                      setCounterDefaultStoreId('');
                       setIsCounterModalOpen(true);
                     }}
                     className="px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer shrink-0"
@@ -685,9 +719,9 @@ export function App() {
                             <div className="font-extrabold text-emerald-800">
                               € {Number(obs.price || 0).toFixed(2).replace('.', ',')}
                             </div>
-                            {obs.ediblePricePerKg ? (
+                            {(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg) ? (
                               <div className="text-[10px] text-slate-600">
-                                {Number(obs.ediblePricePerKg).toFixed(2).replace('.', ',')} €/kg
+                                {Number(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg).toFixed(2).replace('.', ',')} €/{obs.referenceUnit || 'kg'}
                               </div>
                             ) : null}
                           </div>
@@ -700,15 +734,23 @@ export function App() {
             )}
           </main>
         </>
+      ) : !profilesReady ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-slate-500">
+          Sincronizzazione profilo attivo in corso...
+        </main>
       ) : activeRoom === 'room-2-crea' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <CreaExplorerView
             activeProfileId={activeProfileId}
             initialFoodId={selectedCreaFoodId}
+            onCloseInitialFood={() => setSelectedCreaFoodId(null)}
             onAddToShoppingList={handleAddToShoppingList}
-            onNavigateToOfferStore={(storeId, productTitle) => {
+            onNavigateToOfferStore={(storeId) => {
               setSelectedStoreId(storeId || null);
-              setSearchQuery(productTitle || '');
+              setSelectedDomain('food_human');
+              setSelectedCategory('');
+              setSearchQuery('');
+              setSelectedCreaFoodId(null);
               setActiveRoom('room-1-negozi');
             }}
           />
@@ -717,6 +759,8 @@ export function App() {
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <RecipesAndRestaurantsView
             activeProfileId={activeProfileId}
+            onAddToShoppingList={handleAddToShoppingList}
+            onPantryUpdated={refreshShoppingCount}
             onOpenCreaFood={(creaId) => {
               setSelectedCreaFoodId(creaId);
               setActiveRoom('room-2-crea');
@@ -728,7 +772,9 @@ export function App() {
           <KitchenCareView
             onAddToShoppingList={handleAddToShoppingList}
             onNavigateToStoreDomain={(domainId) => {
-              handleSelectDomain(domainId);
+              setSelectedDomain(domainId || null);
+              setSelectedCategory('');
+              setSearchQuery('');
               setSelectedStoreId(null);
               setActiveRoom('room-1-negozi');
             }}
@@ -736,28 +782,20 @@ export function App() {
         </main>
       ) : activeRoom === 'room-5-dispensa' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <PantryAndReceiptsView stores={stores} />
+          <PantryAndReceiptsView
+            stores={stores}
+            onPantryUpdated={refreshShoppingCount}
+          />
         </main>
       ) : activeRoom === 'room-6-pianificatore' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <PlannerAndShoppingView
             activeProfileId={activeProfileId}
             onShoppingListChange={setShoppingCount}
+            onPantryUpdated={refreshShoppingCount}
           />
         </main>
-      ) : (
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-3">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">{currentRoomMeta.icon}</span>
-              <div>
-                <h2 className="text-xl font-extrabold text-slate-900">{currentRoomMeta.fullTitle}</h2>
-                <p className="text-sm text-slate-500">{currentRoomMeta.subtitle}</p>
-              </div>
-            </div>
-          </div>
-        </main>
-      )}
+      ) : null}
 
       {/* Modal Flyer Viewer */}
       {activeFlyer && (
@@ -773,6 +811,7 @@ export function App() {
         isOpen={isCounterModalOpen}
         onClose={() => setIsCounterModalOpen(false)}
         stores={stores}
+        localShops={localShops}
         defaultStoreId={counterDefaultStoreId}
         onSaved={() => {
           refetchOffers();

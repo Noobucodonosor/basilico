@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-export function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
+export function CreaFoodModal({
+  foodId,
+  activeProfileId = 'dany',
+  isOpen,
+  onClose,
+  onSelectOfferStore
+}) {
   const [sheet, setSheet] = useState(null);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState('100g_edible');
@@ -9,23 +15,55 @@ export function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
   const [per100gCooked, setPer100gCooked] = useState(false);
   const [activeSection, setActiveSection] = useState('ALL');
 
+  // Reset calculation controls when inspecting a different food
   useEffect(() => {
-    if (!isOpen || !foodId) return;
+    setMode('100g_edible');
+    setCustomGrams(100);
+    setCookingState('as_is');
+    setPer100gCooked(false);
+    setActiveSection('ALL');
+  }, [foodId]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen || !foodId) return undefined;
+    const controller = new AbortController();
     setLoading(true);
+    const effectivePer100gCooked = mode === '100g_edible' && cookingState === 'cooked_from_raw' && per100gCooked;
     const params = new URLSearchParams({
       mode,
       grams: String(customGrams || 100),
       state: cookingState,
-      per100gCooked: String(per100gCooked)
+      per100gCooked: String(effectivePer100gCooked)
     });
-    fetch(`/api/crea/foods/${encodeURIComponent(foodId)}?${params.toString()}`)
+    if (activeProfileId) {
+      params.set('profileId', activeProfileId);
+    }
+    fetch(`/api/crea/foods/${encodeURIComponent(foodId)}?${params.toString()}`, {
+      signal: controller.signal
+    })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data) setSheet(data);
+        if (data && !controller.signal.aborted) setSheet(data);
       })
       .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [foodId, isOpen, mode, customGrams, cookingState, per100gCooked]);
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [foodId, activeProfileId, isOpen, mode, customGrams, cookingState, per100gCooked]);
 
   if (!isOpen || !foodId) return null;
 
@@ -89,7 +127,12 @@ export function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
                 <button
                   key={opt.id}
                   type="button"
-                  onClick={() => setMode(opt.id)}
+                  onClick={() => {
+                    setMode(opt.id);
+                    if (opt.id !== '100g_edible') {
+                      setPer100gCooked(false);
+                    }
+                  }}
                   className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                     mode === opt.id
                       ? 'bg-emerald-700 text-white border-emerald-700'
@@ -114,7 +157,7 @@ export function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
 
             {/* Physical Raw <-> Cooked Switch */}
             {sheet?.yieldFactor && sheet.yieldFactor.multiplier !== 1.0 && (
-              <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
+              <div className="flex flex-wrap items-center gap-2 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
                 <label className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 cursor-pointer">
                   <input
                     type="checkbox"
@@ -122,12 +165,23 @@ export function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
                     onChange={(e) => {
                       const checked = e.target.checked;
                       setCookingState(checked ? 'cooked_from_raw' : 'as_is');
-                      setPer100gCooked(checked);
+                      if (!checked) setPer100gCooked(false);
                     }}
                     className="rounded border-amber-400 text-amber-600"
                   />
                   <span>🔥 Converti in Cotto (Resa Y={sheet.yieldFactor.multiplier}x)</span>
                 </label>
+                {cookingState === 'cooked_from_raw' && mode === '100g_edible' && (
+                  <label className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 border-l border-amber-300 pl-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={per100gCooked}
+                      onChange={(e) => setPer100gCooked(e.target.checked)}
+                      className="rounded border-amber-400 text-amber-600"
+                    />
+                    <span>per 100 g di cotto</span>
+                  </label>
+                )}
               </div>
             )}
           </div>
@@ -137,7 +191,12 @@ export function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
               <span>
                 Peso edibile crudo di partenza: <strong>{sheet.calculationContext.effectiveEdibleGramsRaw} g</strong>
                 {sheet.yieldFactor?.multiplier !== 1.0 && (
-                  <> → Peso cotto risultante nel piatto: <strong>{sheet.calculationContext.resultingCookedWeightGrams} g</strong> ({sheet.yieldFactor.method})</>
+                  <>
+                    {' '}→ Peso cotto risultante nel piatto: <strong>{sheet.calculationContext.resultingCookedWeightGrams} g</strong> ({sheet.yieldFactor.method})
+                    {sheet.calculationContext.per100gCooked && (
+                      <span className="ml-1 text-amber-800 font-bold">• Valori riferiti a 100 g di cotto</span>
+                    )}
+                  </>
                 )}
               </span>
               <span>
@@ -181,40 +240,56 @@ export function CreaFoodModal({ foodId, isOpen, onClose, onSelectOfferStore }) {
           ) : (
             <>
               {/* Matching Rapallo Supermarket Offers Bridge */}
-              {sheet?.matchingRapalloOffers?.length > 0 && (
-                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2">
-                  <div className="text-xs font-extrabold text-emerald-900">
-                    🏪 Offerte Attive a Rapallo collegate a questo alimento CREA ({sheet.matchingRapalloOffers.length}):
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {sheet.matchingRapalloOffers.map((off) => (
-                      <div
-                        key={off.id}
-                        className="p-2.5 rounded-lg bg-white border border-emerald-200 flex items-center justify-between gap-2 text-xs"
-                      >
-                        <div className="min-w-0">
-                          <div className="font-bold text-slate-900 truncate">{off.title}</div>
-                          <div className="text-[11px] text-slate-500">
-                            {off.brand} • <strong>€ {Number(off.promoPrice).toFixed(2)}</strong> ({off.formattedNormalizedPrice || off.unitPrice})
-                          </div>
-                        </div>
-                        {onSelectOfferStore && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              onClose();
-                              onSelectOfferStore(off.storeId, off.title);
-                            }}
-                            className="px-2 py-1 bg-emerald-700 text-white rounded text-[11px] font-bold shrink-0 cursor-pointer"
+              {(() => {
+                const visibleOffers = (sheet?.matchingRapalloOffers || []).filter(
+                  (off) => off.profileCompatibility?.action !== 'hide'
+                );
+                if (visibleOffers.length === 0) return null;
+                return (
+                  <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2">
+                    <div className="text-xs font-extrabold text-emerald-900">
+                      🏪 Offerte Attive a Rapallo collegate a questo alimento CREA ({visibleOffers.length}):
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {visibleOffers.map((off) => {
+                        const flagged = off.profileCompatibility && off.profileCompatibility.isCompatible === false;
+                        return (
+                          <div
+                            key={off.id}
+                            className={`p-2.5 rounded-lg bg-white border flex items-center justify-between gap-2 text-xs ${
+                              flagged ? 'border-amber-300 opacity-85' : 'border-emerald-200'
+                            }`}
                           >
-                            Vai in Stanza 1 →
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                            <div className="min-w-0">
+                              <div className="font-bold text-slate-900 truncate">
+                                {off.title}
+                                {flagged && (
+                                  <span className="ml-1.5 text-[10px] text-amber-700 font-bold">⚠️ Profilo</span>
+                                )}
+                              </div>
+                              <div className="text-[11px] text-slate-500">
+                                {off.brand} • <strong>€ {Number(off.promoPrice).toFixed(2)}</strong> ({off.formattedNormalizedPrice || off.unitPrice || 'prezzo cassa'})
+                              </div>
+                            </div>
+                            {onSelectOfferStore && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onClose();
+                                  onSelectOfferStore(off.storeId, off.title);
+                                }}
+                                className="px-2 py-1 bg-emerald-700 text-white rounded text-[11px] font-bold shrink-0 cursor-pointer"
+                              >
+                                Vai in Stanza 1 →
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Academic Nutrient Tables */}
               {sectionNames

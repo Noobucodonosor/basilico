@@ -43,7 +43,7 @@ const GRANULAR_INGREDIENT_PACK_RULES = [
   { key: 'milk', regex: /^latte\b|\blatte\s+(?:intero|parzialmente|uht|fresco)\b/, packGrams: 1000, euroPerKg: 1.55 },
   { key: 'eggs', regex: /^(?!.*\b(?:pasta|sfoglia|tagliatell\w*|tagliolin\w*|lasagn\w*|biscott\w*|maionese)\b).*\b(uov\w*|albume|tuorlo)\b/, packGrams: 360, euroPerKg: 6.2 },
   { key: 'bread_bakery', regex: /\b(pane|focaccia|fette biscottate|gallett\w*|crostin\w*|panino|ciabatta)\b/, packGrams: 300, euroPerKg: 4.8 },
-  { key: 'canned_fish', regex: /\b(tonno\s+(?:sott|al\s+naturale|in\s+olio|sgocciolat\w*)|sgombro\s+(?:al\s+naturale|sott|sgocciolat\w*)|filetti\s+di\s+sgombro\s+(?:al\s+naturale|sgocciolat\w*))\b/, packGrams: 160, euroPerKg: 21.0 },
+  { key: 'canned_fish', regex: /\b(tonno\s+(?:sott|all\s*olio|al\s+naturale|in\s+olio|sgocciolat\w*)|sgombro\s+(?:al\s+naturale|sott|all\s*olio|in\s+olio|sgocciolat\w*)|filetti\s+di\s+sgombro\s+(?:al\s+naturale|sott|all\s*olio|in\s+olio|sgocciolat\w*))\b/, packGrams: 160, euroPerKg: 21.0 },
   { key: 'smoked_cured', regex: /\b(salmone\s+affumicato|bresaola|prosciutto|speck|pancetta|guanciale|salame|mortadella)\b/, packGrams: 100, euroPerKg: 28.5 },
   { key: 'luxury_crustaceans', regex: /\b(astice|aragosta|gamber\w*\s+viol\w*|scamp\w*\s+reali)\b/, packGrams: 250, euroPerKg: 58.0 },
   { key: 'fresh_fish', regex: /\b(acciug\w*|alici|orata|branzino|spigola|salmone|tonno|sgombro|palamita|seppi\w*|calamar\w*|polpo|gamber\w*|scamp\w*|cozz\w*|vongol\w*|pesce|pescato|baccala|stoccafisso|merluzzo|nasello|capesante|rombo|sogliola)\b/, packGrams: 250, euroPerKg: 19.5 },
@@ -78,10 +78,11 @@ const COMPOSITE_OFFER_HEADS = new Set([
 
 const LEADING_ARTICLES_SET = new Set(['il', 'lo', 'la', 'i', 'gli', 'le', 'l', 'un', 'uno', 'una']);
 const STOP_WORDS_BOM = new Set([
-  'di', 'del', 'dello', 'della', 'dei', 'degli', 'delle', 'al', 'allo', 'alla', 'ai', 'agli', 'alle',
+  'di', 'd', 'del', 'dello', 'della', 'dell', 'dei', 'degli', 'delle', 'al', 'allo', 'alla', 'ai', 'agli', 'alle',
   'in', 'con', 'da', 'per', 'su', 'o', 'e', 'fresco', 'fresca', 'freschi', 'fresche', 'crudo', 'cruda',
   'cotto', 'cotta', 'ligure', 'genovese', 'tigullio', 'riviera', 'italiano', 'italiana', 'dop', 'igp',
   'filetto', 'filetti', 'trancio', 'tranci', 'cuori', 'fette', 'bocconcini', 'spicchi', 'cubetti',
+  'fiocchi', 'crema', 'petto', 'code', 'fesa',
   'scolati', 'scolate', 'lessati', 'lessate', 'sgocciolato', 'sgocciolati', 'pulito', 'puliti'
 ]);
 
@@ -150,30 +151,71 @@ export function matchBomIngredientToOffer(workingItem = {}, activeOffers = []) {
 
   const bomWords = bomNorm.split(' ').filter(Boolean);
   const coreNoun = bomWords.find((w) => w.length >= 4 && !STOP_WORDS_BOM.has(w)) || bomWords[0];
-  const wantsCannedFish = /\b(sott\s*olio|al\s+naturale|sgocciolat\w*|scatola|vetro)\b/.test(bomNorm) || ['123610', '123550', '123010', '120020'].includes(String(workingItem.creaId));
-  const wantsRawOrFreshFish = !wantsCannedFish && /\b(tonno|sgombro|salmone|acciug\w*|alici|orata|branzino|spigola|merluzzo|polpo|calamar\w*|gamber\w*)\b/.test(bomNorm);
+  const wantsCannedFish =
+    /\b(sott\s*olio|all\s*olio|in\s+olio|al\s+naturale|sgocciolat\w*|scatola|vetro)\b/.test(bomNorm) ||
+    ['123610', '123550', '123010', '120020'].includes(String(workingItem.creaId));
+  const wantsRawOrFreshFish =
+    !wantsCannedFish &&
+    /\b(tonno|sgombro|salmone|acciug\w*|alici|orata|branzino|spigola|merluzzo|polpo|calamar\w*|gamber\w*)\b/.test(bomNorm);
   const wantsSmoked = /\b(affumicat\w*)\b/.test(bomNorm) || String(workingItem.creaId) === '122410';
   const wantsProsciuttoCrudo = /\bprosciutto\s+crudo\b/.test(bomNorm);
   const wantsProsciuttoCotto = /\bprosciutto\s+cotto\b/.test(bomNorm);
-  const wantsPassataOrPelati = /\b(passata|polpa|pelat\w*|san\s+marzano)\b/.test(bomNorm);
+  const isTomatoBom =
+    /\b(pomodor\w*|passata|salsa\s+di\s+pomodoro|conserva\s+di\s+pomodoro|polpa\s+di\s+pomodoro|san\s+marzano)\b/.test(bomNorm) ||
+    (/\bpelati\b/.test(bomNorm) && !/\b(mandorl\w*|nocciol\w*|arachid\w*|castagn\w*|mela|mele|agrume|gamber\w*|patat\w*)\b/.test(bomNorm));
+  const wantsPassataOrPelati = isTomatoBom && /\b(passata|polpa|pelat\w*|conserva|san\s+marzano)\b/.test(bomNorm);
+
+  const isNutOrDrySeedOrGrainBom =
+    /\b(mandorl\w*|noc[ie]|nocciol\w*|pinol\w*|pistacch\w*|anacard\w*|arachid\w*|pasta|spaghett\w*|riso|farro|avena|farina|ceci\s+secch\w*|fagiol\w*\s+secch\w*|lenticchi\w*\s+secch\w*|stoccafisso|baccala)\b/.test(bomNorm);
+  const bomWantsDried = /\b(secch[ioe]|disidratat\w*|essiccat\w*)\b/.test(bomNorm);
+  const bomWantsNaturalBrine =
+    /\bal\s+naturale\b/.test(bomNorm) ||
+    (String(workingItem.creaId) === '123550' && !/\b(sott\s*olio|all\s*olio|in\s+olio)\b/.test(bomNorm));
+  const bomWantsOilPacked =
+    (/\b(sott\s*olio|all\s*olio|in\s+olio)\b/.test(bomNorm) || ['123610', '120020'].includes(String(workingItem.creaId))) &&
+    !/\bal\s+naturale\b/.test(bomNorm);
+  const bomWantsDairyCream = /\b(crema\s+di\s+latte|panna)\b/.test(bomNorm);
 
   for (const off of activeOffers) {
     if (!off || off.isNamelessTile || (off.domain && off.domain !== 'food_human')) continue;
+    if (off.profileCompatibility?.isCompatible === false) continue;
 
     const { stripped, words: offWords } = extractOfferCoreWords(off);
     if (!stripped || offWords.length === 0) continue;
 
     const offHead = offWords[0];
+    const offFullNorm = normalizeSearchToken(`${off.title} ${off.brand || ''}`);
 
-    // Physical-state & cured-cut incompatibilities (checked even if CREA ID is shared)
-    const offIsCanned = /\b(rio\s+mare|angelo\s+parodi|asdomar|palmera|scatola|sott\s*olio|all\s*olio|in\s+olio|leggero|al\s+naturale)\b/.test(normalizeSearchToken(`${off.title} ${off.brand || ''}`));
+    // Physical-state, preservation medium & species incompatibilities (checked even if CREA ID is shared)
+    const offIsCanned = /\b(rio\s+mare|angelo\s+parodi|asdomar|palmera|scatola|sott\s*olio|all\s*olio|in\s+olio|leggero|al\s+naturale)\b/.test(offFullNorm);
     const offIsSmoked = /\b(affumicat\w*|norvegese)\b/.test(stripped);
+    const offIsDried =
+      /\b(disidratat\w*|essiccat\w*|secch[ioe])\b/.test(stripped) &&
+      !/\b(pasta|vino|spumante|prosciutto|mandorl\w*|noc[ie]|nocciol\w*)\b/.test(stripped);
+    const offIsNaturalBrine = /\b(al\s+naturale|in\s+salamoia)\b/.test(offFullNorm);
+    const offIsOilPacked = /\b(all\s*olio|sott\s*olio|in\s+olio|filo\s+d\s*olio)\b/.test(offFullNorm);
 
     if (wantsRawOrFreshFish && !wantsSmoked && (offIsCanned || offIsSmoked)) continue;
     if (wantsCannedFish && !offIsCanned && /\b(fresc\w*|crud\w*|filetto\s+di\s+orata)\b/.test(stripped)) continue;
     if (wantsSmoked && !offIsSmoked) continue;
+    if (bomWantsNaturalBrine && offIsOilPacked && !offIsNaturalBrine) continue;
+    if (bomWantsOilPacked && offIsNaturalBrine && !offIsOilPacked) continue;
+    if (!bomWantsDried && !isNutOrDrySeedOrGrainBom && offIsDried) continue;
+    if (bomWantsDried && !isNutOrDrySeedOrGrainBom && /\bfresc[ohia]\b/.test(stripped)) continue;
     if (wantsProsciuttoCrudo && (!/\bcrudo\b/.test(stripped) || /\bcotto\b/.test(stripped))) continue;
     if (wantsProsciuttoCotto && !/\bcotto\b/.test(stripped)) continue;
+
+    // Species & functional category guards
+    if (/\bpollo\b/.test(bomNorm) && !/\btacchino\b/.test(bomNorm) && /\btacchino\b/.test(offFullNorm) && !/\bpollo\b/.test(offFullNorm)) continue;
+    if (/\btacchino\b/.test(bomNorm) && !/\bpollo\b/.test(bomNorm) && /\bpollo\b/.test(offFullNorm) && !/\btacchino\b/.test(offFullNorm)) continue;
+    if (/\bporcin\w*\b/.test(bomNorm) && !/\bporcin\w*\b/.test(offFullNorm)) continue;
+    if (/\bpinol\w*\b/.test(bomNorm) && !/\bpinol\w*\b/.test(offFullNorm)) continue;
+    if (/\bmandorl\w*\b/.test(bomNorm) && !/\bmandorl\w*\b/.test(offFullNorm)) continue;
+    if (/\bpistacch\w*\b/.test(bomNorm) && !/\bpistacch\w*\b/.test(offFullNorm)) continue;
+    if (bomWantsDairyCream) {
+      if (!/\b(panna|crema\s+di\s+latte)\b/.test(stripped)) continue;
+      if (/\b(spalmabil\w*|nocciol\w*|cioccolat\w*|cacao|pistacch\w*|caffe)\b/.test(stripped)) continue;
+    }
 
     // 1. Direct CREA Food ID match (highest precision)
     if (workingItem.creaId && off.creaMatch?.creaFoodId && String(off.creaMatch.creaFoodId) === String(workingItem.creaId)) {
@@ -189,7 +231,7 @@ export function matchBomIngredientToOffer(workingItem = {}, activeOffers = []) {
     if (!coreNoun || coreNoun.length < 4) continue;
 
     // Special strictness for "latte", "olio", "noci", "mandorle", "pomodori"
-    if (coreNoun === 'latte') {
+    if (coreNoun === 'latte' && !bomWantsDairyCream) {
       if (offHead === 'latte') return off;
       continue;
     }
@@ -197,13 +239,13 @@ export function matchBomIngredientToOffer(workingItem = {}, activeOffers = []) {
       if (offHead === 'olio' && /\b(oliva|vergine|evo)\b/.test(stripped)) return off;
       continue;
     }
-    if (['noci', 'mandorle', 'pinoli', 'nocciole'].includes(coreNoun)) {
+    if (['noci', 'mandorle', 'pinoli', 'nocciole', 'pistacchi', 'anacardi'].includes(coreNoun)) {
       if (offHead === coreNoun) return off;
       continue;
     }
     if (coreNoun.startsWith('pomodor') || wantsPassataOrPelati) {
       const offIsPassata = /\b(passata|polpa|pelat\w*)\b/.test(stripped);
-      if (wantsPassataOrPelati && offIsPassata) return off;
+      if (wantsPassataOrPelati && offIsPassata && /\b(pomodor\w*|passata|pelat\w*|polpa|mutti|cirio|de\s+cecco|petti)\b/.test(offFullNorm)) return off;
       if (!wantsPassataOrPelati && !offIsPassata && (offHead === 'pomodori' || offHead === 'pomodorini')) return off;
       continue;
     }
@@ -214,9 +256,11 @@ export function matchBomIngredientToOffer(workingItem = {}, activeOffers = []) {
       if (!/\b(uov[oa]|tagliatell\w*|tagliolin\w*|pappardell\w*|lasagn\w*)\b/.test(stripped)) continue;
     }
 
-    // Exact whole-word match against offer's first 2 core tokens (after unwrapping "filetto di")
+    // Exact whole-word match against offer's head token (after unwrapping cut/form prefixes like "filetto di", "petto di", "fiocchi di")
     const effectiveOffHead =
-      ['filetto', 'filetti', 'trancio', 'tranci', 'cuori', 'fette', 'spicchi'].includes(offHead) && offWords[1] === 'di' && offWords[2]
+      ['filetto', 'filetti', 'trancio', 'tranci', 'cuori', 'fette', 'spicchi', 'petto', 'fesa', 'code', 'fiocchi', 'crema', 'bocconcini'].includes(offHead) &&
+      ['di', 'd'].includes(offWords[1]) &&
+      offWords[2]
         ? offWords[2]
         : offHead;
 
@@ -274,7 +318,7 @@ export function classifyDishMetadata(dish = {}) {
     } else if (
       course === 'dolce' ||
       course === 'gelato' ||
-      /\b(tiramisu|gelat\w*|sorbett\w*|panna cotta|torta dolce|crostata|semifreddo|cannol\w*|profiterol\w*|meringata|cheesecake|bunet|crema catalana|zabaione|dolce)\b/.test(titleNorm)
+      /\b(tiramisu|gelat\w*|sorbett\w*|granit\w*|frozen\s+yogurt|panna\s+cotta|torta\s+dolce|torte?\s+gelato|crostata|semifredd\w*|cassat\w*|cannol\w*|schiumon\w*|profiterol\w*|meringata|cheesecake|bunet|bonet|crema\s+catalana|creme\s+caramel|zabaione|dolc[ie]\s+della\s+casa|dolc[ie]\s+al\s+cucchiaio)\b/.test(titleNorm)
     ) {
       dishFamily = 'dessert_gelato';
     } else if (/\b(pizz\w*|focaccia\s+col\s+formaggio|focaccia\s+al\s+formaggio|pinsa)\b/.test(titleNorm)) {
@@ -293,7 +337,7 @@ export function classifyDishMetadata(dish = {}) {
       dishFamily = 'tomato_pasta';
     } else if (course === 'primo' && /\b(ragu| tuccu|coniglio|carni|cinghiale|bolognese)\b/.test(combined)) {
       dishFamily = 'meat_ragu_pasta';
-    } else if (/\b(fritt\w*|frittura|cotolett\w*)\b/.test(titleNorm)) {
+    } else if (/\b(fritt[oi]|fritte|frittura|cotolett\w*)\b/.test(titleNorm)) {
       dishFamily = 'fried_dish';
     } else if (/\b(crud[oi]|tartare|carpaccio|ceviche|ostrich\w*)\b/.test(titleNorm)) {
       dishFamily = 'raw_crudo';
@@ -316,14 +360,23 @@ export function classifyDishMetadata(dish = {}) {
 
   // 3. 3-Tier Dairy Role Classification (for honest Zero Formaggi handling)
   const hasCheeseOrHeavyDairyInBom = /\b(formagg\w*|mozzarell\w*|parmigian\w*|grana|pecorin\w*|stracchin\w*|crescenza|prescinseu\w*|presinseu\w*|ricott\w*|mascarpon\w*|gorgonzol\w*|burrata|taleggio|scamorza|fontina|feta)\b/.test(bomText);
+  const hasAnyDairyInBom =
+    hasCheeseOrHeavyDairyInBom ||
+    /\b(crema\s+di\s+latte|panna|latte\s+fresco|latte\s+intero|latte\s+di\s+vacca|burro|yogurt)\b/.test(bomText);
   let dairyRole = dish.dairyRole || 'none';
   if (!dish.dairyRole) {
     if (
-      /\b(focaccia\s+(?:col|al)\s+formaggio|quattro\s+formaggi|4\s+formaggi|cacio\s+e\s+pepe|fonduta|sformatin\w*\s+al\s+parmigiano|caprese|mozzarella|burrata|stracciatella|tagliere\s+di\s+formaggi|tiramisu|panna\s+cotta|cheesecake|gelat\w*|semifreddo|crema\s+di\s+formagg\w*|crema\s+al\s+parmigiano)\b/.test(titleNorm) ||
+      /\b(focaccia\s+(?:col|al)\s+formaggio|quattro\s+formaggi|4\s+formaggi|cacio\s+e\s+pepe|fonduta|sformatin\w*\s+.*parmigiano|caprese|mozzarella|burrata|stracciatella|tagliere\s+di\s+formaggi|tiramisu|panna\s+cotta|cheesecake|cassat\w*|cannol\w*|mascarpon\w*|schiumon\w*|semifredd\w*|torte?\s+gelato|frozen\s+yogurt|crema\s+di\s+formagg\w*|crema\s+al\s+parmigiano)\b/.test(titleNorm) ||
+      ((course === 'gelato' || /\bgelat\w*\b/.test(titleNorm)) && hasAnyDairyInBom) ||
+      (['dolce', 'gelato', 'merenda'].includes(course) && /\b(ricott\w*|mascarpon\w*)\b/.test(bomText)) ||
       (dishFamily === 'pizza_focaccia' && /\b(mozzarella|stracchino|formaggio|gorgonzola|burrata)\b/.test(bomText))
     ) {
       dairyRole = 'structural_unsubstitutable';
-    } else if (hasCheeseOrHeavyDairyInBom && /\b(pansot\w*|raviol\w*\s+di\s+magro|raviol\w*\s+di\s+borragine|pasqualina|ripien\w*)\b/.test(titleNorm)) {
+    } else if (
+      hasCheeseOrHeavyDairyInBom &&
+      !['dolce', 'gelato', 'merenda'].includes(course) &&
+      /\b(pansot\w*|raviol\w*\s+di\s+magro|raviol\w*\s+di\s+borragine|pasqualina|ripien\w*)\b/.test(titleNorm)
+    ) {
       dairyRole = 'savory_herb_binder';
     } else if (hasCheeseOrHeavyDairyInBom) {
       dairyRole = 'secondary_umami_finisher';
@@ -337,7 +390,7 @@ export function classifyDishMetadata(dish = {}) {
       : Boolean(
           (course === 'piatto_unico_barca' ||
             ((dish.mealContexts || []).includes('boat_cooler') &&
-              !/\b(crud[oi]|tartare|carpaccio|ostrich\w*|fritt\w*|frittura|cozze\s+alla\s+marinara|zuppa|brodetto|vellutata|spaghett\w*|trofie|trenette|raviol\w*|pansot\w*|risott\w*|gelat\w*|tiramisu|pizz\w*)\b/.test(titleNorm)))
+              !/\b(crud[oi]|tartare|carpaccio|ostrich\w*|fritt[oi]|fritte|frittura|cozze\s+alla\s+marinara|zuppa|brodetto|vellutata|spaghett\w*|trofie|trenette|raviol\w*|pansot\w*|risott\w*|gelat\w*|semifredd\w*|tiramisu|pizz\w*)\b/.test(titleNorm)))
         );
 
   // 5. Light Dinner Suitability (savory protein/veg dish, non-fried, non-dessert, non-pizza)
@@ -345,11 +398,11 @@ export function classifyDishMetadata(dish = {}) {
     dish.lightDinnerSuitable !== undefined
       ? Boolean(dish.lightDinnerSuitable)
       : Boolean(
-          !['colazione', 'dolce', 'primo'].includes(course) &&
+          !['colazione', 'dolce', 'gelato', 'merenda', 'primo'].includes(course) &&
             dishFamily !== 'dessert_gelato' &&
             dishFamily !== 'pizza_focaccia' &&
             dishFamily !== 'fried_dish' &&
-            !/\b(fritt\w*|frittura|pizz\w*|gelat\w*|tiramisu|dolce)\b/.test(titleNorm)
+            !/\b(fritt[oi]|fritte|frittura|pizz\w*|gelat\w*|semifredd\w*|tiramisu)\b/.test(titleNorm)
         );
 
   return {
@@ -468,12 +521,12 @@ export class RecipeAndArbitrageService {
         ...dish,
         prepMinutes: 240,
         bom: [
-          { creaId: '125100', name: 'Astice blu del Mar Ligure', rawGramsPerServing: 240, yieldFactor: 0.45, notes: 'Portate crostacei nobili e riduzione bisque' },
-          { creaId: '125100', name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 180, yieldFactor: 0.55, notes: 'Crudo marino e variazioni del Golfo' },
+          { creaId: '128050', name: 'Astice blu del Mar Ligure', rawGramsPerServing: 240, yieldFactor: 0.45, notes: 'Portate crostacei nobili e riduzione bisque' },
+          { creaId: '128100', name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 180, yieldFactor: 0.55, notes: 'Crudo marino e variazioni del Golfo' },
           { creaId: '123200', name: 'Filetto di branzino di lenza nostrano', rawGramsPerServing: 200, yieldFactor: 0.85, notes: 'Secondo principale alla brace / vapore' },
-          { creaId: '121000', name: 'Capesante e pescato crudo del Golfo', rawGramsPerServing: 140, yieldFactor: 0.9, notes: 'Sequenza antipasti e crudi' },
+          { creaId: '127100', name: 'Capesante e pescato crudo del Golfo', rawGramsPerServing: 140, yieldFactor: 0.9, notes: 'Sequenza antipasti e crudi' },
           { creaId: '000800', name: 'Pasta di semola trafilata d\'autore', rawGramsPerServing: 80, yieldFactor: 2.1, notes: 'Primi piatti degustazione' },
-          { creaId: '008610', name: 'Pinoli mediterranei scelti e tartufo', rawGramsPerServing: 35, yieldFactor: 1.0, notes: 'Finiture ed estrazioni aromatiche' },
+          { creaId: '008590', name: 'Pinoli mediterranei scelti e tartufo', rawGramsPerServing: 35, yieldFactor: 1.0, notes: 'Finiture ed estrazioni aromatiche' },
           { creaId: '009210', name: 'Olio extravergine d\'oliva Riviera Ligure DOP', rawGramsPerServing: 35, yieldFactor: 1.0, notes: 'Emulsioni a freddo multi-portata' }
         ]
       };
@@ -484,11 +537,11 @@ export class RecipeAndArbitrageService {
         ...dish,
         prepMinutes: 180,
         bom: [
-          { creaId: '125100', name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 200, yieldFactor: 0.55, notes: 'Crudo e antipasto caldo del Golfo' },
+          { creaId: '128100', name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 200, yieldFactor: 0.55, notes: 'Crudo e antipasto caldo del Golfo' },
           { creaId: '123200', name: 'Filetto di branzino di lenza nostrano', rawGramsPerServing: 180, yieldFactor: 0.85, notes: 'Portata principale ittica' },
-          { creaId: '121000', name: 'Calamari e pescato crudo del Golfo', rawGramsPerServing: 130, yieldFactor: 0.85, notes: 'Sequenza mare' },
+          { creaId: '127100', name: 'Calamari e pescato crudo del Golfo', rawGramsPerServing: 130, yieldFactor: 0.85, notes: 'Sequenza mare' },
           { creaId: '000800', name: 'Pasta di semola trafilata d\'autore', rawGramsPerServing: 75, yieldFactor: 2.1, notes: 'Primo piatto degustazione' },
-          { creaId: '008610', name: 'Pinoli mediterranei scelti', rawGramsPerServing: 25, yieldFactor: 1.0, notes: 'Colatura ed emulsione' },
+          { creaId: '008590', name: 'Pinoli mediterranei scelti', rawGramsPerServing: 25, yieldFactor: 1.0, notes: 'Colatura ed emulsione' },
           { creaId: '009210', name: 'Olio extravergine d\'oliva Riviera Ligure DOP', rawGramsPerServing: 25, yieldFactor: 1.0, notes: 'Finitura a crudo' }
         ]
       };
@@ -500,7 +553,7 @@ export class RecipeAndArbitrageService {
         ...dish,
         prepMinutes: Math.max(45, dish.prepMinutes || 25),
         bom: (dish.bom || []).map((b, idx) =>
-          idx === 0 ? { ...b, name: 'Astice blu del Mar Ligure', rawGramsPerServing: 240 } : b
+          idx === 0 ? { ...b, creaId: '128050', name: 'Astice blu del Mar Ligure', rawGramsPerServing: 240 } : b
         )
       };
     }
@@ -510,7 +563,7 @@ export class RecipeAndArbitrageService {
         ...dish,
         prepMinutes: Math.max(35, dish.prepMinutes || 25),
         bom: (dish.bom || []).map((b, idx) =>
-          idx === 0 ? { ...b, name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 180 } : b
+          idx === 0 ? { ...b, creaId: '128100', name: 'Gambero viola di Santa Margherita', rawGramsPerServing: 180 } : b
         )
       };
     }
@@ -585,11 +638,64 @@ export class RecipeAndArbitrageService {
     return normalizeDishCookwareIds(rawTools, dishContext);
   }
 
+  _profileExcludesDairyOrCheese(profile) {
+    if (!profile || profile.filterMode === 'none') return false;
+    if (profile.dietaryRegime === 'vegan') return true;
+    if ((profile.excludedCategories || []).some((c) => /latticini|formagg/i.test(c))) return true;
+    return (profile.excludedIngredients || []).some((x) =>
+      /\b(formagg\w*|mozzarell\w*|parmigian\w*|ricott\w*|mascarpon\w*|latticin\w*)\b/i.test(x)
+    );
+  }
+
+  _checkDishProfileExclusion(dish, meta, profileId) {
+    const profile = userProfileService.getProfileById(profileId);
+    if (!profile || profile.filterMode === 'none') {
+      return { isExcluded: false, reason: null };
+    }
+    const dishTitleCompat = userProfileService.checkItemCompatibility(
+      { title: `${dish.title || ''} ${dish.course || ''}`, category: '' },
+      profileId
+    );
+    const hasIncompatibleBomItem = (dish.bom || []).some(
+      (b) => !userProfileService.checkItemCompatibility({ title: b.name, category: '' }, profileId).isCompatible
+    );
+
+    if (
+      meta.dairyRole === 'structural_unsubstitutable' &&
+      (this._profileExcludesDairyOrCheese(profile) || !dishTitleCompat.isCompatible || hasIncompatibleBomItem)
+    ) {
+      return {
+        isExcluded: true,
+        reason:
+          'Piatto strutturalmente identitario a base di formaggi/latticini non sostituibili senza snaturare la ricetta (escluso dai piani Zero Formaggi; visibile solo per studio arbitraggio o profilo Ospiti).'
+      };
+    }
+
+    if (
+      profile.filterMode === 'hard_ban' &&
+      (!dishTitleCompat.isCompatible || (meta.dairyRole === 'none' && hasIncompatibleBomItem))
+    ) {
+      return {
+        isExcluded: true,
+        reason:
+          'Piatto incompatibile con i vincoli fisici/operativi del profilo attivo (es. gelati/surgelati o alcolici esclusi in Cambusa Barca).'
+      };
+    }
+
+    return { isExcluded: false, reason: null };
+  }
+
   async _getFullFoodOffers(profileId = null) {
     const raw = await offerService.getRawOffers();
     return raw
       .map((o) => enrichOfferRecord(o, profileId))
-      .filter((o) => o && o.domain === 'food_human' && !o.isNamelessTile);
+      .filter(
+        (o) =>
+          o &&
+          o.domain === 'food_human' &&
+          !o.isNamelessTile &&
+          o.profileCompatibility?.isCompatible !== false
+      );
   }
 
   /**
@@ -610,25 +716,11 @@ export class RecipeAndArbitrageService {
     const meta = classifyDishMetadata(dish);
 
     let hasProfileSubstitution = false;
-    let isExcludedByProfileIdentity = false;
-    let profileExclusionReason = null;
+    const exclusionCheck = this._checkDishProfileExclusion(dish, meta, profileId);
+    const isExcludedByProfileIdentity = exclusionCheck.isExcluded;
+    const profileExclusionReason = exclusionCheck.reason;
     const substitutionsApplied = [];
     const enrichedBom = [];
-
-    // Pre-check if the dish itself is structurally unsubstitutable for the active profile
-    const dishTitleCompat = userProfileService.checkItemCompatibility(
-      { title: dish.title, category: '' },
-      profileId
-    );
-    const hasIncompatibleBomItem = (dish.bom || []).some(
-      (b) => !userProfileService.checkItemCompatibility({ title: b.name, category: '' }, profileId).isCompatible
-    );
-
-    if (meta.dairyRole === 'structural_unsubstitutable' && (!dishTitleCompat.isCompatible || hasIncompatibleBomItem)) {
-      isExcludedByProfileIdentity = true;
-      profileExclusionReason =
-        'Piatto strutturalmente identitario a base di formaggi/latticini non sostituibili senza snaturare la ricetta (escluso dai piani Zero Formaggi; visibile solo per studio arbitraggio o profilo Ospiti).';
-    }
 
     let purePortionCostEur = 0;
     let checkoutCashCostEur = 0;
@@ -697,20 +789,31 @@ export class RecipeAndArbitrageService {
           matchedOffer.referencePackEstimate?.estimatedEdiblePricePerKg ??
           matchedOffer.unitPriceExtraction?.ediblePricePerKg ??
           null;
-        const extractedPackGrams =
+        const explicitOfferGrams =
           matchedOffer.drainedWeightGrams ??
           matchedOffer.packWeightGrams ??
           matchedOffer.packVolumeMl ??
-          matchedOffer.referencePackEstimate?.estimatedEdibleGrams ??
           matchedOffer.unitPriceExtraction?.netWeightGrams ??
+          null;
+        const extractedPackGrams =
+          explicitOfferGrams ??
+          matchedOffer.referencePackEstimate?.estimatedEdibleGrams ??
           refSpec.packGrams;
+        const baselineSinglePackEur = (refSpec.euroPerKg * refSpec.packGrams) / 1000;
 
         if (extractedKg && extractedKg > 0.4 && extractedKg < 180) {
           euroPerKg = Number(extractedKg);
+          packSizeGrams = extractedPackGrams;
         } else if (offerPromo > 0) {
-          euroPerKg = Number(((offerPromo / extractedPackGrams) * 1000).toFixed(2));
+          if (!explicitOfferGrams && baselineSinglePackEur > 0 && offerPromo > baselineSinglePackEur * 1.85) {
+            const estPacks = Math.max(2, Math.round(offerPromo / baselineSinglePackEur));
+            packSizeGrams = refSpec.packGrams * estPacks;
+            euroPerKg = Number(((offerPromo / packSizeGrams) * 1000).toFixed(2));
+          } else {
+            packSizeGrams = extractedPackGrams;
+            euroPerKg = Number(((offerPromo / packSizeGrams) * 1000).toFixed(2));
+          }
         }
-        packSizeGrams = extractedPackGrams;
         packPriceEur = offerPromo > 0 ? Number(offerPromo.toFixed(2)) : packPriceEur;
         matchedOfferBrief = {
           id: matchedOffer.id,
@@ -751,6 +854,7 @@ export class RecipeAndArbitrageService {
         cookedGramsTotal,
         yieldFactor: workingItem.yieldFactor || 1.0,
         notes: workingItem.notes || '',
+        isSubstitutedComposite: Boolean(workingItem.isSubstitutedComposite),
         substitutionInfo,
         inPantryGrams: gramsInPantry,
         netMissingGrams,
@@ -869,7 +973,7 @@ export class RecipeAndArbitrageService {
     }
     if (filters.mealContext && filters.mealContext !== 'all') {
       if (filters.mealContext === 'boat_cooler') {
-        filtered = filtered.filter((d) => d.boatSafeCold || (d.mealContexts || []).includes('boat_cooler'));
+        filtered = filtered.filter((d) => Boolean(d.boatSafeCold));
       } else {
         filtered = filtered.filter((d) => (d.mealContexts || []).includes(filters.mealContext));
       }
@@ -885,34 +989,31 @@ export class RecipeAndArbitrageService {
     }
 
     const deduplicateTwins = filters.deduplicateTwins === true || filters.deduplicateTwins === 'true';
+    const isSingleRestaurantFilter = Boolean(filters.restaurantId && filters.restaurantId !== 'all');
     if (deduplicateTwins) {
       const seenTwinKeys = new Set();
       filtered = filtered.filter((d) => {
         if (d.sourceType !== 'tigullio_restaurant' || !d.canonicalTwinKey) return true;
-        if (seenTwinKeys.has(d.canonicalTwinKey)) return false;
-        seenTwinKeys.add(d.canonicalTwinKey);
+        const dedupKey = isSingleRestaurantFilter
+          ? `${d.restaurantId || ''}:${normalizeSearchToken(d.title || '')}`
+          : d.canonicalTwinKey;
+        if (seenTwinKeys.has(dedupKey)) return false;
+        seenTwinKeys.add(dedupKey);
         return true;
       });
     }
 
     const excludeIncompatible = filters.excludeIncompatible === true || filters.excludeIncompatible === 'true';
     if (excludeIncompatible) {
-      filtered = filtered.filter((d) => {
-        if (d.dairyRole !== 'structural_unsubstitutable') return true;
-        const titleOk = userProfileService.checkItemCompatibility({ title: d.title, category: '' }, profileId).isCompatible;
-        const bomOk = (d.bom || []).every(
-          (b) => userProfileService.checkItemCompatibility({ title: b.name, category: '' }, profileId).isCompatible
-        );
-        return titleOk && bomOk;
-      });
+      filtered = filtered.filter((d) => !this._checkDishProfileExclusion(d, d, profileId).isExcluded);
     }
 
     const totalMatching = filtered.length;
     const limit = Math.max(1, Math.min(350, Number(filters.limit) || 80));
     const offset = Math.max(0, Number(filters.offset) || 0);
 
-    const evaluated = [];
-    for (const d of filtered.slice(offset, offset + limit)) {
+    const evaluatedAll = [];
+    for (const d of filtered) {
       const ev = await this.evaluateDish(d, {
         servings,
         activeOffers,
@@ -921,11 +1022,12 @@ export class RecipeAndArbitrageService {
         profileId
       });
       const twins = d.sourceType === 'tigullio_restaurant' ? twinGroups.get(d.canonicalTwinKey) || [] : [];
-      if (twins.length > 1) {
+      const distinctRestaurantIds = new Set(twins.map((t) => t.restaurantId).filter(Boolean));
+      if (distinctRestaurantIds.size > 1) {
         const prices = twins.map((t) => t.menuPriceEuro).filter((p) => p > 0);
         ev.comparableRestaurants = twins;
         ev.restaurantPriceRangeEur = {
-          count: twins.length,
+          count: distinctRestaurantIds.size,
           minEur: prices.length ? Math.min(...prices) : ev.menuPriceEuro,
           maxEur: prices.length ? Math.max(...prices) : ev.menuPriceEuro
         };
@@ -933,16 +1035,18 @@ export class RecipeAndArbitrageService {
         ev.comparableRestaurants = [];
         ev.restaurantPriceRangeEur = null;
       }
-      evaluated.push(ev);
+      evaluatedAll.push(ev);
     }
 
     if (filters.sortBy === 'arbitrage_desc') {
-      evaluated.sort((a, b) => b.costAndArbitrage.arbitrageSavingsEur - a.costAndArbitrage.arbitrageSavingsEur);
+      evaluatedAll.sort((a, b) => b.costAndArbitrage.arbitrageSavingsEur - a.costAndArbitrage.arbitrageSavingsEur);
     } else if (filters.sortBy === 'cost_asc') {
-      evaluated.sort((a, b) => a.costAndArbitrage.purePortionCostPerServingEur - b.costAndArbitrage.purePortionCostPerServingEur);
+      evaluatedAll.sort((a, b) => a.costAndArbitrage.purePortionCostPerServingEur - b.costAndArbitrage.purePortionCostPerServingEur);
     } else if (filters.sortBy === 'pantry_desc') {
-      evaluated.sort((a, b) => b.feasibility.pantryCoveragePct - a.feasibility.pantryCoveragePct);
+      evaluatedAll.sort((a, b) => b.feasibility.pantryCoveragePct - a.feasibility.pantryCoveragePct);
     }
+
+    const evaluated = evaluatedAll.slice(offset, offset + limit);
 
     return {
       totalDishesInCatalog: allDishes.length,
@@ -962,27 +1066,38 @@ export class RecipeAndArbitrageService {
   async computeMaxCoverage8020(options = {}) {
     const topK = Math.max(3, Math.min(25, Number(options.topK) || 12));
     const allDishes = this.getDishesSeed();
-    const activeOffers = await this._getFullFoodOffers(options.profileId || null);
+    const profileId = options.profileId || userProfileService.getProfileById().id;
+    const activeOffers = await this._getFullFoodOffers(profileId);
     const pantryItems = pantryService.getPantryState().items || [];
 
-    // Build ingredient universe keyed by canonical CREA ID or normalized name
+    // Build ingredient universe keyed by canonical CREA ID or normalized name (respecting active profile exclusions & substitutions)
     const ingredientMap = new Map();
     const dishSets = [];
 
     for (const dish of allDishes) {
+      const meta = classifyDishMetadata(dish);
+      if (this._checkDishProfileExclusion(dish, meta, profileId).isExcluded) {
+        continue;
+      }
+
       const reqKeys = new Set();
-      for (const b of dish.bom || []) {
+      for (const rawB of dish.bom || []) {
+        const compat = userProfileService.checkItemCompatibility({ title: rawB.name, category: '' }, profileId);
+        let b = rawB;
+        if (!compat.isCompatible) {
+          const sub = buildProfileSubstitution(rawB, compat, meta.dairyRole);
+          b = {
+            ...rawB,
+            creaId: sub.creaId,
+            name: sub.name,
+            isSubstitutedComposite: sub.isSubstitutedComposite
+          };
+        }
+
         const key = b.creaId || normalizeSearchToken(b.name);
         reqKeys.add(key);
         if (!ingredientMap.has(key)) {
-          const normName = normalizeSearchToken(b.name);
-          const head = normName.split(' ').find((w) => w.length >= 4 && !STOP_WORDS_BOM.has(w)) || normName.split(' ')[0];
-          const headRegex = head && head.length >= 4 ? new RegExp(`\\b${head}\\b`, 'i') : null;
-          const inPantry = pantryItems.some(
-            (p) =>
-              p.remainingWeightGrams > 0 &&
-              ((b.creaId && String(p.creaFoodId) === String(b.creaId)) || (headRegex && headRegex.test(normalizeSearchToken(p.title))))
-          );
+          const inPantry = Boolean(findCompatiblePantryItem(b, pantryItems));
           const promoOffer = matchBomIngredientToOffer(b, activeOffers);
           ingredientMap.set(key, {
             key,
@@ -1075,22 +1190,24 @@ export class RecipeAndArbitrageService {
       });
     }
 
-    const finalUnlockedDishes = dishSets
-      .filter((ds) => Array.from(ds.reqKeys).every((rk) => selectedKeys.has(rk)))
-      .slice(0, 30)
-      .map((d) => ({
-        id: d.id,
-        title: d.title,
-        restaurantName: d.restaurantName,
-        menuPriceEuro: d.menuPriceEuro
-      }));
+    const allFinalUnlocked = dishSets.filter((ds) =>
+      Array.from(ds.reqKeys).every((rk) => selectedKeys.has(rk))
+    );
+    const finalUnlockedDishes = allFinalUnlocked.slice(0, 30).map((d) => ({
+      id: d.id,
+      title: d.title,
+      restaurantName: d.restaurantName,
+      menuPriceEuro: d.menuPriceEuro
+    }));
 
     return {
-      totalCatalogDishes: dishSets.length,
+      activeProfileId: profileId,
+      totalCatalogDishes: allDishes.length,
+      compatibleCatalogDishes: dishSets.length,
       alreadyInPantryCount: Array.from(ingredientMap.values()).filter((i) => i.inPantry).length,
       topK,
       paretoBasket: greedySteps,
-      unlockedDishesCount: finalUnlockedDishes.length,
+      unlockedDishesCount: allFinalUnlocked.length,
       unlockedDishesSample: finalUnlockedDishes
     };
   }
@@ -1164,6 +1281,73 @@ export class RecipeAndArbitrageService {
               visual: 'Colori brillanti e struttura croccante preservata al momento dell\'apertura in barca',
               acoustic: 'Scrocchio netto della componente secca aggiunta al momento',
               olfactory: 'Esplosione balsamica all\'apertura del contenitore'
+            }
+          }
+        ]
+      };
+    }
+
+    // Archetype 1b: Cold / Frozen Dessert Emulsion & Cryoconcentration (Zero Stove Heat)
+    const evalTitleNorm = normalizeSearchToken(evaluated.title || '');
+    if (
+      fam === 'dessert_gelato' &&
+      (['gelato', 'merenda'].includes(evaluated.course) ||
+        /\b(gelat\w*|sorbett\w*|granit\w*|semifredd\w*|tiramisu|cassat\w*|schiumon\w*|panna\s+cotta|cheesecake|frozen\s+yogurt)\b/.test(evalTitleNorm))
+    ) {
+      return {
+        cookingArchetype: 'cold_emulsion_or_frozen_dessert',
+        steps: [
+          {
+            stepNumber: 1,
+            phase: 'Bilanciamento dei Solidi & Punto Crioscopico',
+            title: `Dosaggio a freddo di ${mainItem.name} (${mainItem.rawGramsTotal}g) e zuccheri anticongelanti`,
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 180,
+            timerType: 'active',
+            scientificPrinciple:
+              'Il saccarosio e gli zuccheri della frutta abbassano il punto di congelamento dell\'acqua libera (depressione crioscopica), impedendo la formazione di macro-cristalli di ghiaccio taglienti al palato.',
+            instructions: `Pesare con precisione: ${bomSummary}. Lavorare gli ingredienti in ciotola ben fredda senza portare la base sui fornelli.`,
+            sensoryCues: {
+              visual: 'Massa liscia, omogenea e priva di granuli di zucchero indisciolti',
+              acoustic: 'Incorporazione soffice e silenziosa con spatola o frusta',
+              olfactory: 'Aroma nitido delle materie prime a freddo'
+            }
+          },
+          {
+            stepNumber: 2,
+            phase: 'Incorporazione d\'Aria (Overrun) & Emulsione Strutturale',
+            title: `Montatura / mantecazione a freddo per ${evaluated.title}`,
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: Math.max(180, prepSec),
+            timerType: 'active',
+            scientificPrinciple:
+              'Le micro-bolle d\'aria disperse nella fase continua riducono la conducibilità termica del dolce al cucchiaio/semifreddo, donando sensazione vellutata e scioglimento graduale in bocca.',
+            instructions:
+              'Incorporare l\'aria dal basso verso l\'alto (o mantecare a freddo per sorbetti/granite) senza smontare la struttura colloidale.',
+            sensoryCues: {
+              visual: 'Volume stabile, picchi morbidi e lucentezza setosa',
+              acoustic: 'Leggero fruscio aerato della massa montata',
+              olfactory: 'Note fresche di frutta, agrumi, cacao o caffè'
+            }
+          },
+          {
+            stepNumber: 3,
+            phase: 'Stabilizzazione a Freddo & Temperaggio di Servizio',
+            title: 'Riposo in frigorifero/abbattimento domestico prima del servizio',
+            heatLevel: 'off_heat',
+            stoveInstruction: heatDict.off_heat,
+            durationSeconds: 120,
+            timerType: 'passive',
+            scientificPrinciple:
+              'Servire un semifreddo o gelato tra -12°C e -8°C (o un dolce al cucchiaio a +4°C) evita l\'anestesia termica delle papille gustative e libera i composti aromatici volatili.',
+            instructions:
+              'Far stabilizzare in freddo positivo (+4°C) o negativo (-18°C con 5 minuti di temperaggio prima dell\'impiattamento) e completare con la guarnizione.',
+            sensoryCues: {
+              visual: 'Tenuta perfetta al cucchiaio senza sineresi liquida sul piatto',
+              acoustic: 'Taglio netto e silenzioso del cucchiaio',
+              olfactory: 'Bouquet dolce equilibrato e persistente'
             }
           }
         ]
@@ -1722,23 +1906,44 @@ export class RecipeAndArbitrageService {
     const menuPriceEuro = Math.max(4, Number(payload.menuPriceEuro) || 20);
     const rawIngredientsText = String(payload.ingredientsText || title);
 
-    // Match tokens against CREA foods
-    const tokens = normalizeSearchToken(rawIngredientsText)
+    // Split raw text BEFORE normalizing so comma/semicolon/newline delimiters are preserved!
+    const tokens = rawIngredientsText
       .split(/[,;.\n]+/)
-      .map((s) => s.trim())
+      .map((s) => normalizeSearchToken(s))
       .filter(Boolean);
 
     const bom = [];
     const searchCandidates = tokens.length > 0 ? tokens : [title];
 
     for (const chunk of searchCandidates.slice(0, 6)) {
-      const creaRes = creaService.searchAndRankFoods({ q: chunk, limit: 1 });
+      const expanded = chunk
+        .replace(/\bolio\s+evo\b/g, 'olio di oliva extra vergine')
+        .replace(/\bextravergine\b/g, 'extra vergine')
+        .replace(/\b(astice|scampi|mazzancolle)\b/g, 'aragosta')
+        .replace(/\b(tagliolini|spaghetti|linguine|trofie|trenette|rigatoni|penne|fusilli|paccheri)\b/g, 'pasta di semola');
+
+      let creaRes = creaService.searchAndRankFoods({ q: expanded, limit: 1 });
+      if (!creaRes.foods?.length && expanded.includes('extra vergine')) {
+        creaRes = creaService.searchAndRankFoods({ q: 'olio di oliva extra vergine', limit: 1 });
+      }
+      if (!creaRes.foods?.length) {
+        const coreWords = expanded
+          .split(/\s+/)
+          .filter((w) => w.length >= 3 && !STOP_WORDS_BOM.has(w) && !['golfo', 'ligure', 'liguri', 'tigullio', 'rapallo', 'nostrani', 'nostrano'].includes(w));
+        if (coreWords.length > 0) {
+          creaRes = creaService.searchAndRankFoods({ q: coreWords.slice(0, 2).join(' '), limit: 1 });
+        }
+        if (!creaRes.foods?.length && coreWords.length > 0) {
+          creaRes = creaService.searchAndRankFoods({ q: coreWords[0], limit: 1 });
+        }
+      }
       const topFood = creaRes.foods?.[0];
       if (topFood) {
+        const isOil = /^009/.test(String(topFood.id)) || /\bolio\b/i.test(topFood.name);
         bom.push({
           creaId: topFood.id,
           name: topFood.name,
-          rawGramsPerServing: 90,
+          rawGramsPerServing: isOil ? 15 : 90,
           yieldFactor: 1.0,
           cookwareRequired: 'padella_antiaderente',
           notes: 'Ingrediente estratto e mappato automaticamente su tabella CREA'
@@ -1785,7 +1990,10 @@ export class RecipeAndArbitrageService {
     };
 
     this._customDishes.unshift(customDish);
-    return this.evaluateDish(customDish, { servings: payload.servings || 1 });
+    return this.evaluateDish(customDish, {
+      servings: payload.servings || 1,
+      profileId: payload.profileId
+    });
   }
 }
 

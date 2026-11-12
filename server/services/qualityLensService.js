@@ -75,18 +75,25 @@ export function evaluateQualityLens(item = {}) {
       }
     }
 
-    // 5. Pasta & Farine
-    if (/\b(pasta|spaghetti|penne|fusilli|rigatoni|mezze maniche|trofie)\b/i.test(text)) {
+    // 5. Pasta & Farine (guarded against multi-item Christmas gift baskets)
+    const isGiftBasket = /\b(cesto|cesti|confezione\s+regalo|scatola\s+regalo|pacco\s+regalo|strenna)\b/i.test(title);
+    if (!isGiftBasket && /\b(pasta|spaghetti|penne|fusilli|rigatoni|mezze maniche|trofie)\b/i.test(`${title} ${brand}`)) {
       if (/\b(trafilat\w* al bronzo|bronzo|gragnano|rummo|vozza|molisana|de cecco|garofalo)\b/i.test(text)) {
         badges.push({ label: 'Trafilatura al Bronzo / Lenta essiccazione (Trattiene l\'emulsione)', tone: 'emerald' });
       }
-      if (/\b(integrale|farro|grano saraceno|ceci|lenticchie)\b/i.test(text)) {
+      if (/\b(integrale|farro|grano saraceno|ceci|lenticchie)\b/i.test(`${title} ${brand}`)) {
         badges.push({ label: 'Alto contenuto di Fibre & Basso indice glicemico', tone: 'sky' });
       }
     }
   } else if (domain === 'home_cleaning') {
     // Domain B: Chemical pH & surface safety (ONLY on real chemical/cleaning products, never on textiles, toys, or paper)
-    if (/\b(anticalcare|viakal|acido citrico|aceto\s+pulizie|disincrostant\w*|wc net|anitra\s+wc|bref\s+wc|duck\b)\b/i.test(text)) {
+    // 1. Evaluate laundry detergents/softeners FIRST so "Ace / Chanteclair Detersivo Lavatrice" never gets kitchen degreaser spec!
+    const isLaundryProduct =
+      /\b(lavatrice|bucato|ammorbident\w*|smacchiator\w*|acchiappacolore|curalavatrice|calgon|\bcapi\b|dash\b|dixan|omino\s+bianco|coccolino|vernel|lenor|napisan\s+bucato|perlana|sole\s+bucato)\b/i.test(text);
+
+    if (isLaundryProduct && !/\b(sgrassator\w*\s+universale|pulitore\s+forno|lavastoviglie)\b/i.test(text)) {
+      badges.push({ label: 'Cura Bucato & Lavatrice', tone: 'sky' });
+    } else if (/\b(anticalcare|viakal|acido citrico|aceto\s+pulizie|disincrostant\w*|wc net|anitra\s+wc|bref\s+wc|duck\b)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'acid',
         phLabel: 'pH Acido (2.0 – 4.5)',
@@ -96,7 +103,7 @@ export function evaluateQualityLens(item = {}) {
       };
       badges.push({ label: 'Chimica Acida — Anticalcare & Brillantante Inox', tone: 'sky' });
       warnings.push('VIETATO su marmo, ardesia e alluminio nudo (corrosione chimica); MAI miscelare con candeggina');
-    } else if (/\b(sgrassator\w*|chanteclair|pulitore\s+forno|griglia|candeggina|ipoclorito|ace\b)\b/i.test(text) && !/\b(ammorbidente|bucato\s+delicato)\b/i.test(text)) {
+    } else if (/\b(sgrassator\w*|chanteclair|pulitore\s+forno|griglia|candeggina|ipoclorito|ace\b)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'alkaline',
         phLabel: 'pH Alcalino / Ossidante (10.5 – 13.0)',
@@ -142,8 +149,6 @@ export function evaluateQualityLens(item = {}) {
         forbiddenSurfaces: []
       };
       badges.push({ label: 'Detergenza Superfici & Pavimenti', tone: 'sky' });
-    } else if (/\b(lavatrice|bucato|ammorbident\w*|smacchiator\w*|acchiappacolore|curalavatrice|calgon|dash\b|dixan|omino\s+bianco|coccolino|vernel|lenor|napisan\s+bucato|perlana|sole\s+bucato)\b/i.test(text)) {
-      badges.push({ label: 'Cura Bucato & Lavatrice', tone: 'sky' });
     }
     // Paper goods, food wraps, trash bags, textiles, apparel, toys & home bazar:
     // intentionally receive NO fake chemical pH spec or cookware badge!

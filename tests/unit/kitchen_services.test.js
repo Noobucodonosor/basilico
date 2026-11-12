@@ -33,10 +33,13 @@ describe('ADR-0010 / TASK-M4-01: Kitchen Equipment ROI & Chemical Reset Protocol
     assert.equal(state.heatSource, 'gas');
     assert.ok(state.effectiveTools.length >= 3);
     assert.ok(state.missingRoiOpportunities.length > 0);
-    // Missing Casseruola Inox should report +73 unlocked dishes
+    // Missing Casseruola Inox should report pure dynamic count over normalizedTools (71 dishes)
     const casseruolaRoi = state.missingRoiOpportunities.find((m) => m.id === 'casseruola_inox');
     assert.ok(casseruolaRoi);
-    assert.equal(casseruolaRoi.unlockedDishesCount, 73);
+    assert.equal(casseruolaRoi.unlockedDishesCount, 71);
+    const wokRoi = state.missingRoiOpportunities.find((m) => m.id === 'wok');
+    assert.ok(wokRoi);
+    assert.equal(wokRoi.unlockedDishesCount, 0, 'Must use pure dynamic count without hardcoded 35 fallback');
   });
 
   it('2. should disqualify non-ferromagnetic copper/terracotta cookware when stove is switched to induction', () => {
@@ -88,5 +91,45 @@ describe('ADR-0010 / TASK-M4-01: Kitchen Equipment ROI & Chemical Reset Protocol
 
     const tartareTools = normalizeDishCookwareIds(['bistecchiera', 'mortaio', 'spremiagrumi'], { title: 'Tartare di manzo tagliata al coltello' });
     assert.deepEqual(tartareTools, ['coltello_chef'], 'Cold raw tartare must not require bistecchiera or mortaio');
+  });
+
+  it('5. should provide dedicated rame_puro & rame_stagnato_gres protocols, canonical Rapallo store IDs, bath exclusions, and boat_no_stove ROI filtering (M-P0-10 & M-P1-12)', async () => {
+    const storesSeed = JSON.parse(
+      fs.readFileSync(path.resolve(process.cwd(), 'data/seed/rapallo_stores.json'), 'utf8')
+    );
+    const validStoreIds = new Set(storesSeed.map((s) => s.id));
+    for (const item of kitchenResetService.getCleaningCatalog()) {
+      for (const sid of item.rapalloStores) {
+        assert.ok(validStoreIds.has(sid), `Expected canonical Rapallo store ID, got ${sid}`);
+      }
+    }
+
+    const res = await kitchenResetService.generateProtocol(['pentola_rame_non_induzione', 'teglia_forno']);
+    const ramePuro = res.protocols.find((p) => p.toolId === 'pentola_rame_non_induzione');
+    const rameStagnato = res.protocols.find((p) => p.toolId === 'teglia_forno');
+    assert.equal(ramePuro.material, 'rame_puro');
+    assert.doesNotMatch(ramePuro.thermalShockWarning, /Cr2O3/i);
+    assert.equal(rameStagnato.material, 'rame_stagnato_gres');
+    assert.match(rameStagnato.thermalShockWarning, /232°C/);
+
+    assert.ok(
+      res.liveRapalloCleaningOffers.every(
+        (o) => !/\b(spugna\s+bagno|cotoneve|doccia|corpo|capelli|viso)\b/i.test(`${o.title} ${o.brand || ''}`)
+      ),
+      'Personal/bath items must never leak into liveRapalloCleaningOffers'
+    );
+
+    const emptyRes = await kitchenResetService.generateProtocol([]);
+    assert.equal(emptyRes.protocols.length, 0, 'Empty tools array must return 0 protocols');
+
+    kitchenService.updateKitchenConfig({
+      heatSource: 'boat_no_stove',
+      ownedToolIds: ['coltello_chef']
+    });
+    const boatState = kitchenService.getKitchenState();
+    assert.ok(
+      !boatState.missingRoiOpportunities.some((m) => m.id === 'teglia_forno'),
+      'teglia_forno must never be recommended in boat_no_stove mode'
+    );
   });
 });

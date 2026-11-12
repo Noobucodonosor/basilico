@@ -29,9 +29,13 @@ router.post('/config', (req, res, next) => {
 
 router.get('/reset-protocol', async (req, res, next) => {
   try {
-    const toolsParam = req.query.tools
-      ? String(req.query.tools).split(',').map((s) => s.trim()).filter(Boolean)
-      : ['padella_antiaderente', 'casseruola_inox', 'coltello_chef'];
+    const toolsParam =
+      req.query.tools !== undefined
+        ? String(req.query.tools)
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : (kitchenInventoryService.getKitchenState().effectiveTools || []).map((t) => t.id);
     const protocol = await kitchenResetService.generateProtocol(toolsParam);
     res.status(200).json(protocol);
   } catch (err) {

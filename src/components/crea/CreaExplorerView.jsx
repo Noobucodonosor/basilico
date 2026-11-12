@@ -42,6 +42,8 @@ const PAGE_SIZE = 100;
 export function CreaExplorerView({
   activeProfileId = 'dany',
   initialFoodId = null,
+  onCloseInitialFood,
+  onCloseFoodModal,
   onNavigateToOfferStore,
   onAddToShoppingList
 }) {
@@ -69,9 +71,7 @@ export function CreaExplorerView({
   const [npeLoading, setNpeLoading] = useState(false);
 
   useEffect(() => {
-    if (initialFoodId) {
-      setActiveModalFoodId(initialFoodId);
-    }
+    setActiveModalFoodId(initialFoodId || null);
   }, [initialFoodId]);
 
   useEffect(() => {
@@ -548,6 +548,7 @@ export function CreaExplorerView({
                                   domain: 'food_human',
                                   source: 'promo_flyer',
                                   unitPriceEur: item.promoPrice,
+                                  packSizeGrams: item.packWeightGrams || item.drainedWeightGrams || undefined,
                                   preferredChain: item.storeName,
                                   storeId: item.storeId || null,
                                   onPromo: true,
@@ -585,8 +586,13 @@ export function CreaExplorerView({
       {/* Full 7-Section Academic CREA Modal */}
       <CreaFoodModal
         foodId={activeModalFoodId}
+        activeProfileId={activeProfileId}
         isOpen={Boolean(activeModalFoodId)}
-        onClose={() => setActiveModalFoodId(null)}
+        onClose={() => {
+          setActiveModalFoodId(null);
+          onCloseInitialFood?.();
+          onCloseFoodModal?.();
+        }}
         onSelectOfferStore={onNavigateToOfferStore}
       />
     </div>

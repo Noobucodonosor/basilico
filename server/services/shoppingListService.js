@@ -10,10 +10,10 @@
  *  2. Separate Subtotals: `foodSubtotalEur` vs `homeAndKitchenSubtotalEur`
  *  3. Empirical Rapallo 1-Store vs 2-Store vs 3-Store Logistics Simulator:
  *     - Computed against real Rapallo stores (`rapallo_stores.json`), real active flyer promos, real loyalty cards,
- *       and Haversine transfer minutes across Rapallo (16035 GE) — zero non-existent chains!
+ *       specialist stores (`Unieuro`, `Tigotà`, `PiùMe`, `Arcaplanet`) when covering 100% of cart, and zero ghost stops!
  *  4. "In Corsia" Aisle Ordering (`Ortofrutta -> Pesce/Carne -> Freschi -> Dispensa Secca -> Surgelati -> Cura Casa & Pentole`)
- *  5. Semantic "Prodotto Finito / Piano B sullo Scaffale" substitute finder (same ingredient / culinary family / aisle, profile-safe)
- *  6. WhatsApp / Telegram / Markdown formatted export & 1-click transfer to Pantry
+ *  5. Semantic "Prodotto Finito / Piano B sullo Scaffale" substitute finder (strict culinary/sub-family coherence, profile-safe)
+ *  6. WhatsApp / Telegram / Markdown formatted export & idempotent 1-click individual-pack transfer to Pantry
  */
 
 import fs from 'node:fs';
@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { offerService, enrichOfferRecord, normalizeSearchToken } from './offerService.js';
 import { cacheManager } from './cacheManager.js';
 import { pantryService } from './pantryService.js';
+import { extractPackMetrics } from './unitPriceExtractor.js';
 import { matchBomIngredientToOffer, resolveIngredientPackSpec } from './recipeAndArbitrageService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -39,12 +40,18 @@ export const AISLE_ORDER = [
   { id: 'cura_casa_pentole', label: '6. Chimica Casa, Sottolavello & Pentole (Tigotà/PiùMe/Unieuro)', icon: '🧼' }
 ];
 
+function throwBadRequest(message) {
+  const err = new Error(message);
+  err.status = 400;
+  throw err;
+}
+
 export function classifyAisle(item = {}) {
   if (item.domain && item.domain !== 'food_human') {
     return 'cura_casa_pentole';
   }
   const norm = normalizeSearchToken(`${item.name || item.title || ''} ${item.category || ''}`);
-  if (/\b(salsa|sugo|passata|polpa|pelat\w*|scatola|sott\s*olio|in\s+olio|al\s+naturale|liquore|limoncetta)\b/.test(norm)) {
+  if (/\b(salsa|sugo|passata|polpa|pelat\w*|scatola|sott\s*olio|all\s*olio|in\s+olio|al\s+naturale|liquore|limoncetta)\b/.test(norm)) {
     return 'dispensa_secca';
   }
   if (
@@ -54,7 +61,7 @@ export function classifyAisle(item = {}) {
   ) {
     return 'ortofrutta';
   }
-  if (/\b(tonno\s+(?:sott|al\s+naturale|in\s+olio|sgocciolat\w*)|sgombro\s+(?:al\s+naturale|sott|sgocciolat\w*)|acciug\w*\s+sott\w*)\b/.test(norm)) {
+  if (/\b(tonno\s+(?:sott|all\s*olio|al\s+naturale|in\s+olio|sgocciolat\w*)|sgombro\s+(?:al\s+naturale|all\s*olio|sott|sgocciolat\w*)|acciug\w*\s+sott\w*)\b/.test(norm)) {
     return 'dispensa_secca';
   }
   if (
@@ -71,6 +78,116 @@ export function classifyAisle(item = {}) {
     return 'freschi_gastronomia';
   }
   return 'dispensa_secca';
+}
+
+/**
+ * Local culinary family resolver that hardens `resolveIngredientPackSpec` against
+ * canned fish (`all'olio`/`vasetto`), fried crackers/snacks (`cialde gamberetti`),
+ * and beverages/coffee/wine so Shelf Plan B never cross-substitutes incompatible foods!
+ */
+function resolveEffectiveFoodFamily(text = '') {
+  const norm = normalizeSearchToken(text);
+  if (
+    /\b(ciald\w*|nuvol\w*\s+di\s+drago|cracker\w*|patatin\w*|chips|grissin\w*|tarall\w*|snack|pop\s*corn|biscott\w*|merendin\w*|cioccolat\w*|wafer|caramell\w*)\b/.test(
+      norm
+    )
+  ) {
+    return 'snack_sweet_composite';
+  }
+  if (
+    /\b(vino|prosecco|spumante|champagne|birra|liquore|amaro|grappa|aperitivo|gin\b|vodka|rum\b|whisky|caffe|cappuccino|cialde\s+caffe|capsule\s+caffe|bevanda|succo|nettare|bibita|cola|aranciata|acqua)\b/.test(
+      norm
+    )
+  ) {
+    return 'beverage_coffee_alcohol';
+  }
+  if (
+    /\b(tonno|sgombro|salmone|acciug\w*|alici|sardine)\b/.test(norm) &&
+    /\b(all\s*olio|sott\s*olio|in\s+olio|al\s+naturale|sgocciolat\w*|in\s+scatola|scatola|lattina|vasetto|vetro|sott\s*sale|pasta\s+d\s*acciug\w*|3\s*x|4\s*x|2\s*x)\b/.test(
+      norm
+    )
+  ) {
+    return 'canned_fish';
+  }
+  return resolveIngredientPackSpec(text).family;
+}
+
+function classifyNonFoodSubFamily(domain = '', text = '') {
+  const norm = normalizeSearchToken(text);
+
+  if (domain === 'kitchen_cookware') {
+    if (
+      /\b(lavastovigli\w*|lavatric\w*|asciugatric\w*|frigorifer\w*|congelator\w*|forno\s+incasso|piano\s+cottura|cappa\s+aspirante|climatizzator\w*|condizionator\w*|scaldabagn\w*)\b/.test(
+        norm
+      )
+    ) {
+      return 'major_appliances';
+    }
+    if (
+      /\b(bollitor\w*|tostapan\w*|frullator\w*|impastatric\w*|planetari\w*|friggitric\w*|microonde|macchina\s+(?:del\s+)?caffe|robot\s+cucina|tritatutto|sbattitor\w*|minipimer|estrattor\w*|spremiagrum\w*|griglia\s+elettrica|piastra)\b/.test(
+        norm
+      )
+    ) {
+      return 'small_kitchen_appliances';
+    }
+    if (
+      /\b(telecamer\w*|videocamer\w*|fotocamer\w*|smart\s*tv|televisor\w*|tv\b|notebook|computer|pc\b|tablet|ipad|iphone|smartphone|cellular\w*|cuffi\w*|auricolar\w*|speaker|soundbar|console|playstation|xbox|nintendo|stampant\w*|monitor|router|wifi|wi\s*fi|full\s*hd)\b/.test(
+        norm
+      )
+    ) {
+      return 'consumer_electronics';
+    }
+    if (
+      /\b(padell\w*|pentol\w*|casseruol\w*|tegam\w*|wok\b|bistecchier\w*|rostier\w*|tegli\w*|pirofil\w*|stampo|coperchi\w*|batteria\s+pentole|antiaderent\w*|coltell\w*|taglier\w*|mestol\w*|utensil\w*|scolapasta|pentolame)\b/.test(
+        norm
+      )
+    ) {
+      return 'cookware_pots_pans';
+    }
+    return 'kitchen_accessories_other';
+  }
+
+  if (domain === 'home_cleaning') {
+    if (/\b(lavatric\w*|bucato|ammorbident\w*|capi\b|smacchiator\w*|lana\b)\b/.test(norm)) {
+      return 'laundry_care';
+    }
+    if (/\b(piatti|lavastovigli\w*|brillantant\w*|cura\s+lavastoviglie|svelto|fairy|pril|finish)\b/.test(norm)) {
+      return 'dishwashing';
+    }
+    if (/\b(citric\w*|anticalcare|viakal|disincrostant\w*|acido|wc\b|bagno)\b/.test(norm)) {
+      return 'descaler_bathroom';
+    }
+    if (/\b(sgrassator\w*|forno|cappe|alcalin\w*|chanteclair|candeggina|ipoclorito|igienizzant\w*|disinfettant\w*)\b/.test(norm)) {
+      return 'degreaser_sanitizer';
+    }
+    if (/\b(spugn\w*|pann\w*|microfibra|pagliett\w*|guant\w*|mocio|scopa|paviment\w*|carta\s+(?:forno|assorbente|igienica)|alluminio|pellicola|sacchett\w*)\b/.test(norm)) {
+      return 'sponges_cloths_wraps';
+    }
+    return 'home_cleaning_general';
+  }
+
+  if (domain === 'personal_care') {
+    if (/\b(dentifrici\w*|spazzolin\w*|collutori\w*)\b/.test(norm)) return 'oral_care';
+    if (/\b(shampoo|balsamo|capelli|maschera\s+capelli)\b/.test(norm)) return 'hair_care';
+    if (/\b(bagnodoccia|docciaschiuma|bagnoschiuma|sapone|detergente\s+intimo|deodorant\w*|crema\s+corpo|crema\s+viso)\b/.test(norm)) {
+      return 'body_skin_care';
+    }
+    return 'personal_care_general';
+  }
+
+  if (domain === 'pet_care') {
+    if (/\b(lettier\w*|sabbiett\w*|traversin\w*)\b/.test(norm)) return 'pet_litter_hygiene';
+    if (/\b(gatt\w*|felin\w*|micio)\b/.test(norm)) return 'pet_cat_food';
+    if (/\b(can[ei]|cucciol\w*|dog\b)\b/.test(norm)) return 'pet_dog_food';
+    return 'pet_general';
+  }
+
+  return `${domain}_general`;
+}
+
+function stemItalianWord(word = '') {
+  if (word.length <= 4) return word;
+  return word.replace(/(?:he|hi|ie|ii|[aeiou])$/, '');
 }
 
 function haversineKm(lat1, lon1, lat2, lon2) {
@@ -104,9 +221,42 @@ function canStoreSupplyDomain(store, domain = 'food_human') {
   return domain === 'food_human';
 }
 
+function sanitizeLoadedShoppingItem(raw = {}) {
+  const safePos = (v, fb) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : fb);
+  const safeNonNeg = (v, fb = 0) => (Number.isFinite(Number(v)) && Number(v) >= 0 ? Number(v) : fb);
+  const name = String(raw.name || raw.title || 'Articolo Spesa').trim() || 'Articolo Spesa';
+  const domain = raw.domain || 'food_human';
+  const packsToBuy = Math.max(1, Math.round(safePos(raw.packsToBuy, 1)));
+  const packSizeGrams = safePos(raw.packSizeGrams, 300);
+  const unitPriceEur = Number(safePos(raw.unitPriceEur, 2.5).toFixed(2));
+  const lineTotalEur = Number(
+    safePos(raw.lineTotalEur, Number((packsToBuy * unitPriceEur).toFixed(2))).toFixed(2)
+  );
+  const totalPurchasedGrams = safePos(raw.totalPurchasedGrams, packsToBuy * packSizeGrams);
+  const totalRequiredGrams = safePos(raw.totalRequiredGrams, totalPurchasedGrams);
+  const residualReturnedToPantryGrams = safeNonNeg(raw.residualReturnedToPantryGrams, 0);
+
+  return {
+    ...raw,
+    id: String(raw.id || `shop-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`),
+    name,
+    domain,
+    aisle: raw.aisle || classifyAisle({ name, domain }),
+    packsToBuy,
+    packSizeGrams,
+    totalPurchasedGrams,
+    totalRequiredGrams,
+    residualReturnedToPantryGrams,
+    unitPriceEur,
+    lineTotalEur,
+    checked: Boolean(raw.checked)
+  };
+}
+
 export class ShoppingListService {
   constructor(options = {}) {
     this.storagePath = options.storagePath || process.env.BASILICO_SHOPPING_PATH || DEFAULT_SHOPPING_LIST_PATH;
+    this.pantryService = options.pantryService || pantryService;
     this._stores = null;
     this._seedOffersCache = null;
     this._state = null;
@@ -144,7 +294,9 @@ export class ShoppingListService {
       if (fs.existsSync(this.storagePath)) {
         const parsed = JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
         if (parsed && Array.isArray(parsed.items)) {
-          this._state = parsed;
+          this._state = {
+            items: parsed.items.filter(Boolean).map((i) => sanitizeLoadedShoppingItem(i))
+          };
           return this._state;
         }
       }
@@ -159,7 +311,7 @@ export class ShoppingListService {
     try {
       const dir = path.dirname(this.storagePath);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      const tmp = `${this.storagePath}.tmp.${process.pid}.${Date.now()}`;
+      const tmp = `${this.storagePath}.tmp.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2, 6)}`;
       fs.writeFileSync(tmp, JSON.stringify(this._state, null, 2), 'utf8');
       fs.renameSync(tmp, this.storagePath);
     } catch (_) {}
@@ -167,34 +319,43 @@ export class ShoppingListService {
 
   /**
    * Synchronizes the weekly meal plan's whole-pack ledger into the shopping list,
-   * preserving any manual or kitchen_care items already in the cart.
+   * preserving any manual or kitchen_care items AND preserving existing `checked` flags
+   * / Plan B substitutions on unchanged planner items when `options.preserveChecked` is true.
    */
-  syncFromWeeklyPlan(plan) {
+  syncFromWeeklyPlan(plan, options = {}) {
     const state = this._load();
+    const preserveChecked = options.preserveChecked !== false;
+    const prevPlannerById = new Map(
+      state.items.filter((i) => i.source === 'meal_planner').map((i) => [i.id, i])
+    );
     const nonPlannerItems = state.items.filter((i) => i.source !== 'meal_planner');
 
     const plannerItems = (plan?.ledger?.wholePackItems || [])
       .filter((wp) => wp.packsToBuy > 0)
-      .map((wp) => ({
-        id: `shop-plan-${wp.key}`,
-        name: wp.name,
-        domain: 'food_human',
-        source: 'meal_planner',
-        aisle: classifyAisle({ name: wp.name, domain: 'food_human' }),
-        packsToBuy: wp.packsToBuy,
-        packSizeGrams: wp.packSizeGrams,
-        totalPurchasedGrams: wp.totalPurchasedGrams,
-        totalRequiredGrams: wp.totalRequiredGrams,
-        residualReturnedToPantryGrams: wp.residualReturnedToPantryGrams,
-        unitPriceEur: wp.packPriceEur,
-        lineTotalEur: wp.checkoutCostEur,
-        preferredStoreId: wp.matchedOffer?.storeId || null,
-        preferredChain: wp.matchedOffer?.chainName || 'Basko / Coop Liguria Rapallo',
-        onPromo: Boolean(wp.matchedOffer),
-        usedInMeals: wp.usedInMeals || [],
-        checked: false,
-        creaId: wp.creaId || null
-      }));
+      .map((wp) => {
+        const id = `shop-plan-${wp.key}`;
+        const prev = prevPlannerById.get(id);
+        return {
+          id,
+          name: wp.name,
+          domain: 'food_human',
+          source: 'meal_planner',
+          aisle: classifyAisle({ name: wp.name, domain: 'food_human' }),
+          packsToBuy: wp.packsToBuy,
+          packSizeGrams: wp.packSizeGrams,
+          totalPurchasedGrams: wp.totalPurchasedGrams,
+          totalRequiredGrams: wp.totalRequiredGrams,
+          residualReturnedToPantryGrams: wp.residualReturnedToPantryGrams,
+          unitPriceEur: wp.packPriceEur,
+          lineTotalEur: wp.checkoutCostEur,
+          preferredStoreId: wp.matchedOffer?.storeId || null,
+          preferredChain: wp.matchedOffer?.chainName || 'Basko / Coop Liguria Rapallo',
+          onPromo: Boolean(wp.matchedOffer),
+          usedInMeals: wp.usedInMeals || [],
+          checked: preserveChecked && prev ? Boolean(prev.checked) : false,
+          creaId: wp.creaId || null
+        };
+      });
 
     state.items = [...plannerItems, ...nonPlannerItems];
     this._save();
@@ -203,22 +364,55 @@ export class ShoppingListService {
 
   /**
    * Adds a single item (from flyer offer, Stanza 2 CREA, Stanza 4 Kitchen Reset, or manual entry).
+   * Enforces strict `Number.isFinite` validation (`400 Bad Request` on invalid numeric inputs).
    */
   addItem(payload = {}) {
     const name = String(payload.name || payload.title || '').trim();
     if (!name) {
-      const err = new Error('Nome articolo lista spesa obbligatorio');
-      err.status = 400;
-      throw err;
+      throwBadRequest('Nome articolo lista spesa obbligatorio');
     }
 
     const domain = payload.domain || 'food_human';
     const spec = domain === 'food_human' ? resolveIngredientPackSpec(name) : { packGrams: 500, euroPerKg: 5.0 };
-    const packsToBuy = Math.max(1, Number(payload.packsToBuy || payload.quantity || 1));
-    const packSizeGrams = Number(payload.packSizeGrams || spec.packGrams || 300);
+
+    let packsToBuy = 1;
+    const rawQty = payload.packsToBuy ?? payload.quantity;
+    if (rawQty !== undefined && rawQty !== null && rawQty !== '') {
+      const parsedQty = Number(rawQty);
+      if (!Number.isFinite(parsedQty) || parsedQty <= 0) {
+        throwBadRequest('Quantità confezioni (packsToBuy) non valida: inserire un numero > 0');
+      }
+      packsToBuy = Math.max(1, Math.round(parsedQty));
+    }
+
+    const extractedMetrics = extractPackMetrics({ title: `${name} ${payload.quantityLabel || ''}` });
+    const fallbackPackGrams =
+      extractedMetrics.packVolumeMl || extractedMetrics.packWeightGrams || spec.packGrams || 300;
+
+    let packSizeGrams = fallbackPackGrams;
+    if (payload.packSizeGrams !== undefined && payload.packSizeGrams !== null && payload.packSizeGrams !== '') {
+      const parsedPack = Number(payload.packSizeGrams);
+      if (!Number.isFinite(parsedPack) || parsedPack <= 0) {
+        throwBadRequest('Formato confezione (packSizeGrams) non valido: inserire un numero > 0');
+      }
+      packSizeGrams = parsedPack;
+    }
+
     const defaultUnitPrice =
-      domain === 'food_human' ? Number(((spec.euroPerKg * packSizeGrams) / 1000).toFixed(2)) : 2.5;
-    const unitPriceEur = Math.max(0.1, Number(payload.unitPriceEur ?? payload.price ?? defaultUnitPrice));
+      domain === 'food_human'
+        ? Math.max(0.1, Number(((spec.euroPerKg * packSizeGrams) / 1000).toFixed(2)))
+        : 2.5;
+
+    let unitPriceEur = defaultUnitPrice;
+    const rawPrice = payload.unitPriceEur ?? payload.price;
+    if (rawPrice !== undefined && rawPrice !== null && rawPrice !== '') {
+      const parsedPrice =
+        typeof rawPrice === 'string' ? Number(rawPrice.trim().replace(',', '.')) : Number(rawPrice);
+      if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+        throwBadRequest('Prezzo unitario (unitPriceEur) non valido: inserire un numero > 0');
+      }
+      unitPriceEur = Number(parsedPrice.toFixed(2));
+    }
 
     const item = {
       id: payload.id || `shop-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -228,6 +422,7 @@ export class ShoppingListService {
       aisle: classifyAisle({ name, domain }),
       packsToBuy,
       packSizeGrams,
+      packVolumeMl: extractedMetrics.packVolumeMl || null,
       totalPurchasedGrams: packsToBuy * packSizeGrams,
       totalRequiredGrams: packsToBuy * packSizeGrams,
       residualReturnedToPantryGrams: 0,
@@ -236,6 +431,7 @@ export class ShoppingListService {
       preferredStoreId: payload.storeId || payload.preferredStoreId || null,
       preferredChain:
         payload.preferredChain ||
+        payload.preferredStore ||
         (domain === 'home_cleaning' || domain === 'personal_care'
           ? 'Tigotà / PiùMe Rapallo'
           : domain === 'kitchen_cookware'
@@ -263,7 +459,9 @@ export class ShoppingListService {
       existing.unitPriceEur = Number(unitPriceEur.toFixed(2));
       existing.lineTotalEur = Number((existing.packsToBuy * existing.unitPriceEur).toFixed(2));
       if (payload.preferredChain) existing.preferredChain = payload.preferredChain;
-      if (payload.storeId) existing.preferredStoreId = payload.storeId;
+      if (payload.storeId || payload.preferredStoreId) {
+        existing.preferredStoreId = payload.storeId || payload.preferredStoreId;
+      }
       if (payload.onPromo !== undefined) existing.onPromo = Boolean(payload.onPromo);
       this._save();
       return this.getShoppingListState();
@@ -291,13 +489,61 @@ export class ShoppingListService {
     }
     const current = state.items[idx];
     const nextTitle = String(replacement.title || replacement.name || current.name).trim();
-    const nextPrice = Number(replacement.price ?? replacement.unitPriceEur ?? current.unitPriceEur);
-    const validPrice = Number.isFinite(nextPrice) && nextPrice > 0 ? Number(nextPrice.toFixed(2)) : current.unitPriceEur;
-    const packs = Math.max(1, Number(current.packsToBuy || 1));
+    if (!nextTitle) {
+      throwBadRequest('Titolo sostituto Piano B obbligatorio');
+    }
+
+    let validPrice = current.unitPriceEur;
+    const rawReplacementPrice = replacement.price ?? replacement.unitPriceEur;
+    if (rawReplacementPrice !== undefined && rawReplacementPrice !== null && rawReplacementPrice !== '') {
+      const parsedPrice =
+        typeof rawReplacementPrice === 'string'
+          ? Number(rawReplacementPrice.trim().replace(',', '.'))
+          : Number(rawReplacementPrice);
+      if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+        throwBadRequest('Prezzo sostituto Piano B non valido: inserire un numero > 0');
+      }
+      validPrice = Number(parsedPrice.toFixed(2));
+    }
+
+    // Recompute pack size & total purchased grams when the substitute carries an explicit pack weight/volume (e.g. 500g -> 1kg)!
+    const replMetrics = extractPackMetrics({ title: nextTitle });
+    let nextPackSizeGrams = Number(current.packSizeGrams) || 300;
+    if (replacement.packSizeGrams !== undefined && replacement.packSizeGrams !== null) {
+      const parsedPack = Number(replacement.packSizeGrams);
+      if (!Number.isFinite(parsedPack) || parsedPack <= 0) {
+        throwBadRequest('packSizeGrams sostituto non valido');
+      }
+      nextPackSizeGrams = parsedPack;
+    } else if (replMetrics.packVolumeMl && replMetrics.packVolumeMl > 0) {
+      nextPackSizeGrams = replMetrics.packVolumeMl;
+    } else if (replMetrics.packWeightGrams && replMetrics.packWeightGrams > 0) {
+      nextPackSizeGrams = replMetrics.packWeightGrams;
+    }
+
+    let packs = Math.max(1, Number(current.packsToBuy || 1));
+    let totalRequiredGrams = Number(current.totalRequiredGrams) || packs * nextPackSizeGrams;
+    if (current.source === 'meal_planner' && current.domain === 'food_human' && totalRequiredGrams > 0) {
+      packs = Math.max(1, Math.ceil(totalRequiredGrams / nextPackSizeGrams));
+    } else if (nextPackSizeGrams !== current.packSizeGrams) {
+      totalRequiredGrams = packs * nextPackSizeGrams;
+    }
+
+    const totalPurchasedGrams = packs * nextPackSizeGrams;
+    const residualReturnedToPantryGrams = Math.max(
+      0,
+      Number((totalPurchasedGrams - totalRequiredGrams).toFixed(1))
+    );
 
     state.items[idx] = {
       ...current,
       name: nextTitle,
+      packSizeGrams: nextPackSizeGrams,
+      packVolumeMl: replMetrics.packVolumeMl || null,
+      packsToBuy: packs,
+      totalPurchasedGrams,
+      totalRequiredGrams,
+      residualReturnedToPantryGrams,
       unitPriceEur: validPrice,
       lineTotalEur: Number((packs * validPrice).toFixed(2)),
       preferredChain: replacement.chainName || replacement.preferredChain || current.preferredChain,
@@ -321,8 +567,9 @@ export class ShoppingListService {
 
   /**
    * "Prodotto Finito / Piano B sullo Scaffale":
-   * Finds semantically coherent in-store substitutes in Rapallo (same ingredient, same culinary/chemical family,
-   * or same supermarket aisle — strictly excluding nameless flyer tiles and profile-incompatible items).
+   * Finds semantically coherent in-store substitutes in Rapallo (strict culinary/appliance/pet/cleaning
+   * sub-family coherence — NEVER dishwashers/cameras for pans, NEVER canned tuna or shrimp crackers for
+   * fresh sea bream, NEVER yogurt for eggs, and excluding nameless flyer tiles & profile-incompatible items).
    */
   async getShelfPlanB(itemId) {
     const state = this._load();
@@ -345,11 +592,47 @@ export class ShoppingListService {
         return true;
       });
 
-    const itemSpec = targetDomain === 'food_human' ? resolveIngredientPackSpec(item.name) : { family: 'non_food' };
+    const itemEffectiveFamily =
+      targetDomain === 'food_human' ? resolveEffectiveFoodFamily(item.name) : classifyNonFoodSubFamily(targetDomain, item.name);
     const itemAisle = item.aisle || classifyAisle(item);
-    const itemNormWords = normalizeSearchToken(item.name)
+    const itemNorm = normalizeSearchToken(item.name);
+    const itemStems = itemNorm
       .split(' ')
-      .filter((w) => w.length >= 4);
+      .filter((w) => w.length >= 4)
+      .map(stemItalianWord)
+      .filter((s) => s.length >= 3);
+
+    const COMPATIBLE_AISLE_FOOD_FAMILIES = {
+      fresh_fish: new Set(['fresh_fish', 'luxury_crustaceans']),
+      luxury_crustaceans: new Set(['luxury_crustaceans', 'fresh_fish']),
+      meat_poultry: new Set(['meat_poultry', 'prime_beef_cuts']),
+      prime_beef_cuts: new Set(['prime_beef_cuts', 'meat_poultry']),
+      eggs: new Set(['eggs']),
+      milk: new Set(['milk']),
+      yogurt_single: new Set(['yogurt_single']),
+      smoked_cured: new Set(['smoked_cured']),
+      fresh_pasta: new Set(['fresh_pasta']),
+      fresh_fruit: new Set(['fresh_fruit', 'citrus']),
+      citrus: new Set(['citrus', 'fresh_fruit']),
+      fresh_vegetables: new Set(['fresh_vegetables', 'fresh_herbs', 'alliums_chili']),
+      fresh_herbs: new Set(['fresh_herbs', 'fresh_vegetables']),
+      alliums_chili: new Set(['alliums_chili', 'fresh_vegetables']),
+      dry_pasta_grains: new Set(['dry_pasta_grains', 'bread_bakery']),
+      bread_bakery: new Set(['bread_bakery', 'dry_pasta_grains']),
+      legumes_tomato: new Set(['legumes_tomato']),
+      canned_fish: new Set(['canned_fish', 'olives_capers_anchovies']),
+      oil_fats: new Set(['oil_fats']),
+      nuts_seeds: new Set(['nuts_seeds', 'pine_bottarga']),
+      honey_sweet: new Set(['honey_sweet'])
+    };
+
+    const NON_FOOD_STORE_HINT = {
+      kitchen_cookware: 'Unieuro / GDO Rapallo',
+      home_cleaning: 'Tigotà / PiùMe / GDO Rapallo',
+      personal_care: 'Tigotà / PiùMe / GDO Rapallo',
+      pet_care: 'Arcaplanet / GDO Rapallo',
+      bazar_seasonal: 'Negozi di Rapallo'
+    };
 
     const scored = [];
     for (const o of domainOffers) {
@@ -358,56 +641,85 @@ export class ShoppingListService {
       let rationale = '';
 
       if (targetDomain === 'food_human') {
+        const candEffectiveFamily = resolveEffectiveFoodFamily(o.title);
+
+        // Hard guard against snack/cracker/sweet/beverage leaks into culinary ingredient Plan B
+        if (
+          candEffectiveFamily === 'snack_sweet_composite' &&
+          itemEffectiveFamily !== 'snack_sweet_composite' &&
+          itemEffectiveFamily !== 'honey_sweet'
+        ) {
+          continue;
+        }
+        if (
+          candEffectiveFamily === 'beverage_coffee_alcohol' &&
+          itemEffectiveFamily !== 'beverage_coffee_alcohol' &&
+          itemEffectiveFamily !== 'wine_cooking'
+        ) {
+          continue;
+        }
+
         const directMatch = matchBomIngredientToOffer({ name: item.name, creaId: item.creaId }, [o]);
-        const candSpec = resolveIngredientPackSpec(o.title);
         const candAisle = classifyAisle({ name: o.title, category: o.category, domain: o.domain });
 
-        if (directMatch) {
+        if (directMatch && candEffectiveFamily === itemEffectiveFamily) {
           tier = 1;
           score = 120;
           rationale = 'Stesso ingrediente in offerta attiva a Rapallo (altra marca/insegna) — sostituzione 1:1 immediata.';
-        } else if (itemSpec.family !== 'default' && candSpec.family === itemSpec.family) {
+        } else if (itemEffectiveFamily !== 'default' && candEffectiveFamily === itemEffectiveFamily) {
           tier = 2;
-          score = 70;
+          score = 75;
           rationale =
             'Stessa famiglia gastronomica/nutrizionale in offerta oggi a Rapallo — equivalente diretto per le ricette del piano.';
         } else if (candAisle === itemAisle) {
-          // Guardrail: never cross-substitute sweet fresh fruit with savory vegetables/salads in ortofrutta,
-          // nor sweet biscuits/confectionery with savory pasta/legumes in dispensa_secca!
-          const isFruitVegClash =
-            (itemSpec.family === 'fresh_fruit' && candSpec.family === 'fresh_vegetables') ||
-            (itemSpec.family === 'fresh_vegetables' && candSpec.family === 'fresh_fruit') ||
-            (itemSpec.family === 'fresh_fruit' && candSpec.family === 'citrus' && /\b(insalat|carot|cipoll|patat|zucchin)\b/i.test(o.title)) ||
-            (itemSpec.family === 'fresh_fruit' && candSpec.family === 'default');
-          const isSweetSavoryPantryClash =
-            ['dry_pasta_grains', 'legumes_tomato', 'oil_fats'].includes(itemSpec.family) &&
-            (o.category === 'Colazione e Dolci' || candSpec.family === 'honey_sweet');
+          const allowedSet = COMPATIBLE_AISLE_FOOD_FAMILIES[itemEffectiveFamily];
+          const isCompatibleInAisle = allowedSet
+            ? allowedSet.has(candEffectiveFamily)
+            : candEffectiveFamily !== 'snack_sweet_composite' &&
+              candEffectiveFamily !== 'beverage_coffee_alcohol' &&
+              o.category !== 'Colazione e Dolci';
 
-          if (!isFruitVegClash && !isSweetSavoryPantryClash) {
+          // Extra guard for citrus vs savory vegetables in ortofrutta
+          const isFruitVegClash =
+            (itemEffectiveFamily === 'fresh_fruit' &&
+              /\b(insalat\w*|carot\w*|cipoll\w*|patat\w*|zucchin\w*|spinac\w*|cavol\w*|verza)\b/i.test(o.title)) ||
+            (itemEffectiveFamily === 'fresh_vegetables' && candEffectiveFamily === 'fresh_fruit');
+
+          if (isCompatibleInAisle && !isFruitVegClash) {
             tier = 3;
-            score = 30;
-            rationale = 'Alternativa compatibile dello stesso reparto disponibile oggi nei supermercati di Rapallo.';
+            score = 35;
+            rationale = 'Alternativa compatibile dello stesso reparto e categoria culinaria disponibile oggi a Rapallo.';
           }
         }
       } else {
         const offNorm = normalizeSearchToken(`${o.title} ${o.brand || ''}`);
-        const sharedWord = itemNormWords.some((w) => offNorm.includes(w));
-        const isChemMatch =
-          (/\b(citric\w*|anticalcare|viakal|acido)\b/.test(normalizeSearchToken(item.name)) &&
-            /\b(anticalcare|viakal|acido|bagno|wc)\b/.test(offNorm)) ||
-          (/\b(sgrassator\w*|forno|cappe|alcalin\w*)\b/.test(normalizeSearchToken(item.name)) &&
-            /\b(sgrassator\w*|chanteclair|forno|cucina)\b/.test(offNorm)) ||
-          (/\b(piatti|lavastoviglie|enzim\w*)\b/.test(normalizeSearchToken(item.name)) &&
-            /\b(piatti|svelto|fairy|pril|finish|lavastoviglie)\b/.test(offNorm));
+        const offWords = offNorm.split(' ').filter((w) => w.length >= 4);
+        const offStems = offWords.map(stemItalianWord).filter((s) => s.length >= 3);
+        const candSubFamily = classifyNonFoodSubFamily(targetDomain, o.title);
 
-        if (sharedWord || isChemMatch) {
-          tier = 1;
-          score = 100;
-          rationale = 'Stessa funzione chimica/tecnica in promozione attiva a Rapallo (Tigotà / PiùMe / GDO).';
-        } else {
+        const sharedStem = itemStems.some((st) => offStems.some((os) => os === st || (st.length >= 5 && os.startsWith(st))));
+        const storeHint = NON_FOOD_STORE_HINT[targetDomain] || 'Rapallo';
+
+        // Strict sub-family coherence: NEVER cross cookware <-> major_appliances (dishwashers) <-> electronics (cameras) <-> small_appliances (kettles)!
+        if (candSubFamily === itemEffectiveFamily) {
+          if (sharedStem) {
+            tier = 1;
+            score = 115;
+            rationale = `Stessa tipologia di prodotto in promozione attiva a Rapallo (${storeHint}).`;
+          } else {
+            tier = 2;
+            score = 70;
+            rationale = `Alternativa equivalente della stessa famiglia merceologica in offerta a Rapallo (${storeHint}).`;
+          }
+        } else if (
+          sharedStem &&
+          candSubFamily !== 'consumer_electronics' &&
+          candSubFamily !== 'major_appliances' &&
+          itemEffectiveFamily !== 'cookware_pots_pans'
+        ) {
           tier = 3;
-          score = 25;
-          rationale = 'Alternativa dello stesso reparto Cura Casa / Cucina disponibile oggi a Rapallo.';
+          score = 40;
+          rationale = `Alternativa affine disponibile nei punti vendita di Rapallo (${storeHint}).`;
         }
       }
 
@@ -427,12 +739,14 @@ export class ShoppingListService {
       const key = `${normalizeSearchToken(entry.offer.title)}:${entry.offer.chainId}`;
       if (seenTitles.has(key)) continue;
       seenTitles.add(key);
+      const metrics = extractPackMetrics(entry.offer);
       alternatives.push({
         offerId: entry.offer.id,
         title: entry.offer.title,
         storeId: entry.offer.storeId || null,
         chainName: entry.offer.storeName || entry.offer.chainName || entry.offer.brand || entry.offer.chainId,
         price: Number(entry.offer.promoPrice ?? entry.offer.price ?? entry.offer.discountPrice ?? 0),
+        packSizeGrams: metrics.packVolumeMl || metrics.packWeightGrams || null,
         rationale: entry.rationale
       });
       if (alternatives.length >= 3) break;
@@ -446,7 +760,9 @@ export class ShoppingListService {
 
   /**
    * Empirically simulates shopping in 1 Single Store vs 2 Stores vs 3 Stores across the real
-   * verified retailers of Rapallo (16035 GE) — zero synthetic multipliers, zero non-Rapallo chains.
+   * verified retailers of Rapallo (16035 GE) — allowing specialist stores (`Unieuro`, `Tigotà`,
+   * `PiùMe`, `Arcaplanet`) whenever they cover 100% of active items, pricing `pet` properly (`0.94`),
+   * and pruning 0-item ghost stops in 2/3-Store scenarios!
    */
   _simulateMultiStoreScenarios(items) {
     const allStores = this.getStores();
@@ -523,10 +839,13 @@ export class ShoppingListService {
         }
 
         const storeOffers = offersByStoreId.get(store.id) || [];
-        const brandNorm = normalizeSearchToken(store.brand || store.name || '');
+        const chainNorm = normalizeSearchToken(store.chainId || store.brand || '');
+        const nameHeadNorm = normalizeSearchToken(String(store.name || '').split('-')[0]);
         const isPreferredStore =
           (item.preferredStoreId && item.preferredStoreId === store.id) ||
-          (item.onPromo && brandNorm && prefChainNorm.includes(brandNorm));
+          (prefChainNorm &&
+            ((chainNorm && prefChainNorm.includes(chainNorm)) ||
+              (nameHeadNorm && prefChainNorm.includes(nameHeadNorm))));
 
         if (isPreferredStore) {
           return item.lineTotalEur;
@@ -540,11 +859,31 @@ export class ShoppingListService {
             storeOffers
           );
         } else {
-          matchedStoreOffer = storeOffers.find((o) => {
-            if (o.domain !== item.domain) return false;
-            const offNorm = normalizeSearchToken(`${o.title} ${o.brand || ''}`);
-            return itemNormWords.some((w) => offNorm.includes(w));
-          });
+          // If the user explicitly pinned a specific store/promo (e.g. a €29.90 Lagostina pan at Unieuro
+          // or a specific detergent at Tigotà), do NOT cross-match a generic store-brand/seasonal promo
+          // at another chain (e.g. €3.90 "Padella per caldarroste" at Gulliver) as if it were the same SKU!
+          const hasPinnedSingleChain =
+            Boolean(item.preferredStoreId) ||
+            (Boolean(prefChainNorm) && !prefChainNorm.includes('/'));
+
+          if (!hasPinnedSingleChain) {
+            const itemSubFamily = classifyNonFoodSubFamily(item.domain, item.name);
+            const itemStems = itemNormWords.map(stemItalianWord).filter((s) => s.length >= 3);
+            matchedStoreOffer = storeOffers.find((o) => {
+              if (o.domain !== item.domain) return false;
+              const candSubFamily = classifyNonFoodSubFamily(o.domain, o.title);
+              if (!itemSubFamily.endsWith('_general') && !candSubFamily.endsWith('_general') && candSubFamily !== itemSubFamily) {
+                return false;
+              }
+              if (/\bcaldarrost\w*\b/i.test(o.title || '') && !/\bcaldarrost\w*\b/i.test(item.name || '')) {
+                return false;
+              }
+              const offWords = normalizeSearchToken(`${o.title} ${o.brand || ''}`).split(' ');
+              const offStems = offWords.filter((w) => w.length >= 4).map(stemItalianWord);
+              const sharedCount = itemStems.filter((st) => offStems.includes(st)).length;
+              return itemStems.length >= 2 ? sharedCount >= 2 : sharedCount >= 1;
+            });
+          }
         }
 
         if (matchedStoreOffer) {
@@ -570,6 +909,9 @@ export class ShoppingListService {
         if (store.storeCategory === 'elettronica_cucina') {
           return Number((item.lineTotalEur * (item.onPromo ? 1.03 : 0.95)).toFixed(2));
         }
+        if (store.storeCategory === 'pet') {
+          return Number((item.lineTotalEur * (item.onPromo ? 1.03 : 0.94)).toFixed(2));
+        }
         if (store.chainId === 'carrefour-express') {
           return Number((item.lineTotalEur * (item.onPromo ? 1.21 : 1.08)).toFixed(2));
         }
@@ -583,18 +925,56 @@ export class ShoppingListService {
       });
     });
 
+    // Evaluates a subset of stores AND returns the pruned list of stores that actually win >= 1 item
     const evalStoreSubset = (storeIndices) => {
       let total = 0;
+      const usedSet = new Set();
       for (let i = 0; i < items.length; i++) {
         let bestItemCost = Infinity;
+        let bestStoreIdx = -1;
         for (const sIdx of storeIndices) {
           const c = costMatrix[i][sIdx];
-          if (c < bestItemCost) bestItemCost = c;
+          if (c < bestItemCost) {
+            bestItemCost = c;
+            bestStoreIdx = sIdx;
+          }
         }
-        if (!Number.isFinite(bestItemCost)) return Infinity;
+        if (!Number.isFinite(bestItemCost) || bestStoreIdx === -1) {
+          return { cost: Infinity, activeIndices: [] };
+        }
         total += bestItemCost;
+        usedSet.add(bestStoreIdx);
       }
-      return Number(total.toFixed(2));
+      const activeIndices = storeIndices.filter((idx) => usedSet.has(idx));
+      return {
+        cost: Number(total.toFixed(2)),
+        activeIndices
+      };
+    };
+
+    const computeRouteMinutes = (activeIndices) => {
+      if (activeIndices.length === 0) return 20;
+      if (activeIndices.length === 1) {
+        const s = candidateStores[activeIndices[0]];
+        return (s.logistics?.avgVisitMinutes || 20) + Math.min(10, Math.ceil(items.length * 0.5));
+      }
+      if (activeIndices.length === 2) {
+        const sa = candidateStores[activeIndices[0]];
+        const sb = candidateStores[activeIndices[1]];
+        const distKm = haversineKm(sa.latitude, sa.longitude, sb.latitude, sb.longitude);
+        const transferMins = Math.max(5, Math.round(distKm * 11));
+        return (sa.logistics?.avgVisitMinutes || 18) + (sb.logistics?.avgVisitMinutes || 14) + transferMins;
+      }
+      const trio = activeIndices.map((idx) => candidateStores[idx]);
+      const dist12 = haversineKm(trio[0].latitude, trio[0].longitude, trio[1].latitude, trio[1].longitude);
+      const dist23 = haversineKm(trio[1].latitude, trio[1].longitude, trio[2].latitude, trio[2].longitude);
+      const transferMins = Math.max(10, Math.round((dist12 + dist23) * 11));
+      return (
+        (trio[0].logistics?.avgVisitMinutes || 16) +
+        (trio[1].logistics?.avgVisitMinutes || 14) +
+        (trio[2].logistics?.avgVisitMinutes || 12) +
+        transferMins
+      );
     };
 
     const formatCards = (storesArr) => {
@@ -602,60 +982,60 @@ export class ShoppingListService {
       return cards.length > 0 ? cards : ['Nessuna tessera richiesta'];
     };
 
-    // 1. Optimal Single Store in Rapallo (must be full-line GDO to cover 100% of basket)
+    // 1. Optimal Single Store in Rapallo:
+    // Any store (GDO OR specialist like Unieuro/Tigotà/PiùMe/Arcaplanet) that covers 100% of active items!
     let best1 = null;
     for (let sIdx = 0; sIdx < candidateStores.length; sIdx++) {
-      const s = candidateStores[sIdx];
-      if (s.storeCategory !== 'gdo') continue;
-      const cost = evalStoreSubset([sIdx]);
-      if (!Number.isFinite(cost)) continue;
-      const mins = (s.logistics?.avgVisitMinutes || 20) + Math.min(10, Math.ceil(items.length * 0.5));
-      if (!best1 || cost < best1.cost || (cost === best1.cost && mins < best1.mins)) {
-        best1 = { indices: [sIdx], stores: [s], cost, mins };
+      const res1 = evalStoreSubset([sIdx]);
+      if (!Number.isFinite(res1.cost)) continue;
+      const mins = computeRouteMinutes([sIdx]);
+      if (!best1 || res1.cost < best1.cost || (res1.cost === best1.cost && mins < best1.mins)) {
+        best1 = { indices: [sIdx], stores: [candidateStores[sIdx]], cost: res1.cost, mins };
       }
     }
 
-    // 2. Optimal 2-Store Combination in Rapallo
-    let best2 = null;
+    // 2. Optimal Genuine 2-Store Combination in Rapallo (only if BOTH stores supply >= 1 item AND strictly save vs 1-store)
+    let best2Genuine = null;
     for (let a = 0; a < candidateStores.length; a++) {
       for (let b = a + 1; b < candidateStores.length; b++) {
-        if (candidateStores[a].storeCategory !== 'gdo' && candidateStores[b].storeCategory !== 'gdo') continue;
-        const cost = evalStoreSubset([a, b]);
-        if (!Number.isFinite(cost)) continue;
-        const sa = candidateStores[a];
-        const sb = candidateStores[b];
-        const distKm = haversineKm(sa.latitude, sa.longitude, sb.latitude, sb.longitude);
-        const transferMins = Math.max(5, Math.round(distKm * 11));
-        const mins = (sa.logistics?.avgVisitMinutes || 18) + (sb.logistics?.avgVisitMinutes || 14) + transferMins;
-        if (!best2 || cost < best2.cost || (cost === best2.cost && mins < best2.mins)) {
-          best2 = { indices: [a, b], stores: [sa, sb], cost, mins };
+        const res2 = evalStoreSubset([a, b]);
+        if (!Number.isFinite(res2.cost) || res2.activeIndices.length !== 2) continue;
+        if (best1 && res2.cost >= best1.cost) continue;
+        const mins = computeRouteMinutes(res2.activeIndices);
+        if (!best2Genuine || res2.cost < best2Genuine.cost || (res2.cost === best2Genuine.cost && mins < best2Genuine.mins)) {
+          best2Genuine = {
+            indices: res2.activeIndices,
+            stores: res2.activeIndices.map((i) => candidateStores[i]),
+            cost: res2.cost,
+            mins
+          };
         }
       }
     }
+    // Prune 0-item ghost stops: if no 2-store pair saves money over 1-store, report the pruned single-store winner!
+    const best2 = best2Genuine || best1;
 
-    // 3. Optimal 3-Store Cherry-Picking Combination in Rapallo
-    let best3 = null;
+    // 3. Optimal Genuine 3-Store Combination in Rapallo (only if ALL 3 stores supply >= 1 item AND strictly save vs 2-store)
+    let best3Genuine = null;
     for (let a = 0; a < candidateStores.length; a++) {
       for (let b = a + 1; b < candidateStores.length; b++) {
         for (let c = b + 1; c < candidateStores.length; c++) {
-          const trio = [candidateStores[a], candidateStores[b], candidateStores[c]];
-          if (!trio.some((s) => s.storeCategory === 'gdo')) continue;
-          const cost = evalStoreSubset([a, b, c]);
-          if (!Number.isFinite(cost)) continue;
-          const dist12 = haversineKm(trio[0].latitude, trio[0].longitude, trio[1].latitude, trio[1].longitude);
-          const dist23 = haversineKm(trio[1].latitude, trio[1].longitude, trio[2].latitude, trio[2].longitude);
-          const transferMins = Math.max(10, Math.round((dist12 + dist23) * 11));
-          const mins =
-            (trio[0].logistics?.avgVisitMinutes || 16) +
-            (trio[1].logistics?.avgVisitMinutes || 14) +
-            (trio[2].logistics?.avgVisitMinutes || 12) +
-            transferMins;
-          if (!best3 || cost < best3.cost || (cost === best3.cost && mins < best3.mins)) {
-            best3 = { indices: [a, b, c], stores: trio, cost, mins };
+          const res3 = evalStoreSubset([a, b, c]);
+          if (!Number.isFinite(res3.cost) || res3.activeIndices.length !== 3) continue;
+          if (best2 && res3.cost >= best2.cost) continue;
+          const mins = computeRouteMinutes(res3.activeIndices);
+          if (!best3Genuine || res3.cost < best3Genuine.cost || (res3.cost === best3Genuine.cost && mins < best3Genuine.mins)) {
+            best3Genuine = {
+              indices: res3.activeIndices,
+              stores: res3.activeIndices.map((i) => candidateStores[i]),
+              cost: res3.cost,
+              mins
+            };
           }
         }
       }
     }
+    const best3 = best3Genuine || best2;
 
     const singleCost = best1 ? best1.cost : Number(items.reduce((acc, i) => acc + i.lineTotalEur, 0).toFixed(2));
     const twoCost = best2 ? Math.min(singleCost, best2.cost) : singleCost;
@@ -664,7 +1044,7 @@ export class ShoppingListService {
     const savings2vs1 = Number(Math.max(0, singleCost - twoCost).toFixed(2));
     const savings3vs1 = Number(Math.max(0, singleCost - threeCost).toFixed(2));
     const extraSavings3vs2 = Number(Math.max(0, twoCost - threeCost).toFixed(2));
-    const extraMins3vs2 = Math.max(8, (best3?.mins || 54) - (best2?.mins || 38));
+    const extraMins3vs2 = Math.max(8, (best3Genuine?.mins || (best2?.mins || 38) + 12) - (best2?.mins || 38));
 
     return [
       {
@@ -678,7 +1058,7 @@ export class ShoppingListService {
         savingsVsSingleEur: 0,
         estimatedTotalMinutes: best1 ? best1.mins : 26,
         recommendation:
-          'Unica tappa nel supermercato di Rapallo col miglior costo complessivo sul tuo carrello attuale: zero spostamenti tra insegne.'
+          'Unica tappa nel punto vendita di Rapallo col miglior costo complessivo sul tuo carrello attuale: zero spostamenti tra insegne.'
       },
       {
         strategyId: '2_stores_optimal',
@@ -690,8 +1070,9 @@ export class ShoppingListService {
         estimatedTotalEur: twoCost,
         savingsVsSingleEur: savings2vs1,
         estimatedTotalMinutes: best2 ? best2.mins : 40,
-        recommendation:
-          savings2vs1 >= 1.5
+        recommendation: !best2Genuine
+          ? 'Un singolo punto vendita copre già il carrello al miglior prezzo attivo: nessuna 2ª tappa superflua.'
+          : savings2vs1 >= 1.5
             ? `Risparmi €${savings2vs1.toFixed(2)} rispetto al singolo negozio abbinando le promozioni complementari delle 2 insegne a Rapallo.`
             : 'Il carrello è già molto concentrato su una sola insegna: la 2ª tappa offre un margine contenuto.'
       },
@@ -711,8 +1092,9 @@ export class ShoppingListService {
         estimatedTotalEur: threeCost,
         savingsVsSingleEur: savings3vs1,
         estimatedTotalMinutes: best3 ? best3.mins : 55,
-        recommendation:
-          extraSavings3vs2 < 3.0
+        recommendation: !best3Genuine
+          ? `Nessuna 3ª tappa riduce ulteriormente il totale (€${twoCost.toFixed(2)}): tappe extra eliminate.`
+          : extraSavings3vs2 < 3.0
             ? `Nota onesta: la 3ª tappa fa risparmiare solo €${extraSavings3vs2.toFixed(2)} in più rispetto ai 2 negozi (+${extraMins3vs2} min di spostamento a Rapallo) — consigliato fermarsi a 2 negozi.`
             : `Risparmio extra di €${extraSavings3vs2.toFixed(2)} rispetto a 2 negozi acquistando ogni articolo nell'insegna col miglior prezzo attivo a Rapallo.`
       }
@@ -726,15 +1108,17 @@ export class ShoppingListService {
     const foodItems = items.filter((i) => i.domain === 'food_human');
     const homeAndKitchenItems = items.filter((i) => i.domain !== 'food_human');
 
-    const foodSubtotalEur = Number(foodItems.reduce((acc, i) => acc + i.lineTotalEur, 0).toFixed(2));
+    const safeLineTotal = (i) => (Number.isFinite(Number(i.lineTotalEur)) ? Number(i.lineTotalEur) : 0);
+
+    const foodSubtotalEur = Number(foodItems.reduce((acc, i) => acc + safeLineTotal(i), 0).toFixed(2));
     const homeAndKitchenSubtotalEur = Number(
-      homeAndKitchenItems.reduce((acc, i) => acc + i.lineTotalEur, 0).toFixed(2)
+      homeAndKitchenItems.reduce((acc, i) => acc + safeLineTotal(i), 0).toFixed(2)
     );
     const grandTotalEur = Number((foodSubtotalEur + homeAndKitchenSubtotalEur).toFixed(2));
     const checkedTotalEur = Number(
       items
         .filter((i) => i.checked)
-        .reduce((acc, i) => acc + i.lineTotalEur, 0)
+        .reduce((acc, i) => acc + safeLineTotal(i), 0)
         .toFixed(2)
     );
 
@@ -745,7 +1129,7 @@ export class ShoppingListService {
 
     const storeSimulations = this._simulateMultiStoreScenarios(items);
 
-    // Build formatted WhatsApp / Telegram text export
+    // Build formatted WhatsApp / Telegram text export (hide food grams on non-food items!)
     const exportLines = [
       '🌿 *BASILICO — LISTA SPESA SMART RAPALLO (16035)*',
       `💰 Totale Stimato: €${grandTotalEur.toFixed(2)} (Alimentari: €${foodSubtotalEur.toFixed(2)} · Casa/Pentole: €${homeAndKitchenSubtotalEur.toFixed(2)})`,
@@ -755,9 +1139,12 @@ export class ShoppingListService {
       exportLines.push(`*${grp.icon} ${grp.label}*`);
       for (const it of grp.items) {
         const chk = it.checked ? '✅' : '⬜';
-        exportLines.push(
-          `${chk} ${it.name} — ${it.packsToBuy} conf. (${it.totalPurchasedGrams}g) · €${it.lineTotalEur.toFixed(2)} [${it.preferredChain}]`
-        );
+        const priceTxt = safeLineTotal(it).toFixed(2);
+        const qtyTxt =
+          it.domain === 'food_human'
+            ? `${it.packsToBuy} conf. (${it.totalPurchasedGrams}g)`
+            : `${it.packsToBuy} pz.`;
+        exportLines.push(`${chk} ${it.name} — ${qtyTxt} · €${priceTxt} [${it.preferredChain}]`);
       }
       exportLines.push('');
     }
@@ -780,26 +1167,48 @@ export class ShoppingListService {
 
   /**
    * 1-Click "Spunta tutto e carica in Dispensa":
-   * Transfers all food_human items from the shopping list into the user's 3-zone pantry.
+   * Inserts `packsToBuy` individual `closed` packages of `packSizeGrams` into the 3-zone Pantry
+   * (so opening 1 pack starts `T_open` ONLY on that single pack, never on a merged 750g blob!)
+   * and clears completed items from the active shopping cart so a second click NEVER duplicates
+   * Pantry stock and resets the Header cart badge to `0` (`M-P1-20`).
    */
   completeShoppingAndLoadPantry() {
     const state = this._load();
     const loadedToPantry = [];
 
     for (const item of state.items) {
-      item.checked = true;
-      if (item.domain === 'food_human') {
-        const added = pantryService.addItem({
+      if (item.domain !== 'food_human') continue;
+
+      const packsCount = Math.max(1, Math.round(Number(item.packsToBuy) || 1));
+      const metrics = extractPackMetrics({ title: item.name });
+      const isLiquid =
+        Boolean(item.packVolumeMl || metrics.packVolumeMl) ||
+        /\b(olio|latte|vino|birra|aceto|acqua|succo|bevanda)\b/i.test(item.name || '');
+
+      const singlePackWeight =
+        Number.isFinite(Number(item.packSizeGrams)) && Number(item.packSizeGrams) > 0
+          ? Number(item.packSizeGrams)
+          : Number.isFinite(Number(item.totalPurchasedGrams)) && Number(item.totalPurchasedGrams) > 0
+            ? Math.round(Number(item.totalPurchasedGrams) / packsCount)
+            : 300;
+
+      for (let p = 0; p < packsCount; p++) {
+        const added = this.pantryService.addItem({
           title: item.name,
-          initialWeightGrams: item.totalPurchasedGrams || 300,
-          remainingWeightGrams: item.totalPurchasedGrams || 300,
+          initialWeightGrams: singlePackWeight,
+          remainingWeightGrams: singlePackWeight,
+          unit: isLiquid ? 'ml' : 'g',
+          status: 'closed',
           creaFoodId: item.creaId || null
         });
         loadedToPantry.push(added);
       }
     }
 
+    // Clear completed cart items so repeat clicks are a clean no-op and Header badge resets to 0
+    state.items = [];
     this._save();
+
     return {
       loadedCount: loadedToPantry.length,
       loadedItems: loadedToPantry,

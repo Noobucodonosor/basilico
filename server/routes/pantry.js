@@ -45,7 +45,16 @@ router.post('/items/:id/consume', (req, res, next) => {
 router.post('/consume-dish', async (req, res, next) => {
   try {
     const body = req.body || {};
-    const servings = Math.max(1, Number(body.servings) || 1);
+    let servings = 1;
+    if (body.servings !== undefined && body.servings !== null && body.servings !== '') {
+      const parsedServings = Number(body.servings);
+      if (!Number.isFinite(parsedServings) || parsedServings <= 0) {
+        const err = new Error('Numero porzioni (servings) non valido: inserire un numero > 0');
+        err.status = 400;
+        throw err;
+      }
+      servings = parsedServings;
+    }
 
     if (Array.isArray(body.bom) && body.bom.length > 0) {
       const result = pantryService.consumeDishIngredients({

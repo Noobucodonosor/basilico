@@ -1,20 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
-export function CounterPriceModal({ isOpen, onClose, stores = [], defaultStoreId = null, onSaved }) {
+const DEFAULT_RAPALLO_LOCAL_SHOPS = [
+  { id: 'rapallo-pescheria-mercato', name: 'Mercato Ittico & Pescherie - Rapallo', icon: '🐟' },
+  { id: 'rapallo-macelleria-centro', name: 'Macelleria Storica - Centro Rapallo', icon: '🥩' },
+  { id: 'rapallo-panificio-pastificio', name: 'Panificio & Focacceria Ligure - Rapallo', icon: '🥖' },
+  { id: 'rapallo-ortofrutta-tigullio', name: 'Ortofrutta Locale - Rapallo', icon: '🥬' },
+  { id: 'rapallo-casalinghi-centro', name: 'Casalinghi & Pentole - Centro Storico Rapallo', icon: '🍳' }
+];
+
+const SHOP_ICON_BY_ID = {
+  'rapallo-pescheria-mercato': '🐟',
+  'rapallo-macelleria-centro': '🥩',
+  'rapallo-panificio-pastificio': '🥖',
+  'rapallo-panificio-focacceria': '🥖',
+  'rapallo-ortofrutta-tigullio': '🥬',
+  'rapallo-casalinghi-centro': '🍳'
+};
+
+export function CounterPriceModal({
+  isOpen,
+  onClose,
+  stores = [],
+  localShops = [],
+  defaultStoreId = null,
+  onSaved
+}) {
+  const effectiveLocalShops = useMemo(() => {
+    const base = Array.isArray(localShops) && localShops.length > 0 ? localShops : DEFAULT_RAPALLO_LOCAL_SHOPS;
+    const byId = new Map(base.map((s) => [s.id, s]));
+    if (!byId.has('rapallo-ortofrutta-tigullio')) {
+      byId.set('rapallo-ortofrutta-tigullio', {
+        id: 'rapallo-ortofrutta-tigullio',
+        name: 'Ortofrutta Locale - Rapallo',
+        icon: '🥬'
+      });
+    }
+    if (defaultStoreId === 'rapallo-panificio-focacceria' && !byId.has('rapallo-panificio-focacceria')) {
+      byId.set('rapallo-panificio-focacceria', {
+        id: 'rapallo-panificio-focacceria',
+        name: 'Panificio & Focacceria Ligure - Rapallo',
+        icon: '🥖'
+      });
+    }
+    return Array.from(byId.values());
+  }, [localShops, defaultStoreId]);
+
+  const fallbackStoreId = effectiveLocalShops[0]?.id || 'rapallo-pescheria-mercato';
+
   const [title, setTitle] = useState('');
   const [brand, setBrand] = useState('');
   const [price, setPrice] = useState('');
   const [unitString, setUnitString] = useState('1 kg');
-  const [storeId, setStoreId] = useState(defaultStoreId || 'pescheria-locale-rapallo');
+  const [storeId, setStoreId] = useState(defaultStoreId || fallbackStoreId);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  React.useEffect(() => {
-    if (defaultStoreId) {
-      setStoreId(defaultStoreId);
-    }
-  }, [defaultStoreId, isOpen]);
+  useEffect(() => {
+    if (!isOpen) return;
+    setStoreId(defaultStoreId || fallbackStoreId);
+  }, [defaultStoreId, isOpen, fallbackStoreId]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -23,7 +80,9 @@ export function CounterPriceModal({ isOpen, onClose, stores = [], defaultStoreId
     setError(null);
     setSubmitting(true);
     try {
-      const selectedStore = stores.find((s) => s.id === storeId);
+      const selectedStore =
+        effectiveLocalShops.find((s) => s.id === storeId) ||
+        stores.find((s) => s.id === storeId);
       const res = await fetch('/api/prices/observe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -142,11 +201,11 @@ export function CounterPriceModal({ isOpen, onClose, stores = [], defaultStoreId
                 onChange={(e) => setStoreId(e.target.value)}
                 className="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
-                <option value="pescheria-locale-rapallo">🐟 Pescheria / Mercato Rapallo</option>
-                <option value="macelleria-locale-rapallo">🥩 Macelleria / Polleria Rapallo</option>
-                <option value="panificio-pastificio-rapallo">🥖 Panificio / Pastificio Fresco</option>
-                <option value="ortofrutta-locale-rapallo">🥬 Ortofrutta Locale Rapallo</option>
-                <option value="casalinghi-ferramenta-rapallo">🍳 Casalinghi / Ferramenta Rapallo</option>
+                {effectiveLocalShops.map((shop) => (
+                  <option key={shop.id} value={shop.id}>
+                    {shop.icon || SHOP_ICON_BY_ID[shop.id] || '🧺'} {shop.name}
+                  </option>
+                ))}
                 {stores.map((s) => (
                   <option key={s.id} value={s.id}>
                     🏪 {s.name}

@@ -95,20 +95,20 @@ export function AisleChecklistModal({
             <div>
               <div className="text-[10px] text-slate-500 font-bold uppercase">Subtotale Alimentari</div>
               <div className="text-base font-extrabold text-emerald-800">
-                €{shoppingList.subtotals.foodSubtotalEur.toFixed(2)}
+                €{Number(shoppingList.subtotals.foodSubtotalEur || 0).toFixed(2)}
               </div>
             </div>
             <div>
               <div className="text-[10px] text-slate-500 font-bold uppercase">Casa & Sottolavello</div>
               <div className="text-base font-extrabold text-sky-800">
-                €{shoppingList.subtotals.homeAndKitchenSubtotalEur.toFixed(2)}
+                €{Number(shoppingList.subtotals.homeAndKitchenSubtotalEur || 0).toFixed(2)}
               </div>
             </div>
             <div>
               <div className="text-[10px] text-slate-500 font-bold uppercase">Nel Carrello / Totale</div>
               <div className="text-base font-extrabold text-slate-900">
-                €{shoppingList.subtotals.checkedTotalEur.toFixed(2)} / €
-                {shoppingList.subtotals.grandTotalEur.toFixed(2)}
+                €{Number(shoppingList.subtotals.checkedTotalEur || 0).toFixed(2)} / €
+                {Number(shoppingList.subtotals.grandTotalEur || 0).toFixed(2)}
               </div>
             </div>
           </div>
@@ -188,19 +188,29 @@ export function AisleChecklistModal({
                         <div>
                           <div className="text-sm font-extrabold">{item.name}</div>
                           <div className="text-[11px] text-slate-500">
-                            <strong>{item.packsToBuy} conf. intere</strong> ({item.totalPurchasedGrams}g acquistati ·
-                            usati {item.totalRequiredGrams}g
-                            {item.residualReturnedToPantryGrams > 0
-                              ? ` → +${item.residualReturnedToPantryGrams}g rientrano in Dispensa`
-                              : ''}
-                            ) • Insegna: <strong>{item.preferredChain}</strong>
+                            {item.domain && item.domain !== 'food_human' ? (
+                              <>
+                                <strong>{item.packsToBuy} {item.packsToBuy === 1 ? 'pezzo' : 'pezzi'}</strong>
+                                {' • Insegna: '}
+                                <strong>{item.preferredChain}</strong>
+                              </>
+                            ) : (
+                              <>
+                                <strong>{item.packsToBuy} conf. intere</strong> ({item.totalPurchasedGrams}g acquistati ·
+                                usati {item.totalRequiredGrams}g
+                                {item.residualReturnedToPantryGrams > 0
+                                  ? ` → +${item.residualReturnedToPantryGrams}g rientrano in Dispensa`
+                                  : ''}
+                                ) • Insegna: <strong>{item.preferredChain}</strong>
+                              </>
+                            )}
                           </div>
                         </div>
                       </label>
 
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-extrabold text-emerald-800">
-                          €{item.lineTotalEur.toFixed(2)}
+                          €{Number(item.lineTotalEur || 0).toFixed(2)}
                         </span>
                         <button
                           type="button"

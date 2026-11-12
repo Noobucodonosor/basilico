@@ -1,17 +1,18 @@
 import React from 'react';
 
 const COMPARE_METRICS = [
-  { key: 'kcal', label: 'Energia (kcal/100g)', unit: 'kcal' },
-  { key: 'proteinG', label: 'Proteine (g/100g)', unit: 'g' },
-  { key: 'fatG', label: 'Lipidi (g/100g)', unit: 'g' },
-  { key: 'carbsG', label: 'Carboidrati (g/100g)', unit: 'g' },
-  { key: 'fiberG', label: 'Fibre (g/100g)', unit: 'g' },
-  { key: 'ironMg', label: 'Ferro (mg/100g)', unit: 'mg' },
-  { key: 'calciumMg', label: 'Calcio (mg/100g)', unit: 'mg' },
-  { key: 'potassiumMg', label: 'Potassio (mg/100g)', unit: 'mg' },
-  { key: 'magnesiumMg', label: 'Magnesio (mg/100g)', unit: 'mg' },
-  { key: 'vitaminCMg', label: 'Vitamina C (mg/100g)', unit: 'mg' },
-  { key: 'waterG', label: 'Acqua (g/100g)', unit: 'g' }
+  { key: 'kcal', label: 'Energia (kcal/100g)', unit: 'kcal', highlightMax: false },
+  { key: 'proteinG', label: 'Proteine (g/100g)', unit: 'g', highlightMax: true },
+  { key: 'fatG', label: 'Lipidi (g/100g)', unit: 'g', highlightMax: false },
+  { key: 'carbsG', label: 'Carboidrati (g/100g)', unit: 'g', highlightMax: false },
+  { key: 'fiberG', label: 'Fibre (g/100g)', unit: 'g', highlightMax: true },
+  { key: 'omega3G', label: 'Omega-3 Totali (g/100g)', unit: 'g', highlightMax: true },
+  { key: 'ironMg', label: 'Ferro (mg/100g)', unit: 'mg', highlightMax: true },
+  { key: 'calciumMg', label: 'Calcio (mg/100g)', unit: 'mg', highlightMax: true },
+  { key: 'potassiumMg', label: 'Potassio (mg/100g)', unit: 'mg', highlightMax: true },
+  { key: 'magnesiumMg', label: 'Magnesio (mg/100g)', unit: 'mg', highlightMax: true },
+  { key: 'vitaminCMg', label: 'Vitamina C (mg/100g)', unit: 'mg', highlightMax: true },
+  { key: 'waterG', label: 'Acqua (g/100g)', unit: 'g', highlightMax: false }
 ];
 
 export function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspectFood }) {
@@ -81,7 +82,13 @@ export function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspec
                   <td className="py-1.5 px-3 font-medium text-slate-700">{m.label}</td>
                   {items.map((it) => {
                     const v = it.keyMetrics?.[m.key];
-                    const isBest = v !== null && v !== undefined && v > 0 && v === maxVal && items.length > 1;
+                    const isBest =
+                      m.highlightMax &&
+                      v !== null &&
+                      v !== undefined &&
+                      v > 0 &&
+                      v === maxVal &&
+                      items.length > 1;
                     return (
                       <td
                         key={it.id}
