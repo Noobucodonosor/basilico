@@ -71,6 +71,127 @@ function classifyIngredientFamily(name = '') {
 }
 
 /**
+ * Classifies every dish with canonical culinary metadata (`dishFamily`, `dairyRole`,
+ * `boatSafeCold`, `lightDinnerSuitable`, `canonicalTwinKey`) so Stanza 3 and Stanza 6
+ * enforce real culinary variety, cold-boat safety, and 3-tier Zero-Cheese rules.
+ */
+export function classifyDishMetadata(dish = {}) {
+  const titleNorm = normalizeSearchToken(dish.title || '');
+  const course = String(dish.course || 'secondo').toLowerCase();
+  const bomText = normalizeSearchToken((dish.bom || []).map((b) => b.name).join(' '));
+  const combined = `${titleNorm} ${bomText}`;
+
+  // 1. Canonical Twin Key for grouping homologous dishes across Tigullio restaurants
+  let canonicalTwinKey = titleNorm
+    .replace(/\b(alla|al|alle|ai|con|del|dello|della|dei|degli|delle|in|su|di|da|il|lo|la|i|gli|le|fatto|fatti|fatta|fatte|casa|nostra|nostro|tradizionale|ligure|genovese|tigullio)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (/\b(trofie|trenette|linguine|mandilli|testaroli|gnocchi)\b.*\b(pesto)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'pasta fresca al pesto ligure';
+  } else if (/\b(pansot\w*)\b.*\b(noc\w*)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'pansotti con salsa di noci';
+  } else if (/\b(spaghett\w*|linguine)\b.*\b(vongol\w*|arsell\w*)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'spaghetti alle vongole';
+  } else if (/\b(fritt\w*\s+mist\w*|frittura)\b.*\b(mare|golfo|pesce|paranza|calamar\w*)?\b/.test(titleNorm)) {
+    canonicalTwinKey = 'fritto misto di mare del golfo';
+  } else if (/\b(cappon\s+magro)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'cappon magro ligure';
+  } else if (/\b(focaccia)\b.*\b(formaggio|recco)\b/.test(titleNorm)) {
+    canonicalTwinKey = 'focaccia col formaggio tipo recco';
+  }
+
+  // 2. Dish Family (used by Stanza 6 anti-monotony solver: max 2/week per family)
+  let dishFamily = dish.dishFamily || null;
+  if (!dishFamily) {
+    if (course === 'colazione' || (dish.mealContexts || []).includes('breakfast')) {
+      dishFamily = /\b(uov\w*|salat\w*|focaccia)\b/.test(titleNorm) ? 'breakfast_savory' : 'breakfast_sweet';
+    } else if (course === 'dolce' || /\b(tiramisu|gelat\w*|sorbett\w*|panna cotta|torta dolce|crostata|semifreddo|cannol\w*|profiterol\w*|meringata|cheesecake|bunet|crema catalana|zabaione|dolce)\b/.test(titleNorm)) {
+      dishFamily = 'dessert_gelato';
+    } else if (/\b(pizz\w*|focaccia\s+col\s+formaggio|focaccia\s+al\s+formaggio|pinsa)\b/.test(titleNorm)) {
+      dishFamily = 'pizza_focaccia';
+    } else if (/\b(pesto)\b/.test(titleNorm)) {
+      dishFamily = 'pesto_pasta';
+    } else if (/\b(pansot\w*|salsa\s+di\s+noci)\b/.test(titleNorm)) {
+      dishFamily = 'walnut_filled_pasta';
+    } else if (/\b(raviol\w*|tortell\w*|agnolott\w*|cappellacc\w*)\b/.test(titleNorm)) {
+      dishFamily = /\b(pesce|mare|orata|branzino|gamber\w*)\b/.test(combined) ? 'seafood_filled_pasta' : 'land_filled_pasta';
+    } else if (/\b(risott\w*)\b/.test(titleNorm)) {
+      dishFamily = /\b(mare|pescator\w*|gamber\w*|scamp\w*|seppi\w*)\b/.test(combined) ? 'seafood_risotto' : 'land_risotto';
+    } else if (course === 'primo' && /\b(vongol\w*|cozz\w*|scoglio|mare|pescator\w*|gamber\w*|astice|granchio|bottarga|acciug\w*|tonno|calamar\w*|seppi\w*)\b/.test(combined)) {
+      dishFamily = 'seafood_pasta';
+    } else if (course === 'primo' && /\b(pomodor\w*|arrabbiata|amatriciana|norma)\b/.test(combined)) {
+      dishFamily = 'tomato_pasta';
+    } else if (course === 'primo' && /\b(ragu| tuccu|coniglio|carni|cinghiale|bolognese)\b/.test(combined)) {
+      dishFamily = 'meat_ragu_pasta';
+    } else if (/\b(fritt\w*|frittura|cotolett\w*)\b/.test(titleNorm)) {
+      dishFamily = 'fried_dish';
+    } else if (/\b(crud[oi]|tartare|carpaccio|ceviche|ostrich\w*)\b/.test(titleNorm)) {
+      dishFamily = 'raw_crudo';
+    } else if (/\b(panissa|farinata|ceci|lenticchi\w*|fagiol\w*)\b/.test(titleNorm)) {
+      dishFamily = 'legumes_grains';
+    } else if (/\b(cozz\w*|vongol\w*|polpo|seppi\w*|calamar\w*|moscardin\w*|gamber\w*|scamp\w*|cappon\s+magro)\b/.test(titleNorm)) {
+      dishFamily = 'shellfish_cephalopods';
+    } else if (/\b(orata|branzino|spigola|rombo|pescato|acciug\w*|alici|sgombro|tonno|salmone|merluzzo|baccala|stoccafisso|pesce)\b/.test(combined)) {
+      dishFamily = 'baked_or_pan_fish';
+    } else if (/\b(pollo|tacchino|coniglio|faraona)\b/.test(combined)) {
+      dishFamily = 'white_meat';
+    } else if (/\b(manzo|vitello|bovino|filetto|tagliata|cima|maiale|agnello)\b/.test(combined)) {
+      dishFamily = 'red_meat';
+    } else if (/\b(uov\w*|frittata)\b/.test(combined)) {
+      dishFamily = 'eggs_savory';
+    } else {
+      dishFamily = 'mediterranean_vegetable';
+    }
+  }
+
+  // 3. 3-Tier Dairy Role Classification (for honest Zero Formaggi handling)
+  const hasCheeseOrHeavyDairyInBom = /\b(formagg\w*|mozzarell\w*|parmigian\w*|grana|pecorin\w*|stracchin\w*|crescenza|prescinseu\w*|presinseu\w*|ricott\w*|mascarpon\w*|gorgonzol\w*|burrata|taleggio|scamorza|fontina|feta)\b/.test(bomText);
+  let dairyRole = dish.dairyRole || 'none';
+  if (!dish.dairyRole) {
+    if (
+      /\b(focaccia\s+(?:col|al)\s+formaggio|quattro\s+formaggi|4\s+formaggi|cacio\s+e\s+pepe|fonduta|sformatin\w*\s+al\s+parmigiano|caprese|mozzarella|burrata|stracciatella|tagliere\s+di\s+formaggi|tiramisu|panna\s+cotta|cheesecake|gelat\w*|semifreddo|crema\s+di\s+formagg\w*|crema\s+al\s+parmigiano)\b/.test(titleNorm) ||
+      (dishFamily === 'pizza_focaccia' && /\b(mozzarella|stracchino|formaggio|gorgonzola|burrata)\b/.test(bomText))
+    ) {
+      dairyRole = 'structural_unsubstitutable';
+    } else if (hasCheeseOrHeavyDairyInBom && /\b(pansot\w*|raviol\w*\s+di\s+magro|raviol\w*\s+di\s+borragine|pasqualina|ripien\w*)\b/.test(titleNorm)) {
+      dairyRole = 'savory_herb_binder';
+    } else if (hasCheeseOrHeavyDairyInBom) {
+      dairyRole = 'secondary_umami_finisher';
+    }
+  }
+
+  // 4. Cold Boat / Cooler Safety (zero onboard flame, zero raw unmarinated seafood, zero hot soup/fry/pasta)
+  const boatSafeCold =
+    dish.boatSafeCold !== undefined
+      ? Boolean(dish.boatSafeCold)
+      : Boolean(
+          (course === 'piatto_unico_barca' ||
+            ((dish.mealContexts || []).includes('boat_cooler') &&
+              !/\b(crud[oi]|tartare|carpaccio|ostrich\w*|fritt\w*|frittura|cozze\s+alla\s+marinara|zuppa|brodetto|vellutata|spaghett\w*|trofie|trenette|raviol\w*|pansot\w*|risott\w*|gelat\w*|tiramisu|pizz\w*)\b/.test(titleNorm)))
+        );
+
+  // 5. Light Dinner Suitability (savory protein/veg dish, non-fried, non-dessert, non-pizza)
+  const lightDinnerSuitable =
+    dish.lightDinnerSuitable !== undefined
+      ? Boolean(dish.lightDinnerSuitable)
+      : Boolean(
+          !['colazione', 'dolce', 'primo'].includes(course) &&
+            dishFamily !== 'dessert_gelato' &&
+            dishFamily !== 'pizza_focaccia' &&
+            dishFamily !== 'fried_dish' &&
+            !/\b(fritt\w*|frittura|pizz\w*|gelat\w*|tiramisu|dolce)\b/.test(titleNorm)
+        );
+
+  return {
+    dishFamily,
+    dairyRole,
+    boatSafeCold,
+    lightDinnerSuitable,
+    canonicalTwinKey
+  };
+}
+
+/**
  * Generates a scientific Ligurian substitution when an ingredient violates the active user profile
  * (e.g. substituting Parmigiano/Pecorino/Stracchino/Burro for a cheese-free profile while keeping
  * lipid mouthfeel, umami/sapidity, and structural emulsion).
@@ -394,8 +515,11 @@ export class RecipeAndArbitrageService {
       feasibilityStatus = 'needs_shopping';
     }
 
+    const meta = classifyDishMetadata(dish);
+
     return {
       ...dish,
+      ...meta,
       servings,
       canonicalCookwareIds: canonicalTools,
       hasProfileSubstitution,
@@ -440,7 +564,24 @@ export class RecipeAndArbitrageService {
     const profileId = filters.profileId || userProfileService.getProfileById().id;
     const servings = Math.max(1, Math.min(12, Number(filters.servings) || 1));
 
-    let filtered = allDishes;
+    // Precompute homologous restaurant twin groups across the full catalog
+    const twinGroups = new Map();
+    for (const rawD of allDishes) {
+      const m = classifyDishMetadata(rawD);
+      if (rawD.sourceType === 'tigullio_restaurant' && m.canonicalTwinKey) {
+        if (!twinGroups.has(m.canonicalTwinKey)) twinGroups.set(m.canonicalTwinKey, []);
+        twinGroups.get(m.canonicalTwinKey).push({
+          dishId: rawD.id,
+          title: rawD.title,
+          restaurantId: rawD.restaurantId,
+          restaurantName: rawD.restaurantName,
+          city: rawD.city,
+          menuPriceEuro: Number(rawD.menuPriceEuro || 0)
+        });
+      }
+    }
+
+    let filtered = allDishes.map((d) => ({ ...d, ...classifyDishMetadata(d) }));
 
     if (filters.sourceType && filters.sourceType !== 'all') {
       filtered = filtered.filter((d) => d.sourceType === filters.sourceType);
@@ -452,7 +593,11 @@ export class RecipeAndArbitrageService {
       filtered = filtered.filter((d) => d.course === filters.course);
     }
     if (filters.mealContext && filters.mealContext !== 'all') {
-      filtered = filtered.filter((d) => (d.mealContexts || []).includes(filters.mealContext));
+      if (filters.mealContext === 'boat_cooler') {
+        filtered = filtered.filter((d) => d.boatSafeCold || (d.mealContexts || []).includes('boat_cooler'));
+      } else {
+        filtered = filtered.filter((d) => (d.mealContexts || []).includes(filters.mealContext));
+      }
     }
     if (filters.q && String(filters.q).trim()) {
       const qNorm = normalizeSearchToken(filters.q);
@@ -464,20 +609,44 @@ export class RecipeAndArbitrageService {
       });
     }
 
+    const deduplicateTwins = filters.deduplicateTwins === true || filters.deduplicateTwins === 'true';
+    if (deduplicateTwins) {
+      const seenTwinKeys = new Set();
+      filtered = filtered.filter((d) => {
+        if (d.sourceType !== 'tigullio_restaurant' || !d.canonicalTwinKey) return true;
+        if (seenTwinKeys.has(d.canonicalTwinKey)) return false;
+        seenTwinKeys.add(d.canonicalTwinKey);
+        return true;
+      });
+    }
+
     const totalMatching = filtered.length;
-    const limit = Math.max(1, Math.min(250, Number(filters.limit) || 60));
+    const limit = Math.max(1, Math.min(350, Number(filters.limit) || 80));
+    const offset = Math.max(0, Number(filters.offset) || 0);
 
     const evaluated = [];
-    for (const d of filtered.slice(0, limit)) {
-      evaluated.push(
-        await this.evaluateDish(d, {
-          servings,
-          activeOffers,
-          pantryItems,
-          kitchenState,
-          profileId
-        })
-      );
+    for (const d of filtered.slice(offset, offset + limit)) {
+      const ev = await this.evaluateDish(d, {
+        servings,
+        activeOffers,
+        pantryItems,
+        kitchenState,
+        profileId
+      });
+      const twins = d.sourceType === 'tigullio_restaurant' ? twinGroups.get(d.canonicalTwinKey) || [] : [];
+      if (twins.length > 1) {
+        const prices = twins.map((t) => t.menuPriceEuro).filter((p) => p > 0);
+        ev.comparableRestaurants = twins;
+        ev.restaurantPriceRangeEur = {
+          count: twins.length,
+          minEur: prices.length ? Math.min(...prices) : ev.menuPriceEuro,
+          maxEur: prices.length ? Math.max(...prices) : ev.menuPriceEuro
+        };
+      } else {
+        ev.comparableRestaurants = [];
+        ev.restaurantPriceRangeEur = null;
+      }
+      evaluated.push(ev);
     }
 
     if (filters.sortBy === 'arbitrage_desc') {

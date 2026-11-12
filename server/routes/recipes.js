@@ -23,6 +23,8 @@ router.get('/', async (req, res) => {
       servings: req.query.servings,
       sortBy: req.query.sortBy,
       limit: req.query.limit,
+      offset: req.query.offset,
+      deduplicateTwins: req.query.deduplicateTwins,
       profileId: req.query.profileId
     });
     res.json(result);

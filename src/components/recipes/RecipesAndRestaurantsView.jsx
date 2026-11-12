@@ -2,15 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import CookingModeModal from './CookingModeModal.jsx';
 
 const SOURCE_TYPE_TABS = [
-  { id: 'all', label: 'Tutti i Piatti (234)', icon: '🍽️' },
-  { id: 'base_single_school', label: 'Scuola Base Single & Barca', icon: '⛵' },
+  { id: 'all', label: 'Tutti i Piatti', icon: '🍽️' },
+  { id: 'base_single_school', label: 'Scuola Base Single, Colazioni & Barca (32)', icon: '⛵' },
   { id: 'tigullio_restaurant', label: '32 Ristoranti del Tigullio (230 Piatti)', icon: '🦞' },
   { id: 'starred_author', label: 'Alta Cucina & Stellati (Studio)', icon: '⭐' }
 ];
 
 const MEAL_CONTEXT_PILLS = [
   { id: 'all', label: 'Tutti i Contesti' },
-  { id: 'boat_cooler', label: '⛵ Borsa Termica / Barca' },
+  { id: 'breakfast', label: '☀️ Colazione Mattutina' },
+  { id: 'boat_cooler', label: '⛵ Borsa Termica / Barca (Freddo Sicuro)' },
   { id: 'light_dinner', label: '🌙 Cena Leggera' },
   { id: 'lunch_home', label: '🏠 Pranzo a Terra' },
   { id: 'sunday_lab', label: '🔬 Laboratorio Domenicale' }
@@ -24,9 +25,11 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [servings, setServings] = useState(1);
   const [sortBy, setSortBy] = useState('arbitrage_desc');
+  const [deduplicateTwins, setDeduplicateTwins] = useState(false);
+  const [visibleLimit, setVisibleLimit] = useState(80);
 
   const [catalogData, setCatalogData] = useState({
-    totalDishesInCatalog: 234,
+    totalDishesInCatalog: 264,
     totalMatching: 0,
     restaurants: [],
     dishes: []
@@ -44,6 +47,10 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
   const [customIngredients, setCustomIngredients] = useState('');
   const [deconstructedResult, setDeconstructedResult] = useState(null);
 
+  useEffect(() => {
+    setVisibleLimit(80);
+  }, [sourceType, restaurantId, mealContext, searchQuery, deduplicateTwins, activeProfileId]);
+
   const fetchCatalog = useCallback(() => {
     setLoading(true);
     const params = new URLSearchParams({
@@ -53,7 +60,8 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
       q: searchQuery,
       servings: String(servings),
       sortBy,
-      limit: '80',
+      limit: String(visibleLimit),
+      deduplicateTwins: String(deduplicateTwins),
       profileId: activeProfileId || 'dany'
     });
     fetch(`/api/recipes?${params.toString()}`)
@@ -62,7 +70,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
         if (data) setCatalogData(data);
       })
       .finally(() => setLoading(false));
-  }, [sourceType, restaurantId, mealContext, searchQuery, servings, sortBy, activeProfileId]);
+  }, [sourceType, restaurantId, mealContext, searchQuery, servings, sortBy, visibleLimit, deduplicateTwins, activeProfileId]);
 
   useEffect(() => {
     fetchCatalog();
@@ -189,23 +197,35 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
 
       {activeViewTab === 'catalog' && (
         <section className="space-y-4">
-          {/* Source Type Pills */}
-          <div className="flex flex-wrap items-center gap-2">
-            {SOURCE_TYPE_TABS.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setSourceType(t.id)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold border cursor-pointer transition-all ${
-                  sourceType === t.id
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-400'
-                }`}
-              >
-                <span>{t.icon}</span>
-                <span>{t.label}</span>
-              </button>
-            ))}
+          {/* Source Type Pills + Twin Deduplication Toggle */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {SOURCE_TYPE_TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setSourceType(t.id)}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold border cursor-pointer transition-all ${
+                    sourceType === t.id
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-400'
+                  }`}
+                >
+                  <span>{t.icon}</span>
+                  <span>{t.id === 'all' ? `${t.label} (${catalogData.totalDishesInCatalog})` : t.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer">
+              <input
+                type="checkbox"
+                checked={deduplicateTwins}
+                onChange={(e) => setDeduplicateTwins(e.target.checked)}
+                className="rounded border-slate-300 text-emerald-600"
+              />
+              <span>🔗 Raggruppa piatti omonimi tra ristoranti (fascia prezzo)</span>
+            </label>
           </div>
 
           {/* Filter Bar: Restaurant Selector, Meal Context, Search, Servings Scaler, Sort */}
@@ -320,6 +340,14 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                           {dish.hasProfileSubstitution && (
                             <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300">
                               🛡️ Variante Senza Formaggi Attiva
+                            </span>
+                          )}
+                          {dish.restaurantPriceRangeEur && (
+                            <span
+                              className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200"
+                              title={dish.comparableRestaurants.map((c) => `${c.restaurantName} (${c.city}): €${c.menuPriceEuro}`).join(' • ')}
+                            >
+                              📊 In {dish.restaurantPriceRangeEur.count} ristoranti (€{dish.restaurantPriceRangeEur.minEur}–€{dish.restaurantPriceRangeEur.maxEur})
                             </span>
                           )}
                         </div>
@@ -441,6 +469,20 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood }) {
                   </article>
                 );
               })}
+            </div>
+          )}
+          {!loading && catalogData.totalMatching > catalogData.dishes.length && (
+            <div className="flex flex-col items-center gap-2 pt-2">
+              <span className="text-xs font-semibold text-slate-500">
+                Visualizzati {catalogData.dishes.length} di {catalogData.totalMatching} piatti corrispondenti
+              </span>
+              <button
+                type="button"
+                onClick={() => setVisibleLimit((prev) => prev + 80)}
+                className="px-5 py-2.5 rounded-xl text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-white shadow-xs cursor-pointer"
+              >
+                Mostra altri piatti (+80) →
+              </button>
             </div>
           )}
         </section>

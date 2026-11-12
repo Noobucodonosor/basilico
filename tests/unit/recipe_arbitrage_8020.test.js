@@ -73,3 +73,25 @@ test('RecipeAndArbitrageService — 80/20 Max-Coverage Basket & Science Cooking 
   assert.match(sessionInduction.scientificSteps[1].stoveInstruction, /Induzione/i);
   assert.ok(sessionInduction.kitchenReset.protocols.length >= 1);
 });
+
+test('RecipeAndArbitrageService — Expanded Single/Breakfast/Boat Catalog & Twin Deduplication (ADR-0013 / TASK-REAL-02)', async () => {
+  const svc = new RecipeAndArbitrageService({
+    labNotebookPath: path.join(os.tmpdir(), `basilico-lab-test4-${Date.now()}.json`)
+  });
+
+  const all = svc.getDishesSeed();
+  assert.ok(all.length >= 264, `Expected >=264 dishes after TASK-REAL-02 expansion, got ${all.length}`);
+
+  const breakfasts = all.filter((d) => d.course === 'colazione');
+  assert.ok(breakfasts.length >= 6, `Expected >=6 real breakfast recipes, got ${breakfasts.length}`);
+
+  const boatDishes = await svc.queryDishes({ mealContext: 'boat_cooler', limit: 50 });
+  const coldSafeCount = boatDishes.dishes.filter((d) => d.boatSafeCold).length;
+  assert.ok(coldSafeCount >= 13, `Expected >=13 cold-safe boat dishes, got ${coldSafeCount}`);
+
+  // Comparative restaurant twin deduplication
+  const rawPesto = await svc.queryDishes({ q: 'pesto', sourceType: 'tigullio_restaurant', deduplicateTwins: false, limit: 50 });
+  const dedupPesto = await svc.queryDishes({ q: 'pesto', sourceType: 'tigullio_restaurant', deduplicateTwins: true, limit: 50 });
+  assert.ok(rawPesto.totalMatching > dedupPesto.totalMatching, 'Deduplicating homologous twins must consolidate multiple restaurant pesto entries');
+  assert.ok(dedupPesto.dishes.some((d) => d.restaurantPriceRangeEur && d.restaurantPriceRangeEur.count >= 5));
+});
