@@ -51,13 +51,26 @@ export function validateReceiptCentReconciliation(receiptPayload = {}) {
     const domain = line.domain || classifyProductDomain({ title: line.title || '', category: line.category || '' });
     const metrics = extractPackMetrics({ title: `${line.title || ''} ${line.unitString || ''}` });
 
+    const unitString =
+      line.unitString ||
+      (line.explicitWeightGrams
+        ? `${line.explicitWeightGrams} g`
+        : metrics.packWeightGrams
+          ? `${metrics.packWeightGrams} g`
+          : '1 pz');
+    const resolvedPackGrams = line.explicitWeightGrams
+      ? Number(line.explicitWeightGrams)
+      : metrics.packWeightGrams
+        ? metrics.packWeightGrams * qty
+        : 250 * qty;
+
     return {
       lineIndex: idx + 1,
       title: String(line.title || `Riga ${idx + 1}`).trim(),
       brand: line.brand ? String(line.brand).trim() : null,
       quantity: qty,
-      unitString: line.unitString || (metrics.packWeightGrams ? `${metrics.packWeightGrams} g` : '1 pz'),
-      packWeightGrams: metrics.packWeightGrams ? metrics.packWeightGrams * qty : 250 * qty,
+      unitString,
+      packWeightGrams: resolvedPackGrams,
       packVolumeMl: metrics.packVolumeMl ? metrics.packVolumeMl * qty : null,
       lineTotalCents,
       lineTotalEuro: fromCents(lineTotalCents),
@@ -143,39 +156,107 @@ export class ReceiptService {
 
   /**
    * Parses raw receipt text (from OCR or pasted slip) into a draft receipt ready for cent-reconciliation.
+   * Filters out fiscal/payment/VAT/footer lines and supports multipliers ("2 X") & counter weights ("0,340 kg").
    */
   parseRawReceiptText(rawText = '', storeId = 'basko-rapallo-colombo', storeName = 'Basko Rapallo') {
     const lines = [];
     const discounts = [];
     let declaredTotal = 0;
+    let pendingQty = null;
+    let pendingWeightGrams = null;
 
-    const textLines = String(rawText || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-    for (const row of textLines) {
-      // Check total line ("TOTALE EURO 14,50" or "TOTALE 14.50")
-      const totMatch = row.match(/^(?:totale(?:\s+euro|\s+complessivo)?|importo\s+pagato)\s*[:€]?\s*(\d+[.,]\d{2})$/i);
+    const NON_ITEM_FISCAL_REGEX =
+      /^(?:subtotale|totale\s+merce|contant[ei]|resto\b|pagamento|bancomat|pagobancomat|carta\s+(?:di\s+)?(?:credito|debito|fedelt\w*)|contactless|pos\b|di\s+cui\s+iva|aliquota|riepilogo\s+iva|iva\s+\d+|imponibile|imposta|documento\s+commerciale|scontrino|cassa\b|operatore|data\b|ora\b|punti\b|saldo\s+punti|prima\s+card|arrivederci|grazie|p\.?\s*iva|partita\s+iva|cod\.?\s*fisc|aut\.?\s*n)/i;
+
+    const textLines = String(rawText || '')
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    for (const rawRow of textLines) {
+      // Strip trailing VAT department letters or inline VAT % markers ("1,49 A", "2,50 IVA 4%")
+      const row = rawRow.replace(/\s+(?:IVA\s*\d+%?|[A-D]\*?|#\d+)$/i, '').trim();
+      if (!row) continue;
+
+      // 1. Check total line ("TOTALE EURO 14,50", "TOTALE COMPLESSIVO € 14,50", "IMPORTO DOVUTO 14.50")
+      const totMatch = row.match(
+        /^(?:totale(?:\s+euro|\s+complessivo|\s+documento)?|importo\s+(?:pagato|dovuto))\s*[:€]?\s*(?:€\s*)?(\d+[.,]\d{2})$/i
+      );
       if (totMatch) {
         declaredTotal = parseFloat(totMatch[1].replace(',', '.'));
+        pendingQty = null;
+        pendingWeightGrams = null;
         continue;
       }
 
-      // Check discount line ("SCONTO SOCIO -0,50" or "BUONO -2.00")
-      const discMatch = row.match(/^(?:sconto|buono|promo)\b.*?-\s*(\d+[.,]\d{2})$/i);
+      // 2. Check discount line ("SCONTO SOCIO -0,50", "BUONO -2.00", "PROMO FIDATY - 1,20")
+      const discMatch = row.match(/^(?:sconto|buono|promo|offerta|ribasso)\b.*?-\s*(?:€\s*)?(\d+[.,]\d{2})$/i);
       if (discMatch) {
         discounts.push({
-          label: row.replace(/-\s*\d+[.,]\d{2}$/, '').trim() || 'Sconto',
+          label: row.replace(/-\s*(?:€\s*)?\d+[.,]\d{2}$/, '').trim() || 'Sconto',
           amount: parseFloat(discMatch[1].replace(',', '.'))
         });
+        pendingQty = null;
+        pendingWeightGrams = null;
         continue;
       }
 
-      // Standard item line ("SPAGHETTI RUMMO 500G 1,49")
-      const itemMatch = row.match(/^(.+?)\s+(\d+[.,]\d{2})$/);
+      // 3. Ignore accounting / payment / VAT / loyalty footer lines
+      if (NON_ITEM_FISCAL_REGEX.test(row)) {
+        continue;
+      }
+
+      // 4. Standalone quantity multiplier prefix line ("2 X 1,49" or "3 x € 0,99")
+      const standaloneQtyMatch = row.match(/^(\d{1,2})\s*[xX*]\s*(?:€\s*)?\d+[.,]\d{2}$/);
+      if (standaloneQtyMatch) {
+        pendingQty = parseInt(standaloneQtyMatch[1], 10);
+        continue;
+      }
+
+      // 5. Standalone counter weight prefix line ("0,340 kg x 12,90" or "0.450 KG X 14,90 €/kg")
+      const standaloneWeightMatch = row.match(/^(\d+[.,]\d{1,3})\s*kg\s*[xX*]\s*(?:€\s*)?\d+[.,]\d{2}(?:\s*€\/kg)?$/i);
+      if (standaloneWeightMatch) {
+        pendingWeightGrams = Math.round(parseFloat(standaloneWeightMatch[1].replace(',', '.')) * 1000);
+        continue;
+      }
+
+      // 6. Standard or inline-multiplied item line ("2 X SPAGHETTI RUMMO 500G 2,98" or "ORATA 0,340 kg 5,10")
+      const itemMatch = row.match(/^(.+?)\s+(?:€\s*)?(\d+[.,]\d{2})$/);
       if (itemMatch) {
-        lines.push({
-          title: itemMatch[1].trim(),
-          lineTotal: parseFloat(itemMatch[2].replace(',', '.')),
-          quantity: 1
-        });
+        let cleanTitle = itemMatch[1].trim();
+        const lineTotal = parseFloat(itemMatch[2].replace(',', '.'));
+        let qty = pendingQty || 1;
+        let explicitWeightGrams = pendingWeightGrams || null;
+
+        const inlinePrefixQty = cleanTitle.match(/^(\d{1,2})\s*[xX*]\s+(.+)$/);
+        if (inlinePrefixQty) {
+          qty = parseInt(inlinePrefixQty[1], 10);
+          cleanTitle = inlinePrefixQty[2].trim();
+        } else {
+          const inlineSuffixQty = cleanTitle.match(/^(.+?)\s+[xX*](\d{1,2})$/);
+          if (inlineSuffixQty) {
+            cleanTitle = inlineSuffixQty[1].trim();
+            qty = parseInt(inlineSuffixQty[2], 10);
+          }
+        }
+
+        const inlineKgMatch = cleanTitle.match(/\b(\d+[.,]\d{2,3})\s*kg\b/i);
+        if (inlineKgMatch && !explicitWeightGrams) {
+          explicitWeightGrams = Math.round(parseFloat(inlineKgMatch[1].replace(',', '.')) * 1000);
+        }
+
+        // Guard against pure numeric/date garbage titles
+        if (/[a-zA-ZÀ-ÿ]{2,}/.test(cleanTitle)) {
+          lines.push({
+            title: cleanTitle,
+            lineTotal,
+            quantity: qty,
+            explicitWeightGrams
+          });
+        }
+
+        pendingQty = null;
+        pendingWeightGrams = null;
       }
     }
 

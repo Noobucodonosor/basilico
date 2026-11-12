@@ -17,14 +17,62 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const ARCHETYPES_PATH = path.resolve(__dirname, '../../data/seed/cookware_archetypes.json');
+const DISHES_SEED_PATH = path.resolve(__dirname, '../../data/seed/recipes_and_dishes.json');
 const DEFAULT_KITCHEN_STATE_PATH = path.resolve(__dirname, '../../data/cache/kitchen_inventory.json');
 
 export const VALID_HEAT_SOURCES = ['gas', 'induction', 'electric_radiant', 'boat_no_stove'];
+
+/**
+ * Canonical 1:1 mapper between dish `cookwareRequired` entries and Stanza 4 `cookware_archetypes.json` IDs.
+ * Eliminates orphaned IDs (`mortaio_marmo` -> `mortaio`, `bistecchiera_ghisa` -> `bistecchiera`) and
+ * filters legacy noise (e.g. `mortaio` only required on genuine pounded sauces/pesto, never on tartare/vongole).
+ */
+export function normalizeDishCookwareIds(rawTools = [], dishContext = null) {
+  const mapped = new Set();
+  const titleAndBom = dishContext
+    ? `${dishContext.title || ''} ${(dishContext.bom || []).map((b) => b.name || '').join(' ')}`.toLowerCase()
+    : '';
+  const isTrueMortarDish = !dishContext || /\b(pesto|salsa\s+di\s+noci|agliata|salsa\s+verde)\b/i.test(titleAndBom);
+  const isPureColdAssembly =
+    dishContext &&
+    (dishContext.course === 'piatto_unico_barca' ||
+      /\b(crud[oi]|tartare|carpaccio|ceviche|ostrich\w*)\b/i.test(String(dishContext.title || '')));
+
+  for (const t of rawTools || []) {
+    const norm = String(t || '').toLowerCase().trim();
+    if (!norm) continue;
+
+    if (norm === 'pentola_rame_non_induzione' || norm.includes('rame')) {
+      if (!isPureColdAssembly) mapped.add('pentola_rame_non_induzione');
+    } else if (norm === 'wok' || norm.includes('wok') || norm.includes('saltapasta')) {
+      if (!isPureColdAssembly) mapped.add('wok');
+    } else if (norm === 'casseruola_inox' || norm.includes('casseruola')) {
+      if (!isPureColdAssembly) mapped.add('casseruola_inox');
+    } else if (norm.includes('padella')) {
+      if (!isPureColdAssembly) mapped.add('padella_antiaderente');
+    } else if (norm.includes('pentola') || norm === 'moka') {
+      if (!isPureColdAssembly) mapped.add('pentola');
+    } else if (norm.includes('forno') || norm.includes('teglia') || norm.includes('pirofila')) {
+      if (!isPureColdAssembly) mapped.add('teglia_forno');
+    } else if (norm.includes('mortaio')) {
+      if (isTrueMortarDish) mapped.add('mortaio');
+      else mapped.add('coltello_chef');
+    } else if (norm.includes('bistecchiera') || norm.includes('griglia')) {
+      if (!isPureColdAssembly) mapped.add('bistecchiera');
+    } else {
+      mapped.add('coltello_chef');
+    }
+  }
+
+  if (mapped.size === 0) mapped.add('coltello_chef');
+  return Array.from(mapped);
+}
 
 export class KitchenInventoryService {
   constructor(options = {}) {
     this.storagePath = options.storagePath || process.env.BASILICO_KITCHEN_PATH || DEFAULT_KITCHEN_STATE_PATH;
     this._archetypes = null;
+    this._dishes = null;
     this._state = null;
   }
 
@@ -33,6 +81,17 @@ export class KitchenInventoryService {
       this._archetypes = JSON.parse(fs.readFileSync(ARCHETYPES_PATH, 'utf8'));
     }
     return this._archetypes;
+  }
+
+  getDishesCatalog() {
+    if (!this._dishes) {
+      try {
+        this._dishes = JSON.parse(fs.readFileSync(DISHES_SEED_PATH, 'utf8'));
+      } catch (_) {
+        this._dishes = [];
+      }
+    }
+    return this._dishes;
   }
 
   _load() {
@@ -73,52 +132,98 @@ export class KitchenInventoryService {
   getKitchenState() {
     const state = this._load();
     const archetypes = this.getArchetypes();
+    const allDishes = this.getDishesCatalog();
     const isInduction = state.heatSource === 'induction';
     const isBoat = state.heatSource === 'boat_no_stove';
 
+    // Precompute normalized cookware sets for every dish in the real catalog
+    const dishRequirements = allDishes.map((d) => ({
+      id: d.id,
+      rawTools: (d.cookwareRequired || []).map((t) => String(t).toLowerCase()),
+      normalizedTools: normalizeDishCookwareIds(d.cookwareRequired || [], d)
+    }));
+
+    const countDishesUsingTool = (toolId, fallbackCount) => {
+      if (dishRequirements.length === 0) return fallbackCount || 0;
+      if (toolId === 'casseruola_inox') {
+        const rawCasseruola = dishRequirements.filter(
+          (dr) => dr.rawTools.includes('casseruola') || dr.rawTools.includes('casseruola_inox')
+        ).length;
+        return rawCasseruola || fallbackCount || 0;
+      }
+      const dynCount = dishRequirements.filter((dr) => dr.normalizedTools.includes(toolId)).length;
+      return dynCount > 0 ? dynCount : fallbackCount || 0;
+    };
+
     const effectiveTools = [];
     const disqualifiedTools = [];
-    const missingRoiOpportunities = [];
+    const missingCandidates = [];
 
     for (const arch of archetypes) {
+      const dynamicToolDishesCount = countDishesUsingTool(arch.id, arch.unlockedDishesCount);
       const isOwned = state.ownedToolIds.includes(arch.id);
       if (isOwned) {
         if (isInduction && arch.category === 'cookware' && !arch.inductionCompatible) {
           disqualifiedTools.push({
             ...arch,
+            unlockedDishesCount: dynamicToolDishesCount,
             disqualificationReason:
               'Materiale non ferromagnetico privo di piastra ferritica: non chiude il circuito magnetico (correnti di Foucault) sul piano a induzione e resta freddo.'
           });
         } else if (isBoat && arch.id === 'teglia_forno') {
           disqualifiedTools.push({
             ...arch,
+            unlockedDishesCount: dynamicToolDishesCount,
             disqualificationReason: 'Non utilizzabile in modalità Barca / Borsa Termica (assenza forno).'
           });
         } else {
           effectiveTools.push({
             ...arch,
+            unlockedDishesCount: dynamicToolDishesCount,
             condition: state.toolConditionMap?.[arch.id] || 'optimal'
           });
         }
       } else {
-        // Compute ROI for missing tool if compatible with current stove
         const stoveCompatible = !(isInduction && arch.category === 'cookware' && !arch.inductionCompatible);
         if (stoveCompatible) {
-          const avgRestaurantSavingEuro = 14.5;
-          const paybackUses = Math.max(1, Math.ceil((arch.referencePriceEuro || 20) / avgRestaurantSavingEuro));
-          missingRoiOpportunities.push({
+          missingCandidates.push({
             ...arch,
-            unlockedDishesCount: arch.unlockedDishesCount || 20,
-            paybackUses,
-            roiSummary: `Sblocca +${arch.unlockedDishesCount} piatti del catalogo (si ripaga in ~${paybackUses} cene preparate a casa invece che al ristorante).`
+            unlockedDishesCount: dynamicToolDishesCount
           });
         }
       }
     }
 
-    missingRoiOpportunities.sort((a, b) => b.unlockedDishesCount - a.unlockedDishesCount);
+    // Exact set-union of dishes 100% cookable right now (NEVER exceeds totalCatalogDishes!)
+    const effectiveSet = new Set(effectiveTools.map((t) => t.id));
+    const totalCatalogDishes = dishRequirements.length;
+    const currentlyCookableDishes = dishRequirements.filter((dr) =>
+      dr.normalizedTools.every((tid) => effectiveSet.has(tid))
+    );
+    const totalUnlockedDishes = currentlyCookableDishes.length;
 
-    const totalUnlockedDishes = effectiveTools.reduce((acc, t) => acc + (t.unlockedDishesCount || 0), 0);
+    const missingRoiOpportunities = missingCandidates.map((arch) => {
+      const hypSet = new Set([...effectiveSet, arch.id]);
+      const hypCookable = dishRequirements.filter((dr) =>
+        dr.normalizedTools.every((tid) => hypSet.has(tid))
+      ).length;
+      const marginalNewlyCookableCount = Math.max(0, hypCookable - totalUnlockedDishes);
+      const avgRestaurantSavingEuro = 14.5;
+      const paybackUses = Math.max(1, Math.ceil((arch.referencePriceEuro || 20) / avgRestaurantSavingEuro));
+      return {
+        ...arch,
+        marginalNewlyCookableCount,
+        paybackUses,
+        roiSummary:
+          marginalNewlyCookableCount > 0
+            ? `Usato in ${arch.unlockedDishesCount} ricette (+${marginalNewlyCookableCount} piatti sbloccati subito col tuo set attuale; si ripaga in ~${paybackUses} cene a casa).`
+            : `Usato in ${arch.unlockedDishesCount} ricette del catalogo (si ripaga in ~${paybackUses} cene preparate a casa invece che al ristorante).`
+      };
+    });
+
+    missingRoiOpportunities.sort(
+      (a, b) => b.marginalNewlyCookableCount - a.marginalNewlyCookableCount || b.unlockedDishesCount - a.unlockedDishesCount
+    );
 
     return {
       heatSource: state.heatSource,
@@ -128,6 +233,7 @@ export class KitchenInventoryService {
       effectiveTools,
       disqualifiedTools,
       missingRoiOpportunities,
+      totalCatalogDishes,
       totalUnlockedDishes
     };
   }

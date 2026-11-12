@@ -16144,7 +16144,7 @@
     ],
     "prepMinutes": 18,
     "cookwareRequired": [
-      "casseruola_inox",
+      "padella_antiaderente",
       "coltello_chef"
     ],
     "bom": [
@@ -16562,7 +16562,7 @@
     ],
     "prepMinutes": 15,
     "cookwareRequired": [
-      "casseruola_inox",
+      "pentola",
       "padella_antiaderente",
       "coltello_chef"
     ],
@@ -16617,7 +16617,7 @@
     ],
     "prepMinutes": 18,
     "cookwareRequired": [
-      "casseruola_inox",
+      "pentola",
       "coltello_chef"
     ],
     "bom": [
@@ -16672,7 +16672,7 @@
     ],
     "prepMinutes": 22,
     "cookwareRequired": [
-      "casseruola_inox",
+      "pentola",
       "coltello_chef"
     ],
     "bom": [

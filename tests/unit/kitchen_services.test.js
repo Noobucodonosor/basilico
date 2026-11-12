@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { KitchenInventoryService } from '../../server/services/kitchenInventoryService.js';
+import { KitchenInventoryService, normalizeDishCookwareIds } from '../../server/services/kitchenInventoryService.js';
 import { kitchenResetService } from '../../server/services/kitchenResetService.js';
 
 describe('ADR-0010 / TASK-M4-01: Kitchen Equipment ROI & Chemical Reset Protocol', () => {
@@ -61,5 +61,32 @@ describe('ADR-0010 / TASK-M4-01: Kitchen Equipment ROI & Chemical Reset Protocol
     const mortaioProto = res.protocols.find((p) => p.toolId === 'mortaio');
     assert.ok(mortaioProto.thermalShockWarning.includes('CaCO3'));
     assert.ok(Array.isArray(res.liveRapalloCleaningOffers));
+    // Verify zero food, dolls, or perfumes leak into Kitchen Reset cleaning offers
+    assert.ok(
+      res.liveRapalloCleaningOffers.every(
+        (o) => !/pizza|canestrell|barbie|parfum|peluche/i.test(`${o.title} ${o.brand || ''}`)
+      ),
+      'Kitchen Reset offers must strictly contain genuine cleaning supplies'
+    );
+    // Verify P0-Safety Chemical Incompatibility Matrix is exposed
+    assert.ok(Array.isArray(res.chemicalSafetyMatrix) && res.chemicalSafetyMatrix.length >= 4);
+    assert.ok(res.chemicalSafetyMatrix.some((r) => r.id === 'p0-bleach-acid' && /Cl2/.test(r.hazardFormula)));
+  });
+
+  it('4. should align cookware IDs 1:1 and keep totalUnlockedDishes <= totalCatalogDishes (ADR-0013 / TASK-REAL-04)', () => {
+    const state = kitchenService.getKitchenState();
+    assert.ok(state.totalCatalogDishes >= 264);
+    assert.ok(
+      state.totalUnlockedDishes <= state.totalCatalogDishes,
+      `totalUnlockedDishes (${state.totalUnlockedDishes}) must never exceed totalCatalogDishes (${state.totalCatalogDishes})`
+    );
+
+    const archetypeIds = new Set(kitchenService.getArchetypes().map((a) => a.id));
+    const pestoTools = normalizeDishCookwareIds(['mortaio', 'pentola', 'tagliere'], { title: 'Trofie al pesto ligure' });
+    assert.ok(pestoTools.includes('mortaio'), 'Must emit canonical mortaio ID, not orphaned mortaio_marmo');
+    assert.ok(pestoTools.every((id) => archetypeIds.has(id)), 'Every normalized tool ID must exist in cookware_archetypes.json');
+
+    const tartareTools = normalizeDishCookwareIds(['bistecchiera', 'mortaio', 'spremiagrumi'], { title: 'Tartare di manzo tagliata al coltello' });
+    assert.deepEqual(tartareTools, ['coltello_chef'], 'Cold raw tartare must not require bistecchiera or mortaio');
   });
 });

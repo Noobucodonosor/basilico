@@ -85,7 +85,7 @@ const DEFAULT_SEED_PANTRY = [
     tOpenHours: 1440,
     openedAt: '2026-10-25T12:00:00.000Z',
     expiresAt: '2026-12-24T12:00:00.000Z',
-    creaFoodId: '009010',
+    creaFoodId: '009210',
     sourceReceiptId: null,
     updatedAt: '2026-11-08T10:00:00.000Z'
   },
@@ -367,6 +367,87 @@ export class PantryService {
       alreadyApplied: false,
       revisionKey: rev,
       addedItems
+    };
+  }
+
+  /**
+   * Post-cooking pantry deduction ("Ho cucinato questo piatto"):
+   * Deducts the dish BOM weights from matching pantry items (prioritizing already-opened packages)
+   * and automatically starts the T_open perishable conservation clock on newly opened packages.
+   */
+  consumeDishIngredients(payload = {}) {
+    const state = this._load();
+    const servings = Math.max(1, Number(payload.servings) || 1);
+    const bom = Array.isArray(payload.bom) ? payload.bom : [];
+    const STOP = new Set([
+      'di', 'del', 'dello', 'della', 'dei', 'degli', 'delle', 'al', 'alla', 'in', 'con', 'fresco', 'fresca',
+      'freschi', 'fresche', 'ligure', 'genovese', 'filetto', 'filetti', 'trancio', 'cuori', 'fette', 'spicchi'
+    ]);
+
+    const deductedItems = [];
+    const missingIngredients = [];
+
+    for (const b of bom) {
+      let remainingNeed = Number(
+        b.rawGramsTotal != null ? b.rawGramsTotal : Number(b.rawGramsPerServing || 0) * servings
+      );
+      if (!Number.isFinite(remainingNeed) || remainingNeed <= 0) continue;
+
+      const normName = normalizeSearchToken(b.name || '');
+      const head = normName.split(' ').find((w) => w.length >= 4 && !STOP.has(w)) || normName.split(' ')[0];
+      const headRx = head && head.length >= 4 ? new RegExp(`\\b${head}\\b`, 'i') : null;
+
+      // Sort candidates so already-opened packages are consumed before closed packages
+      const candidates = state.items
+        .filter(
+          (p) =>
+            p.remainingWeightGrams > 0 &&
+            ((b.creaId && p.creaFoodId && String(p.creaFoodId) === String(b.creaId)) ||
+              (!b.isSubstitutedComposite && headRx && headRx.test(normalizeSearchToken(p.title))))
+        )
+        .sort((x, y) => (x.status === 'opened' ? -1 : 1) - (y.status === 'opened' ? -1 : 1));
+
+      for (const cand of candidates) {
+        if (remainingNeed <= 0) break;
+        const wasClosed = cand.status === 'closed';
+        const takeGrams = Number(Math.min(cand.remainingWeightGrams, remainingNeed).toFixed(1));
+        const willFinish = takeGrams >= cand.remainingWeightGrams;
+        const updated = this.consumeOrOpenItem(cand.id, {
+          gramsUsed: takeGrams,
+          markFinished: willFinish
+        });
+        remainingNeed = Number(Math.max(0, remainingNeed - takeGrams).toFixed(1));
+        deductedItems.push({
+          pantryItemId: updated.id,
+          title: updated.title,
+          zone: updated.zone,
+          ingredientName: b.name,
+          gramsDeducted: takeGrams,
+          remainingAfterGrams: updated.remainingWeightGrams,
+          statusAfter: updated.status,
+          tOpenNewlyActivated: wasClosed && updated.status === 'opened',
+          expiresAt: updated.expiresAt,
+          hoursRemaining: updated.hoursRemaining
+        });
+      }
+
+      if (remainingNeed > 0.5) {
+        missingIngredients.push({
+          name: b.name,
+          creaId: b.creaId || null,
+          unmatchedGrams: remainingNeed
+        });
+      }
+    }
+
+    return {
+      dishId: payload.dishId || null,
+      dishTitle: payload.dishTitle || null,
+      servings,
+      deductedCount: deductedItems.length,
+      deductedItems,
+      missingIngredients,
+      ...this.getPantryState()
     };
   }
 }

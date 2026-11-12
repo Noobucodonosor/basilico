@@ -64,7 +64,7 @@ Il completamento architetturale delle 6 Stanze ([ADR-0007](./0007-multi-domain-c
 - [x] **TASK-REAL-03**: **Matcher Semantico Rigoroso BOM↔Offerte, Formati Confezione Reali, Politica `Zero Formaggi` a 3 Livelli & 8 Archetipi *Science & Cooking***
   - *File coinvolti*: `server/services/recipeAndArbitrageService.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `src/components/recipes/CookingModeModal.jsx`, `tests/unit/recipe_arbitrage_8020.test.js`
   - *Verification Step*: `npm test`
-- [ ] **TASK-REAL-04**: **Allineamento ID Pentole con ROI Dinamico Reale, Matching Chimico + Matrice Sicurezza P0 Sottolavello, Parser Scontrini Reale & Scarico Post-Cottura Dispensa**
+- [x] **TASK-REAL-04**: **Allineamento ID Pentole con ROI Dinamico Reale, Matching Chimico + Matrice Sicurezza P0 Sottolavello, Parser Scontrini Reale & Scarico Post-Cottura Dispensa**
   - *File coinvolti*: `server/services/kitchenInventoryService.js`, `server/services/kitchenResetService.js`, `server/services/receiptService.js`, `server/services/pantryService.js`, `server/routes/pantry.js`, `src/components/kitchen/KitchenCareView.jsx`, `src/components/recipes/CookingModeModal.jsx`, `tests/unit/kitchen_services.test.js`, `tests/unit/receipt_reconciliation.test.js`
   - *Verification Step*: `npm test`
 - [ ] **TASK-REAL-05**: **Solver Settimanale *Neo-Dieta* Umano (Varietà, Colazioni Vere, Barca Sicura, Pranzo≠Cena), Vero Simulatore Multi-Negozio Rapallo, Piano B Semantico & `+ Lista` Cross-Room**

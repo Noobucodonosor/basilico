@@ -122,4 +122,56 @@ describe('ADR-0009 / TASK-M3-01: Receipt Cent-Exact Reconciliation & Three-Zone 
     assert.ok(opened.expiresAt);
     assert.ok(opened.hoursRemaining > 30 && opened.hoursRemaining <= 36);
   });
+
+  it('5. should harden receipt OCR parser against fiscal/payment lines & support multipliers/weights (ADR-0013 / TASK-REAL-04)', () => {
+    const rawSlip = [
+      'DOCUMENTO COMMERCIALE DI VENDITA',
+      '2 X 1,49',
+      'SPAGHETTI RUMMO 500G 2,98 A',
+      '0,340 kg x 15,00',
+      'ORATA FRESCA DEL GOLFO 5,10 A',
+      'SCONTO PRIMA CARD -0,50',
+      'SUBTOTALE 7,58',
+      'DI CUI IVA 4% 0,29',
+      'TOTALE COMPLESSIVO € 7,58',
+      'PAGAMENTO BANCOMAT 7,58',
+      'CONTANTI 0,00',
+      'RESTO 0,00',
+      'PUNTI SALDO 142'
+    ].join('\n');
+
+    const parsed = receiptService.parseRawReceiptText(rawSlip, 'basko-rapallo-colombo', 'Basko Rapallo');
+    assert.equal(parsed.isReconciled, true, 'Must reconcile cleanly ignoring SUBTOTALE/PAGAMENTO/RESTO/IVA lines');
+    assert.equal(parsed.lines.length, 2, 'Only the 2 real merchandise lines must be parsed');
+    assert.equal(parsed.lines[0].quantity, 2);
+    assert.equal(parsed.lines[0].packWeightGrams, 1000);
+    assert.equal(parsed.lines[1].packWeightGrams, 340);
+    assert.equal(parsed.declaredTotalEuro, 7.58);
+  });
+
+  it('6. should deduct cooked dish BOM from pantry and automatically activate T_open on closed packages (ADR-0013 / TASK-REAL-04)', () => {
+    const closedTuna = pantryService.addItem({
+      title: 'Filetti di Tonno in Vetro',
+      zone: 'boat_cooler',
+      initialWeightGrams: 200,
+      status: 'closed',
+      creaFoodId: '123610'
+    });
+
+    const deduction = pantryService.consumeDishIngredients({
+      dishId: 'boat-test-1',
+      dishTitle: 'Insalata di Tonno e Ceci in Barca',
+      servings: 1,
+      bom: [
+        { creaId: '123610', name: 'Tonno in vetro sgocciolato', rawGramsPerServing: 80, rawGramsTotal: 80 }
+      ]
+    });
+
+    assert.ok(deduction.deductedCount >= 1);
+    const updatedTuna = deduction.items.find((i) => i.id === closedTuna.id);
+    if (updatedTuna) {
+      assert.equal(updatedTuna.status, 'opened');
+      assert.ok(updatedTuna.expiresAt, 'Must start T_open clock when cooking opens a closed package');
+    }
+  });
 });

@@ -155,7 +155,11 @@ export function KitchenCareView({ onNavigateToStoreDomain }) {
                 2. Dotazione Pentole & Lame Attive ({kitchenState?.effectiveTools?.length || 0})
               </h3>
               <p className="text-[11px] text-slate-500">
-                Stoviglie fisicamente compatibili con il piano cottura selezionato.
+                Stoviglie fisicamente compatibili • Sbloccano{' '}
+                <strong className="text-emerald-800">
+                  {kitchenState?.totalUnlockedDishes || 0} / {kitchenState?.totalCatalogDishes || 264} piatti
+                </strong>{' '}
+                completi del catalogo.
               </p>
             </div>
           </div>
@@ -254,10 +258,48 @@ export function KitchenCareView({ onNavigateToStoreDomain }) {
               </div>
               <div className="font-bold text-slate-900 mt-1">{item.name}</div>
               <div className="text-[10px] text-slate-500 mt-0.5">{item.brand} • ~€ {item.referencePriceEuro}</div>
+              {item.matchedOffers?.length > 0 && (
+                <div className="mt-1.5 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5">
+                  🏷️ Promo {item.matchedOffers[0].storeName}: €{Number(item.matchedOffers[0].promoPrice).toFixed(2)}
+                </div>
+              )}
             </button>
           ))}
         </div>
       </section>
+
+      {/* P0-Safety Chemical Incompatibility Matrix */}
+      {resetData.chemicalSafetyMatrix?.length > 0 && (
+        <section className="bg-rose-50/80 rounded-2xl border-2 border-rose-300 p-4 shadow-xs space-y-3">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-700 text-white">
+              P0-Safety · Sicurezza Chimica Domestica
+            </span>
+            <h3 className="text-sm font-extrabold text-rose-950 mt-1">
+              ☠️ Matrice Incompatibilità Chimiche Critiche (Miscele Vietate Sottolavello)
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {resetData.chemicalSafetyMatrix.map((rule) => (
+              <div key={rule.id} className="bg-white rounded-xl border border-rose-200 p-3 text-xs space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-extrabold text-rose-900">
+                    ⛔ {rule.reagentA} + {rule.reagentB}
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-rose-100 text-rose-900 shrink-0">
+                    {rule.severity}
+                  </span>
+                </div>
+                <div className="font-mono text-[11px] text-slate-700 bg-slate-50 px-2 py-1 rounded border border-slate-200">
+                  {rule.hazardFormula} → {rule.toxicProduct}
+                </div>
+                <p className="text-[11px] text-slate-700">{rule.clinicalRisk}</p>
+                <p className="text-[11px] font-bold text-rose-800">Regola: {rule.mandatoryRule}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Chemical Kitchen Reset Protocols */}
       <section className="space-y-3">

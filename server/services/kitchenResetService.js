@@ -12,7 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { kitchenInventoryService } from './kitchenInventoryService.js';
-import { offerService } from './offerService.js';
+import { offerService, enrichOfferRecord, normalizeSearchToken } from './offerService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -101,6 +101,61 @@ const MATERIAL_PROTOCOLS = {
   }
 };
 
+export const CHEMICAL_SAFETY_MATRIX = [
+  {
+    id: 'p0-bleach-acid',
+    severity: 'P0-LETHAL',
+    reagentA: 'Ipoclorito di Sodio (Candeggina / Ace / Disinfettanti Clorati)',
+    reagentB: 'Acidi (Anticalcare, Acido Citrico, Viakal, Aceto, Disincrostanti WC)',
+    hazardFormula: 'NaClO + 2H+ + Cl- -> Cl2 (gas) + H2O + Na+',
+    toxicProduct: 'Gas Cloro (Cl2) molecolare tossico',
+    clinicalRisk:
+      'Sviluppo istantaneo di vapori giallo-verdi altamente corrosivi per alveoli polmonari e mucose anche in piccole quantità nel lavello.',
+    mandatoryRule: 'MAI miscelare né applicare in sequenza senza abbondante risciacquo intermedio con sola acqua fredda.'
+  },
+  {
+    id: 'p0-bleach-ammonia',
+    severity: 'P0-LETHAL',
+    reagentA: 'Ipoclorito di Sodio (Candeggina)',
+    reagentB: 'Ammoniaca / Sgrassatori Ammoniacali per Pavimenti o Vetri',
+    hazardFormula: 'NaClO + NH3 -> NH2Cl / NHCl2 (clorammine volatili) + NaOH',
+    toxicProduct: 'Clorammine gassose irritanti e idrazina in tracce',
+    clinicalRisk: 'Broncospasmo acuto, lacrimazione severa e intossicazione inalatoria in cucine poco aerate.',
+    mandatoryRule: 'Usare esclusivamente un singolo principio attivo per sessione di pulizia.'
+  },
+  {
+    id: 'p0-bleach-peroxide',
+    severity: 'P0-CRITICAL',
+    reagentA: 'Ipoclorito / Acidi Concentrati',
+    reagentB: 'Perossido di Idrogeno / Additivi ad Ossigeno Attivo',
+    hazardFormula: 'NaClO + H2O2 -> O2 (effervescenza violenta) + NaCl + H2O + calore',
+    toxicProduct: 'Reazione esotermica rapida / Acido peracetico irritante (se con acido acetico)',
+    clinicalRisk: 'Schizzi caustici agli occhi e sovrappressione se chiusi in flaconi.',
+    mandatoryRule: 'Non travasare né combinare mai additivi ossigenati con candeggina o acidi.'
+  },
+  {
+    id: 'p1-acid-marble-castiron',
+    severity: 'P1-DAMAGE',
+    reagentA: 'Acido Citrico / Anticalcare / Limone / Aceto (pH < 4)',
+    reagentB: 'Mortaio in Marmo di Carrara (CaCO3) o Ghisa Stagionata',
+    hazardFormula: 'CaCO3 + 2H+ -> Ca2+ + CO2 + H2O',
+    toxicProduct: 'Dissoluzione chimica irreversibile del cristallo marmoreo / decappaggio patina ferro',
+    clinicalRisk: 'Perdita permanente della levigatura interna del mortaio ligure e ossidazione (ruggine) immediata sulla ghisa.',
+    mandatoryRule: 'Lavare il mortaio solo con acqua tiepida e panno; sulla ghisa solo acqua calda e spugna morbida.'
+  }
+];
+
+const CLEANING_FUNCTION_MATCHERS = {
+  spugna_delicata: /\b(spugn\w*|abrasiv\w*\s+delicat\w*|scotch\s*brite|spontex|arix)\b/i,
+  detersivo_piatti: /\b(detersiv\w*\s+(?:per\s+)?(?:piatti|stoviglie)|lavastoviglie|svelto|nelsen|fairy|pril|finish|sole\s+.*stoviglie)\b/i,
+  anticalcare_citrico: /\b(anticalcare|acido\s+citrico|viakal|disincrostant\w*|winni['’]?s\s+.*bagno|quasar)\b/i,
+  sgrassatore_alcalino: /\b(sgrassator\w*|chanteclair|cif\b|fornet|mastro\s+lindo|ajax|pulitore)\b/i,
+  panno_microfibra: /\b(microfibra|pann[oi]|vileda|asciugatutto|tutto\s*-?\s*asciugatutto|scottex|carta\s+casa)\b/i
+};
+
+const GENUINE_KITCHEN_CLEANING_OFFER_REGEX =
+  /\b(detersiv\w*|ammorbident\w*|sgrassator\w*|candeggina|anticalcare|disincrostant\w*|igienizzant\w*|lavastoviglie|curalavatrice|stoviglie|spugn\w*|microfibra|vileda|asciugatutto|scottex|pellicola|domopak|alluminio\s+cucina|carta\s+forno|nelsen|svelto|fairy|finish|chanteclair|viakal|ace\b|cif\b)\b/i;
+
 export class KitchenResetService {
   constructor() {
     this._catalog = null;
@@ -113,27 +168,56 @@ export class KitchenResetService {
     return this._catalog;
   }
 
+  async _getKitchenCleaningOffers() {
+    const raw = await offerService.getRawOffers();
+    return raw
+      .map((o) => enrichOfferRecord(o))
+      .filter(
+        (o) =>
+          o &&
+          o.domain === 'home_cleaning' &&
+          !o.isNamelessTile &&
+          GENUINE_KITCHEN_CLEANING_OFFER_REGEX.test(`${o.title || ''} ${o.brand || ''}`)
+      );
+  }
+
+  matchOffersForSupplyKey(key, activeCleaningOffers = []) {
+    const rx = CLEANING_FUNCTION_MATCHERS[key];
+    if (!rx) return [];
+    return activeCleaningOffers
+      .filter((off) => rx.test(`${off.title || ''} ${off.brand || ''}`))
+      .slice(0, 3)
+      .map((off) => ({
+        id: off.id,
+        title: off.title,
+        brand: off.brand || null,
+        storeId: off.storeId,
+        storeName: off.storeName || off.chainId,
+        promoPrice: off.promoPrice
+      }));
+  }
+
   /**
    * Generates a complete Kitchen Reset protocol for a list of used tool IDs
-   * and matches cleaning supplies against the user's under-sink inventory and live Tigotà/PiùMe offers.
+   * and matches cleaning supplies against the user's under-sink inventory and live Tigotà/PiùMe/GDO offers,
+   * including the mandatory P0-Safety Chemical Incompatibility Matrix.
    */
   async generateProtocol(toolIds = ['padella_antiaderente', 'coltello_chef']) {
     const archetypes = kitchenInventoryService.getArchetypes();
     const kitchenState = kitchenInventoryService.getKitchenState();
     const cleaningCatalog = this.getCleaningCatalog();
-
-    // Fetch live/seed home_cleaning offers in Rapallo (Tigotà, PiùMe, etc.)
-    const cleaningOffersRes = await offerService.getOffers({
-      domain: 'home_cleaning',
-      limit: 50
-    });
-    const activeCleaningOffers = cleaningOffersRes.offers || [];
+    const activeCleaningOffers = await this._getKitchenCleaningOffers();
 
     const protocols = [];
     for (const tid of toolIds) {
-      const arch = archetypes.find((a) => a.id === tid) || {
-        id: tid,
-        name: tid,
+      const normalizedTid = normalizeSearchToken(tid) === 'mortaio marmo'
+        ? 'mortaio'
+        : normalizeSearchToken(tid) === 'bistecchiera ghisa'
+          ? 'bistecchiera'
+          : tid;
+      const arch = archetypes.find((a) => a.id === normalizedTid) || {
+        id: normalizedTid,
+        name: normalizedTid,
         material: 'acciaio_inox_18_10'
       };
       const proto = MATERIAL_PROTOCOLS[arch.material] || MATERIAL_PROTOCOLS.acciaio_inox_18_10;
@@ -141,9 +225,11 @@ export class KitchenResetService {
       const requiredSupplies = proto.requiredCleaningKeys.map((key) => {
         const refProd = cleaningCatalog.find((c) => c.key === key) || cleaningCatalog[0];
         const ownedInUnderSink = kitchenState.ownedCleaningKeys.includes(key);
+        const matchedOffers = this.matchOffersForSupplyKey(key, activeCleaningOffers);
         return {
           ...refProd,
-          ownedInUnderSink
+          ownedInUnderSink,
+          matchedOffers
         };
       });
 
@@ -162,11 +248,13 @@ export class KitchenResetService {
 
     return {
       protocols,
+      chemicalSafetyMatrix: CHEMICAL_SAFETY_MATRIX,
       underSinkCatalog: cleaningCatalog.map((item) => ({
         ...item,
-        ownedInUnderSink: kitchenState.ownedCleaningKeys.includes(item.key)
+        ownedInUnderSink: kitchenState.ownedCleaningKeys.includes(item.key),
+        matchedOffers: this.matchOffersForSupplyKey(item.key, activeCleaningOffers)
       })),
-      liveRapalloCleaningOffers: activeCleaningOffers.slice(0, 12)
+      liveRapalloCleaningOffers: activeCleaningOffers.slice(0, 16)
     };
   }
 }

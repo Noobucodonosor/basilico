@@ -16,6 +16,30 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [activeTimers, setActiveTimers] = useState({});
   const [isLabModalOpen, setIsLabModalOpen] = useState(false);
+  const [pantryConsumeResult, setPantryConsumeResult] = useState(null);
+  const [consumingPantry, setConsumingPantry] = useState(false);
+
+  const handleConsumeFromPantry = async () => {
+    if (!session?.dish || consumingPantry) return;
+    setConsumingPantry(true);
+    try {
+      const res = await fetch('/api/pantry/consume-dish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dishId: session.dish.id,
+          dishTitle: session.dish.title,
+          servings: session.dish.servings || initialServings,
+          profileId: activeProfileId || 'dany',
+          bom: session.dish.bom
+        })
+      });
+      if (res.ok) {
+        setPantryConsumeResult(await res.json());
+      }
+    } catch (_) {}
+    setConsumingPantry(false);
+  };
 
   useEffect(() => {
     if (!dishId) return;
@@ -134,6 +158,14 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
             </select>
             <button
               type="button"
+              onClick={handleConsumeFromPantry}
+              disabled={consumingPantry || Boolean(pantryConsumeResult)}
+              className="px-3 py-2 text-xs font-extrabold bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white rounded-lg cursor-pointer whitespace-nowrap"
+            >
+              {pantryConsumeResult ? '✓ Scalato da Dispensa' : '🍳 Ho cucinato (Scala Dispensa)'}
+            </button>
+            <button
+              type="button"
               onClick={() => setIsLabModalOpen(true)}
               className="px-3 py-2 text-xs font-extrabold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg cursor-pointer whitespace-nowrap"
             >
@@ -155,6 +187,19 @@ export function CookingModeModal({ dishId, initialServings = 1, activeProfileId,
           </div>
         ) : (
           <div className="p-5 space-y-6">
+            {pantryConsumeResult && (
+              <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-300 text-xs text-sky-950 space-y-1">
+                <div className="font-extrabold">
+                  🥫 Dispensa aggiornata post-cottura ({pantryConsumeResult.deductedCount} confezioni scalate):
+                </div>
+                {pantryConsumeResult.deductedItems.map((di, idx) => (
+                  <p key={idx}>
+                    • <strong>{di.title}</strong>: -{di.gramsDeducted}g → residuo <strong>{di.remainingAfterGrams}g</strong>
+                    {di.tOpenNewlyActivated ? ' (⏱️ Orologio freschezza T_open avviato!)' : ''}
+                  </p>
+                ))}
+              </div>
+            )}
             {/* Profile Substitution Notice or Structural Dairy Identity Warning */}
             {session.dish.isExcludedByProfileIdentity && (
               <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-950 space-y-1">

@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { offerService, enrichOfferRecord, normalizeSearchToken } from './offerService.js';
 import { creaService } from './creaService.js';
 import { pantryService } from './pantryService.js';
-import { kitchenInventoryService } from './kitchenInventoryService.js';
+import { kitchenInventoryService, normalizeDishCookwareIds } from './kitchenInventoryService.js';
 import { kitchenResetService } from './kitchenResetService.js';
 import { userProfileService } from './userProfileService.js';
 
@@ -440,31 +440,11 @@ export class RecipeAndArbitrageService {
   }
 
   /**
-   *Normalizes cookware IDs from dish seed (`padella`, `pentola`, `tagliere`, etc.)
-   * to canonical Stanza 4 archetype IDs (`padella_antiaderente`, `pentola`, `coltello_chef`, `mortaio_marmo`, etc.).
+   * Normalizes cookware IDs from dish seed (`padella`, `pentola`, `tagliere`, etc.)
+   * 1:1 to canonical Stanza 4 archetype IDs (`padella_antiaderente`, `casseruola_inox`, `pentola`, `mortaio`, `bistecchiera`, etc.).
    */
-  _normalizeCookwareIds(rawTools = []) {
-    const mapped = new Set();
-    for (const t of rawTools) {
-      const norm = normalizeSearchToken(t);
-      if (norm.includes('padella') || norm.includes('wok') || norm.includes('casseruola')) {
-        mapped.add('padella_antiaderente');
-      } else if (norm.includes('pentola')) {
-        mapped.add('pentola');
-      } else if (norm.includes('forno') || norm.includes('teglia') || norm.includes('pirofila')) {
-        mapped.add('teglia_forno');
-      } else if (norm.includes('mortaio')) {
-        mapped.add('mortaio_marmo');
-      } else if (norm.includes('bistecchiera') || norm.includes('griglia')) {
-        mapped.add('bistecchiera_ghisa');
-      } else if (norm.includes('pentola_pressione') || norm.includes('pressione')) {
-        mapped.add('pentola_pressione');
-      } else {
-        mapped.add('coltello_chef');
-      }
-    }
-    if (mapped.size === 0) mapped.add('coltello_chef');
-    return Array.from(mapped);
+  _normalizeCookwareIds(rawTools = [], dishContext = null) {
+    return normalizeDishCookwareIds(rawTools, dishContext);
   }
 
   async _getFullFoodOffers(profileId = null) {
@@ -669,7 +649,7 @@ export class RecipeAndArbitrageService {
     const arbitrageSavingsPct =
       totalMenuPriceEur > 0 ? Math.round((arbitrageSavingsEur / totalMenuPriceEur) * 100) : 0;
 
-    const canonicalTools = this._normalizeCookwareIds(dish.cookwareRequired || []);
+    const canonicalTools = this._normalizeCookwareIds(dish.cookwareRequired || [], dish);
     const missingCookware = canonicalTools.filter((tid) => !ownedToolSet.has(tid));
     const bomCount = Math.max(1, enrichedBom.length);
     const pantryCoveragePct = Math.round((inPantryCount / bomCount) * 100);
