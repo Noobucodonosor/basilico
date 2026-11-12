@@ -65,13 +65,26 @@ test('API /api/recipes — Catalog, 80/20 Solver, Cooking Session, Lab Notes & C
     } catch (_) {}
   });
 
-  // 1. GET /api/recipes
+  // 1. GET /api/recipes & GET /api/recipes/restaurants
   const listRes = await requestJson(server, 'GET', '/api/recipes?limit=15&servings=2');
   assert.equal(listRes.status, 200);
-  assert.ok(listRes.body.totalDishesInCatalog >= 234);
-  assert.equal(listRes.body.restaurants.length, 32);
+  assert.ok(listRes.body.totalDishesInCatalog >= 360);
+  assert.ok(listRes.body.restaurants.length >= 23);
+  assert.ok(listRes.body.restaurants.every((r) => r.dishCount > 0));
+  assert.equal(listRes.body.totalCensusedRestaurantsCount, 32);
+  assert.equal(listRes.body.activeMenuRestaurantsCount, listRes.body.restaurants.length);
   assert.equal(listRes.body.dishes.length, 15);
   assert.equal(listRes.body.servings, 2);
+
+  const restActiveRes = await requestJson(server, 'GET', '/api/recipes/restaurants');
+  assert.equal(restActiveRes.status, 200);
+  assert.ok(restActiveRes.body.restaurants.every((r) => r.dishCount > 0));
+  assert.equal(restActiveRes.body.totalCensusedCount, 32);
+  assert.equal(restActiveRes.body.activeMenuRestaurantsCount, restActiveRes.body.restaurants.length);
+
+  const restAllRes = await requestJson(server, 'GET', '/api/recipes/restaurants?includeWithoutMenu=true');
+  assert.equal(restAllRes.status, 200);
+  assert.equal(restAllRes.body.restaurants.length, 32);
 
   // 2. GET /api/recipes/8020
   const paretoRes = await requestJson(server, 'GET', '/api/recipes/8020?topK=8');

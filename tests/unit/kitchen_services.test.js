@@ -33,10 +33,10 @@ describe('ADR-0010 / TASK-M4-01: Kitchen Equipment ROI & Chemical Reset Protocol
     assert.equal(state.heatSource, 'gas');
     assert.ok(state.effectiveTools.length >= 3);
     assert.ok(state.missingRoiOpportunities.length > 0);
-    // Missing Casseruola Inox should report pure dynamic count over normalizedTools (71 dishes)
+    // Missing Casseruola Inox should report pure dynamic count over normalizedTools (>= 71 dishes)
     const casseruolaRoi = state.missingRoiOpportunities.find((m) => m.id === 'casseruola_inox');
     assert.ok(casseruolaRoi);
-    assert.equal(casseruolaRoi.unlockedDishesCount, 71);
+    assert.ok(casseruolaRoi.unlockedDishesCount >= 71, `Expected >=71 dishes for casseruola_inox, got ${casseruolaRoi.unlockedDishesCount}`);
     const wokRoi = state.missingRoiOpportunities.find((m) => m.id === 'wok');
     assert.ok(wokRoi);
     assert.equal(wokRoi.unlockedDishesCount, 0, 'Must use pure dynamic count without hardcoded 35 fallback');

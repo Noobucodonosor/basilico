@@ -14,19 +14,25 @@ import {
 } from '../../server/services/recipeAndArbitrageService.js';
 import { creaService } from '../../server/services/creaService.js';
 
-test('RecipeAndArbitrageService — Certified Catalog Integrity (234 Dishes & 32 Tigullio Restaurants)', () => {
+test('RecipeAndArbitrageService — Certified Catalog Integrity (Verified Tigullio Menus & 32 Censused Restaurants)', () => {
   const svc = new RecipeAndArbitrageService({
     labNotebookPath: path.join(os.tmpdir(), `basilico-lab-test-${Date.now()}.json`)
   });
 
   const dishes = svc.getDishesSeed();
-  const restaurants = svc.getRestaurantsSeed();
+  const activeRestaurants = svc.getRestaurants();
+  const allCensusedRestaurants = svc.getRestaurants({ includeWithoutMenu: true });
 
-  assert.equal(restaurants.length, 32, 'Must include all 32 Tigullio restaurants');
-  assert.ok(dishes.length >= 234, `Expected at least 234 dishes, got ${dishes.length}`);
+  assert.equal(allCensusedRestaurants.length, 32, 'Must preserve all 32 censused Tigullio restaurants when includeWithoutMenu=true');
+  assert.ok(activeRestaurants.length >= 23, `Expected at least 23 active restaurants with verified priced menus, got ${activeRestaurants.length}`);
+  assert.ok(
+    activeRestaurants.every((r) => r.dishCount > 0),
+    'Default getRestaurants() must strictly return only restaurants with dishCount > 0'
+  );
+  assert.ok(dishes.length >= 360, `Expected at least 360 dishes after TASK-M5-03 expansion, got ${dishes.length}`);
 
   const totalBomRows = dishes.reduce((acc, d) => acc + (d.bom?.length || 0), 0);
-  assert.ok(totalBomRows >= 1134, `Expected at least 1134 BOM rows, got ${totalBomRows}`);
+  assert.ok(totalBomRows >= 1500, `Expected at least 1500 BOM rows, got ${totalBomRows}`);
 });
 
 test('RecipeAndArbitrageService — Profile-Adapted Variant & Dual Cost Arbitrage', async () => {
@@ -171,11 +177,22 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
 
   const dishes = svc.getDishesSeed();
 
-  // M-P0-09: 100% of BOM creaId references across all 264 dishes must exist in CREA database
+  // M-P0-09: 100% of BOM creaId references across all dishes must exist in CREA database,
+  // and 100% of newly added TASK-M5-03 dishes (numericId >= 231) must have canonical cookware_archetypes.json IDs
+  const cookwareSeed = JSON.parse(
+    await import('node:fs').then((m) => m.default.readFileSync(path.resolve(process.cwd(), 'data/seed/cookware_archetypes.json'), 'utf8'))
+  );
+  const validCookwareIds = new Set(cookwareSeed.map((c) => c.id));
   for (const d of dishes) {
     for (const b of d.bom || []) {
       const food = creaService.getFoodById(b.creaId);
       assert.ok(food, `Dish ${d.id} BOM "${b.name}" has invalid creaId "${b.creaId}"`);
+    }
+    if (Number(d.numericId) >= 231) {
+      assert.ok(d.menuPriceEuro > 0 && d.menuSourceUrl, `New dish ${d.id} must have verified price & menuSourceUrl`);
+      for (const cid of d.cookwareRequired || []) {
+        assert.ok(validCookwareIds.has(cid), `New dish ${d.id} has invalid cookwareRequired ID "${cid}"`);
+      }
     }
   }
   const cracco = dishes.find((d) => d.id === 'starred-cracco-spaghetto-pomodoro-studio');
@@ -251,7 +268,7 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
 
   // M-P1-11 & M-P1-14: Global sort before pagination, strict boatSafeCold, Semifreddi cold archetype & Frittata non-fried
   const top5Cheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 5 });
-  const allCheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 350 });
+  const allCheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 500 });
   assert.equal(top5Cheapest.dishes[0].id, allCheapest.dishes[0].id);
 
   const boatOnly = await svc.queryDishes({ mealContext: 'boat_cooler', limit: 100 });
@@ -264,4 +281,16 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
   const evalFrittata = await svc.evaluateDish(frittataDish, { profileId: 'dany' });
   assert.notEqual(evalFrittata.dishFamily, 'fried_dish', 'Frittata must never be classified as deep-fried');
   assert.equal(evalFrittata.lightDinnerSuitable, true);
+
+  // Structural cheese dishes from Angolo 48 SML must be honestly excluded under Zero-Formaggi (dany)
+  const fugassetteDish = dishes.find((d) => d.id === 'tigullio-dish-299');
+  const sanSteDish = dishes.find((d) => d.id === 'tigullio-dish-300');
+  assert.ok(fugassetteDish && sanSteDish, 'Expected Angolo 48 SML structural cheese dishes in seed');
+  const evalFugassette = await svc.evaluateDish(fugassetteDish, { profileId: 'dany' });
+  const evalSanSte = await svc.evaluateDish(sanSteDish, { profileId: 'dany' });
+  assert.equal(evalFugassette.dairyRole, 'structural_unsubstitutable');
+  assert.equal(evalFugassette.isExcludedByProfileIdentity, true);
+  assert.equal(evalFugassette.dishFamily, 'pizza_focaccia');
+  assert.equal(evalSanSte.dairyRole, 'structural_unsubstitutable');
+  assert.equal(evalSanSte.isExcludedByProfileIdentity, true);
 });

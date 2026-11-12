@@ -22,7 +22,7 @@ Nelle conversazioni storiche, la visione gastronomica poggiava su tre pilastri m
 1. **Dataset Gastronomico Certificato (`data/seed/recipes_and_dishes.json`, `data/seed/restaurants_tigullio.json`):**
    - Unificazione pulita di:
      - **Ricettario Base "Scuola di Cucina per Single"** (colazioni, pranzi freddi da barca per borsa termica, primi, secondi, contorni);
-     - **32 Ristoranti Reali del Tigullio (230 piatti + 1.134 righe di Distinta Base `dish_bom`)** con prezzo reale del menu al tavolo;
+     - **32 Ristoranti Reali Censiti nel Tigullio, di cui 23 con Listino Pubblico Verificato (334 piatti reali da ristorante su 368 totali a catalogo + 1.797 righe di Distinta Base `bom`)** con prezzo reale del menu al tavolo e URL fonte verificata (`ADR-0006`). I **9 locali privi di listino pubblico con prezzi online** (`last_scrape_status: "no_public_priced_menu"`) restano censiti in anagrafica senza alcun prezzo o piatto inventato e vengono esclusi di default dai dropdown e KPI attivi della UI di Stanza 3 (`getRestaurants()` restituisce solo locali con `dishCount > 0`, mentre `getRestaurants({ includeWithoutMenu: true })` espone tutti i 32 locali censiti);
      - **Selezione Piatti d'Autore e Stellati Documentati** (con etichetta trasparente di livello: `documented_original` vs `domestic_scientific_interpretation`).
    - Ogni piatto possiede:
      - `bom`: array di ingredienti con `creaId`, `rawGramsPerServing` (per 1 persona, scalabile a $N$ persone), ruolo nell'architettura del piatto e **sostituto scientifico automatico** (`substitutionRule`) qualora l'ingrediente sia escluso dal Profilo Utente attivo (es. variante senza formaggi bilanciata per sapidità e lipidi);
@@ -54,3 +54,6 @@ Nelle conversazioni storiche, la visione gastronomica poggiava su tre pilastri m
 - [x] **TASK-M5-02**: **Interfaccia Completa Stanza 3 ("Ricette, Ristoranti & Fornelli"): Catalogo con Arbitraggio & Vista 80/20, Modalità Fornelli a Schermo Intero (*Science & Cooking* + Timer + Kitchen Reset) e Quaderno di Laboratorio**
   - *File coinvolti*: `src/components/recipes/RecipesAndRestaurantsView.jsx`, `src/components/recipes/CookingModeModal.jsx`, `src/components/recipes/LabNotebookModal.jsx`, `src/App.jsx`, `tests/e2e/recipes_cooking_ui.test.js`
   - *Verification Step*: `npm test`
+- [x] **TASK-M5-03** (`#37`): **Acquisizione Menu Pubblici Reali con Prezzi nel Tigullio e Filtro Esclusivo Ristoranti con Listino Verificato**
+  - *File coinvolti*: `data/seed/recipes_and_dishes.json`, `data/seed/restaurants_tigullio.json`, `server/services/recipeAndArbitrageService.js`, `server/routes/recipes.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `specs/03-ricette.spec.md`, `evals/run_evals.mjs`, `tests/unit/recipe_arbitrage_8020.test.js`, `tests/unit/kitchen_services.test.js`, `tests/api/recipes_api.test.js`, `tests/e2e/recipes_cooking_ui.test.js`
+  - *Verification Step*: `npm run build && npm run eval && npm test`

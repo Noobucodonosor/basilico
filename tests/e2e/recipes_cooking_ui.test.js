@@ -24,7 +24,7 @@ test('Stanza 3 UI Components — Structural & Contract Verification (ADR-0011 / 
   assert.ok(fs.existsSync(labModalPath), 'LabNotebookModal.jsx must exist');
 
   const viewSrc = fs.readFileSync(viewPath, 'utf8');
-  assert.match(viewSrc, /32 Ristoranti del Tigullio/i);
+  assert.match(viewSrc, /Ristoranti con Menu Reale Verificato/i);
   assert.match(viewSrc, /Costo Porzione Pura/i);
   assert.match(viewSrc, /Analisi 80\/20 Max-Coverage/i);
   assert.match(viewSrc, /De-costruisci Menu/i);

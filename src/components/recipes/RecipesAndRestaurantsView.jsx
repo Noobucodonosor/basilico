@@ -3,8 +3,8 @@ import CookingModeModal from './CookingModeModal.jsx';
 
 const SOURCE_TYPE_TABS = [
   { id: 'all', label: 'Tutti i Piatti', icon: '🍽️' },
-  { id: 'base_single_school', label: 'Scuola Base Single, Colazioni & Barca (32)', icon: '⛵' },
-  { id: 'tigullio_restaurant', label: '32 Ristoranti del Tigullio (230 Piatti)', icon: '🦞' },
+  { id: 'base_single_school', label: 'Scuola Base Single, Colazioni & Barca', icon: '⛵' },
+  { id: 'tigullio_restaurant', label: 'Ristoranti con Menu Reale Verificato', icon: '🦞' },
   { id: 'starred_author', label: 'Alta Cucina & Stellati (Studio)', icon: '⭐' }
 ];
 
@@ -30,7 +30,12 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
   const [visibleLimit, setVisibleLimit] = useState(80);
 
   const [catalogData, setCatalogData] = useState({
-    totalDishesInCatalog: 264,
+    totalDishesInCatalog: 368,
+    totalBomRowsInCatalog: 1647,
+    tigullioDishesCount: 334,
+    baseSingleDishesCount: 32,
+    totalCensusedRestaurantsCount: 32,
+    activeMenuRestaurantsCount: 23,
     totalMatching: 0,
     restaurants: [],
     dishes: []
@@ -148,7 +153,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                 Stanza 3 · ADR-0011
               </span>
               <span className="text-xs text-emerald-300 font-semibold">
-                32 Ristoranti Reali del Tigullio • 234 Piatti • 1.134 Righe BOM Certificate CREA
+                {catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount} Ristoranti con Menu Reale Verificato • {catalogData.totalDishesInCatalog} Piatti • {(catalogData.totalBomRowsInCatalog || 0).toLocaleString('it-IT')} Righe BOM Certificate CREA
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
@@ -227,7 +232,15 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                   }`}
                 >
                   <span>{t.icon}</span>
-                  <span>{t.id === 'all' ? `${t.label} (${catalogData.totalDishesInCatalog})` : t.label}</span>
+                  <span>
+                    {t.id === 'all'
+                      ? `${t.label} (${catalogData.totalDishesInCatalog})`
+                      : t.id === 'tigullio_restaurant'
+                        ? `${catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount} Ristoranti con Menu Reale Verificato (${catalogData.tigullioDishesCount || 334} Piatti)`
+                        : t.id === 'base_single_school'
+                          ? `${t.label} (${catalogData.baseSingleDishesCount || 32})`
+                          : t.label}
+                  </span>
                 </button>
               ))}
             </div>
@@ -258,7 +271,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
           <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-slate-500 mb-1">
-                Ristorante del Tigullio (32 locali)
+                Ristorante del Tigullio ({catalogData.restaurants.length} con Menu Reale Verificato)
               </label>
               <select
                 aria-label="Filtra per Ristorante del Tigullio"
@@ -266,10 +279,12 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                 onChange={(e) => setRestaurantId(e.target.value)}
                 className="w-full text-xs font-semibold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-800"
               >
-                <option value="all">Tutti i 32 Ristoranti & Scuole</option>
+                <option value="all">
+                  Tutti i {catalogData.restaurants.length} Ristoranti con Menu Reale Verificato &amp; Scuole
+                </option>
                 {catalogData.restaurants.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.logo_emoji || '🍽️'} {r.nome} ({r.citta} · {r.fascia_prezzo})
+                    {r.logo_emoji || '🍽️'} {r.nome} ({r.citta}) — {r.dishCount} {r.dishCount === 1 ? 'piatto' : 'piatti'}
                   </option>
                 ))}
               </select>

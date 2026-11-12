@@ -20206,7 +20206,7 @@ const BASILICO_ROOMS = [
     icon: "🍽️",
     shortTitle: "Ricette & Fornelli",
     fullTitle: "3. Ricette, Ristoranti & Fornelli",
-    subtitle: "Scuola base, 32 ristoranti Tigullio, Arbitraggio, 80/20 e Fornelli"
+    subtitle: "Scuola base, ristoranti Tigullio con menu verificato, Arbitraggio, 80/20 e Fornelli"
   },
   {
     id: "room-4-cucina",
@@ -24831,8 +24831,8 @@ function CookingModeModal({
 
 const SOURCE_TYPE_TABS = [
   { id: "all", label: "Tutti i Piatti", icon: "🍽️" },
-  { id: "base_single_school", label: "Scuola Base Single, Colazioni & Barca (32)", icon: "⛵" },
-  { id: "tigullio_restaurant", label: "32 Ristoranti del Tigullio (230 Piatti)", icon: "🦞" },
+  { id: "base_single_school", label: "Scuola Base Single, Colazioni & Barca", icon: "⛵" },
+  { id: "tigullio_restaurant", label: "Ristoranti con Menu Reale Verificato", icon: "🦞" },
   { id: "starred_author", label: "Alta Cucina & Stellati (Studio)", icon: "⭐" }
 ];
 const MEAL_CONTEXT_PILLS = [
@@ -24855,7 +24855,12 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
   const [excludeIncompatible, setExcludeIncompatible] = reactExports.useState(false);
   const [visibleLimit, setVisibleLimit] = reactExports.useState(80);
   const [catalogData, setCatalogData] = reactExports.useState({
-    totalDishesInCatalog: 264,
+    totalDishesInCatalog: 368,
+    totalBomRowsInCatalog: 1647,
+    tigullioDishesCount: 334,
+    baseSingleDishesCount: 32,
+    totalCensusedRestaurantsCount: 32,
+    activeMenuRestaurantsCount: 23,
     totalMatching: 0,
     restaurants: [],
     dishes: []
@@ -24948,7 +24953,14 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-emerald-500 text-slate-950", children: "Stanza 3 · ADR-0011" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-emerald-300 font-semibold", children: "32 Ristoranti Reali del Tigullio • 234 Piatti • 1.134 Righe BOM Certificate CREA" })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-emerald-300 font-semibold", children: [
+            catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount,
+            " Ristoranti con Menu Reale Verificato • ",
+            catalogData.totalDishesInCatalog,
+            " Piatti • ",
+            (catalogData.totalBomRowsInCatalog || 0).toLocaleString("it-IT"),
+            " Righe BOM Certificate CREA"
+          ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-xl sm:text-2xl font-extrabold tracking-tight", children: [
           "🍽️ Ricette Base Single, Ristoranti del Tigullio, Arbitraggio Live & Fornelli (",
@@ -25020,7 +25032,7 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
             className: `inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold border cursor-pointer transition-all ${sourceType === t.id ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-400"}`,
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.icon }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.id === "all" ? `${t.label} (${catalogData.totalDishesInCatalog})` : t.label })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.id === "all" ? `${t.label} (${catalogData.totalDishesInCatalog})` : t.id === "tigullio_restaurant" ? `${catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount} Ristoranti con Menu Reale Verificato (${catalogData.tigullioDishesCount || 334} Piatti)` : t.id === "base_single_school" ? `${t.label} (${catalogData.baseSingleDishesCount || 32})` : t.label })
             ]
           },
           t.id
@@ -25054,7 +25066,11 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-500 mb-1", children: "Ristorante del Tigullio (32 locali)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-[11px] font-bold text-slate-500 mb-1", children: [
+            "Ristorante del Tigullio (",
+            catalogData.restaurants.length,
+            " con Menu Reale Verificato)"
+          ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
             {
@@ -25063,16 +25079,21 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
               onChange: (e) => setRestaurantId(e.target.value),
               className: "w-full text-xs font-semibold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-800",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "all", children: "Tutti i 32 Ristoranti & Scuole" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: "all", children: [
+                  "Tutti i ",
+                  catalogData.restaurants.length,
+                  " Ristoranti con Menu Reale Verificato & Scuole"
+                ] }),
                 catalogData.restaurants.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: r.id, children: [
                   r.logo_emoji || "🍽️",
                   " ",
                   r.nome,
                   " (",
                   r.citta,
-                  " · ",
-                  r.fascia_prezzo,
-                  ")"
+                  ") — ",
+                  r.dishCount,
+                  " ",
+                  r.dishCount === 1 ? "piatto" : "piatti"
                 ] }, r.id))
               ]
             }
@@ -39796,4 +39817,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-BlGUyrFg.js.map
+//# sourceMappingURL=index-Dz0bnK2i.js.map

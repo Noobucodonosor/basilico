@@ -26,9 +26,33 @@ router.get('/', async (req, res) => {
       offset: req.query.offset,
       deduplicateTwins: req.query.deduplicateTwins,
       excludeIncompatible: req.query.excludeIncompatible,
+      includeWithoutMenu: req.query.includeWithoutMenu,
       profileId: req.query.profileId
     });
     res.json(result);
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/recipes/restaurants
+ * Lists Tigullio restaurants with dynamic `dishCount`. By default returns ONLY venues with
+ * verified priced public menus (`dishCount > 0`), unless `?includeWithoutMenu=true` is passed.
+ */
+router.get('/restaurants', (req, res) => {
+  try {
+    const includeWithoutMenu =
+      req.query.includeWithoutMenu === 'true' || req.query.includeWithoutMenu === true;
+    const allCensused = recipeAndArbitrageService.getRestaurants({ includeWithoutMenu: true });
+    const restaurants = includeWithoutMenu
+      ? allCensused
+      : allCensused.filter((r) => r.dishCount > 0);
+    res.json({
+      restaurants,
+      activeMenuRestaurantsCount: allCensused.filter((r) => r.dishCount > 0).length,
+      totalCensusedCount: allCensused.length
+    });
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message });
   }

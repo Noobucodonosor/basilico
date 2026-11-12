@@ -7,7 +7,7 @@
     "tipo_cucina": "ligure",
     "fascia_prezzo": "€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://angolo48.it/menu/",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -16,8 +16,8 @@
     "foto_url": null,
     "logo_emoji": "📐",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "verified_public_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -28,7 +28,7 @@
     "tipo_cucina": "cocktail_bar",
     "fascia_prezzo": "€€€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://www.davmare.com",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -37,8 +37,8 @@
     "foto_url": null,
     "logo_emoji": "🍸",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "verified_public_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -58,7 +58,7 @@
     "foto_url": null,
     "logo_emoji": "👨‍🍳",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.483061",
     "attivo": 1
   },
@@ -70,7 +70,7 @@
     "tipo_cucina": "pesce",
     "fascia_prezzo": "€€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://www.alfredorestaurant.com/menu/",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -79,8 +79,8 @@
     "foto_url": null,
     "logo_emoji": "🦞",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "verified_public_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -100,7 +100,7 @@
     "foto_url": null,
     "logo_emoji": "🫓",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.492850",
     "attivo": 1
   },
@@ -121,7 +121,7 @@
     "foto_url": null,
     "logo_emoji": "⚓",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.479986",
     "attivo": 1
   },
@@ -133,7 +133,7 @@
     "tipo_cucina": "ligure",
     "fascia_prezzo": "€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://laltro.ristoranteeden.com/",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -142,8 +142,8 @@
     "foto_url": null,
     "logo_emoji": "🌿",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -163,7 +163,7 @@
     "foto_url": null,
     "logo_emoji": "💎",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.507659",
     "attivo": 1
   },
@@ -184,7 +184,7 @@
     "foto_url": null,
     "logo_emoji": "🍨",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.516318",
     "attivo": 1
   },
@@ -205,7 +205,7 @@
     "foto_url": null,
     "logo_emoji": "🍦",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.514250",
     "attivo": 1
   },
@@ -226,7 +226,7 @@
     "foto_url": null,
     "logo_emoji": "🏠",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.509858",
     "attivo": 1
   },
@@ -247,8 +247,8 @@
     "foto_url": null,
     "logo_emoji": "🕳️",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -268,8 +268,8 @@
     "foto_url": null,
     "logo_emoji": "🎨",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -289,7 +289,7 @@
     "foto_url": null,
     "logo_emoji": "🦢",
     "sorgente": "seed",
-    "last_scrape_status": "failed",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:39:10.248375",
     "attivo": 1
   },
@@ -310,8 +310,8 @@
     "foto_url": null,
     "logo_emoji": "🍦",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -322,7 +322,7 @@
     "tipo_cucina": "pesce",
     "fascia_prezzo": "€€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://lagolettarapallo.wixsite.com/lagoletta",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -331,8 +331,8 @@
     "foto_url": null,
     "logo_emoji": "⛵",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -352,7 +352,7 @@
     "foto_url": null,
     "logo_emoji": "🎣",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.498720",
     "attivo": 1
   },
@@ -364,7 +364,7 @@
     "tipo_cucina": "gourmet",
     "fascia_prezzo": "€€€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://menus.belmond.com/splendido/la-terrazza/la-terrazza-lunch?response=html&collection=wh8kmKmd&base_lang=it",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -373,8 +373,8 @@
     "foto_url": null,
     "logo_emoji": "🏰",
     "sorgente": "seed",
-    "last_scrape_status": "failed",
-    "last_scrape_ts": "2026-06-06T22:23:39.964221",
+    "last_scrape_status": "verified_public_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -394,7 +394,7 @@
     "foto_url": null,
     "logo_emoji": "⭐",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.487783",
     "attivo": 1
   },
@@ -406,7 +406,7 @@
     "tipo_cucina": "pesce",
     "fascia_prezzo": "€€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://www.trattoriabansin.it/menu.php",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -415,8 +415,8 @@
     "foto_url": null,
     "logo_emoji": "🎏",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "verified_public_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -436,7 +436,7 @@
     "foto_url": null,
     "logo_emoji": "🫒",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.511941",
     "attivo": 1
   },
@@ -457,8 +457,8 @@
     "foto_url": null,
     "logo_emoji": "🍕",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -478,7 +478,7 @@
     "foto_url": null,
     "logo_emoji": "🐟",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.477155",
     "attivo": 1
   },
@@ -499,7 +499,7 @@
     "foto_url": null,
     "logo_emoji": "🌋",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.505506",
     "attivo": 1
   },
@@ -511,7 +511,7 @@
     "tipo_cucina": "pizza",
     "fascia_prezzo": "€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://roccoeisuoifratelli.digitaltouchmenu.it/",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -520,8 +520,8 @@
     "foto_url": null,
     "logo_emoji": "🍕",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "verified_public_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -541,7 +541,7 @@
     "foto_url": null,
     "logo_emoji": "⛵",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.496268",
     "attivo": 1
   },
@@ -562,7 +562,7 @@
     "foto_url": null,
     "logo_emoji": "🚢",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.485319",
     "attivo": 1
   },
@@ -583,8 +583,8 @@
     "foto_url": null,
     "logo_emoji": "🍽️",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -604,8 +604,8 @@
     "foto_url": null,
     "logo_emoji": "🍝",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   },
   {
@@ -625,7 +625,7 @@
     "foto_url": null,
     "logo_emoji": "🍝",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.503332",
     "attivo": 1
   },
@@ -646,7 +646,7 @@
     "foto_url": null,
     "logo_emoji": "🐙",
     "sorgente": "seed",
-    "last_scrape_status": "success",
+    "last_scrape_status": "verified_public_menu",
     "last_scrape_ts": "2026-06-06T22:28:21.500860",
     "attivo": 1
   },
@@ -658,7 +658,7 @@
     "tipo_cucina": "pesce",
     "fascia_prezzo": "€€€",
     "telefono": null,
-    "sito_web": null,
+    "sito_web": "https://www.winteroseportofino.it/it/winebar.html",
     "rating": null,
     "orari": null,
     "lat": null,
@@ -667,8 +667,8 @@
     "foto_url": null,
     "logo_emoji": "🌹",
     "sorgente": "seed",
-    "last_scrape_status": null,
-    "last_scrape_ts": null,
+    "last_scrape_status": "no_public_priced_menu",
+    "last_scrape_ts": "2026-11-12T21:42:00Z",
     "attivo": 1
   }
 ]

@@ -328,11 +328,11 @@ export async function runAllDomainEvals(options = {}) {
     const danyDishesRes = await recipeAndArbitrageService.queryDishes({
       profileId: 'dany',
       includeExcluded: true,
-      limit: 300
+      limit: 500
     });
     const allDishes = danyDishesRes.dishes || [];
     const structuralDairyTargets = allDishes.filter((d) =>
-      /\b(focaccia\s+col\s+formaggio|tiramis[uù]|caprese\s+di\s+bufala|cacio\s+e\s+pepe|quattro\s+formaggi)\b/i.test(
+      /\b(focaccia\s+col\s+formaggio|focaccett\w*\s+al\s+formaggio|formaggio\s+di\s+san\s+st[eè]|tiramis[uù]|caprese|cacio\s+e\s+pepe|quattro\s+formaggi|cannol\w*|cassat\w*)(?=\s|$|[),.;:]|\b)/i.test(
         d.title || ''
       )
     );
@@ -406,6 +406,19 @@ export async function runAllDomainEvals(options = {}) {
         unresolvedCreaRefs.length === 0
           ? `${totalBomCreaRefs}/${totalBomCreaRefs} riferimenti BOM->CREA verificati su ${seedDishes.length} piatti`
           : `creaId orfani (${unresolvedCreaRefs.length}): ${unresolvedCreaRefs.slice(0, 4).join(', ')}`
+    });
+
+    const activeMenuRestaurants = recipeAndArbitrageService.getRestaurants();
+    const allCensusedRestaurants = recipeAndArbitrageService.getRestaurants({ includeWithoutMenu: true });
+    const zeroDishLeaksInActive = activeMenuRestaurants.filter((r) => !(r.dishCount > 0));
+    checks.push({
+      id: 'R3-VERIFIED-MENU-RESTAURANTS-FILTER',
+      label: 'Filtro esclusivo ristoranti con listino pubblico verificato: 0 locali vuoti in UI e anagrafica completa (32) preservata',
+      passed:
+        activeMenuRestaurants.length >= 23 &&
+        zeroDishLeaksInActive.length === 0 &&
+        allCensusedRestaurants.length === 32,
+      detail: `AttiviConMenu=${activeMenuRestaurants.length}/${allCensusedRestaurants.length} censiti, LocaliVuotiEsposti=${zeroDishLeaksInActive.length}`
     });
 
     recordSuite(3, 'Ricette, Ristoranti & Fornelli', 'specs/03-ricette.spec.md', 30, checks);

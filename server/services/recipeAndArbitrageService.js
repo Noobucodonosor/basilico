@@ -298,7 +298,7 @@ export function classifyDishMetadata(dish = {}) {
     canonicalTwinKey = 'fritto misto di mare del golfo';
   } else if (/\b(cappon\s+magro)\b/.test(titleNorm)) {
     canonicalTwinKey = 'cappon magro ligure';
-  } else if (/\b(focaccia)\b.*\b(formaggio|recco)\b/.test(titleNorm)) {
+  } else if (/\b(focaccia|focaccett\w*|fugassett\w*)\b.*\b(formaggio|recco)\b/.test(titleNorm)) {
     canonicalTwinKey = 'focaccia col formaggio tipo recco';
   } else if (/\b(farinata)\b.*\b(ceci)?\b/.test(titleNorm)) {
     canonicalTwinKey = 'farinata ligure di ceci';
@@ -321,7 +321,7 @@ export function classifyDishMetadata(dish = {}) {
       /\b(tiramisu|gelat\w*|sorbett\w*|granit\w*|frozen\s+yogurt|panna\s+cotta|torta\s+dolce|torte?\s+gelato|crostata|semifredd\w*|cassat\w*|cannol\w*|schiumon\w*|profiterol\w*|meringata|cheesecake|bunet|bonet|crema\s+catalana|creme\s+caramel|zabaione|dolc[ie]\s+della\s+casa|dolc[ie]\s+al\s+cucchiaio)\b/.test(titleNorm)
     ) {
       dishFamily = 'dessert_gelato';
-    } else if (/\b(pizz\w*|focaccia\s+col\s+formaggio|focaccia\s+al\s+formaggio|pinsa)\b/.test(titleNorm)) {
+    } else if (/\b(pizz\w*|focaccia\s+col\s+formaggio|focaccia\s+al\s+formaggio|focaccett\w*\s+(?:col|al)\s+formaggio|fugassett\w*|pinsa)\b/.test(titleNorm)) {
       dishFamily = 'pizza_focaccia';
     } else if (/\b(pesto)\b/.test(titleNorm)) {
       dishFamily = 'pesto_pasta';
@@ -366,7 +366,7 @@ export function classifyDishMetadata(dish = {}) {
   let dairyRole = dish.dairyRole || 'none';
   if (!dish.dairyRole) {
     if (
-      /\b(focaccia\s+(?:col|al)\s+formaggio|quattro\s+formaggi|4\s+formaggi|cacio\s+e\s+pepe|fonduta|sformatin\w*\s+.*parmigiano|caprese|mozzarella|burrata|stracciatella|tagliere\s+di\s+formaggi|tiramisu|panna\s+cotta|cheesecake|cassat\w*|cannol\w*|mascarpon\w*|schiumon\w*|semifredd\w*|torte?\s+gelato|frozen\s+yogurt|crema\s+di\s+formagg\w*|crema\s+al\s+parmigiano)\b/.test(titleNorm) ||
+      /(?:^formaggi(?:o)?\b|\b(?:focacc(?:ia|ett\w*)\s+(?:col|con\s+il|al)\s+formaggio|fugassett\w*|formaggi(?:o)?\s+(?:di|alla|sulla|al|fuso|fusi|grigliat\w*|fritt\w*)|quattro\s+formaggi|4\s+formaggi|cacio\s+e\s+pepe|fonduta|sformatin\w*\s+.*parmigiano|caprese|mozzarella|burrata|stracciatella|tagliere\s+di\s+formaggi|tiramisu|panna\s+cotta|cheesecake|cassat\w*|cannol\w*|mascarpon\w*|schiumon\w*|semifredd\w*|torte?\s+gelato|frozen\s+yogurt|crema\s+di\s+formagg\w*|crema\s+al\s+parmigiano)\b)/.test(titleNorm) ||
       ((course === 'gelato' || /\bgelat\w*\b/.test(titleNorm)) && hasAnyDairyInBom) ||
       (['dolce', 'gelato', 'merenda'].includes(course) && /\b(ricott\w*|mascarpon\w*)\b/.test(bomText)) ||
       (dishFamily === 'pizza_focaccia' && /\b(mozzarella|stracchino|formaggio|gorgonzola|burrata)\b/.test(bomText))
@@ -603,6 +603,36 @@ export class RecipeAndArbitrageService {
       this._restaurants = JSON.parse(fs.readFileSync(RESTAURANTS_SEED_PATH, 'utf8'));
     }
     return this._restaurants;
+  }
+
+  /**
+   * Computes dynamic `dishCount` for every censused Tigullio restaurant from `getDishesSeed()`
+   * and returns ONLY restaurants with `dishCount > 0` by default (hiding 0-menu venues in UI),
+   * unless `options.includeWithoutMenu === true` is explicitly passed.
+   */
+  getRestaurants(options = {}) {
+    const includeWithoutMenu =
+      options.includeWithoutMenu === true || options.includeWithoutMenu === 'true';
+    const allDishes = this.getDishesSeed();
+    const countsByRestaurant = new Map();
+    for (const d of allDishes) {
+      if (d && d.restaurantId && d.restaurantId !== 'custom-tigullio') {
+        countsByRestaurant.set(
+          d.restaurantId,
+          (countsByRestaurant.get(d.restaurantId) || 0) + 1
+        );
+      }
+    }
+
+    const enriched = this.getRestaurantsSeed().map((r) => ({
+      ...r,
+      dishCount: countsByRestaurant.get(r.id) || 0
+    }));
+
+    if (includeWithoutMenu) {
+      return enriched;
+    }
+    return enriched.filter((r) => r.dishCount > 0);
   }
 
   _loadLabNotes() {
@@ -936,7 +966,13 @@ export class RecipeAndArbitrageService {
    */
   async queryDishes(filters = {}) {
     const allDishes = this.getDishesSeed();
-    const restaurants = this.getRestaurantsSeed();
+    const allCensusedRestaurants = this.getRestaurants({ includeWithoutMenu: true });
+    const restaurants = this.getRestaurants({
+      includeWithoutMenu: filters.includeWithoutMenu
+    });
+    const totalBomRowsInCatalog = allDishes.reduce((acc, d) => acc + (d.bom?.length || 0), 0);
+    const tigullioDishesCount = allDishes.filter((d) => d.sourceType === 'tigullio_restaurant').length;
+    const baseSingleDishesCount = allDishes.filter((d) => d.sourceType === 'base_single_school').length;
     const profileId = filters.profileId || userProfileService.getProfileById().id;
     const activeOffers = await this._getFullFoodOffers(profileId);
     const pantryItems = pantryService.getPantryState().items || [];
@@ -1009,7 +1045,7 @@ export class RecipeAndArbitrageService {
     }
 
     const totalMatching = filtered.length;
-    const limit = Math.max(1, Math.min(350, Number(filters.limit) || 80));
+    const limit = Math.max(1, Math.min(500, Number(filters.limit) || 80));
     const offset = Math.max(0, Number(filters.offset) || 0);
 
     const evaluatedAll = [];
@@ -1050,6 +1086,11 @@ export class RecipeAndArbitrageService {
 
     return {
       totalDishesInCatalog: allDishes.length,
+      totalBomRowsInCatalog,
+      tigullioDishesCount,
+      baseSingleDishesCount,
+      totalCensusedRestaurantsCount: allCensusedRestaurants.length,
+      activeMenuRestaurantsCount: restaurants.length,
       totalMatching,
       servings,
       activeProfileId: profileId,
@@ -1097,18 +1138,25 @@ export class RecipeAndArbitrageService {
         const key = b.creaId || normalizeSearchToken(b.name);
         reqKeys.add(key);
         if (!ingredientMap.has(key)) {
+          const canonicalCreaName = b.creaId ? creaService.getFoodById(b.creaId)?.name : null;
+          const displayName = b.isSubstitutedComposite && canonicalCreaName ? canonicalCreaName : b.name;
           const inPantry = Boolean(findCompatiblePantryItem(b, pantryItems));
           const promoOffer = matchBomIngredientToOffer(b, activeOffers);
           ingredientMap.set(key, {
             key,
             creaId: b.creaId || null,
-            name: b.name,
+            name: displayName,
             dishFrequency: 0,
             inPantry,
             onPromoInRapallo: Boolean(promoOffer),
             promoChain: promoOffer ? promoOffer.storeName || promoOffer.chainName || promoOffer.brand || promoOffer.chainId : null,
             promoPrice: promoOffer ? Number(promoOffer.promoPrice ?? promoOffer.price ?? 0) : null
           });
+        } else if (!b.isSubstitutedComposite) {
+          const existing = ingredientMap.get(key);
+          if (/\b(finitura\s+sapida|variante\s+ligure|legante\s+ligure)\b/i.test(existing.name || '')) {
+            existing.name = b.name;
+          }
         }
         ingredientMap.get(key).dishFrequency += 1;
       }

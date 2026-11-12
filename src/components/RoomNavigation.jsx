@@ -23,7 +23,7 @@ export const BASILICO_ROOMS = [
     icon: '🍽️',
     shortTitle: 'Ricette & Fornelli',
     fullTitle: '3. Ricette, Ristoranti & Fornelli',
-    subtitle: 'Scuola base, 32 ristoranti Tigullio, Arbitraggio, 80/20 e Fornelli'
+    subtitle: 'Scuola base, ristoranti Tigullio con menu verificato, Arbitraggio, 80/20 e Fornelli'
   },
   {
     id: 'room-4-cucina',
