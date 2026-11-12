@@ -28,6 +28,69 @@ const DISHES_SEED_PATH = path.resolve(__dirname, '../../data/seed/recipes_and_di
 const RESTAURANTS_SEED_PATH = path.resolve(__dirname, '../../data/seed/restaurants_tigullio.json');
 const DEFAULT_LAB_NOTEBOOK_PATH = path.resolve(__dirname, '../../data/cache/lab_notebook.json');
 
+export const CANONICAL_GE_ZONES = [
+  'Genova Centro & Porto Antico',
+  'Genova Mare (Boccadasse-Nervi)',
+  'Ponente Genovese',
+  'Golfo Paradiso',
+  'Tigullio Ovest (Rapallo-SML-Portofino)',
+  'Tigullio Est (Chiavari-Sestri-Moneglia)',
+  'Entroterra Genovese'
+];
+
+/**
+ * Resolves the canonical Provincia di Genova `zona` for a restaurant record.
+ * Preserves explicit canonical `zona` values on newly added GE venues while
+ * defaulting legacy Rapallo/SML/Portofino records (without `r.zona`) to
+ * `"Tigullio Ovest (Rapallo-SML-Portofino)"`.
+ */
+export function resolveRestaurantZona(restaurant = {}) {
+  const explicit = typeof restaurant?.zona === 'string' ? restaurant.zona.trim() : '';
+  if (explicit) {
+    if (CANONICAL_GE_ZONES.includes(explicit)) return explicit;
+    const normExp = normalizeSearchToken(explicit);
+    if (/genova\s+centro|porto\s+antico/.test(normExp)) return 'Genova Centro & Porto Antico';
+    if (/genova\s+mare|boccadasse|nervi|levante\s+costier/.test(normExp)) return 'Genova Mare (Boccadasse-Nervi)';
+    if (/ponente/.test(normExp)) return 'Ponente Genovese';
+    if (/golfo\s+paradiso/.test(normExp)) return 'Golfo Paradiso';
+    if (/tigullio\s+ovest|rapallo\s+sml/.test(normExp)) return 'Tigullio Ovest (Rapallo-SML-Portofino)';
+    if (/tigullio\s+est|tigullio\s+orientale|chiavari\s+sestri/.test(normExp)) return 'Tigullio Est (Chiavari-Sestri-Moneglia)';
+    if (/entroterra/.test(normExp)) return 'Entroterra Genovese';
+    return explicit;
+  }
+
+  const cityRaw = String(restaurant?.citta || restaurant?.city || restaurant?.municipality || '').trim();
+  const cityNorm = normalizeSearchToken(cityRaw);
+  const addrNorm = normalizeSearchToken(restaurant?.indirizzo || '');
+
+  if (/\b(bogliasco|pieve\s+ligure|sori|recco|camogli|ruta|san\s+rocco|punta\s+chiappa|san\s+fruttuoso)\b/.test(cityNorm)) {
+    return 'Golfo Paradiso';
+  }
+  if (/\b(zoagli|chiavari|lavagna|cavi|sestri\s+levante|riva\s+trigoso|casarza\s+ligure|moneglia)\b/.test(cityNorm)) {
+    return 'Tigullio Est (Chiavari-Sestri-Moneglia)';
+  }
+  if (/\b(arenzano|cogoleto|pegli|voltri|sestri\s+ponente|cornigliano|sampierdarena)\b/.test(cityNorm)) {
+    return 'Ponente Genovese';
+  }
+  if (cityNorm && cityNorm !== 'genova' && /\b(boccadasse|nervi|quinto|quarto|vernazzola|sturla|albaro|foce)\b/.test(cityNorm)) {
+    return 'Genova Mare (Boccadasse-Nervi)';
+  }
+  if (cityNorm === 'genova') {
+    if (/\b(boccadasse|nervi|quinto|quarto|vernazzola|capo\s+santa\s+chiara)\b/.test(addrNorm)) {
+      return 'Genova Mare (Boccadasse-Nervi)';
+    }
+    return 'Genova Centro & Porto Antico';
+  }
+  if (
+    /\b(campo\s+ligure|masone|rossiglione|tiglieto|campomorone|ceranesi|mignanego|serra\s+ricco|sant\s+olcese|casella|savignone|busalla|ronco\s+scrivia|isola\s+del\s+cantone|crocefieschi|vobbia|valbrevenna|montoggio|torriglia|bargagli|davagna|lumarzo|uscio|avegno|tribogna|cicagna|moconesi|neirone|lorsica|favale\s+di\s+malvaro|orero|san\s+colombano|coreglia\s+ligure|leivi|carasco|mezzanego|borzonasca|rezzoaglio|santo\s+stefano\s+d\s+aveto|castiglione\s+chiavarese|propata|rondanina|fascia|fontanigorda|gorreto|montebruno|rovegno)\b/.test(cityNorm) ||
+    cityNorm === 'ne'
+  ) {
+    return 'Entroterra Genovese';
+  }
+
+  return 'Tigullio Ovest (Rapallo-SML-Portofino)';
+}
+
 // Granular real-world commercial pack sizes (g) & baseline Rapallo prices (€/kg) when no active offer is matched
 const GRANULAR_INGREDIENT_PACK_RULES = [
   { key: 'fresh_herbs', regex: /\b(basilico|prezzemolo|rosmarino|timo|maggiorana|salvia|menta|origano|erba cipollina|alloro)\b/, packGrams: 30, euroPerKg: 39.0 },
@@ -321,7 +384,9 @@ export function classifyDishMetadata(dish = {}) {
       /\b(tiramisu|gelat\w*|sorbett\w*|granit\w*|frozen\s+yogurt|panna\s+cotta|torta\s+dolce|torte?\s+gelato|crostata|semifredd\w*|cassat\w*|cannol\w*|schiumon\w*|profiterol\w*|meringata|cheesecake|bunet|bonet|crema\s+catalana|creme\s+caramel|zabaione|dolc[ie]\s+della\s+casa|dolc[ie]\s+al\s+cucchiaio)\b/.test(titleNorm)
     ) {
       dishFamily = 'dessert_gelato';
-    } else if (/\b(pizz\w*|focaccia\s+col\s+formaggio|focaccia\s+al\s+formaggio|focaccett\w*\s+(?:col|al)\s+formaggio|fugassett\w*|pinsa)\b/.test(titleNorm)) {
+    } else if (
+      /\b(pizz\w*|focacc(?:ia|ett\w*|in\w*)\s+(?:di\s+recco|tipo\s+recco|recco|(?:col|con\s+il|al|ai)\s+formagg\w*)|fugassett\w*|pinsa)\b/.test(titleNorm)
+    ) {
       dishFamily = 'pizza_focaccia';
     } else if (/\b(pesto)\b/.test(titleNorm)) {
       dishFamily = 'pesto_pasta';
@@ -358,24 +423,60 @@ export function classifyDishMetadata(dish = {}) {
     }
   }
 
-  // 3. 3-Tier Dairy Role Classification (for honest Zero Formaggi handling)
-  const hasCheeseOrHeavyDairyInBom = /\b(formagg\w*|mozzarell\w*|parmigian\w*|grana|pecorin\w*|stracchin\w*|crescenza|prescinseu\w*|presinseu\w*|ricott\w*|mascarpon\w*|gorgonzol\w*|burrata|taleggio|scamorza|fontina|feta)\b/.test(bomText);
+  // 3. 3-Tier Dairy Role Classification (for honest Zero Formaggi handling across Provincia di Genova)
+  const hasExplicitCheeseFlagInBom = (dish.bom || []).some(
+    (b) => b?.isDairy === true && !/\b(burro|latte|yogurt|panna|crema\s+di\s+latte)\b/.test(normalizeSearchToken(b.name || ''))
+  );
+  const hasCheeseOrHeavyDairyInBom =
+    hasExplicitCheeseFlagInBom ||
+    /\b(formagg\w*|mozzarell\w*|parmigian\w*|grana|pecorin\w*|stracchin\w*|crescenza|prescinseu\w*|presinseu\w*|seirass\w*|sarass\w*|ricott\w*|mascarpon\w*|gorgonzol\w*|burrata|stracciatella|taleggio|scamorz\w*|provol\w*|fontina|toma\b|tomini?\b|castelmagno|raschera|robiola|caprin\w*|feta|brie|camembert|squacquerone|caciocavallo|primo\s*sale|primosale|fiocchi\s+di\s+latte)\b/.test(
+      bomText
+    );
   const hasAnyDairyInBom =
     hasCheeseOrHeavyDairyInBom ||
+    (dish.bom || []).some((b) => b?.isDairy === true) ||
     /\b(crema\s+di\s+latte|panna|latte\s+fresco|latte\s+intero|latte\s+di\s+vacca|burro|yogurt)\b/.test(bomText);
+
+  const isExplicitlyDairyFreeTitle = /\b(senza\s+formagg\w*|zero\s+formagg\w*|senza\s+latticin\w*|vegan\w*)\b/.test(titleNorm);
+  const isStructuralParmigiana =
+    /\bparmigiana\b/.test(titleNorm) &&
+    !isExplicitlyDairyFreeTitle &&
+    hasCheeseOrHeavyDairyInBom &&
+    /\b(mozzarell\w*|scamorz\w*|provol\w*|burrata|fior\s*di\s*latte|fiordilatte|stracchin\w*|caciocavallo|melanzan\w*)\b/.test(combined);
+  const isCheesePizzata =
+    /\bpizzat[ae]\b/.test(titleNorm) &&
+    !isExplicitlyDairyFreeTitle &&
+    (hasCheeseOrHeavyDairyInBom || /\brecco\b/.test(titleNorm));
+  const isPureCheesePlateOrDessert =
+    !isExplicitlyDairyFreeTitle &&
+    (/^(?:il\s+|la\s+|i\s+|le\s+)?(?:seirass\w*|sarass\w*|prescinseu\w*|presinseu\w*|tomini?\b|scamorz\w*|provol\w*|caciocavallo\b|robiola\b|caprin\w*)\b/.test(titleNorm) ||
+      (/\b(?:seirass\w*|sarass\w*)\b/.test(titleNorm) && !/\b(raviol\w*|pansot\w*|tortell\w*|gnocch\w*|ripien\w*|torta\s+verde|torta\s+pasqualina)\b/.test(titleNorm)));
+
   let dairyRole = dish.dairyRole || 'none';
   if (!dish.dairyRole) {
     if (
-      /(?:^formaggi(?:o)?\b|\b(?:focacc(?:ia|ett\w*)\s+(?:col|con\s+il|al)\s+formaggio|fugassett\w*|formaggi(?:o)?\s+(?:di|alla|sulla|al|fuso|fusi|grigliat\w*|fritt\w*)|quattro\s+formaggi|4\s+formaggi|cacio\s+e\s+pepe|fonduta|sformatin\w*\s+.*parmigiano|caprese|mozzarella|burrata|stracciatella|tagliere\s+di\s+formaggi|tiramisu|panna\s+cotta|cheesecake|cassat\w*|cannol\w*|mascarpon\w*|schiumon\w*|semifredd\w*|torte?\s+gelato|frozen\s+yogurt|crema\s+di\s+formagg\w*|crema\s+al\s+parmigiano)\b)/.test(titleNorm) ||
-      ((course === 'gelato' || /\bgelat\w*\b/.test(titleNorm)) && hasAnyDairyInBom) ||
-      (['dolce', 'gelato', 'merenda'].includes(course) && /\b(ricott\w*|mascarpon\w*)\b/.test(bomText)) ||
-      (dishFamily === 'pizza_focaccia' && /\b(mozzarella|stracchino|formaggio|gorgonzola|burrata)\b/.test(bomText))
+      !isExplicitlyDairyFreeTitle &&
+      (/(?:^formaggi(?:o)?\b|\b(?:focacc(?:ia|ett\w*|in\w*)\s+(?:di\s+recco|tipo\s+recco|recco|(?:col|con\s+il|al|ai)\s+formagg\w*)|fugassett\w*|formaggi(?:o)?\s+(?:di|del|dello|della|dei|degli|delle|alla|sulla|al|fuso|fusi|grigliat\w*|fritt\w*|mist\w*|ligur\w*|stagionat\w*|erborinat\w*)|(?:tagliere|selezione|piatto|assiette|degustazione)\s+(?:di\s+)?formaggi|(?:quattro|4|tre|3|cinque|5)\s+formaggi|ai\s+formaggi|cacio\s+e\s+pepe|sformatin\w*\s+.*(?:parmigiano|formagg\w*|prescinseu\w*|ricott\w*)|mozzarella|burrata|tiramisu|panna\s+cotta|cheesecake|cheese\s+cake|cassat\w*|cannol\w*|mascarpon\w*|schiumon\w*|semifredd\w*|torte?\s+gelato|frozen\s+yogurt|crema\s+di\s+formagg\w*|crema\s+al\s+parmigiano|fiordilatte)\b)/.test(
+        titleNorm
+      ) ||
+        (/\bfondut[ae]\b/.test(titleNorm) && !/\bcioccolat\w*\b/.test(titleNorm)) ||
+        (/\bfocacc(?:ina|ine|ett[ae])\b/.test(titleNorm) && /\b(stracchin\w*|robiola|formagg\w*|crescenza)\b/.test(titleNorm)) ||
+        /\b(?:salumi\s+e\s+formaggi|gnocco\s+di\s+robiola)\b/.test(titleNorm) ||
+        (/\bcaprese\b/.test(titleNorm) && !/\btorta\s+caprese\b/.test(titleNorm)) ||
+        (/\bstracciatella\b/.test(titleNorm) && !/\bin\s+brodo\b/.test(titleNorm)) ||
+        isStructuralParmigiana ||
+        isCheesePizzata ||
+        isPureCheesePlateOrDessert ||
+        ((course === 'gelato' || /\bgelat\w*\b/.test(titleNorm)) && hasAnyDairyInBom) ||
+        (['dolce', 'gelato', 'merenda'].includes(course) &&
+          /\b(ricott\w*|mascarpon\w*|seirass\w*|sarass\w*|prescinseu\w*|presinseu\w*|formagg\w*)\b/.test(combined)) ||
+        (dishFamily === 'pizza_focaccia' && hasCheeseOrHeavyDairyInBom))
     ) {
       dairyRole = 'structural_unsubstitutable';
     } else if (
       hasCheeseOrHeavyDairyInBom &&
       !['dolce', 'gelato', 'merenda'].includes(course) &&
-      /\b(pansot\w*|raviol\w*\s+di\s+magro|raviol\w*\s+di\s+borragine|pasqualina|ripien\w*)\b/.test(titleNorm)
+      /\b(pansot\w*|raviol\w*\s+di\s+magro|raviol\w*\s+di\s+borragine|raviol\w*.*(?:prescinseu\w*|seirass\w*|ricott\w*)|pasqualina|ripien\w*)\b/.test(titleNorm)
     ) {
       dairyRole = 'savory_herb_binder';
     } else if (hasCheeseOrHeavyDairyInBom) {
@@ -435,7 +536,7 @@ export function buildProfileSubstitution(bomItem, profileCompat, dairyRole = 'se
     };
   }
 
-  if (dairyRole === 'savory_herb_binder' || /\b(prescinseua|presinseua|ricotta|stracchino|crescenza)\b/.test(norm)) {
+  if (dairyRole === 'savory_herb_binder' || /\b(prescinseu\w*|presinseu\w*|seirass\w*|sarass\w*|ricott\w*|stracchin\w*|crescenza)\b/.test(norm)) {
     return {
       substituted: true,
       originalName: bomItem.name,
@@ -606,9 +707,62 @@ export class RecipeAndArbitrageService {
   }
 
   /**
-   * Computes dynamic `dishCount` for every censused Tigullio restaurant from `getDishesSeed()`
-   * and returns ONLY restaurants with `dishCount > 0` by default (hiding 0-menu venues in UI),
+   * Aggregates active restaurant & dish counts by canonical `zona` and `citta`
+   * across Provincia di Genova (GE).
+   */
+  buildGeographyMetadata(restaurantsList = null) {
+    const source = Array.isArray(restaurantsList)
+      ? restaurantsList
+      : this.getRestaurants({ includeWithoutMenu: false });
+    const zoneMap = new Map();
+    const cityMap = new Map();
+
+    for (const r of source) {
+      if (!r || !(r.dishCount > 0)) continue;
+      const zona = resolveRestaurantZona(r);
+      const citta = String(r.citta || r.city || '').trim() || 'Genova';
+
+      if (!zoneMap.has(zona)) {
+        zoneMap.set(zona, { zona, restaurantCount: 0, dishCount: 0 });
+      }
+      const zEntry = zoneMap.get(zona);
+      zEntry.restaurantCount += 1;
+      zEntry.dishCount += r.dishCount;
+
+      const cityKey = `${zona}::${normalizeSearchToken(citta)}`;
+      if (!cityMap.has(cityKey)) {
+        cityMap.set(cityKey, { citta, zona, restaurantCount: 0, dishCount: 0 });
+      }
+      const cEntry = cityMap.get(cityKey);
+      cEntry.restaurantCount += 1;
+      cEntry.dishCount += r.dishCount;
+    }
+
+    const zoneOrderIndex = (z) => {
+      const idx = CANONICAL_GE_ZONES.indexOf(z);
+      return idx === -1 ? 999 : idx;
+    };
+
+    const zones = Array.from(zoneMap.values()).sort((a, b) => {
+      const d = zoneOrderIndex(a.zona) - zoneOrderIndex(b.zona);
+      return d !== 0 ? d : a.zona.localeCompare(b.zona, 'it');
+    });
+
+    const cities = Array.from(cityMap.values()).sort((a, b) => {
+      const d = zoneOrderIndex(a.zona) - zoneOrderIndex(b.zona);
+      if (d !== 0) return d;
+      if (b.dishCount !== a.dishCount) return b.dishCount - a.dishCount;
+      return a.citta.localeCompare(b.citta, 'it');
+    });
+
+    return { zones, cities };
+  }
+
+  /**
+   * Computes dynamic `dishCount` and canonical `zona` for every censused Provincia di Genova restaurant
+   * from `getDishesSeed()` and returns ONLY restaurants with `dishCount > 0` by default (hiding 0-menu venues in UI),
    * unless `options.includeWithoutMenu === true` is explicitly passed.
+   * Supports optional `options.zona` and `options.citta` filters.
    */
   getRestaurants(options = {}) {
     const includeWithoutMenu =
@@ -626,13 +780,32 @@ export class RecipeAndArbitrageService {
 
     const enriched = this.getRestaurantsSeed().map((r) => ({
       ...r,
+      zona: resolveRestaurantZona(r),
       dishCount: countsByRestaurant.get(r.id) || 0
     }));
 
-    if (includeWithoutMenu) {
-      return enriched;
+    let list = includeWithoutMenu ? enriched : enriched.filter((r) => r.dishCount > 0);
+
+    if (options.zona && String(options.zona).trim() && options.zona !== 'all') {
+      const targetZona = resolveRestaurantZona({ zona: String(options.zona).trim() });
+      const targetZonaNorm = normalizeSearchToken(targetZona);
+      list = list.filter(
+        (r) => r.zona === targetZona || normalizeSearchToken(r.zona) === targetZonaNorm
+      );
     }
-    return enriched.filter((r) => r.dishCount > 0);
+
+    if (options.citta && String(options.citta).trim() && options.citta !== 'all') {
+      const targetCittaNorm = normalizeSearchToken(options.citta);
+      list = list.filter((r) => normalizeSearchToken(r.citta || '') === targetCittaNorm);
+    }
+
+    const { zones, cities } = this.buildGeographyMetadata(list);
+    Object.defineProperties(list, {
+      zones: { value: zones, enumerable: false, configurable: true },
+      cities: { value: cities, enumerable: false, configurable: true }
+    });
+
+    return list;
   }
 
   _loadLabNotes() {
@@ -677,6 +850,21 @@ export class RecipeAndArbitrageService {
     );
   }
 
+  _checkBomItemCompatibility(bomItem, profileId) {
+    const itemName = String(bomItem?.name || '');
+    const normItem = normalizeSearchToken(itemName);
+    const isCheeseOrRegionalCurd =
+      /\b(seirass\w*|sarass\w*|prescinseu\w*|presinseu\w*|castelmagno|raschera|toma\b|tomini?\b)\b/.test(normItem) ||
+      (bomItem?.isDairy === true && !/\b(latte|yogurt|burro\s+chiarificato)\b/.test(normItem));
+    return userProfileService.checkItemCompatibility(
+      {
+        title: itemName,
+        category: isCheeseOrRegionalCurd ? 'Formaggi e latticini' : ''
+      },
+      profileId
+    );
+  }
+
   _checkDishProfileExclusion(dish, meta, profileId) {
     const profile = userProfileService.getProfileById(profileId);
     if (!profile || profile.filterMode === 'none') {
@@ -687,7 +875,7 @@ export class RecipeAndArbitrageService {
       profileId
     );
     const hasIncompatibleBomItem = (dish.bom || []).some(
-      (b) => !userProfileService.checkItemCompatibility({ title: b.name, category: '' }, profileId).isCompatible
+      (b) => !this._checkBomItemCompatibility(b, profileId).isCompatible
     );
 
     if (
@@ -763,10 +951,7 @@ export class RecipeAndArbitrageService {
     let totalCarbsGPerServing = 0;
 
     for (const rawItem of dish.bom || []) {
-      const compat = userProfileService.checkItemCompatibility(
-        { title: rawItem.name, category: '' },
-        profileId
-      );
+      const compat = this._checkBomItemCompatibility(rawItem, profileId);
 
       let workingItem = { ...rawItem };
       let substitutionInfo = null;
@@ -962,14 +1147,20 @@ export class RecipeAndArbitrageService {
   }
 
   /**
-   * Lists and filters dishes with real-time arbitrage, profile variants, and restaurants metadata.
+   * Lists and filters dishes with real-time arbitrage, profile variants, and Provincia di Genova geography metadata.
    */
   async queryDishes(filters = {}) {
     const allDishes = this.getDishesSeed();
     const allCensusedRestaurants = this.getRestaurants({ includeWithoutMenu: true });
+    const allActiveRestaurants = allCensusedRestaurants.filter((r) => r.dishCount > 0);
+    const { zones, cities } = this.buildGeographyMetadata(allActiveRestaurants);
     const restaurants = this.getRestaurants({
-      includeWithoutMenu: filters.includeWithoutMenu
+      includeWithoutMenu: filters.includeWithoutMenu,
+      zona: filters.zona,
+      citta: filters.citta
     });
+    const restaurantById = new Map(allCensusedRestaurants.map((r) => [r.id, r]));
+
     const totalBomRowsInCatalog = allDishes.reduce((acc, d) => acc + (d.bom?.length || 0), 0);
     const tigullioDishesCount = allDishes.filter((d) => d.sourceType === 'tigullio_restaurant').length;
     const baseSingleDishesCount = allDishes.filter((d) => d.sourceType === 'base_single_school').length;
@@ -984,22 +1175,55 @@ export class RecipeAndArbitrageService {
     for (const rawD of allDishes) {
       const m = classifyDishMetadata(rawD);
       if (rawD.sourceType === 'tigullio_restaurant' && m.canonicalTwinKey) {
+        const restRecord = rawD.restaurantId ? restaurantById.get(rawD.restaurantId) : null;
         if (!twinGroups.has(m.canonicalTwinKey)) twinGroups.set(m.canonicalTwinKey, []);
         twinGroups.get(m.canonicalTwinKey).push({
           dishId: rawD.id,
           title: rawD.title,
           restaurantId: rawD.restaurantId,
           restaurantName: rawD.restaurantName,
-          city: rawD.city,
+          city: rawD.city || restRecord?.citta,
+          zona: restRecord?.zona || resolveRestaurantZona({ zona: rawD.zona, citta: rawD.city }),
           menuPriceEuro: Number(rawD.menuPriceEuro || 0)
         });
       }
     }
 
-    let filtered = allDishes.map((d) => ({ ...d, ...classifyDishMetadata(d) }));
+    let filtered = allDishes.map((d) => {
+      const restRecord = d.restaurantId ? restaurantById.get(d.restaurantId) : null;
+      const dishZona = restRecord
+        ? restRecord.zona
+        : d.sourceType === 'tigullio_restaurant'
+          ? resolveRestaurantZona({ zona: d.zona, citta: d.citta || d.city || d.municipality })
+          : d.zona || null;
+      const dishCitta = restRecord
+        ? restRecord.citta
+        : d.sourceType === 'tigullio_restaurant'
+          ? d.citta || d.city || d.municipality || null
+          : d.citta || null;
+      return {
+        ...d,
+        zona: dishZona,
+        citta: dishCitta,
+        ...classifyDishMetadata(d)
+      };
+    });
 
     if (filters.sourceType && filters.sourceType !== 'all') {
       filtered = filtered.filter((d) => d.sourceType === filters.sourceType);
+    }
+    if (filters.zona && String(filters.zona).trim() && filters.zona !== 'all') {
+      const targetZona = resolveRestaurantZona({ zona: String(filters.zona).trim() });
+      const targetZonaNorm = normalizeSearchToken(targetZona);
+      filtered = filtered.filter(
+        (d) => d.zona && (d.zona === targetZona || normalizeSearchToken(d.zona) === targetZonaNorm)
+      );
+    }
+    if (filters.citta && String(filters.citta).trim() && filters.citta !== 'all') {
+      const targetCittaNorm = normalizeSearchToken(filters.citta);
+      filtered = filtered.filter(
+        (d) => d.citta && normalizeSearchToken(d.citta) === targetCittaNorm
+      );
     }
     if (filters.restaurantId && filters.restaurantId !== 'all') {
       filtered = filtered.filter((d) => d.restaurantId === filters.restaurantId);
@@ -1018,7 +1242,7 @@ export class RecipeAndArbitrageService {
       const qNorm = normalizeSearchToken(filters.q);
       filtered = filtered.filter((d) => {
         const hay = normalizeSearchToken(
-          `${d.title} ${d.restaurantName || ''} ${d.city || ''} ${(d.bom || []).map((b) => b.name).join(' ')}`
+          `${d.title} ${d.restaurantName || ''} ${d.city || ''} ${d.zona || ''} ${(d.bom || []).map((b) => b.name).join(' ')}`
         );
         return hay.includes(qNorm);
       });
@@ -1045,7 +1269,7 @@ export class RecipeAndArbitrageService {
     }
 
     const totalMatching = filtered.length;
-    const limit = Math.max(1, Math.min(500, Number(filters.limit) || 80));
+    const limit = Math.max(1, Math.min(2500, Number(filters.limit) || 80));
     const offset = Math.max(0, Number(filters.offset) || 0);
 
     const evaluatedAll = [];
@@ -1090,10 +1314,12 @@ export class RecipeAndArbitrageService {
       tigullioDishesCount,
       baseSingleDishesCount,
       totalCensusedRestaurantsCount: allCensusedRestaurants.length,
-      activeMenuRestaurantsCount: restaurants.length,
+      activeMenuRestaurantsCount: allActiveRestaurants.length,
       totalMatching,
       servings,
       activeProfileId: profileId,
+      zones,
+      cities,
       restaurants,
       dishes: evaluated
     };
@@ -1123,7 +1349,7 @@ export class RecipeAndArbitrageService {
 
       const reqKeys = new Set();
       for (const rawB of dish.bom || []) {
-        const compat = userProfileService.checkItemCompatibility({ title: rawB.name, category: '' }, profileId);
+        const compat = this._checkBomItemCompatibility(rawB, profileId);
         let b = rawB;
         if (!compat.isCompatible) {
           const sub = buildProfileSubstitution(rawB, compat, meta.dairyRole);

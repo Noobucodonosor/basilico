@@ -20206,7 +20206,7 @@ const BASILICO_ROOMS = [
     icon: "🍽️",
     shortTitle: "Ricette & Fornelli",
     fullTitle: "3. Ricette, Ristoranti & Fornelli",
-    subtitle: "Scuola base, ristoranti Tigullio con menu verificato, Arbitraggio, 80/20 e Fornelli"
+    subtitle: "Scuola base, ristoranti Provincia di Genova (Genova, Golfo Paradiso, Tigullio & Entroterra) vs cassa Rapallo, Arbitraggio, 80/20 e Fornelli"
   },
   {
     id: "room-4-cucina",
@@ -24832,7 +24832,7 @@ function CookingModeModal({
 const SOURCE_TYPE_TABS = [
   { id: "all", label: "Tutti i Piatti", icon: "🍽️" },
   { id: "base_single_school", label: "Scuola Base Single, Colazioni & Barca", icon: "⛵" },
-  { id: "tigullio_restaurant", label: "Ristoranti con Menu Reale Verificato", icon: "🦞" },
+  { id: "tigullio_restaurant", label: "Ristoranti con Menu Reale Verificato (GE)", icon: "🦞" },
   { id: "starred_author", label: "Alta Cucina & Stellati (Studio)", icon: "⭐" }
 ];
 const MEAL_CONTEXT_PILLS = [
@@ -24846,6 +24846,7 @@ const MEAL_CONTEXT_PILLS = [
 function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUpdated }) {
   const [activeViewTab, setActiveViewTab] = reactExports.useState("catalog");
   const [sourceType, setSourceType] = reactExports.useState("all");
+  const [zona, setZona] = reactExports.useState("all");
   const [restaurantId, setRestaurantId] = reactExports.useState("all");
   const [mealContext, setMealContext] = reactExports.useState("all");
   const [searchQuery, setSearchQuery] = reactExports.useState("");
@@ -24862,9 +24863,12 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
     totalCensusedRestaurantsCount: 32,
     activeMenuRestaurantsCount: 23,
     totalMatching: 0,
+    zones: [],
+    cities: [],
     restaurants: [],
     dishes: []
   });
+  const [allRestaurantsCache, setAllRestaurantsCache] = reactExports.useState([]);
   const [loading, setLoading] = reactExports.useState(true);
   const [paretoData, setParetoData] = reactExports.useState(null);
   const [labEntries, setLabEntries] = reactExports.useState([]);
@@ -24877,11 +24881,12 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
   const [deconstructedResult, setDeconstructedResult] = reactExports.useState(null);
   reactExports.useEffect(() => {
     setVisibleLimit(80);
-  }, [sourceType, restaurantId, mealContext, searchQuery, deduplicateTwins, excludeIncompatible, activeProfileId]);
+  }, [sourceType, zona, restaurantId, mealContext, searchQuery, deduplicateTwins, excludeIncompatible, activeProfileId]);
   const fetchCatalog = reactExports.useCallback(() => {
     setLoading(true);
     const params = new URLSearchParams({
       sourceType,
+      zona,
       restaurantId,
       mealContext,
       q: searchQuery,
@@ -24893,9 +24898,40 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
       profileId: activeProfileId || "dany"
     });
     fetch(`/api/recipes?${params.toString()}`).then((r) => r.ok ? r.json() : null).then((data) => {
-      if (data) setCatalogData(data);
+      if (data) {
+        setCatalogData(data);
+        if (zona === "all" && Array.isArray(data.restaurants)) {
+          setAllRestaurantsCache(data.restaurants);
+        }
+        if (restaurantId !== "all" && Array.isArray(data.restaurants) && !data.restaurants.some((r) => r.id === restaurantId)) {
+          setRestaurantId("all");
+        }
+      }
     }).finally(() => setLoading(false));
-  }, [sourceType, restaurantId, mealContext, searchQuery, servings, sortBy, visibleLimit, deduplicateTwins, excludeIncompatible, activeProfileId]);
+  }, [sourceType, zona, restaurantId, mealContext, searchQuery, servings, sortBy, visibleLimit, deduplicateTwins, excludeIncompatible, activeProfileId]);
+  const handleZonaChange = (e) => {
+    const nextZona = e.target.value;
+    setZona(nextZona);
+    if (nextZona !== "all" && restaurantId !== "all") {
+      const knownPool = allRestaurantsCache.length > 0 ? allRestaurantsCache : catalogData.restaurants;
+      const selectedRest = knownPool.find((r) => r.id === restaurantId);
+      if (!selectedRest || selectedRest.zona !== nextZona) {
+        setRestaurantId("all");
+      }
+    }
+  };
+  const restaurantsByZone = reactExports.useMemo(() => {
+    const groups = /* @__PURE__ */ new Map();
+    for (const zObj of catalogData.zones || []) {
+      if (zObj?.zona) groups.set(zObj.zona, []);
+    }
+    for (const r of catalogData.restaurants || []) {
+      const z = r.zona || "Tigullio Ovest (Rapallo-SML-Portofino)";
+      if (!groups.has(z)) groups.set(z, []);
+      groups.get(z).push(r);
+    }
+    return Array.from(groups.entries()).filter(([, list]) => list.length > 0);
+  }, [catalogData.restaurants, catalogData.zones]);
   reactExports.useEffect(() => {
     fetchCatalog();
   }, [fetchCatalog]);
@@ -24954,8 +24990,10 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-emerald-500 text-slate-950", children: "Stanza 3 · ADR-0011" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs text-emerald-300 font-semibold", children: [
-            catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount,
-            " Ristoranti con Menu Reale Verificato • ",
+            catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length,
+            " Ristoranti con Menu Reale Verificato in ",
+            (catalogData.zones || []).length || 1,
+            " Zone GE • ",
             catalogData.totalDishesInCatalog,
             " Piatti • ",
             (catalogData.totalBomRowsInCatalog || 0).toLocaleString("it-IT"),
@@ -24963,16 +25001,18 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-xl sm:text-2xl font-extrabold tracking-tight", children: [
-          "🍽️ Ricette Base Single, Ristoranti del Tigullio, Arbitraggio Live & Fornelli (",
+          "🍽️ Ricette Base Single, Ristoranti della Provincia di Genova, Arbitraggio Live & Fornelli (",
           /* @__PURE__ */ jsxRuntimeExports.jsx("em", { className: "italic font-semibold text-emerald-200", children: "Science & Cooking" }),
           ")"
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs sm:text-sm text-slate-300 max-w-3xl", children: [
-          "Confronta il prezzo al tavolo dei ristoranti di Rapallo, Santa Margherita, Portofino, Chiavari e Sestri Levante con il",
+          "Confronta il prezzo al tavolo dei ristoranti verificati della ",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Provincia di Genova (Genova, Golfo Paradiso, Tigullio & Entroterra — zero pizzerie)" }),
+          " con il",
           /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: " Costo Porzione Pura" }),
           " e lo ",
           /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Scontrino Reale di Cassa" }),
-          " a Rapallo, con variante automatica senza formaggi e guida scientifica ai fornelli."
+          " nei negozi di Rapallo, con variante automatica senza formaggi e guida scientifica ai fornelli."
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 shrink-0", children: [
@@ -25032,7 +25072,7 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
             className: `inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold border cursor-pointer transition-all ${sourceType === t.id ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-400"}`,
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.icon }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.id === "all" ? `${t.label} (${catalogData.totalDishesInCatalog})` : t.id === "tigullio_restaurant" ? `${catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount} Ristoranti con Menu Reale Verificato (${catalogData.tigullioDishesCount || 334} Piatti)` : t.id === "base_single_school" ? `${t.label} (${catalogData.baseSingleDishesCount || 32})` : t.label })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t.id === "all" ? `${t.label} (${catalogData.totalDishesInCatalog})` : t.id === "tigullio_restaurant" ? `${catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length} Ristoranti con Menu Reale Verificato (${catalogData.tigullioDishesCount || 334} Piatti)` : t.id === "base_single_school" ? `${t.label} (${catalogData.baseSingleDishesCount || 32})` : t.label })
             ]
           },
           t.id
@@ -25064,27 +25104,59 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-[11px] font-bold text-slate-500 mb-1", children: [
-            "Ristorante del Tigullio (",
-            catalogData.restaurants.length,
-            " con Menu Reale Verificato)"
+            "Zona / Area GE (",
+            (catalogData.zones || []).length || 1,
+            " aree verificate)"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
             {
-              "aria-label": "Filtra per Ristorante del Tigullio",
+              "aria-label": "Filtra per Zona della Provincia di Genova",
+              value: zona,
+              onChange: handleZonaChange,
+              className: "w-full text-xs font-semibold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-800",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: "all", children: [
+                  "Tutte le Zone della Provincia di Genova (GE) (",
+                  catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length,
+                  " locali)"
+                ] }),
+                (catalogData.zones || []).map((z) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: z.zona, children: [
+                  "📍 ",
+                  z.zona,
+                  " — ",
+                  z.restaurantCount,
+                  " ",
+                  z.restaurantCount === 1 ? "locale" : "locali",
+                  " (",
+                  z.dishCount,
+                  " piatti)"
+                ] }, z.zona))
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-[11px] font-bold text-slate-500 mb-1", children: [
+            "Ristorante (",
+            catalogData.restaurants.length,
+            " ",
+            zona !== "all" ? `in ${zona}` : "con Menu Reale Verificato",
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "select",
+            {
+              "aria-label": "Filtra per Ristorante della Provincia di Genova",
               value: restaurantId,
               onChange: (e) => setRestaurantId(e.target.value),
               className: "w-full text-xs font-semibold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-800",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: "all", children: [
-                  "Tutti i ",
-                  catalogData.restaurants.length,
-                  " Ristoranti con Menu Reale Verificato & Scuole"
-                ] }),
-                catalogData.restaurants.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: r.id, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "all", children: zona === "all" ? `Tutti i ${catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length} Ristoranti con Menu Reale Verificato & Scuole` : `Tutti i ${catalogData.restaurants.length} Ristoranti in ${zona}` }),
+                restaurantsByZone.map(([zoneLabel, rests]) => /* @__PURE__ */ jsxRuntimeExports.jsx("optgroup", { label: `${zoneLabel} (${rests.length})`, children: rests.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: r.id, children: [
                   r.logo_emoji || "🍽️",
                   " ",
                   r.nome,
@@ -25094,7 +25166,7 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
                   r.dishCount,
                   " ",
                   r.dishCount === 1 ? "piatto" : "piatti"
-                ] }, r.id))
+                ] }, r.id)) }, zoneLabel))
               ]
             }
           )
@@ -25173,6 +25245,7 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
             {
               type: "button",
               onClick: () => {
+                setZona("all");
                 setRestaurantId("all");
                 setSourceType("all");
                 setMealContext("all");
@@ -25203,11 +25276,18 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1.5", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-800", children: [
-                      dish.restaurantName || "Scuola Base Single",
-                      " · ",
-                      dish.city
-                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "span",
+                      {
+                        className: "px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-800",
+                        title: dish.zona || "",
+                        children: [
+                          dish.restaurantName || "Scuola Base Single",
+                          " · ",
+                          dish.city
+                        ]
+                      }
+                    ),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200", children: dish.course }),
                     dish.hasProfileSubstitution && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300", children: "🛡️ Variante Senza Formaggi Attiva" }),
                     dish.isExcludedByProfileIdentity && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -25421,7 +25501,7 @@ function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUp
     activeViewTab === "pareto_8020" && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-900", children: "Algoritmo Submodulare 80/20 Max-Coverage" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-extrabold text-slate-900 mt-1", children: "📊 I 12 Ingredienti Chiave che Sbloccano il Massimo Numero di Piatti del Tigullio" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-extrabold text-slate-900 mt-1", children: "📊 I 12 Ingredienti Chiave che Sbloccano il Massimo Numero di Piatti della Provincia di Genova" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Considerando le scorte già presenti nella tua Dispensa, ecco l'ordine ottimo di acquisto a Rapallo per massimizzare i piatti cucinabili al 100%." })
       ] }),
       !paretoData ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-6 text-center text-xs text-slate-500", children: "Calcolo copertura 80/20 in corso..." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3", children: paretoData.paretoBasket.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -39817,4 +39897,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-Dz0bnK2i.js.map
+//# sourceMappingURL=index-Cls2lf4R.js.map

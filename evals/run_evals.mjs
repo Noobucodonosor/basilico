@@ -328,23 +328,30 @@ export async function runAllDomainEvals(options = {}) {
     const danyDishesRes = await recipeAndArbitrageService.queryDishes({
       profileId: 'dany',
       includeExcluded: true,
-      limit: 500
+      limit: 2500
     });
     const allDishes = danyDishesRes.dishes || [];
-    const structuralDairyTargets = allDishes.filter((d) =>
-      /\b(focaccia\s+col\s+formaggio|focaccett\w*\s+al\s+formaggio|formaggio\s+di\s+san\s+st[eè]|tiramis[uù]|caprese|cacio\s+e\s+pepe|quattro\s+formaggi|cannol\w*|cassat\w*)(?=\s|$|[),.;:]|\b)/i.test(
-        d.title || ''
-      )
-    );
+    const structuralDairyTargets = allDishes.filter((d) => {
+      const t = d.title || '';
+      if (/\b(senza\s+formagg\w*|zero\s+formagg\w*|senza\s+latticin\w*|vegan\w*|torta\s+caprese)\b/i.test(t)) {
+        return false;
+      }
+      return /\b(focacc(?:ia|ett\w*|in\w*)\s+(?:di\s+recco|tipo\s+recco|recco|(?:col|con\s+il|al|ai)\s+formagg\w*)|pizzat[ae]\s+di\s+recco|fugassett\w*|formaggio\s+di\s+san\s+st[eè]|tiramis[uù]|caprese|cacio\s+e\s+pepe|quattro\s+formaggi|4\s+formaggi|cheesecake|cheese\s+cake|cannol\w*|cassat\w*)(?=\s|$|[),.;:]|\b)/i.test(
+        t
+      );
+    });
+    const unflaggedStructural = structuralDairyTargets.filter((d) => d.isExcludedByProfileIdentity !== true);
     const allExcludedProperly =
-      structuralDairyTargets.length > 0 &&
-      structuralDairyTargets.every((d) => d.isExcludedByProfileIdentity === true);
+      structuralDairyTargets.length > 0 && unflaggedStructural.length === 0;
 
     checks.push({
       id: 'R3-CULINARY-IDENTITY-GUARD',
-      label: 'Piatti dove il formaggio/mascarpone è identità (Recco, Tiramisù, Caprese) esclusi onestamente per Dany',
+      label: 'Piatti dove il formaggio/mascarpone è identità (Recco, Tiramisù, Caprese, Cheesecake, Cacio e pepe) esclusi onestamente per Dany',
       passed: allExcludedProperly,
-      detail: `${structuralDairyTargets.length} piatti strutturali lattiero-caseari marcati isExcludedByProfileIdentity=true`
+      detail:
+        unflaggedStructural.length === 0
+          ? `${structuralDairyTargets.length} piatti strutturali lattiero-caseari marcati isExcludedByProfileIdentity=true`
+          : `Mancata esclusione su: ${unflaggedStructural.map((d) => `${d.id}(${d.title})`).slice(0, 4).join(', ')}`
     });
 
     const sampleByFamily = new Map();
@@ -386,39 +393,63 @@ export async function runAllDomainEvals(options = {}) {
 
     const seedDishes = recipeAndArbitrageService.getDishesSeed();
     const unresolvedCreaRefs = [];
+    const missingCreaRefs = [];
     let totalBomCreaRefs = 0;
     for (const dish of seedDishes) {
       for (const bomItem of dish.bom || []) {
-        if (bomItem?.creaId) {
-          totalBomCreaRefs++;
-          const resolved = creaService.getFoodById(bomItem.creaId);
-          if (!resolved) {
-            unresolvedCreaRefs.push(`${dish.id}:${bomItem.creaId}(${bomItem.name})`);
-          }
+        if (!bomItem?.creaId) {
+          missingCreaRefs.push(`${dish.id}:missing(${bomItem?.name || ''})`);
+          continue;
+        }
+        totalBomCreaRefs++;
+        const resolved = creaService.getFoodById(bomItem.creaId);
+        if (!resolved) {
+          unresolvedCreaRefs.push(`${dish.id}:${bomItem.creaId}(${bomItem.name})`);
         }
       }
     }
     checks.push({
       id: 'R3-CREA-REFERENTIAL-INTEGRITY',
       label: 'Integrità referenziale BOM <-> CREA: 100% dei creaId nei piatti risolve a un alimento CREA reale non nullo',
-      passed: totalBomCreaRefs > 0 && unresolvedCreaRefs.length === 0,
+      passed: totalBomCreaRefs > 0 && unresolvedCreaRefs.length === 0 && missingCreaRefs.length === 0,
       detail:
-        unresolvedCreaRefs.length === 0
+        unresolvedCreaRefs.length === 0 && missingCreaRefs.length === 0
           ? `${totalBomCreaRefs}/${totalBomCreaRefs} riferimenti BOM->CREA verificati su ${seedDishes.length} piatti`
-          : `creaId orfani (${unresolvedCreaRefs.length}): ${unresolvedCreaRefs.slice(0, 4).join(', ')}`
+          : `creaId invalidi/mancanti (${unresolvedCreaRefs.length + missingCreaRefs.length}): ${[...unresolvedCreaRefs, ...missingCreaRefs].slice(0, 4).join(', ')}`
     });
 
     const activeMenuRestaurants = recipeAndArbitrageService.getRestaurants();
     const allCensusedRestaurants = recipeAndArbitrageService.getRestaurants({ includeWithoutMenu: true });
     const zeroDishLeaksInActive = activeMenuRestaurants.filter((r) => !(r.dishCount > 0));
+    const hiddenWithoutMenuCount = allCensusedRestaurants.length - activeMenuRestaurants.length;
     checks.push({
       id: 'R3-VERIFIED-MENU-RESTAURANTS-FILTER',
-      label: 'Filtro esclusivo ristoranti con listino pubblico verificato: 0 locali vuoti in UI e anagrafica completa (32) preservata',
+      label: 'Filtro esclusivo ristoranti con listino pubblico verificato: 0 locali vuoti in UI e anagrafica completa preservata',
       passed:
         activeMenuRestaurants.length >= 23 &&
         zeroDishLeaksInActive.length === 0 &&
-        allCensusedRestaurants.length === 32,
-      detail: `AttiviConMenu=${activeMenuRestaurants.length}/${allCensusedRestaurants.length} censiti, LocaliVuotiEsposti=${zeroDishLeaksInActive.length}`
+        allCensusedRestaurants.length >= 32 &&
+        hiddenWithoutMenuCount >= 9,
+      detail: `AttiviConMenu=${activeMenuRestaurants.length}/${allCensusedRestaurants.length} censiti (${hiddenWithoutMenuCount} senza listino pubblico nascosti), LocaliVuotiEsposti=${zeroDishLeaksInActive.length}`
+    });
+
+    const geZones = danyDishesRes.zones || [];
+    const geCities = danyDishesRes.cities || [];
+    const newPizzaLeaks = seedDishes.filter(
+      (d) => Number(d.numericId) >= 335 && String(d.course || '').toLowerCase() === 'pizza'
+    );
+    checks.push({
+      id: 'R3-GENOVA-PROVINCE-COVERAGE',
+      label: 'Copertura Provincia di Genova (GE): >=5 zone attive, >35 ristoranti con menu verificato, 100% creaId validi, 0 locali vuoti e 0 nuove pizze',
+      passed:
+        geZones.length >= 5 &&
+        danyDishesRes.activeMenuRestaurantsCount > 35 &&
+        activeMenuRestaurants.length > 35 &&
+        unresolvedCreaRefs.length === 0 &&
+        missingCreaRefs.length === 0 &&
+        zeroDishLeaksInActive.length === 0 &&
+        newPizzaLeaks.length === 0,
+      detail: `ZoneGE=${geZones.length} (${geZones.map((z) => `${z.zona}:${z.restaurantCount}`).join(' · ')}), Comuni=${geCities.length}, RistorantiAttivi=${danyDishesRes.activeMenuRestaurantsCount}, NuovePizze=${newPizzaLeaks.length}`
     });
 
     recordSuite(3, 'Ricette, Ristoranti & Fornelli', 'specs/03-ricette.spec.md', 30, checks);

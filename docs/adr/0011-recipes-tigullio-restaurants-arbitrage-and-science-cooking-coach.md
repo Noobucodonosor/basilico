@@ -57,3 +57,6 @@ Nelle conversazioni storiche, la visione gastronomica poggiava su tre pilastri m
 - [x] **TASK-M5-03** (`#37`): **Acquisizione Menu Pubblici Reali con Prezzi nel Tigullio e Filtro Esclusivo Ristoranti con Listino Verificato**
   - *File coinvolti*: `data/seed/recipes_and_dishes.json`, `data/seed/restaurants_tigullio.json`, `server/services/recipeAndArbitrageService.js`, `server/routes/recipes.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `specs/03-ricette.spec.md`, `evals/run_evals.mjs`, `tests/unit/recipe_arbitrage_8020.test.js`, `tests/unit/kitchen_services.test.js`, `tests/api/recipes_api.test.js`, `tests/e2e/recipes_cooking_ui.test.js`
   - *Verification Step*: `npm run build && npm run eval && npm test`
+- [x] **TASK-M5-04** (`#38`): **Espansione Ristoranti Verificati all'intera Provincia di Genova (GE, Zero Pizzerie) e Filtro per Zone/Comuni**
+  - *File coinvolti*: `data/seed/recipes_and_dishes.json`, `data/seed/restaurants_tigullio.json`, `server/services/recipeAndArbitrageService.js`, `server/routes/recipes.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `specs/03-ricette.spec.md`, `evals/run_evals.mjs`, `tests/**`
+  - *Verification Step*: `npm run build && npm run eval && npm test`

@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import CookingModeModal from './CookingModeModal.jsx';
 
 const SOURCE_TYPE_TABS = [
   { id: 'all', label: 'Tutti i Piatti', icon: '🍽️' },
   { id: 'base_single_school', label: 'Scuola Base Single, Colazioni & Barca', icon: '⛵' },
-  { id: 'tigullio_restaurant', label: 'Ristoranti con Menu Reale Verificato', icon: '🦞' },
+  { id: 'tigullio_restaurant', label: 'Ristoranti con Menu Reale Verificato (GE)', icon: '🦞' },
   { id: 'starred_author', label: 'Alta Cucina & Stellati (Studio)', icon: '⭐' }
 ];
 
@@ -20,6 +20,7 @@ const MEAL_CONTEXT_PILLS = [
 export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUpdated }) {
   const [activeViewTab, setActiveViewTab] = useState('catalog'); // 'catalog' | 'pareto_8020' | 'deconstruct' | 'lab_notebook'
   const [sourceType, setSourceType] = useState('all');
+  const [zona, setZona] = useState('all');
   const [restaurantId, setRestaurantId] = useState('all');
   const [mealContext, setMealContext] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,9 +38,12 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
     totalCensusedRestaurantsCount: 32,
     activeMenuRestaurantsCount: 23,
     totalMatching: 0,
+    zones: [],
+    cities: [],
     restaurants: [],
     dishes: []
   });
+  const [allRestaurantsCache, setAllRestaurantsCache] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paretoData, setParetoData] = useState(null);
   const [labEntries, setLabEntries] = useState([]);
@@ -55,12 +59,13 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
 
   useEffect(() => {
     setVisibleLimit(80);
-  }, [sourceType, restaurantId, mealContext, searchQuery, deduplicateTwins, excludeIncompatible, activeProfileId]);
+  }, [sourceType, zona, restaurantId, mealContext, searchQuery, deduplicateTwins, excludeIncompatible, activeProfileId]);
 
   const fetchCatalog = useCallback(() => {
     setLoading(true);
     const params = new URLSearchParams({
       sourceType,
+      zona,
       restaurantId,
       mealContext,
       q: searchQuery,
@@ -74,10 +79,47 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
     fetch(`/api/recipes?${params.toString()}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data) setCatalogData(data);
+        if (data) {
+          setCatalogData(data);
+          if (zona === 'all' && Array.isArray(data.restaurants)) {
+            setAllRestaurantsCache(data.restaurants);
+          }
+          if (
+            restaurantId !== 'all' &&
+            Array.isArray(data.restaurants) &&
+            !data.restaurants.some((r) => r.id === restaurantId)
+          ) {
+            setRestaurantId('all');
+          }
+        }
       })
       .finally(() => setLoading(false));
-  }, [sourceType, restaurantId, mealContext, searchQuery, servings, sortBy, visibleLimit, deduplicateTwins, excludeIncompatible, activeProfileId]);
+  }, [sourceType, zona, restaurantId, mealContext, searchQuery, servings, sortBy, visibleLimit, deduplicateTwins, excludeIncompatible, activeProfileId]);
+
+  const handleZonaChange = (e) => {
+    const nextZona = e.target.value;
+    setZona(nextZona);
+    if (nextZona !== 'all' && restaurantId !== 'all') {
+      const knownPool = allRestaurantsCache.length > 0 ? allRestaurantsCache : catalogData.restaurants;
+      const selectedRest = knownPool.find((r) => r.id === restaurantId);
+      if (!selectedRest || selectedRest.zona !== nextZona) {
+        setRestaurantId('all');
+      }
+    }
+  };
+
+  const restaurantsByZone = useMemo(() => {
+    const groups = new Map();
+    for (const zObj of catalogData.zones || []) {
+      if (zObj?.zona) groups.set(zObj.zona, []);
+    }
+    for (const r of catalogData.restaurants || []) {
+      const z = r.zona || 'Tigullio Ovest (Rapallo-SML-Portofino)';
+      if (!groups.has(z)) groups.set(z, []);
+      groups.get(z).push(r);
+    }
+    return Array.from(groups.entries()).filter(([, list]) => list.length > 0);
+  }, [catalogData.restaurants, catalogData.zones]);
 
   useEffect(() => {
     fetchCatalog();
@@ -153,15 +195,15 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                 Stanza 3 · ADR-0011
               </span>
               <span className="text-xs text-emerald-300 font-semibold">
-                {catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount} Ristoranti con Menu Reale Verificato • {catalogData.totalDishesInCatalog} Piatti • {(catalogData.totalBomRowsInCatalog || 0).toLocaleString('it-IT')} Righe BOM Certificate CREA
+                {catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length} Ristoranti con Menu Reale Verificato in {(catalogData.zones || []).length || 1} Zone GE • {catalogData.totalDishesInCatalog} Piatti • {(catalogData.totalBomRowsInCatalog || 0).toLocaleString('it-IT')} Righe BOM Certificate CREA
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              🍽️ Ricette Base Single, Ristoranti del Tigullio, Arbitraggio Live &amp; Fornelli (<em className="italic font-semibold text-emerald-200">Science &amp; Cooking</em>)
+              🍽️ Ricette Base Single, Ristoranti della Provincia di Genova, Arbitraggio Live &amp; Fornelli (<em className="italic font-semibold text-emerald-200">Science &amp; Cooking</em>)
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-3xl">
-              Confronta il prezzo al tavolo dei ristoranti di Rapallo, Santa Margherita, Portofino, Chiavari e Sestri Levante con il
-              <strong> Costo Porzione Pura</strong> e lo <strong>Scontrino Reale di Cassa</strong> a Rapallo, con variante automatica senza formaggi e guida scientifica ai fornelli.
+              Confronta il prezzo al tavolo dei ristoranti verificati della <strong>Provincia di Genova (Genova, Golfo Paradiso, Tigullio &amp; Entroterra — zero pizzerie)</strong> con il
+              <strong> Costo Porzione Pura</strong> e lo <strong>Scontrino Reale di Cassa</strong> nei negozi di Rapallo, con variante automatica senza formaggi e guida scientifica ai fornelli.
             </p>
           </div>
 
@@ -236,7 +278,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                     {t.id === 'all'
                       ? `${t.label} (${catalogData.totalDishesInCatalog})`
                       : t.id === 'tigullio_restaurant'
-                        ? `${catalogData.restaurants.length || catalogData.activeMenuRestaurantsCount} Ristoranti con Menu Reale Verificato (${catalogData.tigullioDishesCount || 334} Piatti)`
+                        ? `${catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length} Ristoranti con Menu Reale Verificato (${catalogData.tigullioDishesCount || 334} Piatti)`
                         : t.id === 'base_single_school'
                           ? `${t.label} (${catalogData.baseSingleDishesCount || 32})`
                           : t.label}
@@ -267,25 +309,52 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
             </div>
           </div>
 
-          {/* Filter Bar: Restaurant Selector, Meal Context, Search, Servings Scaler, Sort */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* Filter Bar: Zona GE Selector, Restaurant Selector (<optgroup>), Meal Context, Search, Servings Scaler, Sort */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-slate-500 mb-1">
-                Ristorante del Tigullio ({catalogData.restaurants.length} con Menu Reale Verificato)
+                Zona / Area GE ({(catalogData.zones || []).length || 1} aree verificate)
               </label>
               <select
-                aria-label="Filtra per Ristorante del Tigullio"
+                aria-label="Filtra per Zona della Provincia di Genova"
+                value={zona}
+                onChange={handleZonaChange}
+                className="w-full text-xs font-semibold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-800"
+              >
+                <option value="all">
+                  Tutte le Zone della Provincia di Genova (GE) ({catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length} locali)
+                </option>
+                {(catalogData.zones || []).map((z) => (
+                  <option key={z.zona} value={z.zona}>
+                    📍 {z.zona} — {z.restaurantCount} {z.restaurantCount === 1 ? 'locale' : 'locali'} ({z.dishCount} piatti)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">
+                Ristorante ({catalogData.restaurants.length} {zona !== 'all' ? `in ${zona}` : 'con Menu Reale Verificato'})
+              </label>
+              <select
+                aria-label="Filtra per Ristorante della Provincia di Genova"
                 value={restaurantId}
                 onChange={(e) => setRestaurantId(e.target.value)}
                 className="w-full text-xs font-semibold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-800"
               >
                 <option value="all">
-                  Tutti i {catalogData.restaurants.length} Ristoranti con Menu Reale Verificato &amp; Scuole
+                  {zona === 'all'
+                    ? `Tutti i ${catalogData.activeMenuRestaurantsCount || catalogData.restaurants.length} Ristoranti con Menu Reale Verificato & Scuole`
+                    : `Tutti i ${catalogData.restaurants.length} Ristoranti in ${zona}`}
                 </option>
-                {catalogData.restaurants.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.logo_emoji || '🍽️'} {r.nome} ({r.citta}) — {r.dishCount} {r.dishCount === 1 ? 'piatto' : 'piatti'}
-                  </option>
+                {restaurantsByZone.map(([zoneLabel, rests]) => (
+                  <optgroup key={zoneLabel} label={`${zoneLabel} (${rests.length})`}>
+                    {rests.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.logo_emoji || '🍽️'} {r.nome} ({r.citta}) — {r.dishCount} {r.dishCount === 1 ? 'piatto' : 'piatti'}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>
@@ -374,6 +443,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                 <button
                   type="button"
                   onClick={() => {
+                    setZona('all');
                     setRestaurantId('all');
                     setSourceType('all');
                     setMealContext('all');
@@ -408,7 +478,10 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                       {/* Top badges */}
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-800">
+                          <span
+                            className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-800"
+                            title={dish.zona || ''}
+                          >
                             {dish.restaurantName || 'Scuola Base Single'} · {dish.city}
                           </span>
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -587,7 +660,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
               Algoritmo Submodulare 80/20 Max-Coverage
             </span>
             <h2 className="text-lg font-extrabold text-slate-900 mt-1">
-              📊 I 12 Ingredienti Chiave che Sbloccano il Massimo Numero di Piatti del Tigullio
+              📊 I 12 Ingredienti Chiave che Sbloccano il Massimo Numero di Piatti della Provincia di Genova
             </h2>
             <p className="text-xs text-slate-600">
               Considerando le scorte già presenti nella tua Dispensa, ecco l&apos;ordine ottimo di acquisto a Rapallo per massimizzare i piatti cucinabili al 100%.

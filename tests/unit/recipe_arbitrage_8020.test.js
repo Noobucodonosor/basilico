@@ -10,11 +10,13 @@ import os from 'node:os';
 import {
   RecipeAndArbitrageService,
   matchBomIngredientToOffer,
-  resolveIngredientPackSpec
+  resolveIngredientPackSpec,
+  resolveRestaurantZona,
+  classifyDishMetadata
 } from '../../server/services/recipeAndArbitrageService.js';
 import { creaService } from '../../server/services/creaService.js';
 
-test('RecipeAndArbitrageService — Certified Catalog Integrity (Verified Tigullio Menus & 32 Censused Restaurants)', () => {
+test('RecipeAndArbitrageService — Certified Catalog Integrity (Verified Provincia di Genova Menus & Censused Restaurants)', () => {
   const svc = new RecipeAndArbitrageService({
     labNotebookPath: path.join(os.tmpdir(), `basilico-lab-test-${Date.now()}.json`)
   });
@@ -23,13 +25,17 @@ test('RecipeAndArbitrageService — Certified Catalog Integrity (Verified Tigull
   const activeRestaurants = svc.getRestaurants();
   const allCensusedRestaurants = svc.getRestaurants({ includeWithoutMenu: true });
 
-  assert.equal(allCensusedRestaurants.length, 32, 'Must preserve all 32 censused Tigullio restaurants when includeWithoutMenu=true');
+  assert.ok(allCensusedRestaurants.length >= 32, 'Must preserve all censused Provincia di Genova restaurants when includeWithoutMenu=true');
+  assert.ok(
+    allCensusedRestaurants.length - activeRestaurants.length >= 9,
+    'Must preserve the 9 historic Tigullio restaurants without public menus in full anagrafica'
+  );
   assert.ok(activeRestaurants.length >= 23, `Expected at least 23 active restaurants with verified priced menus, got ${activeRestaurants.length}`);
   assert.ok(
-    activeRestaurants.every((r) => r.dishCount > 0),
-    'Default getRestaurants() must strictly return only restaurants with dishCount > 0'
+    activeRestaurants.every((r) => r.dishCount > 0 && Boolean(r.zona)),
+    'Default getRestaurants() must strictly return only restaurants with dishCount > 0 and canonical zona'
   );
-  assert.ok(dishes.length >= 360, `Expected at least 360 dishes after TASK-M5-03 expansion, got ${dishes.length}`);
+  assert.ok(dishes.length >= 360, `Expected at least 360 dishes after expansion, got ${dishes.length}`);
 
   const totalBomRows = dishes.reduce((acc, d) => acc + (d.bom?.length || 0), 0);
   assert.ok(totalBomRows >= 1500, `Expected at least 1500 BOM rows, got ${totalBomRows}`);
@@ -266,10 +272,11 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
   assert.equal(customDish.bom.length, 4);
   assert.ok(!customDish.bom.some((b) => b.creaId === '120010'));
 
-  // M-P1-11 & M-P1-14: Global sort before pagination, strict boatSafeCold, Semifreddi cold archetype & Frittata non-fried
+  // M-P1-11 & M-P1-14: Global sort before pagination (with 2500 full-catalog limit), strict boatSafeCold, Semifreddi cold archetype & Frittata non-fried
   const top5Cheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 5 });
-  const allCheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 500 });
+  const allCheapest = await svc.queryDishes({ sortBy: 'cost_asc', limit: 2500 });
   assert.equal(top5Cheapest.dishes[0].id, allCheapest.dishes[0].id);
+  assert.equal(allCheapest.dishes.length, allCheapest.totalMatching, 'limit=2500 must inspect 100% of catalog dishes');
 
   const boatOnly = await svc.queryDishes({ mealContext: 'boat_cooler', limit: 100 });
   assert.ok(boatOnly.dishes.every((d) => d.boatSafeCold === true), 'boat_cooler filter must strictly enforce boatSafeCold');
@@ -293,4 +300,103 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
   assert.equal(evalFugassette.dishFamily, 'pizza_focaccia');
   assert.equal(evalSanSte.dairyRole, 'structural_unsubstitutable');
   assert.equal(evalSanSte.isExcludedByProfileIdentity, true);
+});
+
+test('RecipeAndArbitrageService — Provincia di Genova Zona/Citta Filters & Recco/Genova Structural Cheese Guards (TASK-M5-04)', async () => {
+  const svc = new RecipeAndArbitrageService({
+    labNotebookPath: path.join(os.tmpdir(), `basilico-lab-ge-${Date.now()}.json`)
+  });
+
+  // 1. Canonical Zona resolution across Provincia di Genova
+  assert.equal(resolveRestaurantZona({ citta: 'Rapallo' }), 'Tigullio Ovest (Rapallo-SML-Portofino)');
+  assert.equal(resolveRestaurantZona({ citta: 'Santa Margherita Ligure' }), 'Tigullio Ovest (Rapallo-SML-Portofino)');
+  assert.equal(resolveRestaurantZona({ citta: 'Recco' }), 'Golfo Paradiso');
+  assert.equal(resolveRestaurantZona({ citta: 'Camogli' }), 'Golfo Paradiso');
+  assert.equal(resolveRestaurantZona({ citta: 'Chiavari' }), 'Tigullio Est (Chiavari-Sestri-Moneglia)');
+  assert.equal(resolveRestaurantZona({ citta: 'Sestri Levante' }), 'Tigullio Est (Chiavari-Sestri-Moneglia)');
+  assert.equal(resolveRestaurantZona({ citta: 'Genova', zona: 'Genova Centro & Porto Antico' }), 'Genova Centro & Porto Antico');
+  assert.equal(resolveRestaurantZona({ citta: 'Genova', indirizzo: 'Via Boccadasse 1' }), 'Genova Mare (Boccadasse-Nervi)');
+  assert.equal(resolveRestaurantZona({ citta: 'Arenzano' }), 'Ponente Genovese');
+  assert.equal(resolveRestaurantZona({ citta: 'Campo Ligure' }), 'Entroterra Genovese');
+
+  // 2. Dynamic zona & citta filters consistency between getRestaurants() and queryDishes()
+  const fullQuery = await svc.queryDishes({ limit: 2500 });
+  assert.ok(Array.isArray(fullQuery.zones) && fullQuery.zones.length >= 1);
+  assert.ok(Array.isArray(fullQuery.cities) && fullQuery.cities.length >= 3);
+
+  const sampleZone = fullQuery.zones[0];
+  const zoneRests = svc.getRestaurants({ zona: sampleZone.zona });
+  assert.equal(zoneRests.length, sampleZone.restaurantCount);
+  assert.ok(zoneRests.every((r) => r.zona === sampleZone.zona && r.dishCount > 0));
+
+  const zoneDishesRes = await svc.queryDishes({ zona: sampleZone.zona, limit: 2500 });
+  assert.equal(zoneDishesRes.totalMatching, sampleZone.dishCount);
+  assert.ok(zoneDishesRes.dishes.every((d) => d.zona === sampleZone.zona));
+
+  const sampleCity = fullQuery.cities[0];
+  const cityRests = svc.getRestaurants({ citta: sampleCity.citta });
+  assert.ok(cityRests.length >= sampleCity.restaurantCount);
+  const cityDishesRes = await svc.queryDishes({ citta: sampleCity.citta, zona: sampleCity.zona, limit: 2500 });
+  assert.equal(cityDishesRes.totalMatching, sampleCity.dishCount);
+
+  // 3. Recco/Genova structural cheese dishes vs non-cheese false-positive guards
+  const reccoCheeseDishes = [
+    {
+      id: 'test-focaccia-recco',
+      title: 'La Focaccia di Recco IGP',
+      course: 'focaccia',
+      bom: [
+        { creaId: '000220', name: 'Farina di frumento 00', rawGramsPerServing: 90 },
+        { creaId: '167250', name: 'Stracchino / Crescenza fresca', rawGramsPerServing: 110, isDairy: true }
+      ]
+    },
+    {
+      id: 'test-pizzata-recco',
+      title: 'Pizzata di Recco',
+      course: 'focaccia',
+      bom: [
+        { creaId: '000220', name: 'Farina di frumento 00', rawGramsPerServing: 90 },
+        { creaId: '167250', name: 'Stracchino fresco', rawGramsPerServing: 95, isDairy: true },
+        { creaId: '006680', name: 'Polpa di pomodoro', rawGramsPerServing: 50 }
+      ]
+    },
+    {
+      id: 'test-seirass',
+      title: 'Seirass del Fen con miele di castagno',
+      course: 'dolce',
+      bom: [{ creaId: '166820', name: 'Seirass vaccino ligure', rawGramsPerServing: 100, isDairy: true }]
+    },
+    {
+      id: 'test-parmigiana',
+      title: 'Parmigiana di melanzane classica',
+      course: 'antipasto',
+      bom: [
+        { creaId: '005500', name: 'Melanzane fresche', rawGramsPerServing: 160 },
+        { creaId: '164820', name: 'Mozzarella fiordilatte', rawGramsPerServing: 80, isDairy: true },
+        { creaId: '166000', name: 'Parmigiano Reggiano DOP', rawGramsPerServing: 25, isDairy: true }
+      ]
+    }
+  ];
+
+  for (const sample of reccoCheeseDishes) {
+    const ev = await svc.evaluateDish(sample, { profileId: 'dany' });
+    assert.equal(ev.dairyRole, 'structural_unsubstitutable', `${sample.title} must be structural_unsubstitutable`);
+    assert.equal(ev.isExcludedByProfileIdentity, true, `${sample.title} must be excluded for dany`);
+    assert.equal(ev.hasProfileSubstitution, false);
+  }
+
+  // Non-cheese false positive guards: Trofie di Recco & Torta Caprese must NOT be misclassified as structural mozzarella/Recco cheese
+  const trofieMeta = classifyDishMetadata({
+    title: 'Trofie di Recco al pesto',
+    course: 'primo',
+    bom: [{ creaId: '166000', name: 'Parmigiano Reggiano', rawGramsPerServing: 18, isDairy: true }]
+  });
+  assert.equal(trofieMeta.dairyRole, 'secondary_umami_finisher');
+
+  const tortaCapreseMeta = classifyDishMetadata({
+    title: 'Torta Caprese alle mandorle e cioccolato fondente',
+    course: 'dolce',
+    bom: [{ creaId: '008540', name: 'Mandorle dolci', rawGramsPerServing: 50 }]
+  });
+  assert.equal(tortaCapreseMeta.dairyRole, 'none');
 });

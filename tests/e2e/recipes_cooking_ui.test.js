@@ -25,10 +25,17 @@ test('Stanza 3 UI Components — Structural & Contract Verification (ADR-0011 / 
 
   const viewSrc = fs.readFileSync(viewPath, 'utf8');
   assert.match(viewSrc, /Ristoranti con Menu Reale Verificato/i);
+  assert.match(viewSrc, /Provincia di Genova/i);
+  assert.match(viewSrc, /Tutte le Zone della Provincia di Genova \(GE\)/);
+  assert.match(viewSrc, /<optgroup/);
+  assert.match(viewSrc, /handleZonaChange/);
   assert.match(viewSrc, /Costo Porzione Pura/i);
   assert.match(viewSrc, /Analisi 80\/20 Max-Coverage/i);
   assert.match(viewSrc, /De-costruisci Menu/i);
   assert.match(viewSrc, /Quaderno Lab/i);
+
+  const roomNavSrc = fs.readFileSync(path.join(ROOT, 'src/components/RoomNavigation.jsx'), 'utf8');
+  assert.match(roomNavSrc, /Provincia di Genova/i);
 
   const cookingSrc = fs.readFileSync(cookingModalPath, 'utf8');
   assert.match(cookingSrc, /Harvard Science & Cooking/i);

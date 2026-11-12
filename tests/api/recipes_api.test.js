@@ -65,26 +65,61 @@ test('API /api/recipes — Catalog, 80/20 Solver, Cooking Session, Lab Notes & C
     } catch (_) {}
   });
 
-  // 1. GET /api/recipes & GET /api/recipes/restaurants
+  // 1. GET /api/recipes & GET /api/recipes/restaurants (including dynamic zona & citta filters)
   const listRes = await requestJson(server, 'GET', '/api/recipes?limit=15&servings=2');
   assert.equal(listRes.status, 200);
   assert.ok(listRes.body.totalDishesInCatalog >= 360);
   assert.ok(listRes.body.restaurants.length >= 23);
-  assert.ok(listRes.body.restaurants.every((r) => r.dishCount > 0));
-  assert.equal(listRes.body.totalCensusedRestaurantsCount, 32);
+  assert.ok(listRes.body.restaurants.every((r) => r.dishCount > 0 && Boolean(r.zona)));
+  assert.ok(listRes.body.totalCensusedRestaurantsCount >= 32);
   assert.equal(listRes.body.activeMenuRestaurantsCount, listRes.body.restaurants.length);
+  assert.ok(Array.isArray(listRes.body.zones) && listRes.body.zones.length >= 1);
+  assert.ok(Array.isArray(listRes.body.cities) && listRes.body.cities.length >= 3);
   assert.equal(listRes.body.dishes.length, 15);
   assert.equal(listRes.body.servings, 2);
 
   const restActiveRes = await requestJson(server, 'GET', '/api/recipes/restaurants');
   assert.equal(restActiveRes.status, 200);
-  assert.ok(restActiveRes.body.restaurants.every((r) => r.dishCount > 0));
-  assert.equal(restActiveRes.body.totalCensusedCount, 32);
+  assert.ok(restActiveRes.body.restaurants.every((r) => r.dishCount > 0 && Boolean(r.zona)));
+  assert.ok(restActiveRes.body.totalCensusedCount >= 32);
   assert.equal(restActiveRes.body.activeMenuRestaurantsCount, restActiveRes.body.restaurants.length);
+  assert.ok(Array.isArray(restActiveRes.body.zones) && restActiveRes.body.zones.length >= 1);
+  assert.ok(Array.isArray(restActiveRes.body.cities) && restActiveRes.body.cities.length >= 3);
 
   const restAllRes = await requestJson(server, 'GET', '/api/recipes/restaurants?includeWithoutMenu=true');
   assert.equal(restAllRes.status, 200);
-  assert.equal(restAllRes.body.restaurants.length, 32);
+  assert.equal(restAllRes.body.restaurants.length, restActiveRes.body.totalCensusedCount);
+  assert.ok(restAllRes.body.restaurants.length >= restActiveRes.body.restaurants.length + 9);
+
+  // 1b. Filter GET /api/recipes and GET /api/recipes/restaurants by zona & citta
+  const targetZone = restActiveRes.body.zones[0];
+  const zoneRestsRes = await requestJson(
+    server,
+    'GET',
+    `/api/recipes/restaurants?zona=${encodeURIComponent(targetZone.zona)}`
+  );
+  assert.equal(zoneRestsRes.status, 200);
+  assert.equal(zoneRestsRes.body.restaurants.length, targetZone.restaurantCount);
+  assert.ok(zoneRestsRes.body.restaurants.every((r) => r.zona === targetZone.zona));
+
+  const zoneDishesRes = await requestJson(
+    server,
+    'GET',
+    `/api/recipes?zona=${encodeURIComponent(targetZone.zona)}&limit=2500`
+  );
+  assert.equal(zoneDishesRes.status, 200);
+  assert.equal(zoneDishesRes.body.totalMatching, targetZone.dishCount);
+  assert.equal(zoneDishesRes.body.dishes.length, targetZone.dishCount);
+  assert.ok(zoneDishesRes.body.dishes.every((d) => d.zona === targetZone.zona));
+
+  const targetCity = restActiveRes.body.cities[0];
+  const cityDishesRes = await requestJson(
+    server,
+    'GET',
+    `/api/recipes?citta=${encodeURIComponent(targetCity.citta)}&zona=${encodeURIComponent(targetCity.zona)}&limit=2500`
+  );
+  assert.equal(cityDishesRes.status, 200);
+  assert.equal(cityDishesRes.body.totalMatching, targetCity.dishCount);
 
   // 2. GET /api/recipes/8020
   const paretoRes = await requestJson(server, 'GET', '/api/recipes/8020?topK=8');

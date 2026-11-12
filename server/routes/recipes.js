@@ -16,6 +16,8 @@ router.get('/', async (req, res) => {
   try {
     const result = await recipeAndArbitrageService.queryDishes({
       sourceType: req.query.sourceType,
+      zona: req.query.zona,
+      citta: req.query.citta,
       restaurantId: req.query.restaurantId,
       course: req.query.course,
       mealContext: req.query.mealContext,
@@ -37,20 +39,27 @@ router.get('/', async (req, res) => {
 
 /**
  * GET /api/recipes/restaurants
- * Lists Tigullio restaurants with dynamic `dishCount`. By default returns ONLY venues with
- * verified priced public menus (`dishCount > 0`), unless `?includeWithoutMenu=true` is passed.
+ * Lists Provincia di Genova restaurants with dynamic `dishCount`, `zona`, and `zones`/`cities` metadata.
+ * By default returns ONLY venues with verified priced public menus (`dishCount > 0`),
+ * unless `?includeWithoutMenu=true` is passed. Supports `?zona=...` and `?citta=...`.
  */
 router.get('/restaurants', (req, res) => {
   try {
     const includeWithoutMenu =
       req.query.includeWithoutMenu === 'true' || req.query.includeWithoutMenu === true;
     const allCensused = recipeAndArbitrageService.getRestaurants({ includeWithoutMenu: true });
-    const restaurants = includeWithoutMenu
-      ? allCensused
-      : allCensused.filter((r) => r.dishCount > 0);
+    const allActive = allCensused.filter((r) => r.dishCount > 0);
+    const { zones, cities } = recipeAndArbitrageService.buildGeographyMetadata(allActive);
+    const restaurants = recipeAndArbitrageService.getRestaurants({
+      includeWithoutMenu,
+      zona: req.query.zona,
+      citta: req.query.citta
+    });
     res.json({
       restaurants,
-      activeMenuRestaurantsCount: allCensused.filter((r) => r.dishCount > 0).length,
+      zones,
+      cities,
+      activeMenuRestaurantsCount: allActive.length,
       totalCensusedCount: allCensused.length
     });
   } catch (err) {
