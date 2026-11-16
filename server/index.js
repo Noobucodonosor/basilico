@@ -26,6 +26,10 @@ import recipesRouter from './routes/recipes.js';
 import plannerRouter from './routes/planner.js';
 import shoppingListRouter from './routes/shoppingList.js';
 import agentationRouter from './routes/agentation.js';
+import maestroRouter from './routes/maestro.js';
+import homeChemistryRouter from './routes/homeChemistry.js';
+import academyRouter from './routes/academy.js';
+import nutritionCoachRouter from './routes/nutritionCoach.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -293,6 +297,10 @@ export function createApp(options = {}) {
   if (plannerRouter) app.use('/api/planner', plannerRouter);
   if (shoppingListRouter) app.use('/api/shopping-list', shoppingListRouter);
   if (agentationRouter) app.use('/api/agentation', agentationRouter);
+  if (maestroRouter) app.use('/api/maestro', maestroRouter);
+  if (homeChemistryRouter) app.use('/api/home-chemistry', homeChemistryRouter);
+  if (academyRouter) app.use('/api/academy', academyRouter);
+  if (nutritionCoachRouter) app.use('/api/nutrition-coach', nutritionCoachRouter);
   if (statusRouter) {
     app.use('/api/status', statusRouter);
     app.use('/api/sync', statusRouter);

@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Header from './components/Header.jsx';
-import RoomNavigation, { BASILICO_ROOMS } from './components/RoomNavigation.jsx';
+import RoomNavigation, {
+  BASILICO_ROOMS,
+  RhythmNavigation,
+  VALID_RHYTHM_IDS
+} from './components/RoomNavigation.jsx';
 import StoreSwitcher from './components/StoreSwitcher.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import CategoryFilters from './components/CategoryFilters.jsx';
@@ -15,6 +19,12 @@ import PantryAndReceiptsView from './components/pantry/PantryAndReceiptsView.jsx
 import KitchenCareView from './components/kitchen/KitchenCareView.jsx';
 import RecipesAndRestaurantsView from './components/recipes/RecipesAndRestaurantsView.jsx';
 import PlannerAndShoppingView from './components/planner/PlannerAndShoppingView.jsx';
+import TodayCopilotView from './components/today/TodayCopilotView.jsx';
+import WeeklyRegiaView from './components/today/WeeklyRegiaView.jsx';
+import MaestroDrawer from './components/maestro/MaestroDrawer.jsx';
+import HomeChemistryView from './components/home/HomeChemistryView.jsx';
+import CulinaryAcademyPanel from './components/academy/CulinaryAcademyPanel.jsx';
+import NutritionCoachPanel from './components/crea/NutritionCoachPanel.jsx';
 import { Agentation } from 'agentation';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
 
@@ -50,9 +60,30 @@ const DOMAIN_ALLOWED_CATEGORIES = {
 };
 
 const VALID_ROOM_IDS = new Set(BASILICO_ROOMS.map((r) => r.id));
+const VALID_ATLANTE_SECTIONS = new Set(['rooms', 'academy', 'nutrition']);
+const VALID_ACADEMY_SECTIONS = new Set(['skills', 'sos', 'ratios', 'improvise']);
+
+const ATLANTE_SECTIONS = [
+  { id: 'academy', icon: '👨‍🍳', label: 'Scuola Culinaria & SOS Fornelli' },
+  { id: 'nutrition', icon: '🥗', label: 'Coach Nutrizionale' },
+  { id: 'rooms', icon: '🗂️', label: 'Atlante delle 7 Stanze' }
+];
 
 function normalizeRoomId(roomId) {
   return roomId && VALID_ROOM_IDS.has(roomId) ? roomId : 'room-1-negozi';
+}
+
+/**
+ * Resolves the initial 3-Rhythms app mode from the URL (ADR-0015):
+ *  - `?room=room-X-...`  -> Atlante (deep-links to the 7 Rooms always preserved)
+ *  - `?rhythm=oggi|regia|atlante`
+ *  - bare `/`            -> ⚡ Oggi (Co-pilota), the default entry chosen by the Regista
+ */
+function resolveInitialAppMode(params) {
+  if (params.get('room')) return 'atlante';
+  const rhythm = params.get('rhythm');
+  if (rhythm && VALID_RHYTHM_IDS.has(rhythm)) return rhythm;
+  return 'oggi';
 }
 
 export function App() {
@@ -64,6 +95,20 @@ export function App() {
   const initialQuery = initialParams.get('q') || '';
   const initialCategory = initialParams.get('category') || null;
   const initialSort = initialParams.get('sortBy') || 'discountDesc';
+  const initialAppMode = resolveInitialAppMode(initialParams);
+  const initialSectionParam = initialParams.get('section');
+  const initialAtlanteSection =
+    initialParams.get('room') || !VALID_ATLANTE_SECTIONS.has(initialSectionParam)
+      ? 'rooms'
+      : initialSectionParam;
+
+  // ADR-0015: 3 Daily Rhythms (`oggi` | `regia` | `atlante`) + Atlante sub-sections
+  const [appMode, setAppMode] = useState(initialAppMode);
+  const [atlanteSection, setAtlanteSection] = useState(initialAtlanteSection);
+  const [academySection, setAcademySection] = useState('skills');
+  const [rhythmPreset, setRhythmPreset] = useState('feriale');
+  const [isMaestroOpen, setIsMaestroOpen] = useState(false);
+  const [maestroPrompt, setMaestroPrompt] = useState('');
 
   const [activeRoom, setActiveRoomState] = useState(initialRoom);
   const [selectedStoreId, setSelectedStoreId] = useState(initialStore);
@@ -96,6 +141,73 @@ export function App() {
   }, []);
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+
+  // ---- ADR-0015 Navigation handlers across the 3 Rhythms, Atlante & 7 Rooms ----
+  const scrollToTop = useCallback(() => {
+    if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (_) {}
+    }
+  }, []);
+
+  const handleSelectRhythm = useCallback(
+    (nextRhythm) => {
+      const mode = VALID_RHYTHM_IDS.has(nextRhythm) ? nextRhythm : 'oggi';
+      setAppMode(mode);
+      if (mode !== 'atlante') setIsMobileSearchOpen(false);
+      scrollToTop();
+    },
+    [scrollToTop]
+  );
+
+  const handleNavigateRoom = useCallback(
+    (roomId) => {
+      setAppMode('atlante');
+      setAtlanteSection('rooms');
+      setActiveRoom(roomId);
+      scrollToTop();
+    },
+    [setActiveRoom, scrollToTop]
+  );
+
+  const handleOpenAcademy = useCallback(
+    (section = 'skills') => {
+      setAcademySection(VALID_ACADEMY_SECTIONS.has(section) ? section : 'skills');
+      setAppMode('atlante');
+      setAtlanteSection('academy');
+      scrollToTop();
+    },
+    [scrollToTop]
+  );
+
+  const handleOpenNutritionCoach = useCallback(() => {
+    setAppMode('atlante');
+    setAtlanteSection('nutrition');
+    scrollToTop();
+  }, [scrollToTop]);
+
+  const handleOpenMaestro = useCallback((prompt = '') => {
+    setMaestroPrompt(typeof prompt === 'string' ? prompt : '');
+    setIsMaestroOpen(true);
+  }, []);
+
+  const handleCloseMaestro = useCallback(() => {
+    setIsMaestroOpen(false);
+    setMaestroPrompt('');
+  }, []);
+
+  // Hydrate persisted rhythm preset (Sera Stanca / Feriale / Weekend) from the economics engine
+  useEffect(() => {
+    fetch('/api/maestro/calibration')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((cal) => {
+        if (cal?.activeRhythmPreset) setRhythmPreset(cal.activeRhythmPreset);
+      })
+      .catch(() => {});
+  }, []);
+
+  const isRoomsView = appMode === 'atlante' && atlanteSection === 'rooms';
   const [activeFlyer, setActiveFlyer] = useState(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -215,16 +327,26 @@ export function App() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams();
-    if (activeRoom && activeRoom !== 'room-1-negozi') params.set('room', activeRoom);
-    if (selectedStoreId) params.set('store', selectedStoreId);
-    if (selectedDomain) params.set('domain', selectedDomain);
-    if (searchQuery.trim()) params.set('q', searchQuery.trim());
-    if (selectedCategory) params.set('category', selectedCategory);
-    if (sortBy && sortBy !== 'discountDesc') params.set('sortBy', sortBy);
+    if (appMode === 'regia') {
+      params.set('rhythm', 'regia');
+    } else if (appMode === 'atlante' && atlanteSection !== 'rooms') {
+      params.set('rhythm', 'atlante');
+      params.set('section', atlanteSection);
+    } else if (appMode === 'atlante') {
+      // Deep-link to any of the 7 Rooms (`?room=room-X-...`) is always explicit now that `/` opens ⚡ Oggi
+      if (activeRoom) params.set('room', activeRoom);
+      if (activeRoom === 'room-1-negozi') {
+        if (selectedStoreId) params.set('store', selectedStoreId);
+        if (selectedDomain) params.set('domain', selectedDomain);
+        if (searchQuery.trim()) params.set('q', searchQuery.trim());
+        if (selectedCategory) params.set('category', selectedCategory);
+        if (sortBy && sortBy !== 'discountDesc') params.set('sortBy', sortBy);
+      }
+    }
 
     const newRelativePath = params.toString() ? `?${params.toString()}` : window.location.pathname;
     window.history.replaceState(null, '', newRelativePath);
-  }, [activeRoom, selectedStoreId, selectedDomain, searchQuery, selectedCategory, sortBy]);
+  }, [appMode, atlanteSection, activeRoom, selectedStoreId, selectedDomain, searchQuery, selectedCategory, sortBy]);
 
   // 4. Resolve Active Store display name
   const activeStore = useMemo(() => {
@@ -390,7 +512,7 @@ export function App() {
       {/* Responsive Header */}
       <Header
         status={status}
-        activeRoom={activeRoom}
+        activeRoom={isRoomsView ? activeRoom : `rhythm-${appMode}`}
         activeStoreName={activeStoreName}
         isMobileSearchOpen={isMobileSearchOpen}
         onToggleMobileSearch={() => setIsMobileSearchOpen((prev) => !prev)}
@@ -405,7 +527,8 @@ export function App() {
           setIsCounterModalOpen(true);
         }}
         shoppingCount={shoppingCount}
-        onOpenShoppingList={() => setActiveRoom('room-6-pianificatore')}
+        onOpenShoppingList={() => handleNavigateRoom('room-6-pianificatore')}
+        onOpenMaestro={handleOpenMaestro}
       />
 
       {shoppingToast && (
@@ -414,7 +537,90 @@ export function App() {
         </div>
       )}
 
-      {/* 6 Main Rooms Navigation Bar (ADR-0007..0012) */}
+      {/* ADR-0015: 3 Daily Rhythms Bar (⚡ Oggi · 🧭 Regia Settimanale · 🎓 Accademia & Atlante) + quick jump to 7 Rooms */}
+      <RhythmNavigation
+        activeRhythm={appMode}
+        onSelectRhythm={handleSelectRhythm}
+        activeRoom={isRoomsView ? activeRoom : ''}
+        onSelectRoom={handleNavigateRoom}
+      />
+
+      {appMode === 'oggi' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <TodayCopilotView
+            activeProfileId={activeProfileId}
+            rhythmPreset={rhythmPreset}
+            onChangeRhythmPreset={setRhythmPreset}
+            onSwitchAppMode={handleSelectRhythm}
+            onNavigateRoom={handleNavigateRoom}
+            onOpenMaestro={handleOpenMaestro}
+            onAddToShoppingList={handleAddToShoppingList}
+            onOpenAcademy={handleOpenAcademy}
+          />
+        </main>
+      ) : appMode === 'regia' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <WeeklyRegiaView
+            activeProfileId={activeProfileId}
+            onNavigateRoom={handleNavigateRoom}
+            onOpenMaestro={handleOpenMaestro}
+            onAddToShoppingList={handleAddToShoppingList}
+          />
+        </main>
+      ) : (
+        <>
+          {/* 🎓 Accademia & Atlante — section selector */}
+          <section
+            aria-label="Sezioni Accademia & Atlante"
+            className="bg-white border-b border-slate-200"
+            data-testid="atlante-section-switcher"
+          >
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              {ATLANTE_SECTIONS.map((sec) => {
+                const isActive = atlanteSection === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => {
+                      setAtlanteSection(sec.id);
+                      if (sec.id === 'academy') setAcademySection('skills');
+                    }}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                      isActive
+                        ? 'bg-slate-900 text-white border-slate-900'
+                        : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40'
+                    }`}
+                  >
+                    <span aria-hidden="true">{sec.icon}</span>
+                    <span>{sec.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {atlanteSection === 'academy' ? (
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <CulinaryAcademyPanel
+                key={`academy-${academySection}`}
+                activeProfileId={activeProfileId}
+                onNavigateRoom={handleNavigateRoom}
+                onOpenMaestro={handleOpenMaestro}
+                initialSection={academySection}
+              />
+            </main>
+          ) : atlanteSection === 'nutrition' ? (
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <NutritionCoachPanel
+                activeProfileId={activeProfileId}
+                onNavigateRoom={handleNavigateRoom}
+                onOpenMaestro={handleOpenMaestro}
+              />
+            </main>
+          ) : (
+            <>
+      {/* 7 Rooms Atlas Navigation Bar (ADR-0007..0012 + ADR-0015) */}
       <RoomNavigation activeRoom={activeRoom} onSelectRoom={setActiveRoom} />
 
       {activeRoom === 'room-1-negozi' ? (
@@ -739,7 +945,19 @@ export function App() {
           Sincronizzazione profilo attivo in corso...
         </main>
       ) : activeRoom === 'room-2-crea' ? (
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+          <section className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <p className="text-xs text-emerald-900">
+              <strong>🥗 Coach Nutrizionale:</strong> fisiologia del pasto cotto (ritenzione USDA), Calcio Zero-Formaggi biodisponibile, preset LARN e coaching adattivo 1-tap.
+            </p>
+            <button
+              type="button"
+              onClick={handleOpenNutritionCoach}
+              className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold cursor-pointer shrink-0"
+            >
+              Apri Coach Nutrizionale →
+            </button>
+          </section>
           <CreaExplorerView
             activeProfileId={activeProfileId}
             initialFoodId={selectedCreaFoodId}
@@ -756,7 +974,28 @@ export function App() {
           />
         </main>
       ) : activeRoom === 'room-3-ricette' ? (
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+          <section className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <p className="text-xs text-amber-950">
+              <strong>👨‍🍳 Accademia Culinaria:</strong> 12 competenze scientifiche, SOS Fornelli in 30 secondi, Ratios e "Frigo → Tecnica" senza ricetta.
+            </p>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleOpenAcademy('sos')}
+                className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold cursor-pointer"
+              >
+                🔥 SOS Fornelli
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOpenAcademy('skills')}
+                className="px-3 py-1.5 rounded-lg border border-amber-300 bg-white hover:bg-amber-100 text-amber-900 text-xs font-bold cursor-pointer"
+              >
+                Apri Accademia →
+              </button>
+            </div>
+          </section>
           <RecipesAndRestaurantsView
             activeProfileId={activeProfileId}
             onAddToShoppingList={handleAddToShoppingList}
@@ -770,7 +1009,10 @@ export function App() {
       ) : activeRoom === 'room-4-cucina' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <KitchenCareView
+            activeProfileId={activeProfileId}
             onAddToShoppingList={handleAddToShoppingList}
+            onNavigateRoom={handleNavigateRoom}
+            onOpenMaestro={handleOpenMaestro}
             onNavigateToStoreDomain={(domainId) => {
               setSelectedDomain(domainId || null);
               setSelectedCategory('');
@@ -795,7 +1037,29 @@ export function App() {
             onPantryUpdated={refreshShoppingCount}
           />
         </main>
+      ) : activeRoom === 'room-7-chimica' ? (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <HomeChemistryView
+            activeProfileId={activeProfileId}
+            onAddToShoppingList={handleAddToShoppingList}
+            onNavigateRoom={handleNavigateRoom}
+            onOpenMaestro={handleOpenMaestro}
+          />
+        </main>
       ) : null}
+            </>
+          )}
+        </>
+      )}
+
+      {/* Global single instance: Basilico Maestro Hybrid Grounded Chat (ADR-0015) */}
+      <MaestroDrawer
+        isOpen={isMaestroOpen}
+        onClose={handleCloseMaestro}
+        activeProfileId={activeProfileId}
+        rhythmPreset={rhythmPreset}
+        initialPrompt={maestroPrompt}
+      />
 
       {/* Modal Flyer Viewer */}
       {activeFlyer && (

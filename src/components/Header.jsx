@@ -17,7 +17,8 @@ export function Header({
   onChangeProfile,
   onOpenCounterPriceModal,
   shoppingCount = 0,
-  onOpenShoppingList
+  onOpenShoppingList,
+  onOpenMaestro
 }) {
   const online = status ? (status.isOnline !== false && status.dataSource !== 'seed') : isOnline;
   const source = status?.dataSource || dataSource || 'live';
@@ -86,6 +87,21 @@ export function Header({
 
           {/* Right Actions: Shopping list, live status, sync & mobile search toggle */}
           <div className="order-2 sm:order-3 flex items-center gap-1.5 sm:gap-2 shrink-0">
+
+            {/* Global Basilico Maestro Chat Drawer (ADR-0015) */}
+            {onOpenMaestro && (
+              <button
+                type="button"
+                onClick={() => onOpenMaestro('')}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-extrabold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-xs transition-colors cursor-pointer"
+                title="Apri la chat con Basilico Maestro (5 Anime, grounded sui dati reali di casa tua)"
+                aria-label="Apri chat Basilico Maestro"
+                data-testid="header-open-maestro"
+              >
+                <span aria-hidden="true">💬</span>
+                <span>Maestro</span>
+              </button>
+            )}
 
             {/* Live Smart Shopping List Shortcut */}
             {onOpenShoppingList && (
