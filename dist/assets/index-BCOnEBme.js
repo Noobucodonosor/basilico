@@ -20031,15 +20031,15 @@ function Header({
   const online = status ? status.isOnline !== false && status.dataSource !== "seed" : isOnline;
   const source = status?.dataSource || dataSource || "live";
   const isOpen = isMobileSearchOpen ?? mobileSearchOpen;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-y-2 gap-x-2 sm:gap-3", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E2DA] transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-y-2 gap-x-2 sm:gap-3", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "order-1 flex items-center gap-2 min-w-0 shrink-0", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl sm:text-2xl select-none", "aria-hidden": "true", children: "🌿" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col min-w-0", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 sm:gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-base sm:text-lg text-emerald-800 tracking-tight whitespace-nowrap", children: "Basilico" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-100 text-emerald-800 shrink-0", children: "Rapallo 16035" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-base sm:text-lg text-[#1B5E3A] tracking-tight whitespace-nowrap", children: "Basilico" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-flex items-center px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold bg-[#F3F1EC] text-[#1B5E3A] border border-[#DFDCD2] shrink-0", children: "Rapallo 16035" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-slate-500 truncate hidden sm:block", children: activeStoreName || "Tutti i Supermercati" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-[#575E58] truncate hidden sm:block", children: activeStoreName || "Tutti i Supermercati" })
       ] })
     ] }),
     (profiles.length > 0 || onOpenCounterPriceModal) && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "order-3 sm:order-2 w-full sm:w-auto flex items-center gap-2 sm:ml-auto", children: [
@@ -20051,7 +20051,7 @@ function Header({
             id: "active-profile-select",
             value: activeProfileId,
             onChange: (e) => onChangeProfile(e.target.value),
-            className: "w-full sm:w-auto text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer sm:max-w-[250px] truncate",
+            className: "w-full sm:w-auto text-xs font-semibold bg-[#F3F1EC] text-[#141A17] border border-[#DFDCD2] rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#1B5E3A] cursor-pointer sm:max-w-[250px] truncate",
             title: "Seleziona il profilo alimentare attivo (Dany / In Barca / Ospiti)",
             children: profiles.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: p.id, children: [
               "👤 ",
@@ -20065,7 +20065,7 @@ function Header({
         {
           type: "button",
           onClick: onOpenCounterPriceModal,
-          className: "inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors cursor-pointer shrink-0",
+          className: "inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] border border-[#DFDCD2] rounded-lg taste-btn cursor-pointer shrink-0",
           title: "Registra un prezzo visto al banco in pescheria, macelleria o scaffale",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: "🏷️" }),
@@ -20080,8 +20080,8 @@ function Header({
         {
           type: "button",
           onClick: () => onOpenMaestro(""),
-          className: "inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-extrabold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg shadow-xs transition-colors cursor-pointer",
-          title: "Apri la chat con Basilico Maestro (5 Anime, grounded sui dati reali di casa tua)",
+          className: "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#1B5E3A] hover:bg-[#14492D] rounded-lg shadow-xs taste-btn cursor-pointer",
+          title: "Apri la chat con Basilico Maestro sui dati reali di casa tua",
           "aria-label": "Apri chat Basilico Maestro",
           "data-testid": "header-open-maestro",
           children: [
@@ -20095,25 +20095,25 @@ function Header({
         {
           type: "button",
           onClick: onOpenShoppingList,
-          className: "inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-extrabold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 rounded-lg transition-colors cursor-pointer",
+          className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] border border-[#DFDCD2] rounded-lg taste-btn cursor-pointer",
           title: "Apri la Lista Spesa Multi-Negozio di Rapallo (Stanza 6)",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: "🛒" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: "Lista" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-1.5 py-0.2 rounded-full bg-emerald-800 text-white text-[10px]", children: shoppingCount })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-1.5 py-0.2 rounded-full bg-[#1B5E3A] text-white text-[10px] font-bold", children: shoppingCount })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: `flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${online ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"}`,
+          className: "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-[#FAF9F6] text-[#575E58] border-[#E5E2DA]",
           title: `Sorgente: ${source}`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "span",
               {
-                className: `w-2 h-2 rounded-full ${online ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`
+                className: `w-2 h-2 rounded-full ${online ? "bg-[#1B5E3A]" : "bg-[#9A5B25]"}`
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden lg:inline", children: online ? "Online" : source === "cache" ? "Copia Cache" : "Offline" })
@@ -20126,14 +20126,14 @@ function Header({
           type: "button",
           onClick: onRefresh,
           disabled: isRefreshing,
-          className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 rounded-lg transition-colors disabled:opacity-50 cursor-pointer",
-          title: "Controllo rapido stato online e cache (1-2 secondi)",
+          className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] border border-[#DFDCD2] rounded-lg taste-btn disabled:opacity-50 cursor-pointer",
+          title: "Aggiornamento rapido stato online e cache (1-2 secondi)",
           "aria-label": "Aggiorna offerte",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "svg",
               {
-                className: `w-4 h-4 ${isRefreshing ? "animate-spin text-emerald-600" : ""}`,
+                className: `w-4 h-4 ${isRefreshing ? "animate-spin text-[#1B5E3A]" : ""}`,
                 fill: "none",
                 viewBox: "0 0 24 24",
                 stroke: "currentColor",
@@ -20148,7 +20148,7 @@ function Header({
                 )
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden md:inline", children: "Rapido" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden md:inline", children: "Aggiorna" })
           ]
         }
       ),
@@ -20158,18 +20158,18 @@ function Header({
           type: "button",
           onClick: onDeepSync,
           disabled: isRefreshing,
-          className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors disabled:opacity-50 cursor-pointer",
-          title: "Deep Sync completo: scarica volantini e offerte negozio per negozio da tutti i 14 punti vendita di Rapallo",
-          "aria-label": "Deep Sync 14 negozi Rapallo",
+          className: "inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] border border-[#DFDCD2] rounded-lg taste-btn disabled:opacity-50 cursor-pointer",
+          title: "Sincronizza volantini e offerte negozio per negozio da tutti i 14 punti vendita di Rapallo",
+          "aria-label": "Sincronizza 14 negozi Rapallo",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "svg",
               {
-                className: `w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`,
+                className: `w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#1B5E3A]" : ""}`,
                 fill: "none",
                 viewBox: "0 0 24 24",
                 stroke: "currentColor",
-                strokeWidth: 2.2,
+                strokeWidth: 2,
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "path",
                   {
@@ -20180,7 +20180,8 @@ function Header({
                 )
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: "Deep Sync" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden lg:inline", children: "Sincronizza 14 negozi" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline lg:hidden", children: "Sincronizza" })
           ]
         }
       ),
@@ -20189,7 +20190,7 @@ function Header({
         {
           type: "button",
           onClick: onToggleMobileSearch,
-          className: "sm:hidden p-2 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer",
+          className: "sm:hidden p-2 text-[#575E58] hover:text-[#1B5E3A] hover:bg-[#F3F1EC] rounded-lg taste-btn cursor-pointer",
           "aria-label": "Cerca prodotti",
           "aria-expanded": Boolean(isOpen),
           children: /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-5 h-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 2, children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" }) })
@@ -20205,14 +20206,14 @@ const BASILICO_RHYTHMS = [
     icon: "⚡",
     shortTitle: "Oggi",
     fullTitle: "⚡ Oggi (Co-pilota)",
-    subtitle: "Stasera in cucina in 5 secondi: 3 scelte di Pareto, frigo VaR 48h, SOS Fornelli e SOS Macchia"
+    subtitle: "Stasera in cucina in 5 secondi: tre proposte su misura, freschi in scadenza, SOS Fornelli e Smacchiatore"
   },
   {
     id: "regia",
     icon: "🧭",
     shortTitle: "Regia",
     fullTitle: "🧭 Regia Settimanale",
-    subtitle: "Weekend in 10 minuti: inflazione personale, Swipe Check dispensa, batch cooking e giro spesa €/h"
+    subtitle: "Weekend in 10 minuti: andamento prezzi, controllo frigo rapido, cotture multiple e giro spesa"
   },
   {
     id: "atlante",
@@ -20230,7 +20231,7 @@ const BASILICO_ROOMS = [
     icon: "🏪",
     shortTitle: "Negozi & Offerte",
     fullTitle: "1. Negozi & Offerte Rapallo",
-    subtitle: "14+ insegne, 5 domini, €/kg sgocciolato e Lente Qualità"
+    subtitle: "14+ insegne, 5 domini merceologici, €/kg sgocciolato e Lente Qualità"
   },
   {
     id: "room-2-crea",
@@ -20246,7 +20247,7 @@ const BASILICO_ROOMS = [
     icon: "🍽️",
     shortTitle: "Ricette & Fornelli",
     fullTitle: "3. Ricette, Ristoranti & Fornelli",
-    subtitle: "Scuola base, ristoranti Provincia di Genova (Genova, Golfo Paradiso, Tigullio & Entroterra) vs cassa Rapallo, Arbitraggio, 80/20 e Fornelli"
+    subtitle: "Scuola base, ristoranti Provincia di Genova (Genova, Golfo Paradiso, Tigullio & Entroterra) vs spesa a Rapallo, Arbitraggio, 80/20 e Fornelli"
   },
   {
     id: "room-4-cucina",
@@ -20254,7 +20255,7 @@ const BASILICO_ROOMS = [
     icon: "🍳",
     shortTitle: "Officina Cucina",
     fullTitle: "4. Officina Cucina: Fornelli, Pentole & Lame",
-    subtitle: "Fornello, fisica delle pentole, ROI piatti sbloccati, lame, contenitori e Kitchen Reset"
+    subtitle: "Fornello, fisica delle pentole, piatti sbloccati, lame, contenitori e pulizia post-cottura"
   },
   {
     id: "room-5-dispensa",
@@ -20262,7 +20263,7 @@ const BASILICO_ROOMS = [
     icon: "🥫",
     shortTitle: "Dispensa & Scontrini",
     fullTitle: "5. Dispensa & Scontrini",
-    subtitle: "Scontrini al centesimo, 3 zone (Secca, Frigo, Barca), orologio T_open e Valore a Rischio 48h"
+    subtitle: "Scontrini al centesimo, 3 zone (Secca, Frigo, Barca), durata dopo apertura e freschi in scadenza"
   },
   {
     id: "room-6-pianificatore",
@@ -20278,7 +20279,7 @@ const BASILICO_ROOMS = [
     icon: "🧪",
     shortTitle: "Chimica Casa",
     fullTitle: "7. Chimica & Cura della Casa/Barca",
-    subtitle: "SOS Macchia 3-tap, Kit Minimo 7 Pilastri, acqua Rapallo 14–22 °f, elettrodomestici, barca e guardie P0"
+    subtitle: "Smacchiatore guidato, i 7 prodotti base, acqua Rapallo 14–22 °f, elettrodomestici, barca e sicurezza"
   }
 ];
 function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onSelectRoom }) {
@@ -20286,10 +20287,10 @@ function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onSelectRo
     "nav",
     {
       "aria-label": "I 3 Ritmi Quotidiani di Basilico",
-      className: "bg-emerald-950 text-white border-b border-emerald-900",
+      className: "bg-[#FAF9F6] text-[#141A17] border-b border-[#E5E2DA]",
       "data-testid": "rhythm-navigation",
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 flex-1 min-w-0", role: "tablist", children: BASILICO_RHYTHMS.map((r) => {
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full sm:w-auto sm:flex-1 flex flex-wrap items-center gap-1.5", role: "tablist", children: BASILICO_RHYTHMS.map((r) => {
           const isActive = activeRhythm === r.id;
           return /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "button",
@@ -20299,7 +20300,7 @@ function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onSelectRo
               "aria-selected": isActive,
               onClick: () => onSelectRhythm(r.id),
               title: r.subtitle,
-              className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-extrabold whitespace-nowrap transition-all cursor-pointer ${isActive ? "bg-emerald-500 text-white shadow-xs ring-1 ring-emerald-300" : "text-emerald-100 hover:text-white hover:bg-emerald-900"}`,
+              className: `min-h-[38px] sm:min-h-0 flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold whitespace-nowrap taste-btn cursor-pointer ${isActive ? "bg-[#141A17] text-white shadow-xs" : "text-[#4A524C] hover:text-[#141A17] hover:bg-[#EFECE6]"}`,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: r.icon }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: r.shortTitle })
@@ -20308,7 +20309,7 @@ function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onSelectRo
             r.id
           );
         }) }),
-        onSelectRoom && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "shrink-0", children: [
+        onSelectRoom && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full sm:w-auto shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "quick-room-select", className: "sr-only", children: "Vai direttamente a una delle 7 Stanze" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
@@ -20318,7 +20319,7 @@ function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onSelectRo
               onChange: (e) => {
                 if (e.target.value) onSelectRoom(e.target.value);
               },
-              className: "text-xs font-bold bg-emerald-900 text-emerald-50 border border-emerald-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer max-w-[190px]",
+              className: "w-full sm:w-auto sm:max-w-[190px] min-h-[38px] sm:min-h-0 text-xs font-semibold bg-[#F3F1EC] text-[#141A17] border border-[#DFDCD2] rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#1B5E3A] cursor-pointer",
               title: "Accesso rapido alle 7 Stanze dell'Atlante",
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "🗂️ Vai alla Stanza…" }),
@@ -20342,7 +20343,7 @@ function RoomNavigation({ activeRoom, onSelectRoom }) {
     "nav",
     {
       "aria-label": "Navigazione 7 Stanze dell'Atlante di Basilico",
-      className: "bg-slate-900 text-white border-b border-slate-800 sm:sticky sm:top-16 z-20 shadow-xs relative",
+      className: "bg-white text-[#141A17] border-b border-[#E5E2DA] sm:sticky sm:top-16 z-20 relative",
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 overflow-x-auto py-2 pr-8 lg:pr-0 no-scrollbar", children: BASILICO_ROOMS.map((room) => {
           const isActive = activeRoom === room.id;
@@ -20352,7 +20353,7 @@ function RoomNavigation({ activeRoom, onSelectRoom }) {
               type: "button",
               onClick: () => onSelectRoom(room.id),
               title: room.subtitle,
-              className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${isActive ? "bg-emerald-600 text-white shadow-xs ring-1 ring-emerald-400" : "text-slate-300 hover:text-white hover:bg-slate-800"}`,
+              className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap taste-btn cursor-pointer shrink-0 ${isActive ? "bg-[#1B5E3A] text-white shadow-xs" : "text-[#4A524C] hover:text-[#141A17] hover:bg-[#F3F1EC]"}`,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: room.icon }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: room.shortTitle })
@@ -20365,7 +20366,7 @@ function RoomNavigation({ activeRoom, onSelectRoom }) {
           "div",
           {
             "aria-hidden": "true",
-            className: "pointer-events-none lg:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-slate-900 via-slate-900/70 to-transparent"
+            className: "pointer-events-none lg:hidden absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-white via-white/80 to-transparent"
           }
         )
       ] })
@@ -27290,27 +27291,33 @@ function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, onPantr
 const RHYTHM_BUTTONS = [
   {
     id: "sera_stanca",
-    icon: "🌙",
     label: "Sera Stanca",
-    sub: "30 €/h · ≤15m"
+    sub: "≤15 min"
   },
   {
     id: "feriale",
-    icon: "⚡",
     label: "Feriale",
-    sub: "18 €/h · ≤30m"
+    sub: "≤30 min"
   },
   {
     id: "weekend_relax",
-    icon: "☀️",
     label: "Weekend",
-    sub: "8 €/h · Studio/Batch"
+    sub: "Con calma"
   }
 ];
 function formatEuro(val) {
   const num = Number(val);
   if (!Number.isFinite(num)) return "n/d";
   return `€ ${num.toFixed(2).replace(".", ",")}`;
+}
+function formatPantryAmount(item) {
+  if (item.remainingWeightGrams != null) {
+    return `${item.remainingWeightGrams}${item.unit || "g"}`;
+  }
+  const pct = Math.round((item.remainingFraction ?? 1) * 100);
+  if (pct >= 95) return "Confezione intera";
+  if (pct >= 45 && pct <= 55) return "Circa metà";
+  return `Circa ${pct}%`;
 }
 function TodayCopilotView({
   activeProfileId = "dany",
@@ -27334,13 +27341,13 @@ function TodayCopilotView({
   const [savingCal, setSavingCal] = reactExports.useState(false);
   const [adaptBanner, setAdaptBanner] = reactExports.useState(null);
   const [adapting, setAdapting] = reactExports.useState(false);
-  const [expandedChains, setExpandedChains] = reactExports.useState(() => /* @__PURE__ */ new Set(["min_friction", "save_var_value"]));
+  const [expandedChains, setExpandedChains] = reactExports.useState(() => /* @__PURE__ */ new Set());
   const [toastMsg, setToastMsg] = reactExports.useState("");
   reactExports.useEffect(() => {
     if (rhythmPreset && rhythmPreset !== localRhythm) {
       setLocalRhythm(rhythmPreset);
     }
-  }, [rhythmPreset]);
+  }, [rhythmPreset, localRhythm]);
   const showToast = reactExports.useCallback((msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(""), 3e3);
@@ -27415,7 +27422,7 @@ function TodayCopilotView({
         })
       });
       if (res.ok) {
-        showToast("⚙️ Parametri economici salvati e applicati al Co-pilota.");
+        showToast("Parametri salvati e applicati alle proposte di stasera.");
         setShowAdvancedCal(false);
         fetchCopilot(localRhythm);
       }
@@ -27434,7 +27441,7 @@ function TodayCopilotView({
       });
       if (res.ok) {
         setAdvHourlyEur("");
-        showToast("Ripristinati i valori automatici del preset.");
+        showToast("Ripristinati i parametri automatici.");
         fetchCopilot(localRhythm);
       }
     } catch (_) {
@@ -27451,7 +27458,7 @@ function TodayCopilotView({
       });
       if (res.ok) {
         showToast(
-          fraction === 0 ? reason === "discarded_waste" ? "Registrato come spreco (aggiornato VaR_48h)." : "Ottimo! Fresco salvato e consumato." : `Scorta aggiornata al ${Math.round(fraction * 100)}%.`
+          fraction === 0 ? reason === "discarded_waste" ? "Registrato come scarto: elenco freschi aggiornato." : "Perfetto, alimento segnato come consumato." : `Quantità aggiornata al ${Math.round(fraction * 100)}%.`
         );
         fetchCopilot(localRhythm);
       }
@@ -27493,284 +27500,286 @@ function TodayCopilotView({
   const var48h = copilotData?.valueAtRisk48h || { totalAtRiskEuro: 0, atRiskItems: [] };
   const paretoCards = copilotData?.tonightParetoCards || [];
   const flashOffers = copilotData?.rapalloFlashOpportunities || [];
-  const effectiveWt = copilotData?.activeRhythm?.hourlyValueEuro ?? calibration?.effectiveParameters?.hourlyValueEuro ?? 18;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", "data-testid": "today-copilot-view", children: [
-    toastMsg && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-emerald-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs", children: toastMsg }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-800", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col lg:flex-row lg:items-center justify-between gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30", children: "⚡ Co-pilota Oggi · 5 Anime" }),
-            copilotData?.activeProfile?.name && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-semibold text-slate-300", children: [
-              "Profilo: ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-white", children: copilotData.activeProfile.name })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-amber-300 font-semibold", children: [
-              "Valore tempo attivo: €",
-              effectiveWt,
-              "/h"
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg sm:text-xl font-extrabold mt-1", children: "Qual è la tua energia stasera?" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-300 mt-0.5", children: "Un tap ricalibra istantaneamente fornelli, tempi di pulizia e convenienza delle tappe a Rapallo." })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", role: "group", "aria-label": "Preset Ritmo Quotidiano", children: [
-          RHYTHM_BUTTONS.map((btn) => {
-            const active = localRhythm === btn.id;
-            return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "button",
-              {
-                type: "button",
-                onClick: () => handleSelectRhythm(btn.id),
-                className: `flex flex-col items-start px-3.5 py-2 rounded-xl border text-left transition-all cursor-pointer ${active ? "bg-emerald-600 border-emerald-400 text-white shadow-xs ring-2 ring-emerald-400/40" : "bg-slate-800/90 border-slate-700 text-slate-200 hover:bg-slate-800 hover:border-slate-500"}`,
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold flex items-center gap-1.5", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: btn.icon }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: btn.label })
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] ${active ? "text-emerald-100" : "text-slate-400"}`, children: btn.sub })
-                ]
-              },
-              btn.id
-            );
-          }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              type: "button",
-              onClick: () => setShowAdvancedCal((v) => !v),
-              className: "px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/70 hover:bg-slate-800 text-xs font-semibold text-slate-300 cursor-pointer",
-              children: "⚙️ Calibrazione Avanzata"
-            }
-          )
-        ] })
-      ] }),
-      showAdvancedCal && /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "form",
-        {
-          onSubmit: handleSaveAdvancedCalibration,
-          className: "mt-4 pt-4 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end",
-          children: [
+  const profileLabel = copilotData?.activeProfile?.name || "Cucina di casa";
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", "data-testid": "today-copilot-view", children: [
+    toastMsg && /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        role: "status",
+        className: "bg-[#1B5E3A] text-white text-xs font-semibold px-4 py-2.5 rounded-xl",
+        children: toastMsg
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "section",
+      {
+        "data-enter": true,
+        className: "bg-white border border-[#E5E2DA] rounded-2xl p-5 sm:p-7",
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-6 items-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-8 space-y-5", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-300 mb-1", children: "Override Valore Tempo (€/h)" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "number",
-                  step: "0.5",
-                  min: "1",
-                  placeholder: "Vuoto = usa preset",
-                  value: advHourlyEur,
-                  onChange: (e) => setAdvHourlyEur(e.target.value),
-                  className: "w-full rounded-lg bg-slate-800 border border-slate-700 px-2.5 py-1.5 text-xs text-white"
-                }
-              )
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs font-medium text-[#575E58]", children: [
+                profileLabel,
+                " · Rapallo",
+                var48h.totalAtRiskEuro > 0 ? ` · ${formatEuro(var48h.totalAtRiskEuro)} di freschi da usare entro 48 ore` : ""
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl sm:text-3xl font-bold tracking-tight text-[#141A17] mt-1.5", children: "Cosa cucinare stasera" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-[#575E58] mt-1.5 max-w-2xl leading-relaxed", children: "Tre piatti scelti su cosa hai in dispensa, sulle pentole di casa e sul tempo che hai adesso." })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-300 mb-1", children: "Luce (€/kWh ARERA/bolletta)" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "number",
-                  step: "0.01",
-                  min: "0.05",
-                  value: advKwhEur,
-                  onChange: (e) => setAdvKwhEur(e.target.value),
-                  className: "w-full rounded-lg bg-slate-800 border border-slate-700 px-2.5 py-1.5 text-xs text-white"
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-300 mb-1", children: "Gas Metano (€/Smc)" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "number",
-                  step: "0.01",
-                  min: "0.1",
-                  value: advSmcEur,
-                  onChange: (e) => setAdvSmcEur(e.target.value),
-                  className: "w-full rounded-lg bg-slate-800 border border-slate-700 px-2.5 py-1.5 text-xs text-white"
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-300 mb-1", children: "Spostamento Spesa Rapallo" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                "select",
-                {
-                  value: advTransport,
-                  onChange: (e) => setAdvTransport(e.target.value),
-                  className: "w-full rounded-lg bg-slate-800 border border-slate-700 px-2.5 py-1.5 text-xs text-white",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "car", children: "🚗 Auto (conta parcheggio)" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "scooter", children: "🛵 Scooter / Moto" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "foot", children: "🚶 A piedi" })
-                  ]
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "button",
-                {
-                  type: "submit",
-                  disabled: savingCal,
-                  className: "flex-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-extrabold text-white cursor-pointer",
-                  children: "Salva"
-                }
-              ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2.5", role: "group", "aria-label": "Tempo disponibile stasera", children: [
+              RHYTHM_BUTTONS.map((btn) => {
+                const active = localRhythm === btn.id;
+                return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => handleSelectRhythm(btn.id),
+                    "aria-pressed": active,
+                    className: `taste-btn inline-flex items-baseline gap-2 px-4 py-2.5 rounded-xl border text-left cursor-pointer min-h-[42px] ${active ? "bg-[#1B5E3A] border-[#1B5E3A] text-white" : "bg-[#F3F1EC] border-[#E5E2DA] text-[#141A17] hover:bg-[#E7E4DC]"}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold", children: btn.label }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[11px] ${active ? "text-emerald-100" : "text-[#575E58]"}`, children: btn.sub })
+                    ]
+                  },
+                  btn.id
+                );
+              }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
                   type: "button",
-                  onClick: handleResetAdvanced,
-                  disabled: savingCal,
-                  className: "px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs text-slate-300 cursor-pointer",
-                  children: "Reset"
+                  onClick: () => setShowAdvancedCal((v) => !v),
+                  "aria-expanded": showAdvancedCal,
+                  className: "text-xs font-medium text-[#575E58] hover:text-[#141A17] underline underline-offset-4 px-2 py-2 cursor-pointer",
+                  children: "Parametri"
                 }
               )
-            ] })
-          ]
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "grid grid-cols-2 sm:grid-cols-5 gap-2.5", "aria-label": "Scorciatoie operative rapide", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "button",
-        {
-          type: "button",
-          onClick: () => onOpenMaestro?.(""),
-          className: "p-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-left shadow-xs transition-colors cursor-pointer col-span-2 sm:col-span-1",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold", children: "💬 Chiedi al Maestro" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-emerald-100 mt-0.5", children: "Chat 5 Anime Grounded" })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "button",
-        {
-          type: "button",
-          onClick: () => {
-            if (onOpenAcademy) {
-              onOpenAcademy("sos");
-            } else if (onOpenMaestro) {
-              onOpenMaestro("SOS Fornelli: la salsa si sta slegando o il pesce attacca, aiutami in 30 secondi!");
-            } else {
-              onNavigateRoom?.("room-3-ricette");
+            ] }),
+            showAdvancedCal && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "form",
+              {
+                onSubmit: handleSaveAdvancedCalibration,
+                className: "pt-4 border-t border-[#E5E2DA] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-semibold text-[#575E58] mb-1", children: "Valore del tuo tempo (€/ora)" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "input",
+                      {
+                        type: "number",
+                        step: "0.5",
+                        min: "1",
+                        placeholder: "Automatico",
+                        value: advHourlyEur,
+                        onChange: (e) => setAdvHourlyEur(e.target.value),
+                        className: "w-full rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] px-2.5 py-2 text-xs text-[#141A17] focus:outline-none focus:border-[#1B5E3A]"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-semibold text-[#575E58] mb-1", children: "Luce (€/kWh)" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "input",
+                      {
+                        type: "number",
+                        step: "0.01",
+                        min: "0.05",
+                        value: advKwhEur,
+                        onChange: (e) => setAdvKwhEur(e.target.value),
+                        className: "w-full rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] px-2.5 py-2 text-xs text-[#141A17] focus:outline-none focus:border-[#1B5E3A]"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-semibold text-[#575E58] mb-1", children: "Gas (€/Smc)" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "input",
+                      {
+                        type: "number",
+                        step: "0.01",
+                        min: "0.1",
+                        value: advSmcEur,
+                        onChange: (e) => setAdvSmcEur(e.target.value),
+                        className: "w-full rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] px-2.5 py-2 text-xs text-[#141A17] focus:outline-none focus:border-[#1B5E3A]"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-semibold text-[#575E58] mb-1", children: "Mezzo per la spesa" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "select",
+                      {
+                        value: advTransport,
+                        onChange: (e) => setAdvTransport(e.target.value),
+                        className: "w-full rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] px-2.5 py-2 text-xs text-[#141A17] focus:outline-none focus:border-[#1B5E3A]",
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "car", children: "Auto (include parcheggio)" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "scooter", children: "Scooter o moto" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "foot", children: "A piedi" })
+                        ]
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "submit",
+                        disabled: savingCal,
+                        className: "taste-btn flex-1 px-3 py-2 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-xs font-semibold text-white cursor-pointer",
+                        children: "Salva"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: handleResetAdvanced,
+                        disabled: savingCal,
+                        className: "taste-btn px-2.5 py-2 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-xs font-medium text-[#141A17] cursor-pointer",
+                        children: "Reset"
+                      }
+                    )
+                  ] })
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "flex flex-wrap items-center gap-2 pt-3 border-t border-[#E5E2DA]",
+                "aria-label": "Azioni rapide",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: adapting,
+                      onClick: () => handleTriggerAdaptiveCoach("eat_out"),
+                      className: "taste-btn min-h-[40px] px-3.5 py-2 rounded-full bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-xs font-semibold text-[#141A17] cursor-pointer",
+                      children: "Ho mangiato fuori"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: adapting,
+                      onClick: () => handleTriggerAdaptiveCoach("emergency_5min"),
+                      className: "taste-btn min-h-[40px] px-3.5 py-2 rounded-full bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-xs font-semibold text-[#141A17] cursor-pointer",
+                      children: "Ho solo 5 minuti"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => {
+                        if (onOpenAcademy) {
+                          onOpenAcademy("sos");
+                        } else if (onOpenMaestro) {
+                          onOpenMaestro("Aiuto rapido ai fornelli: la salsa si sta slegando o il pesce attacca, come rimedio subito?");
+                        } else {
+                          onNavigateRoom?.("room-3-ricette");
+                        }
+                      },
+                      className: "taste-btn min-h-[40px] px-3.5 py-2 rounded-full bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-xs font-semibold text-[#141A17] cursor-pointer",
+                      children: "SOS Fornelli"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => onNavigateRoom?.("room-7-chimica"),
+                      className: "taste-btn min-h-[40px] px-3.5 py-2 rounded-full bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-xs font-semibold text-[#141A17] cursor-pointer",
+                      children: "SOS Macchia"
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => onOpenMaestro?.(""),
+                      className: "taste-btn min-h-[40px] px-3.5 py-2 rounded-full bg-white hover:bg-[#F3F1EC] border border-[#1B5E3A]/35 text-xs font-semibold text-[#1B5E3A] cursor-pointer",
+                      children: "Chiedi al Maestro"
+                    }
+                  )
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lg:col-span-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "taste-photo-frame rounded-xl aspect-[4/3] bg-[#F3F1EC] border border-[#E5E2DA]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              src: "/assets/img/photo-m61660576.jpg",
+              alt: "Cestino con zucchine e pomodori freschi appoggiato su un tavolo di cucina in legno scuro",
+              className: "w-full h-full object-cover",
+              loading: "eager"
             }
-          },
-          className: "p-3 rounded-xl bg-white hover:bg-amber-50 border border-amber-200 text-left shadow-xs transition-colors cursor-pointer",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-amber-900", children: "🔥 SOS Fornelli 30s" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-600 mt-0.5", children: "Recupera piatto ora" })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "button",
-        {
-          type: "button",
-          onClick: () => onNavigateRoom?.("room-7-chimica"),
-          className: "p-3 rounded-xl bg-white hover:bg-sky-50 border border-sky-200 text-left shadow-xs transition-colors cursor-pointer",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-sky-900", children: "🧼 SOS Macchia 3-Tap" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-600 mt-0.5", children: "Chimica Casa & Barca" })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "button",
-        {
-          type: "button",
-          disabled: adapting,
-          onClick: () => handleTriggerAdaptiveCoach("eat_out"),
-          className: "p-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-left shadow-xs transition-colors cursor-pointer",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-slate-900", children: "🍽️ Ho mangiato fuori" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-600 mt-0.5", children: "Salva freschi 48h" })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "button",
-        {
-          type: "button",
-          disabled: adapting,
-          onClick: () => handleTriggerAdaptiveCoach("emergency_5min"),
-          className: "p-3 rounded-xl bg-white hover:bg-rose-50 border border-rose-200 text-left shadow-xs transition-colors cursor-pointer",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-rose-900", children: "🛟 Salvagente 5 min" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-600 mt-0.5", children: "Zero cottura da dispensa" })
-          ]
-        }
-      )
-    ] }),
-    adaptBanner && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-emerald-50 border border-emerald-300 rounded-2xl p-4 space-y-2.5 shadow-xs", children: [
+          ) }) })
+        ] })
+      }
+    ),
+    adaptBanner && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white border border-[#1B5E3A]/30 rounded-2xl p-5 space-y-3", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-extrabold uppercase tracking-wider bg-emerald-700 text-white px-2 py-0.5 rounded", children: adaptBanner.eventType === "emergency_5min" ? "🛟 Piatti Salvagente ≤ 5 Minuti (Zero Sensi di Colpa)" : "🍽️ Ricalibrazione Dolce Post-Ristorante" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-800 font-medium mt-1.5", children: adaptBanner.data?.coachMessage || adaptBanner.data?.summary || "Piano ricalibrato proteggendo i freschi aperti nelle prossime 48h senza tagli punitivi." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "inline-block text-[11px] font-semibold bg-emerald-50 text-[#1B5E3A] px-2.5 py-0.5 rounded-full", children: adaptBanner.eventType === "emergency_5min" ? "Piatti pronti in 5 minuti" : "Riequilibrio leggero dopo la cena fuori" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#141A17] mt-2 leading-relaxed", children: adaptBanner.data?.coachMessage || adaptBanner.data?.summary || "Piano aggiornato proteggendo gli ingredienti freschi già aperti nei prossimi due giorni, senza tagli drastici." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
             onClick: () => setAdaptBanner(null),
-            className: "text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer",
-            children: "✕ Chiudi"
+            className: "text-xs font-medium text-[#575E58] hover:text-[#141A17] cursor-pointer shrink-0",
+            children: "Chiudi"
           }
         )
       ] }),
-      Array.isArray(adaptBanner.data?.rescueOptions) && adaptBanner.data.rescueOptions.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1", children: adaptBanner.data.rescueOptions.slice(0, 3).map((opt, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-xl p-3 border border-emerald-200 text-xs", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-slate-900", children: opt.title || opt.name }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-600 mt-1", children: opt.rationale || opt.description || "Pronto in 5 min con scorte reali." })
+      Array.isArray(adaptBanner.data?.rescueOptions) && adaptBanner.data.rescueOptions.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1", children: adaptBanner.data.rescueOptions.slice(0, 3).map((opt, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] rounded-xl p-3.5 border border-[#E5E2DA] text-xs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-semibold text-[#141A17]", children: opt.title || opt.name }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-[#575E58] mt-1", children: opt.rationale || opt.description || "Pronto in 5 minuti con ciò che hai già in casa." })
       ] }, opt.id || idx)) })
     ] }),
-    var48h.atRiskItemsCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-amber-50/90 border border-amber-300 rounded-2xl p-4 shadow-xs space-y-3", children: [
+    var48h.atRiskItemsCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white border border-[#E5E2DA] rounded-2xl p-5 space-y-3.5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold uppercase tracking-wider bg-amber-600 text-white px-2.5 py-0.5 rounded-full", children: [
-              "⏰ Valore a Rischio 48h: ",
-              formatEuro(var48h.totalAtRiskEuro)
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-sm font-bold text-[#141A17]", children: [
+              "Da usare entro due giorni (",
+              formatEuro(var48h.totalAtRiskEuro),
+              ")"
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-semibold text-amber-900", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-semibold text-[#9A5B25] bg-[#FAF9F6] border border-[#E5E2DA] px-2.5 py-0.5 rounded-full", children: [
               var48h.atRiskItemsCount,
               " ",
-              var48h.atRiskItemsCount === 1 ? "fresco prioritario" : "freschi prioritari",
-              " in frigo/dispensa"
+              var48h.atRiskItemsCount === 1 ? "fresco in frigo" : "freschi in frigo"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-amber-900/90 mt-1", children: "Swipe Check 5 secondi: aggiorna lo stato con 1 tap per azzerare lo spreco reale (senza pesare nulla)." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-1", children: "Aggiorna con un tocco quanto ne resta per tenere in ordine dispensa e idee per cena." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
             onClick: () => onNavigateRoom?.("room-5-dispensa"),
-            className: "text-xs font-bold text-amber-900 underline cursor-pointer self-start sm:self-center",
-            children: "Apri Dispensa 3 Zone →"
+            className: "text-xs font-semibold text-[#1B5E3A] hover:underline cursor-pointer self-start sm:self-center",
+            children: "Apri dispensa →"
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-2.5", children: var48h.atRiskItems.slice(0, 4).map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: var48h.atRiskItems.slice(0, 4).map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "bg-white rounded-xl border border-amber-200 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5",
+          className: "bg-[#FAF9F6] rounded-xl border border-[#E5E2DA] p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-slate-900 truncate", children: item.title }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-600", children: [
-                item.remainingWeightGrams != null ? `${item.remainingWeightGrams}${item.unit || "g"}` : `Quota ${Math.round((item.remainingFraction ?? 1) * 100)}% (non pesato)`,
-                " ",
-                "•",
-                " ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-amber-800", children: item.atRiskEuro != null ? formatEuro(item.atRiskEuro) : "Prezzo non rilevato" }),
-                " ",
-                "• ",
-                item.hoursRemaining != null ? `${item.hoursRemaining}h residue` : "In scadenza"
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-semibold text-[#141A17] truncate", children: item.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58] mt-0.5", children: [
+                formatPantryAmount(item),
+                item.atRiskEuro != null ? ` · ${formatEuro(item.atRiskEuro)}` : "",
+                item.hoursRemaining != null ? ` · ${item.hoursRemaining}h rimaste` : " · In scadenza"
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 shrink-0", children: [
@@ -27779,8 +27788,8 @@ function TodayCopilotView({
                 {
                   type: "button",
                   onClick: () => handleSwipePantry(item.id, 1),
-                  className: "px-2 py-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-700 cursor-pointer",
-                  children: "100%"
+                  className: "taste-btn px-2.5 py-1.5 rounded-lg border border-[#E5E2DA] bg-white hover:bg-[#F3F1EC] text-[11px] font-semibold text-[#141A17] cursor-pointer",
+                  children: "Intero"
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -27788,8 +27797,8 @@ function TodayCopilotView({
                 {
                   type: "button",
                   onClick: () => handleSwipePantry(item.id, 0.5),
-                  className: "px-2 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-[11px] font-bold text-amber-900 cursor-pointer",
-                  children: "50%"
+                  className: "taste-btn px-2.5 py-1.5 rounded-lg border border-[#E5E2DA] bg-white hover:bg-[#F3F1EC] text-[11px] font-semibold text-[#9A5B25] cursor-pointer",
+                  children: "Metà"
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -27797,8 +27806,8 @@ function TodayCopilotView({
                 {
                   type: "button",
                   onClick: () => handleSwipePantry(item.id, 0, "consumed"),
-                  className: "px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-[11px] font-bold text-white cursor-pointer",
-                  children: "✓ Finito"
+                  className: "taste-btn px-3 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-[11px] font-semibold text-white cursor-pointer",
+                  children: "Finito"
                 }
               )
             ] })
@@ -27807,105 +27816,102 @@ function TodayCopilotView({
         item.id
       )) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-3", "aria-label": "Stasera in Cucina — Frontiera di Pareto", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-end justify-between gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base sm:text-lg font-extrabold text-slate-900", children: "🍳 Stasera in Cucina — Le 3 Scelte di Pareto (Zero Punteggi Magici)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Filtrate sui tuoi vincoli P0 (profilo, pentole possedute e sicurezza termica), mostrando i trade-off nudi sulle 5 Anime." })
-        ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-4", "aria-label": "Le tre proposte per cena", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-baseline justify-between gap-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg sm:text-xl font-bold text-[#141A17]", children: "Le tre proposte per cena" }),
         onSwitchAppMode && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
             onClick: () => onSwitchAppMode("regia"),
-            className: "text-xs font-bold text-emerald-700 hover:text-emerald-800 cursor-pointer",
-            children: "🧭 Apri Regia Settimanale & Spesa →"
+            className: "text-xs font-semibold text-[#1B5E3A] hover:text-[#14492D] hover:underline cursor-pointer self-start sm:self-auto",
+            children: "Pianifica la settimana →"
           }
         )
       ] }),
-      loading && paretoCards.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: [1, 2, 3].map((n) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-slate-200 p-5 h-72 animate-pulse" }, n)) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: paretoCards.map((card) => {
+      loading && paretoCards.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-5", children: [1, 2, 3].map((n) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-5 h-72 animate-pulse" }, n)) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-5", children: paretoCards.map((card) => {
         const isExpanded = expandedChains.has(card.slotId);
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "article",
           {
-            className: `bg-white rounded-2xl border p-4 sm:p-5 shadow-xs flex flex-col justify-between transition-all ${card.recommendedForRhythm ? "border-emerald-500 ring-2 ring-emerald-500/20" : "border-slate-200"}`,
+            className: `taste-card bg-white rounded-2xl border p-5 flex flex-col justify-between ${card.recommendedForRhythm ? "border-[#1B5E3A] ring-1 ring-[#1B5E3A]/20" : "border-[#E5E2DA]"}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-slate-900 text-white", children: card.badge }),
-                  card.recommendedForRhythm && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800", children: "Ideale ora" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F3F1EC] text-[#141A17]", children: card.badge }),
+                  card.recommendedForRhythm && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A]", children: "Consigliato ora" })
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900 leading-snug", children: card.title }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600 mt-1", children: card.whyThisWins })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-bold text-[#141A17] leading-snug", children: card.cleanTitle || card.title }),
+                  card.cleanSubtitle && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-0.5", children: card.cleanSubtitle }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-2 leading-relaxed", children: card.whyThisWins })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-2 bg-slate-50 rounded-xl p-2.5 border border-slate-100 text-center", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-3 bg-[#FAF9F6] rounded-xl p-3 border border-[#E5E2DA]", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-semibold text-slate-500", children: "Mani + Lavaggio" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-900", children: [
-                      card.totalHandsOnMinutes,
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-medium text-[#575E58]", children: "Tempo totale" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm font-bold text-[#141A17] mt-0.5", children: [
+                      Math.round(card.totalHandsOnMinutes),
                       " min"
-                    ] })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-[#575E58]", children: "cottura + lavaggio" })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-semibold text-slate-500", children: "Materia Edibile" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-emerald-800", children: formatEuro(card.purePortionCostEur) })
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-semibold text-slate-500", children: "Costo Pieno Netto" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-slate-900", children: formatEuro(card.netGeneralizedCostEur) })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-medium text-[#575E58]", children: "Ingredienti" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-[#1B5E3A] mt-0.5", children: formatEuro(card.purePortionCostEur) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-[#575E58]", children: "a porzione" })
                   ] })
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "button",
                     {
                       type: "button",
                       onClick: () => toggleChain(card.slotId),
-                      className: "text-[11px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer",
-                      children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                        isExpanded ? "▾" : "▸",
-                        " Catena Simbiotica delle 5 Anime"
-                      ] })
+                      "aria-expanded": isExpanded,
+                      className: "text-xs font-semibold text-[#1B5E3A] hover:text-[#14492D] inline-flex items-center gap-1.5 cursor-pointer py-1",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: isExpanded ? "▾" : "▸" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Perché funziona" })
+                      ]
                     }
                   ),
-                  isExpanded && card.fiveSoulsChain && /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "mt-2 space-y-1.5 text-[11px] text-slate-700 bg-emerald-50/40 rounded-xl p-3 border border-emerald-100", children: [
+                  isExpanded && card.fiveSoulsChain && /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "mt-2 space-y-2 text-xs bg-[#FAF9F6] rounded-xl p-3.5 border border-[#E5E2DA] leading-relaxed", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "💶 Economia:" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "font-semibold text-[#141A17]", children: "Tecnica:" }),
                       " ",
-                      card.fiveSoulsChain.economia
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#575E58]", children: card.fiveSoulsChain.culinaria })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🍳 Strumenti & P0:" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "font-semibold text-[#141A17]", children: "Pentola:" }),
                       " ",
-                      card.fiveSoulsChain.strumenti
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#575E58]", children: card.fiveSoulsChain.strumenti })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "👨‍🍳 Tecnica:" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "font-semibold text-[#141A17]", children: "Nutrizione:" }),
                       " ",
-                      card.fiveSoulsChain.culinaria
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#575E58]", children: card.fiveSoulsChain.nutrizione })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🥗 Fisiologia CREA:" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "font-semibold text-[#141A17]", children: "Lavaggio:" }),
                       " ",
-                      card.fiveSoulsChain.nutrizione
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#575E58]", children: card.fiveSoulsChain.casa })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🧼 Kitchen Reset:" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "font-semibold text-[#141A17]", children: "Bilancio economico completo (incluso tempo ed energia):" }),
                       " ",
-                      card.fiveSoulsChain.casa
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#575E58]", children: card.fiveSoulsChain.economia })
                     ] })
                   ] })
                 ] })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 pt-3 border-t border-slate-100 flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-5 pt-3.5 border-t border-[#E5E2DA] flex items-center gap-2.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
                   {
                     type: "button",
                     onClick: () => onNavigateRoom?.("room-3-ricette"),
-                    className: "flex-1 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold cursor-pointer",
-                    children: "🔥 Vai ai Fornelli"
+                    className: "taste-btn flex-1 px-3.5 py-2.5 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-semibold cursor-pointer",
+                    children: "Cucina questo piatto"
                   }
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -27913,10 +27919,10 @@ function TodayCopilotView({
                   {
                     type: "button",
                     onClick: () => onOpenMaestro?.(
-                      `Guidami passo-passo per preparare "${card.title}" stasera con le mie pentole e dimmi il reset pulizia finale.`
+                      `Guidami passo-passo per preparare "${card.cleanTitle || card.title}" stasera con le mie pentole e dimmi come lavare subito dopo.`
                     ),
-                    className: "px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 cursor-pointer",
-                    children: "💬 Maestro"
+                    className: "taste-btn px-3.5 py-2.5 rounded-xl bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-xs font-semibold text-[#141A17] cursor-pointer",
+                    children: "Chiedi al Maestro"
                   }
                 )
               ] })
@@ -27926,38 +27932,38 @@ function TodayCopilotView({
         );
       }) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "grid grid-cols-1 lg:grid-cols-12 gap-5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-7 bg-white rounded-2xl border border-[#E5E2DA] p-5 space-y-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🏷️ Flash Veri Sconti Storici a Rapallo (16035)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Solo offerte compatibili col profilo attivo e verificate contro lo storico prezzi reale." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-bold text-[#141A17]", children: "Sconti veri oggi a Rapallo" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-0.5", children: "Offerte adatte al tuo profilo e confrontate con i prezzi reali delle scorse settimane." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               onClick: () => onNavigateRoom?.("room-1-negozi"),
-              className: "text-xs font-bold text-emerald-700 hover:underline cursor-pointer",
+              className: "text-xs font-semibold text-[#1B5E3A] hover:underline cursor-pointer shrink-0",
               children: "Tutte le offerte →"
             }
           )
         ] }),
-        flashOffers.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Nessuno sconto straordinario rilevato in questo istante. Apri Stanza 1 per esplorare i volantini." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-2.5", children: flashOffers.map((off) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        flashOffers.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Nessuno sconto fuori dal comune rilevato in questo momento. Puoi comunque sfogliare i volantini dei negozi di Rapallo." }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-3", children: flashOffers.map((off) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: "p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-2",
+            className: "p-3.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] flex flex-col justify-between gap-3",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-bold text-emerald-800 uppercase", children: off.storeName }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-bold text-slate-900 line-clamp-2 mt-0.5", children: off.title })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-semibold text-[#1B5E3A]", children: off.storeName }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-semibold text-[#141A17] line-clamp-2 mt-1", children: off.title })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 pt-1", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-extrabold text-slate-900", children: formatEuro(off.promoPrice) }),
-                  off.ediblePricePerKg != null && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-bold text-[#141A17]", children: formatEuro(off.promoPrice) }),
+                  off.ediblePricePerKg != null && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58]", children: [
                     formatEuro(off.ediblePricePerKg),
-                    "/kg edib."
+                    "/kg edibile"
                   ] })
                 ] }),
                 onAddToShoppingList && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -27971,7 +27977,7 @@ function TodayCopilotView({
                       preferredChain: off.storeName,
                       onPromo: true
                     }),
-                    className: "px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer",
+                    className: "taste-btn px-2.5 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-[11px] font-semibold cursor-pointer",
                     children: "+ Lista"
                   }
                 )
@@ -27981,18 +27987,29 @@ function TodayCopilotView({
           off.id
         )) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs flex flex-col justify-between gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🚗 Rendimento Orario Giro Spesa (€/h)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600 mt-1", children: copilotData?.storeRouteYieldSummary?.summary || "Valutazione automatica 1 vs 2 vs 3 negozi a Rapallo inclusi tempi di parcheggio." })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-5 bg-white rounded-2xl border border-[#E5E2DA] p-5 flex flex-col justify-between gap-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "taste-photo-frame rounded-xl aspect-[16/10] bg-[#F3F1EC] border border-[#E5E2DA]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "img",
+            {
+              src: "/assets/img/photo-m61663250-960.jpg",
+              alt: "Cassetta di legno con carote fresche e cipolle rosse di stagione",
+              className: "w-full h-full object-cover",
+              loading: "lazy"
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-bold text-[#141A17]", children: "Conviene fare più tappe?" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-1 leading-relaxed", children: copilotData?.storeRouteYieldSummary?.summary || "Confrontiamo uno, due o tre negozi a Rapallo contando anche tempo di strada e parcheggio." })
+          ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
             onClick: () => onSwitchAppMode ? onSwitchAppMode("regia") : onNavigateRoom?.("room-6-pianificatore"),
-            className: "w-full px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold cursor-pointer",
-            children: "Simula Tappe & Modalità In Corsia →"
+            className: "taste-btn w-full px-4 py-2.5 rounded-xl bg-[#141A17] hover:bg-[#27312B] text-white text-xs font-semibold cursor-pointer",
+            children: "Simula tappe e lista in corsia →"
           }
         )
       ] })
@@ -28001,15 +28018,21 @@ function TodayCopilotView({
 }
 
 const REGIA_STEPS = [
-  { step: 1, icon: "📈", short: "1. Inflazione & TCO", title: "Cruscotto Economia, ISTAT Personale & Shrinkflation" },
-  { step: 2, icon: "🥫", short: "2. Swipe Dispensa 5s", title: "Controllo Rapido Freschi & Valore a Rischio (VaR_48h)" },
-  { step: 3, icon: "⛵", short: "3. Batch & Piano Barca", title: "Strategia Pasti, Economie di Scala & Giorni Barca" },
-  { step: 4, icon: "🚗", short: "4. Giro Spesa €/h", title: "Simulatore Tappe Rapallo sul Rendimento Orario Netto" }
+  { step: 1, icon: "📈", short: "1. Prezzi & Strumenti", title: "Come cambiano i prezzi della tua spesa" },
+  { step: 2, icon: "🥫", short: "2. Controllo Frigo", title: "Controlla in un tocco cosa resta in frigo" },
+  { step: 3, icon: "⛵", short: "3. Basi & Barca", title: "Cucina una volta sola per più pasti" },
+  { step: 4, icon: "🚗", short: "4. Giro Spesa", title: "Quante tappe conviene fare a Rapallo?" }
 ];
 function fmtEur(val) {
   const n = Number(val);
   if (!Number.isFinite(n)) return "n/d";
   return `€ ${n.toFixed(2).replace(".", ",")}`;
+}
+function formatPantryZone(zone) {
+  if (zone === "fridge_freezer") return "Frigo e freezer";
+  if (zone === "dry_pantry") return "Dispensa secca";
+  if (zone === "boat_galley") return "Cambusa barca";
+  return zone || "Casa";
 }
 function WeeklyRegiaView({
   activeProfileId = "dany",
@@ -28101,7 +28124,7 @@ function WeeklyRegiaView({
         body: JSON.stringify({ fraction, reason })
       });
       if (res.ok) {
-        notify("Dispensa e VaR_48h aggiornati!");
+        notify("Dispensa e scorte fresche aggiornate!");
         const panRes = await fetch("/api/pantry");
         if (panRes.ok) setPantryData(await panRes.json());
       }
@@ -28110,41 +28133,41 @@ function WeeklyRegiaView({
   };
   const var48h = pantryData?.valueAtRisk48h || { totalAtRiskEuro: 0};
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", "data-testid": "weekly-regia-view", children: [
-    toast && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-emerald-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs", children: toast }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-slate-900 text-white rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-xs space-y-4", children: [
+    toast && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-[#1B5E3A] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs", children: toast }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white text-[#141A17] rounded-2xl p-5 sm:p-6 border border-[#E5E2DA] shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30", children: "🧭 Regia Settimanale · 10 Minuti ad Alto ROI" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg sm:text-xl font-extrabold mt-1", children: "Governa Casa, Cambusa Barca e Spesa a Rapallo" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-300 mt-0.5", children: "Un tunnel ordinato in 4 passi: prima chiudi i conti veri e salvi il frigo, poi ottimizzi pasti e tappe spesa." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#F3F1EC] text-[#575E58] border border-[#E5E2DA]", children: "Piano settimanale · 10 minuti nel weekend" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg sm:text-2xl font-extrabold text-[#141A17] mt-2 tracking-tight", children: "Organizza casa, cambusa e spesa a Rapallo" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs sm:text-sm text-[#575E58] mt-1", children: "Quattro passaggi rapidi: controlla prezzi e attrezzatura, verifica cosa resta in frigo, prepara le basi e scegli dove fare la spesa." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
             onClick: () => onOpenMaestro?.(
-              "Facciamo il check-up settimanale di economia domestica, scorte in scadenza e giro spesa a Rapallo."
+              "Facciamo il punto settimanale su prezzi, scorte in frigo e giro spesa a Rapallo."
             ),
-            className: "px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-extrabold text-white cursor-pointer shrink-0",
-            children: "💬 Regia col Maestro"
+            className: "px-4 py-2.5 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-xs font-extrabold text-white cursor-pointer shrink-0 transition-colors",
+            children: "💬 Chiedi al Maestro"
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "grid grid-cols-2 lg:grid-cols-4 gap-2", "aria-label": "4 Passi Regia Settimanale", children: REGIA_STEPS.map((s) => {
+      /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "grid grid-cols-2 lg:grid-cols-4 gap-2", "aria-label": "Percorso weekend in 4 passi", children: REGIA_STEPS.map((s) => {
         const active = activeStep === s.step;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "button",
           {
             type: "button",
             onClick: () => setActiveStep(s.step),
-            className: `p-3 rounded-xl border text-left transition-all cursor-pointer ${active ? "bg-emerald-600 border-emerald-400 text-white shadow-xs" : "bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800"}`,
+            className: `p-3 rounded-xl border text-left transition-all cursor-pointer ${active ? "bg-[#1B5E3A] border-[#1B5E3A] text-white shadow-xs" : "bg-[#F3F1EC] border-[#E5E2DA] text-[#141A17] hover:bg-[#E7E4DC]"}`,
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: s.icon }),
                 " ",
                 s.short
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[10px] mt-0.5 line-clamp-1 ${active ? "text-emerald-100" : "text-slate-400"}`, children: s.title })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[11px] mt-0.5 line-clamp-1 ${active ? "text-emerald-100" : "text-[#575E58]"}`, children: s.title })
             ]
           },
           s.step
@@ -28152,85 +28175,91 @@ function WeeklyRegiaView({
       }) })
     ] }),
     activeStep === 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold uppercase tracking-wider text-emerald-800", children: "📊 Il Tuo Indice ISTAT a Rapallo (Laspeyres)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl font-extrabold text-slate-900", children: inflationData?.laspeyresIndex != null ? `${inflationData.laspeyresIndex} (${inflationData.personalInflationPct >= 0 ? "+" : ""}${inflationData.personalInflationPct}%)` : "In attesa di serie storica" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: inflationData?.summary || "Calcolato esclusivamente su referenze reali osservate almeno 2 volte negli scontrini (ADR-0006: zero indici sintetici)." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              type: "button",
-              onClick: () => onNavigateRoom?.("room-5-dispensa"),
-              className: "mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold cursor-pointer",
-              children: "🧾 Carica Nuovo Scontrino al Centesimo →"
-            }
-          )
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base sm:text-lg font-extrabold text-[#141A17]", children: "Come cambiano i prezzi della tua spesa" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-0.5", children: "Confronto basato solo sui prodotti comprati più volte nei tuoi scontrini reali, senza stime inventate." })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold uppercase tracking-wider text-amber-800", children: "🔍 Shrinkflation Watchdog" }),
-          inflationData?.shrinkflationAlerts?.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: inflationData.shrinkflationAlerts.map((al) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-amber-950", children: al.title }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-amber-900", children: al.explanation })
-          ] }, al.productKey)) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Nessuna riduzione occulta di formato rilevata sugli scontrini caricati finora. Il cane da guardia confronta peso confezione e prezzo €/kg a ogni nuovo scontrino." })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold uppercase tracking-wider text-sky-800", children: "🥗 Audit Gruppi Sentinella LARN (Scontrini)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: receiptAudit?.summary || "Controllo passivo a zero data-entry su pesce azzurro EPA/DHA, Calcio Fascia Alta Zero-Formaggi, legumi e verdure dagli scontrini Casa." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              type: "button",
-              onClick: () => onNavigateRoom?.("room-2-crea"),
-              className: "text-xs font-bold text-emerald-700 hover:underline cursor-pointer",
-              children: "Apri Classifica Nutrienti/€ CREA →"
-            }
-          )
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] rounded-xl border border-[#E5E2DA] p-4 space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-[#1B5E3A]", children: "Andamento reale dei tuoi scontrini" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl font-extrabold text-[#141A17]", children: inflationData?.laspeyresIndex != null ? `${inflationData.laspeyresIndex} (${inflationData.personalInflationPct >= 0 ? "+" : ""}${inflationData.personalInflationPct}%)` : "Servono almeno due spese" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: inflationData?.summary || "Carica gli scontrini della spesa per confrontare nel tempo gli stessi prodotti." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => onNavigateRoom?.("room-5-dispensa"),
+                className: "mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141A17] hover:bg-[#2A332E] text-white text-xs font-bold cursor-pointer",
+                children: "🧾 Carica nuovo scontrino →"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] rounded-xl border border-[#E5E2DA] p-4 space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-[#141A17]", children: "Controllo peso delle confezioni" }),
+            inflationData?.shrinkflationAlerts?.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: inflationData.shrinkflationAlerts.map((al) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-amber-950", children: al.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-amber-900", children: al.explanation })
+            ] }, al.productKey)) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Nessuna riduzione nascosta di peso rilevata finora. Controlla grammatura e prezzo al chilo a ogni nuovo scontrino." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] rounded-xl border border-[#E5E2DA] p-4 space-y-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-[#141A17]", children: "Equilibrio nutrizionale della spesa" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: receiptAudit?.summary || "Verifica automatica su pesce azzurro, fonti di calcio senza formaggi, legumi e verdure dai tuoi scontrini." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => onNavigateRoom?.("room-2-crea"),
+                className: "text-xs font-bold text-[#1B5E3A] hover:underline cursor-pointer",
+                children: "Apri classifica nutrienti per euro →"
+              }
+            )
+          ] })
         ] })
       ] }),
-      tcoData?.toolsTco && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3", children: [
+      tcoData?.toolsTco && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🍳 Capitale Domestico: TCO a 10 Anni (Buy-It-For-Life vs Consumabili PTFE)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Quanto costa davvero ogni strumento per singolo utilizzo e quanto brucia un uso termico/chimico errato." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "Quanto ti costano le pentole negli anni" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Costo per singolo utilizzo su 10 anni e quanto si butta rovinando il rivestimento sul fuoco." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               onClick: () => onNavigateRoom?.("room-4-cucina"),
-              className: "text-xs font-bold text-emerald-700 hover:underline cursor-pointer",
-              children: "Apri Officina Cucina (Stanza 4) →"
+              className: "text-xs font-bold text-[#1B5E3A] hover:underline cursor-pointer",
+              children: "Apri Officina Cucina →"
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-3", children: tcoData.toolsTco.slice(0, 6).map((tool) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-xs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-3", children: tcoData.toolsTco.slice(0, 6).map((tool) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] space-y-1 text-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-slate-900 truncate", children: tool.name }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-[#141A17] truncate", children: tool.name }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "span",
               {
-                className: `text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${tool.capExClass === "buy_it_for_life" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`,
-                children: tool.capExClass === "buy_it_for_life" ? "BIFL 25+ anni" : "Consumabile PTFE"
+                className: `text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${tool.capExClass === "buy_it_for_life" ? "bg-emerald-50 text-[#1B5E3A] border border-emerald-200" : "bg-amber-50 text-amber-900 border border-amber-200"}`,
+                children: tool.capExClass === "buy_it_for_life" ? "Dura tutta la vita" : "Rivestimento delicato"
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-700", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58]", children: [
             "Uso corretto: ",
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-[#141A17]", children: [
               "€",
               tool.cpuProperRangeEur[0],
               "–",
               tool.cpuProperRangeEur[1],
-              "/ciclo"
+              " a utilizzo"
             ] }),
-            " (10 anni:",
+            " (in 10 anni:",
             " ",
             fmtEur(tool.tenYearTcoProperRangeEur[0]),
             ")"
           ] }),
-          tool.tenYearAbuseWasteMidpointEur > 30 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-rose-700 font-semibold", children: [
-            "⚠️ Abuso Boost/alcali spreca ~",
+          tool.tenYearAbuseWasteMidpointEur > 30 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-rose-800 font-semibold", children: [
+            "⚠️ Calore eccessivo o lavaggi sbagliati sprecano ~",
             fmtEur(tool.tenYearAbuseWasteMidpointEur),
             " in 10 anni"
           ] })
@@ -28241,19 +28270,19 @@ function WeeklyRegiaView({
         {
           type: "button",
           onClick: () => setActiveStep(2),
-          className: "px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold cursor-pointer",
-          children: "Passo 2: Swipe Check Dispensa 5s →"
+          className: "px-4 py-2 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer",
+          children: "Passo 2: Controllo Frigo →"
         }
       ) })
     ] }),
-    activeStep === 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4", children: [
+    activeStep === 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-extrabold text-slate-900", children: "🥫 Swipe Check 5 Secondi — Frigo, Dispensa & Cambusa Barca" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-600", children: [
-            "Valore a rischio entro 48h: ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: fmtEur(var48h.totalAtRiskEuro) }),
-            ". Aggiorna con 1 tap prima di generare la spesa per non ricomprare doppioni."
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base sm:text-lg font-extrabold text-[#141A17]", children: "Controlla in un tocco cosa resta in frigo" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-[#575E58] mt-0.5", children: [
+            "Valore dei freschi da usare entro due giorni: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: fmtEur(var48h.totalAtRiskEuro) }),
+            ". Aggiorna prima di fare la lista per evitare doppioni."
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28261,24 +28290,23 @@ function WeeklyRegiaView({
           {
             type: "button",
             onClick: () => onNavigateRoom?.("room-5-dispensa"),
-            className: "text-xs font-bold text-emerald-700 hover:underline cursor-pointer",
-            children: "Gestione completa Stanza 5 →"
+            className: "text-xs font-bold text-[#1B5E3A] hover:underline cursor-pointer",
+            children: "Apri tutta la dispensa →"
           }
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: (pantryData?.items || []).slice(0, 8).map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: "p-3 rounded-xl border border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5",
+          className: "p-3 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5",
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-slate-900 truncate", children: item.title }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-600", children: [
-                "Zona: ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: item.zone }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-[#141A17] truncate", children: item.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58]", children: [
+                formatPantryZone(item.zone),
                 " •",
                 " ",
-                item.remainingWeightGrams != null ? `${item.remainingWeightGrams}${item.unit || "g"}` : `Quota ${Math.round((item.remainingFraction ?? 1) * 100)}%`,
+                item.remainingWeightGrams != null ? `${item.remainingWeightGrams}${item.unit || "g"}` : `Rimasto ${Math.round((item.remainingFraction ?? 1) * 100)}%`,
                 " ",
                 item.currentValueEuro != null ? `• ${fmtEur(item.currentValueEuro)}` : ""
               ] })
@@ -28289,8 +28317,8 @@ function WeeklyRegiaView({
                 {
                   type: "button",
                   onClick: () => handleQuickSwipe(item.id, 1),
-                  className: "px-2 py-1 rounded-lg border border-slate-300 bg-white text-[11px] font-bold text-slate-700 cursor-pointer",
-                  children: "100%"
+                  className: "px-2.5 py-1 rounded-lg border border-[#E5E2DA] bg-white hover:bg-[#F3F1EC] text-[11px] font-bold text-[#141A17] cursor-pointer",
+                  children: "Intero"
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28298,8 +28326,8 @@ function WeeklyRegiaView({
                 {
                   type: "button",
                   onClick: () => handleQuickSwipe(item.id, 0.5),
-                  className: "px-2 py-1 rounded-lg border border-amber-300 bg-amber-50 text-[11px] font-bold text-amber-900 cursor-pointer",
-                  children: "50%"
+                  className: "px-2.5 py-1 rounded-lg border border-amber-300 bg-amber-50 text-[11px] font-bold text-amber-950 cursor-pointer",
+                  children: "Metà"
                 }
               ),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28307,7 +28335,7 @@ function WeeklyRegiaView({
                 {
                   type: "button",
                   onClick: () => handleQuickSwipe(item.id, 0, "consumed"),
-                  className: "px-2.5 py-1 rounded-lg bg-emerald-600 text-[11px] font-bold text-white cursor-pointer",
+                  className: "px-2.5 py-1 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-[11px] font-bold text-white cursor-pointer",
                   children: "✓ Finito"
                 }
               )
@@ -28322,7 +28350,7 @@ function WeeklyRegiaView({
           {
             type: "button",
             onClick: () => setActiveStep(1),
-            className: "px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer",
+            className: "px-3 py-1.5 rounded-xl border border-[#E5E2DA] bg-[#F3F1EC] text-xs font-bold text-[#141A17] cursor-pointer",
             children: "← Passo 1"
           }
         ),
@@ -28331,47 +28359,47 @@ function WeeklyRegiaView({
           {
             type: "button",
             onClick: () => setActiveStep(3),
-            className: "px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold cursor-pointer",
-            children: "Passo 3: Batch Cooking & Piano Barca →"
+            className: "px-4 py-2 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer",
+            children: "Passo 3: Basi & Barca →"
           }
         )
       ] })
     ] }),
-    activeStep === 3 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4", children: [
+    activeStep === 3 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-extrabold text-slate-900", children: "⛵ Strategia Pasti, Batch Cooking & Amido Resistente RS3 per la Barca" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600 mt-0.5", children: "Cuocere basi intelligenti nel weekend abbatte i costi fissi di rampa forno (0,42 kWh), dimezza i lavaggi e prepara cereali/patate raffreddati ≥12h (+4°C) ricchi di amido resistente RS3 per la borsa termica!" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base sm:text-lg font-extrabold text-[#141A17]", children: "Cucina una volta sola per più pasti" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-0.5", children: "Cuocere più porzioni insieme abbatte il costo di accensione del forno, dimezza i lavaggi e prepara cereali o patate raffreddati in frigo (+4°C) più leggeri per la borsa termica in barca." })
       ] }),
       batchComparison && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-bold text-slate-500", children: "1 Cottura Singola in Forno (1 porzione)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-lg font-extrabold text-slate-900", children: [
-            "Costo Pieno: ",
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-bold text-[#575E58]", children: "Una cottura singola in forno (1 porzione)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-lg font-extrabold text-[#141A17]", children: [
+            "Costo reale: ",
             fmtEur(batchComparison.single.grossGeneralizedCostEur),
             " / porzione"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-slate-600", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-[#575E58]", children: [
             "Energia forno: ",
             fmtEur(batchComparison.single.breakdown.energyCostEur),
-            " • Tempo attivo+reset:",
+            " • Tempo e lavaggio:",
             " ",
             batchComparison.single.minutesPerServing.totalHandsOnMinutes,
             " min"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 rounded-xl bg-emerald-50 border border-emerald-300 space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-emerald-800", children: "⚡ Batch Cooking Weekend (4 porzioni su 1 sola rampa forno)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-lg font-extrabold text-emerald-950", children: [
-            "Costo Pieno: ",
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 rounded-xl bg-emerald-50/70 border border-[#1B5E3A]/30 space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-[#1B5E3A]", children: "Preparazione multipla (4 porzioni con una sola infornata)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-lg font-extrabold text-[#141A17]", children: [
+            "Costo reale: ",
             fmtEur(batchComparison.batch4.grossGeneralizedCostEur),
             " / porzione"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-emerald-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-[#1B5E3A]", children: [
             "Risparmi ",
             /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: fmtEur(batchComparison.batch4.batchScaleEconomy.savedPerServingViaBatchEur) }),
             " a porzione (",
             batchComparison.batch4.minutesPerServing.totalHandsOnMinutes,
-            " min attivi/porz.)!"
+            " min di impegno per pasto)."
           ] })
         ] })
       ] }),
@@ -28381,8 +28409,8 @@ function WeeklyRegiaView({
           {
             type: "button",
             onClick: () => onNavigateRoom?.("room-6-pianificatore"),
-            className: "px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold cursor-pointer",
-            children: "🗓️ Apri Pianificatore 21 Pasti Zero-Spreco (Stanza 6) →"
+            className: "px-4 py-2 rounded-xl bg-[#141A17] hover:bg-[#2A332E] text-white text-xs font-extrabold cursor-pointer",
+            children: "🗓️ Apri pianificatore settimanale →"
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28390,47 +28418,47 @@ function WeeklyRegiaView({
           {
             type: "button",
             onClick: () => setActiveStep(4),
-            className: "px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold cursor-pointer",
-            children: "Passo 4: Simulatore Tappe Spesa €/h →"
+            className: "px-4 py-2 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer",
+            children: "Passo 4: Giro Spesa →"
           }
         )
       ] })
     ] }),
-    activeStep === 4 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4", children: [
+    activeStep === 4 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base font-extrabold text-slate-900", children: "🚗 Simulatore Giro Spesa a Rapallo sul Rendimento Orario Netto (€/h)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Una 2ª o 3ª tappa è approvata SOLO se il risparmio diviso per i minuti extra (parcheggio a Rapallo incluso!) supera il valore del tuo tempo." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-base sm:text-lg font-extrabold text-[#141A17]", children: "Quante tappe conviene fare a Rapallo?" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-0.5", children: "Una seconda o terza fermata conviene solo se il risparmio supera il tempo perso tra traffico e parcheggio." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5", children: ["car", "scooter", "foot"].map((tm) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
             onClick: () => setTransportMode(tm),
-            className: `px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${transportMode === tm ? "bg-slate-900 text-white border-slate-900" : "bg-slate-50 text-slate-700 border-slate-200"}`,
-            children: tm === "car" ? "🚗 Auto" : tm === "scooter" ? "🛵 Scooter" : "🚶 Piedi"
+            className: `px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${transportMode === tm ? "bg-[#141A17] text-white border-[#141A17]" : "bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]"}`,
+            children: tm === "car" ? "🚗 Auto" : tm === "scooter" ? "🛵 Scooter" : "🚶 A piedi"
           },
           tm
         )) })
       ] }),
-      storeYieldData?.optimalSummary && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-950", children: [
+      storeYieldData?.optimalSummary && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-emerald-50/70 border border-[#1B5E3A]/30 text-xs font-bold text-[#141A17]", children: [
         "✅ ",
         storeYieldData.optimalSummary
       ] }),
       Array.isArray(storeYieldData?.incrementalYields) && storeYieldData.incrementalYields.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: storeYieldData.incrementalYields.map((yld) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: `p-3.5 rounded-xl border text-xs space-y-1 ${yld.verdict === "recommended" ? "bg-emerald-50/60 border-emerald-300" : "bg-slate-50 border-slate-200"}`,
+          className: `p-3.5 rounded-xl border text-xs space-y-1 ${yld.verdict === "recommended" ? "bg-emerald-50/60 border-[#1B5E3A]/30" : "bg-[#FAF9F6] border-[#E5E2DA]"}`,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between font-extrabold text-slate-900", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between font-extrabold text-[#141A17]", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: yld.stepLabel }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-                "Rende ",
+                "Vale ",
                 fmtEur(yld.impliedHourlyYieldEur),
-                "/h"
+                "/ora"
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-700", children: yld.explanation })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58]", children: yld.explanation })
           ]
         },
         yld.stepLabel
@@ -28441,7 +28469,7 @@ function WeeklyRegiaView({
           {
             type: "button",
             onClick: () => setActiveStep(3),
-            className: "px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer",
+            className: "px-3 py-1.5 rounded-xl border border-[#E5E2DA] bg-[#F3F1EC] text-xs font-bold text-[#141A17] cursor-pointer",
             children: "← Passo 3"
           }
         ),
@@ -28450,13 +28478,13 @@ function WeeklyRegiaView({
           {
             type: "button",
             onClick: () => onNavigateRoom?.("room-6-pianificatore"),
-            className: "px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold cursor-pointer",
-            children: "🛒 Vai alla Lista per Corsia & Piano B Scaffale →"
+            className: "px-4 py-2 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer",
+            children: "🛒 Vai alla lista per corsia →"
           }
         )
       ] })
     ] }),
-    loading && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center text-xs text-slate-400 py-1", children: "Aggiornamento indicatori economici deterministici..." })
+    loading && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center text-xs text-[#575E58] py-1", children: "Aggiornamento dati di casa e offerte di Rapallo..." })
   ] });
 }
 
@@ -28482,6 +28510,29 @@ const FIVE_SOULS_CHIPS = [
     prompt: "Conviene dividere la spesa in 2 o 3 negozi a Rapallo oggi tenendo conto del valore del mio tempo?"
   }
 ];
+function formatRhythmLabel(preset) {
+  if (preset === "sera_stanca") return "Sera stanca";
+  if (preset === "weekend_relax") return "Weekend";
+  return "Feriale";
+}
+function formatHeatSourceLabel(heatSource) {
+  if (heatSource === "induction") return "Induzione";
+  if (heatSource === "gas") return "Gas";
+  if (heatSource === "electric_radiant") return "Vetroceramica";
+  if (heatSource === "boat_no_stove") return "Cambusa barca";
+  return heatSource;
+}
+function formatCitationLabel(cit) {
+  const sourceLabels = {
+    NutritionPhysiologyEngine: "Nutrizione CREA",
+    ScienceAndCookingEngine: "Tecnica di cottura",
+    HomeChemistryMatrix: "Chimica della casa",
+    CookwarePhysicsAndTco: "Fisica pentole",
+    HouseholdEconomicsEngine: "Economia domestica",
+    TonightParetoFrontier: "Proposta cena"
+  };
+  return sourceLabels[cit?.source] || cit?.source || "Fonte locale";
+}
 function MaestroDrawer({
   isOpen,
   onClose,
@@ -28494,7 +28545,7 @@ function MaestroDrawer({
       id: "welcome-maestro",
       role: "assistant",
       mode: "deterministic_scientific_engine",
-      content: "Benvenuto! Sono **Basilico Maestro**. Leggo in sola lettura il tuo frigo (`VaR_48h`), il tuo piano cottura, le tue pentole, il profilo *Zero Formaggi* e le offerte reali di Rapallo — con zero numeri inventati e guardie chimico-fisiche P0 sempre attive. Chiedimi qualsiasi cosa sulle 5 Anime!",
+      content: "Ciao! Vedo cosa hai in dispensa, che piano cottura usi e quali offerte ci sono oggi a Rapallo. Chiedimi pure un'idea per cena, come rimediare a una salsa slegata o come togliere una macchia senza rovinare le superfici.",
       p0Alerts: [],
       groundedCitations: []
     }
@@ -28576,7 +28627,8 @@ function MaestroDrawer({
           profileName: data.activeProfile?.name || activeProfileId,
           rhythmPreset: data.activeRhythm?.activeRhythmPreset || rhythmPreset,
           hourlyValueEuro: data.activeRhythm?.hourlyValueEuro ?? 18,
-          valueAtRisk48hEuro: data.valueAtRisk48h?.totalAtRiskEuro ?? 0
+          valueAtRisk48hEuro: data.valueAtRisk48h?.totalAtRiskEuro ?? 0,
+          heatSource: data.activeKitchen?.heatSource || data.householdContext?.heatSource || null
         });
       }
     }).catch(() => {
@@ -28608,15 +28660,15 @@ function MaestroDrawer({
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
-      className: "fixed inset-0 z-50 flex justify-end bg-slate-950/55 backdrop-blur-xs",
+      className: "fixed inset-0 z-50 flex justify-end bg-[#141A17]/50 backdrop-blur-xs",
       role: "dialog",
       "aria-modal": "true",
       "aria-label": "Chat con Basilico Maestro",
       "data-testid": "maestro-drawer",
       children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0", onClick: () => onClose?.(), "aria-hidden": "true" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "relative z-10 w-full sm:max-w-lg bg-white h-full shadow-2xl flex flex-col border-l border-slate-200", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "bg-slate-900 text-white p-4 space-y-2.5 shrink-0", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "relative z-10 w-full sm:max-w-lg bg-[#FAF9F6] h-full shadow-2xl flex flex-col border-l border-[#E5E2DA]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "bg-[#141A17] text-white p-4 space-y-2.5 shrink-0", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
@@ -28624,58 +28676,58 @@ function MaestroDrawer({
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "span",
                     {
-                      className: `text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border ${isLiveLlm ? "bg-violet-500/20 text-violet-200 border-violet-400/40" : "bg-emerald-500/20 text-emerald-200 border-emerald-400/40"}`,
-                      children: isLiveLlm ? "✨ LLM Grounded Live" : "🛡️ Grounded Deterministico Offline"
+                      className: `text-[10px] font-bold tracking-wide px-2.5 py-0.5 rounded-full border ${isLiveLlm ? "bg-[#1B5E3A] text-white border-emerald-400/50" : "bg-white/10 text-emerald-200 border-white/20"}`,
+                      children: isLiveLlm ? "AI sui dati di casa" : "Motore locale verificato"
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-300 mt-0.5", children: "Co-pilota scientifico a 5 Anime • Zero numeri inventati (ADR-0006) • Guardie P0 attive" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-stone-300 mt-1", children: "Conosce la tua dispensa, le tue pentole e le offerte attive a Rapallo." })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
                 {
                   type: "button",
                   onClick: () => onClose?.(),
-                  className: "px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 cursor-pointer",
+                  className: "px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-stone-100 cursor-pointer",
                   "aria-label": "Chiudi chat Maestro",
                   children: "✕ Chiudi"
                 }
               )
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-1.5 text-[10px]", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded bg-slate-800 text-emerald-300 font-semibold", children: [
-                "👤 Profilo: ",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded-md bg-white/10 text-emerald-200 font-semibold", children: [
+                "Profilo: ",
                 contextSummary?.profileName || activeProfileId
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded bg-slate-800 text-amber-300 font-semibold", children: [
-                "⏰ VaR 48h: €",
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded-md bg-white/10 text-amber-300 font-semibold", children: [
+                "Freschi in scadenza: €",
                 Number(contextSummary?.valueAtRisk48hEuro || 0).toFixed(2)
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded bg-slate-800 text-sky-300 font-semibold", children: [
-                "⚡ Ritmo: ",
-                contextSummary?.rhythmPreset || rhythmPreset,
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded-md bg-white/10 text-stone-200 font-semibold", children: [
+                "Ritmo: ",
+                formatRhythmLabel(contextSummary?.rhythmPreset || rhythmPreset),
                 " (€",
                 contextSummary?.hourlyValueEuro ?? 18,
                 "/h)"
               ] }),
-              contextSummary?.heatSource && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded bg-slate-800 text-slate-200 font-semibold", children: [
-                "🔥 Piano: ",
-                contextSummary.heatSource
+              contextSummary?.heatSource && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 rounded-md bg-white/10 text-stone-200 font-semibold", children: [
+                "Piano: ",
+                formatHeatSourceLabel(contextSummary.heatSource)
               ] })
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3.5 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0", children: FIVE_SOULS_CHIPS.map((chip) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-3.5 py-2.5 bg-[#F3F1EC] border-b border-[#E5E2DA] flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0", children: FIVE_SOULS_CHIPS.map((chip) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               disabled: sending,
               onClick: () => sendPrompt(chip.prompt),
-              className: "px-2.5 py-1.5 rounded-full bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-[11px] font-bold text-slate-800 whitespace-nowrap transition-colors cursor-pointer shrink-0",
+              className: "px-2.5 py-1.5 rounded-full bg-white hover:bg-emerald-50 border border-[#E5E2DA] hover:border-[#1B5E3A] text-[11px] font-bold text-[#141A17] whitespace-nowrap transition-colors cursor-pointer shrink-0",
               children: chip.soul
             },
             chip.soul
           )) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50/50", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4 space-y-3.5 bg-[#FAF9F6]", children: [
             messages.map((msg) => {
               const isUser = msg.role === "user";
               return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -28689,13 +28741,11 @@ function MaestroDrawer({
                         className: "w-full mb-2 p-3.5 rounded-xl bg-rose-950 text-white border-2 border-rose-500 shadow-xs space-y-2",
                         role: "alert",
                         children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold uppercase tracking-wider text-rose-300", children: "🛑 Blocco di Sicurezza Chimico-Fisica P0 Attivato" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold uppercase tracking-wider text-rose-200", children: "🛑 Avviso di Sicurezza Chimica o Termica" }),
                           msg.p0Alerts.map((al) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs space-y-0.5 border-t border-rose-800/80 pt-1.5", children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold text-white", children: [
-                              "[",
-                              al.code,
-                              "] ",
-                              al.title
+                            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-baseline justify-between gap-2", children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-white", children: al.title }),
+                              al.code && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono text-rose-200/80", children: al.code })
                             ] }),
                             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-rose-100 leading-relaxed", children: al.scientificWarning })
                           ] }, al.code))
@@ -28705,20 +28755,16 @@ function MaestroDrawer({
                     /* @__PURE__ */ jsxRuntimeExports.jsxs(
                       "div",
                       {
-                        className: `max-w-[92%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-line shadow-xs ${isUser ? "bg-emerald-700 text-white font-medium" : "bg-white text-slate-800 border border-slate-200"}`,
+                        className: `max-w-[92%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-line shadow-xs ${isUser ? "bg-[#1B5E3A] text-white font-medium" : "bg-white text-[#141A17] border border-[#E5E2DA]"}`,
                         children: [
                           msg.content,
-                          !isUser && Array.isArray(msg.groundedCitations) && msg.groundedCitations.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5", children: [
-                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-bold text-slate-400", children: "Fonti verificate:" }),
-                            msg.groundedCitations.map((cit, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          !isUser && Array.isArray(msg.groundedCitations) && msg.groundedCitations.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2.5 pt-2 border-t border-[#E5E2DA] flex flex-wrap items-center gap-1.5", children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-bold text-[#575E58]", children: "Dati consultati:" }),
+                            msg.groundedCitations.map((cit, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
                               "span",
                               {
-                                className: "text-[10px] font-mono bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded",
-                                children: [
-                                  cit.source,
-                                  cit.code ? `:${cit.code}` : "",
-                                  cit.dishId ? `:${cit.dishId}` : ""
-                                ]
+                                className: "text-[10px] bg-[#F3F1EC] text-[#575E58] px-2 py-0.5 rounded-md font-medium",
+                                children: formatCitationLabel(cit)
                               },
                               `${cit.source}-${i}`
                             ))
@@ -28731,7 +28777,7 @@ function MaestroDrawer({
                 msg.id
               );
             }),
-            sending && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-slate-500 font-medium px-2 animate-pulse", children: "Il Maestro sta consultando i motori deterministici della tua casa..." }),
+            sending && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-[#575E58] font-medium px-2 animate-pulse", children: "Controllo dispensa, pentole e offerte attive a Rapallo..." }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: bottomRef })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -28741,7 +28787,7 @@ function MaestroDrawer({
                 e.preventDefault();
                 sendPrompt(inputText);
               },
-              className: "p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0",
+              className: "p-3 bg-white border-t border-[#E5E2DA] flex items-center gap-2 shrink-0",
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
@@ -28749,8 +28795,8 @@ function MaestroDrawer({
                     type: "text",
                     value: inputText,
                     onChange: (e) => setInputText(e.target.value),
-                    placeholder: "Es. Cosa cucino stasera in 12 min? Come tolgo il calcare?",
-                    className: "flex-1 rounded-xl border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder: "Es. Cosa cucino stasera in 15 min? Come tolgo il calcare?",
+                    className: "flex-1 rounded-xl border border-[#E5E2DA] px-3 py-2 text-xs text-[#141A17] bg-white focus:outline-none focus:ring-2 focus:ring-[#1B5E3A]"
                   }
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -28758,7 +28804,7 @@ function MaestroDrawer({
                   {
                     type: "submit",
                     disabled: sending || !inputText.trim(),
-                    className: "px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-extrabold cursor-pointer",
+                    className: "px-4 py-2 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] disabled:opacity-50 text-white text-xs font-extrabold cursor-pointer transition-colors",
                     children: "Invia"
                   }
                 )
@@ -28772,11 +28818,33 @@ function MaestroDrawer({
 }
 
 const TABS = [
-  { id: "sos", label: "⚡ SOS Macchia 3-Tap", shortLabel: "⚡ SOS 3-Tap" },
-  { id: "kit", label: "🧪 Kit 7 Pilastri & P0", shortLabel: "🧪 Kit & P0" },
-  { id: "offers", label: "💶 Offerte €/ciclo & INCI", shortLabel: "💶 €/ciclo & INCI" },
-  { id: "maintenance", label: "🛡️ Elettrodomestici & Miti", shortLabel: "🛡️ Casa & Miti" }
+  { id: "sos", label: "Smacchiatore guidato", shortLabel: "Smacchiatore" },
+  { id: "kit", label: "I 7 prodotti base & Sicurezza", shortLabel: "Base & Sicurezza" },
+  { id: "offers", label: "Prezzi a lavaggio & Etichette", shortLabel: "Prezzi & Etichette" },
+  { id: "maintenance", label: "Elettrodomestici & Falsi miti", shortLabel: "Cura & Miti" }
 ];
+const SAFETY_LOCK_TITLES = {
+  "P0-PRESSURE-BURST": "Mai chiudere il percarbonato in uno spruzzino",
+  "P0-CAV-INGESTION": "Mai travasare in bottiglie d'acqua",
+  "P0-DUST-AEROSOL": "Usa erogatori a schiuma o un panno, mai aerosol",
+  "P0-CL2-LETHAL": "Mai mescolare candeggina e acidi (gas tossico)",
+  "P0-NH2CL-LETHAL": "Mai mescolare candeggina e ammoniaca",
+  "P0-PERACETIC": "Mai mescolare aceto e acqua ossigenata",
+  "P0-ALUMINUM-CORROSION": "Mai sgrassatori forti o soda sull'alluminio",
+  "P0-BIOCIDE-FAIL": "Risciacqua il sapone prima di disinfettare",
+  "P1-ACID-MARBLE-SLATE": "Mai acidi o aceto su marmo, ardesia e graniglia",
+  "P1-BLEACH-INOX-PITTING": "Mai candeggina sull'acciaio inox"
+};
+function getSafetyLockTitle(lock) {
+  if (!lock) return "Avviso di sicurezza";
+  return SAFETY_LOCK_TITLES[lock.code] || lock.reagentA || lock.title || "Avviso di sicurezza";
+}
+function formatSeverityLabel(severity) {
+  if (severity === "P0-LETHAL") return "Pericolo grave";
+  if (severity === "P0-CRITICAL") return "Attenzione critica";
+  if (severity === "P1-DAMAGE") return "Rischio danni";
+  return "Avviso";
+}
 const SURFACE_ICONS = {
   marmo_ardesia_graniglia: "🏛️",
   gres_porcellanato: "🧱",
@@ -29010,32 +29078,19 @@ function HomeChemistryView({
   const soils = matrix?.soilTaxonomy || [];
   const kitPillars = kitGuide?.pillars || matrix?.minimalChemicalKit || [];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", "data-testid": "room-7-home-chemistry", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col lg:flex-row lg:items-center justify-between gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-100 text-sky-900", children: "Stanza 7 · Chimica Applicata (Reg. CE 648/2004)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200", children: [
-              "💧 Acqua Iren Rapallo: 14–22 °f (Attuale: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]", children: "Casa e barca · Pulizie sicure" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A] border border-emerald-200", children: [
+              "💧 Acqua Iren Rapallo: 14–22 °f (attuale: ",
               waterHardnessF,
               " °f)"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg sm:text-xl font-extrabold text-slate-900", children: "🧼 Chimica & Cura Scientifica della Casa e della Barca" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-600 max-w-3xl", children: [
-            "Motore deterministico a 4 assi (",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("em", { children: "Sporco × Substrato × Principio Attivo × Cerchio di Sinner" }),
-            ") con guardie salvavita ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "P0" }),
-            ", tutela marmi/ardesie liguri e arbitraggio reale ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "€/ciclo" }),
-            " su",
-            " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Tigotà" }),
-            ", ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "PiùMe" }),
-            " e supermercati di Rapallo."
-          ] })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg sm:text-xl font-extrabold text-[#141A17] pt-1", children: "Pulizie sicure per casa e barca" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] max-w-3xl", children: "Scegli la superficie e il tipo di sporco per avere i prodotti giusti, proteggere marmi e ardesie liguri e confrontare i veri prezzi a lavaggio tra Tigotà, PiùMe e supermercati di Rapallo." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 shrink-0", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -29043,10 +29098,10 @@ function HomeChemistryView({
             {
               type: "button",
               onClick: handleToggleBoatMode,
-              className: `px-3 py-2 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${boatMode ? "bg-sky-900 text-white border-sky-800 shadow-xs" : "bg-slate-50 text-slate-800 border-slate-200 hover:border-sky-300"}`,
+              className: `px-3 py-2 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${boatMode ? "bg-[#141A17] text-white border-[#141A17] shadow-xs" : "bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]"}`,
               children: [
-                "⚓ Modalità Barca (AISI 316 / Mare): ",
-                boatMode ? "ATTIVA" : "OFF"
+                "⚓ Modalità barca: ",
+                boatMode ? "Attiva" : "Spenta"
               ]
             }
           ),
@@ -29055,10 +29110,10 @@ function HomeChemistryView({
             {
               type: "button",
               onClick: () => onOpenMaestro(
-                "Ho un dubbio chimico sulle pulizie di casa a Rapallo: cosa uso in sicurezza senza rovinare le superfici?"
+                "Ho un dubbio sulle pulizie di casa a Rapallo: cosa uso in sicurezza senza rovinare le superfici?"
               ),
-              className: "px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold rounded-xl cursor-pointer",
-              children: "💬 Chiedi al Chimico (Maestro)"
+              className: "px-3 py-2 bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold rounded-xl cursor-pointer transition-colors",
+              children: "💬 Chiedi al Maestro"
             }
           ),
           onNavigateRoom && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -29066,15 +29121,15 @@ function HomeChemistryView({
             {
               type: "button",
               onClick: () => onNavigateRoom("room-4-cucina"),
-              className: "px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold rounded-xl cursor-pointer",
-              children: "🍳 Officina Pentole →"
+              className: "px-3 py-2 bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] border border-[#E5E2DA] text-xs font-bold rounded-xl cursor-pointer",
+              children: "🍳 Pentole e fornelli →"
             }
           )
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-3 border-t border-[#E5E2DA] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "rapallo-hardness-slider", className: "font-bold text-slate-700 shrink-0", children: "💧 Durezza Acqua (°f):" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "rapallo-hardness-slider", className: "font-bold text-[#141A17] shrink-0", children: "💧 Durezza acqua (°f):" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -29084,10 +29139,10 @@ function HomeChemistryView({
               max: 38,
               value: waterHardnessF,
               onChange: (e) => setWaterHardnessF(Number(e.target.value)),
-              className: "w-36 sm:w-48 accent-sky-700 cursor-pointer"
+              className: "w-36 sm:w-48 accent-[#1B5E3A] cursor-pointer"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-extrabold text-sky-900 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-extrabold text-[#141A17] bg-[#F3F1EC] border border-[#E5E2DA] px-2 py-0.5 rounded", children: [
             waterHardnessF,
             " °f"
           ] }),
@@ -29096,15 +29151,15 @@ function HomeChemistryView({
             {
               type: "button",
               onClick: () => setWaterHardnessF(18),
-              className: "text-[11px] underline text-slate-500 hover:text-slate-800 cursor-pointer",
-              children: "Reset Rapallo (18 °f)"
+              className: "text-[11px] underline text-[#575E58] hover:text-[#141A17] cursor-pointer",
+              children: "Ripristina Rapallo (18 °f)"
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-600", children: [
-          "Fattore dosaggio detersivo vs standard UE (25 °f):",
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58]", children: [
+          "Dosaggio consigliato rispetto allo standard UE (25 °f):",
           " ",
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-slate-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-[#141A17]", children: [
             kitGuide?.waterHardness?.detergentMultiplierVsEu25F ?? 1,
             "×"
           ] }),
@@ -29114,7 +29169,7 @@ function HomeChemistryView({
           ")"
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 lg:grid-cols-4 gap-2 pt-1", role: "tablist", "aria-label": "Sezioni Chimica Casa", children: TABS.map((tab) => {
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 lg:grid-cols-4 gap-2 pt-1", role: "tablist", "aria-label": "Sezioni Cura della Casa", children: TABS.map((tab) => {
         const active = activeTab === tab.id;
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "button",
@@ -29123,7 +29178,7 @@ function HomeChemistryView({
             role: "tab",
             "aria-selected": active,
             onClick: () => setActiveTab(tab.id),
-            className: `py-2.5 px-3 rounded-xl text-xs font-extrabold border text-center transition-all cursor-pointer ${active ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"}`,
+            className: `py-2.5 px-3 rounded-xl text-xs font-extrabold border text-center transition-all cursor-pointer ${active ? "bg-[#1B5E3A] text-white border-[#1B5E3A] shadow-xs" : "bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]"}`,
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "hidden sm:inline", children: tab.label }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "sm:hidden", children: tab.shortLabel })
@@ -29135,12 +29190,12 @@ function HomeChemistryView({
     ] }),
     activeTab === "sos" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-7 space-y-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "1️⃣ Tap 1 — Quale superficie o tessuto devi trattare?" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-slate-500", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "1. Quale superficie o tessuto devi pulire?" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-[#575E58]", children: [
               surfaces.length,
-              " substrati"
+              " materiali"
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 sm:grid-cols-3 gap-2", children: surfaces.map((surf) => {
@@ -29150,7 +29205,7 @@ function HomeChemistryView({
               {
                 type: "button",
                 onClick: () => setSelectedSurface(surf.id),
-                className: `p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${isSelected ? "bg-emerald-900 text-white border-emerald-800 shadow-xs" : "bg-slate-50 text-slate-800 border-slate-200 hover:border-emerald-300"}`,
+                className: `p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${isSelected ? "bg-[#1B5E3A] text-white border-[#1B5E3A] shadow-xs" : "bg-[#FAF9F6] text-[#141A17] border-[#E5E2DA] hover:border-[#1B5E3A]"}`,
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold leading-snug", children: [
                     SURFACE_ICONS[surf.id] || "🧼",
@@ -29160,7 +29215,7 @@ function HomeChemistryView({
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
-                      className: `text-[10px] mt-0.5 ${isSelected ? "text-emerald-200" : "text-slate-500"}`,
+                      className: `text-[10px] mt-0.5 ${isSelected ? "text-emerald-100" : "text-[#575E58]"}`,
                       children: [
                         "pH sicuro: ",
                         surf.safePhRange?.[0],
@@ -29175,8 +29230,8 @@ function HomeChemistryView({
             );
           }) })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "2️⃣ Tap 2 — Qual è la natura chimica dello sporco o della macchia?" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "2. Che tipo di sporco o macchia devi togliere?" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-2", children: soils.map((soil) => {
             const isSelected = selectedSoil === soil.id;
             return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -29184,18 +29239,13 @@ function HomeChemistryView({
               {
                 type: "button",
                 onClick: () => setSelectedSoil(soil.id),
-                className: `p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${isSelected ? "bg-sky-900 text-white border-sky-800 shadow-xs" : "bg-slate-50 text-slate-800 border-slate-200 hover:border-sky-300"}`,
+                className: `p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${isSelected ? "bg-[#141A17] text-white border-[#141A17] shadow-xs" : "bg-[#FAF9F6] text-[#141A17] border-[#E5E2DA] hover:border-[#1B5E3A]"}`,
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold", children: [
-                    "[",
-                    soil.code,
-                    "] ",
-                    soil.name
-                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold", children: soil.name }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
-                      className: `text-[10px] mt-0.5 line-clamp-1 ${isSelected ? "text-sky-200" : "text-slate-500"}`,
+                      className: `text-[10px] mt-0.5 line-clamp-1 ${isSelected ? "text-stone-300" : "text-[#575E58]"}`,
                       children: [
                         "Es: ",
                         (soil.examples || []).slice(0, 3).join(", ")
@@ -29208,10 +29258,10 @@ function HomeChemistryView({
             );
           }) })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "3️⃣ Tap 3 — Cosa hai già in casa nel tuo Armadietto Chimico?" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-500", children: "Spunta i pilastri che possiedi: il protocollo evidenzierà cosa puoi usare subito e cosa comprare da Tigotà/PiùMe." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "3. Cosa hai già in casa sotto il lavello?" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58]", children: "Spunta i prodotti base che possiedi per usare subito quello che hai già in armadietto." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-2", children: kitPillars.map((pillar) => {
             const isOwned = ownedKitKeys.includes(pillar.key);
@@ -29220,7 +29270,7 @@ function HomeChemistryView({
               {
                 type: "button",
                 onClick: () => toggleOwnedKitKey(pillar.key),
-                className: `px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${isOwned ? "bg-emerald-50 text-emerald-900 border-emerald-300" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"}`,
+                className: `px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${isOwned ? "bg-emerald-50 text-[#1B5E3A] border-[#1B5E3A]/40" : "bg-white text-[#575E58] border-[#E5E2DA] hover:bg-[#FAF9F6]"}`,
                 children: [
                   isOwned ? "✓ " : "+ ",
                   pillar.name.split("—")[0].split("(")[0].trim()
@@ -29231,27 +29281,26 @@ function HomeChemistryView({
           }) })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lg:col-span-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "bg-white rounded-2xl border-2 border-slate-900 p-4 sm:p-5 shadow-sm space-y-4 sticky top-4", children: solving && !solvedProtocol ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-10 text-center text-xs text-slate-500", children: "Calcolo stechiometria e Cerchio di Sinner..." }) : solvedProtocol ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-b border-slate-100 pb-3", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-900", children: "Protocollo Scientifico Validato" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900 mt-1.5", children: solvedProtocol.title }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-600 mt-1", children: solvedProtocol.soil?.chemicalMechanism })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "lg:col-span-5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4 sticky top-4", children: solving && !solvedProtocol ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-10 text-center text-xs text-[#575E58]", children: "Calcolo la soluzione migliore..." }) : solvedProtocol ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-b border-[#E5E2DA] pb-3", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A] border border-emerald-200", children: "Procedura sicura" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-[#141A17] mt-1.5", children: solvedProtocol.title }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58] mt-1", children: solvedProtocol.soil?.chemicalMechanism })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-rose-50 border-2 border-rose-400 text-xs text-rose-950 space-y-1.5", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-rose-900 uppercase tracking-wide flex items-center gap-1.5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "⛔ COSA NON FARE PER PRIMO (Guardia P0/P1)" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-xs text-rose-950 space-y-1.5", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-rose-900 uppercase tracking-wide flex items-center gap-1.5", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "⛔ Cosa non fare per prima cosa" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-bold leading-relaxed", children: solvedProtocol.doNotDoFirst }),
           (solvedProtocol.p0SafetyLocks || []).map((lock) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: "mt-1.5 pt-1.5 border-t border-rose-200 text-[11px] text-rose-900",
+              className: "mt-1.5 pt-1.5 border-t border-rose-200 text-[11px] text-rose-900 space-y-0.5",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
-                  "[",
-                  lock.code,
-                  "]"
-                ] }),
-                " ",
-                lock.mandatoryRule
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold", children: getSafetyLockTitle(lock) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: lock.mandatoryRule }),
+                lock.code && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-mono text-rose-700/80", children: [
+                  "Rif.: ",
+                  lock.code
+                ] })
               ]
             },
             lock.id
@@ -29259,27 +29308,27 @@ function HomeChemistryView({
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between text-xs", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-extrabold text-slate-800", children: [
-              "🔄 Cerchio di Sinner (",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-extrabold text-[#141A17]", children: [
+              "Equilibrio della pulizia (",
               solvedProtocol.sinnerCircle?.totalPct || 100,
               "%)"
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-500", children: "Bilanciamento energia" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-[#575E58]", children: "Fattori in gioco" })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-3 rounded-full overflow-hidden flex bg-slate-100 border border-slate-200", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-full h-3 rounded-full overflow-hidden flex bg-[#F3F1EC] border border-[#E5E2DA]", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
                 style: { width: `${solvedProtocol.sinnerCircle?.chemistryPct || 25}%` },
-                className: "bg-emerald-600",
-                title: "Chimica"
+                className: "bg-[#1B5E3A]",
+                title: "Prodotto"
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
                 style: { width: `${solvedProtocol.sinnerCircle?.tempPct || 25}%` },
-                className: "bg-amber-500",
+                className: "bg-[#9A5B25]",
                 title: "Temperatura"
               }
             ),
@@ -29287,59 +29336,59 @@ function HomeChemistryView({
               "div",
               {
                 style: { width: `${solvedProtocol.sinnerCircle?.timePct || 25}%` },
-                className: "bg-sky-600",
-                title: "Tempo di contatto"
+                className: "bg-stone-500",
+                title: "Tempo di posa"
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
                 style: { width: `${solvedProtocol.sinnerCircle?.mechanicalPct || 25}%` },
-                className: "bg-purple-600",
-                title: "Azione Meccanica"
+                className: "bg-[#141A17]",
+                title: "Azione meccanica"
               }
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px] font-bold pt-0.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-emerald-800", children: [
-              "🧪 Chimica: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[#1B5E3A]", children: [
+              "Prodotto: ",
               solvedProtocol.sinnerCircle?.chemistryPct,
               "%"
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-amber-800", children: [
-              "🌡️ Temp: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[#9A5B25]", children: [
+              "Calore: ",
               solvedProtocol.sinnerCircle?.tempPct,
               "%"
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sky-800", children: [
-              "⏱️ Tempo: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[#575E58]", children: [
+              "Tempo: ",
               solvedProtocol.sinnerCircle?.timePct,
               "%"
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-purple-800", children: [
-              "🧽 Meccanica: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[#141A17]", children: [
+              "Olio di gomito: ",
               solvedProtocol.sinnerCircle?.mechanicalPct,
               "%"
             ] })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-800", children: [
-            "🧴 Principi Attivi Consigliati (calibrati su ",
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#141A17]", children: [
+            "Prodotti consigliati (calibrati su ",
             waterHardnessF,
             " °f):"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: (solvedProtocol.requiredKitPillars || []).map((req) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: `p-2.5 rounded-xl border text-xs flex items-start justify-between gap-2 ${req.owned ? "bg-emerald-50/60 border-emerald-200" : "bg-amber-50/60 border-amber-200"}`,
+              className: `p-2.5 rounded-xl border text-xs flex items-start justify-between gap-2 ${req.owned ? "bg-[#FAF9F6] border-[#E5E2DA]" : "bg-amber-50/50 border-amber-200"}`,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold text-slate-900", children: [
-                    req.owned ? "✓ Già in casa: " : "🛒 Ti manca: ",
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold text-[#141A17]", children: [
+                    req.owned ? "✓ Già in casa: " : "Da comprare: ",
                     req.name
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-600 mt-0.5", children: req.formula })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-[#575E58] mt-0.5", children: req.formula })
                 ] }),
                 !req.owned && onAddToShoppingList && /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
@@ -29352,7 +29401,7 @@ function HomeChemistryView({
                       unitPriceEur: Number(req.referencePriceEuro || 2.99),
                       preferredChain: "Tigotà / PiùMe Rapallo"
                     }),
-                    className: "px-2 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-extrabold shrink-0 cursor-pointer",
+                    className: "px-2 py-1 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-[10px] font-extrabold shrink-0 cursor-pointer",
                     children: "+ Lista"
                   }
                 )
@@ -29361,89 +29410,97 @@ function HomeChemistryView({
             req.key
           )) })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5 pt-2 border-t border-slate-100", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-slate-900", children: "📋 Procedura Operativa Step-by-Step:" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "list-decimal list-inside text-xs text-slate-700 space-y-1.5 leading-relaxed", children: (solvedProtocol.steps || []).map((st, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: st }, idx)) })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5 pt-2 border-t border-[#E5E2DA]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-[#141A17]", children: "Passaggi da seguire:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "list-decimal list-inside text-xs text-[#141A17] space-y-1.5 leading-relaxed", children: (solvedProtocol.steps || []).map((st, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: st }, idx)) })
         ] }),
-        solvedProtocol.surface?.materialNote && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🔬 Scienza del Substrato:" }),
+        solvedProtocol.surface?.materialNote && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-xl bg-[#F3F1EC] border border-[#E5E2DA] text-[11px] text-[#575E58]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Nota sul materiale:" }),
           " ",
           solvedProtocol.surface.materialNote
         ] })
       ] }) : null }) })
     ] }) }),
     activeTab === "kit" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-rose-50 rounded-2xl border-2 border-rose-400 p-4 sm:p-5 space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-rose-50/80 rounded-2xl border border-rose-300 p-4 sm:p-5 space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center justify-between gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-700 text-white", children: "Guardie Inviolabili P0 · Autoproduzione Sicura" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm sm:text-base font-extrabold text-rose-950 mt-1", children: "☠️ I 3 Divieti Salvavita sulle Polveri Pure (Contro la fallacia “Naturale = Innocuo”)" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-700 text-white", children: "Sicurezza essenziale · Uso corretto" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm sm:text-base font-extrabold text-rose-950 mt-1.5", children: "I 3 divieti essenziali sulle polveri pure" })
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-3", children: (kitGuide?.purePowderSafetyLocksP0 || []).map((lock) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: "bg-white rounded-xl border border-rose-300 p-3.5 text-xs space-y-1.5 shadow-2xs",
+            className: "bg-white rounded-xl border border-rose-200 p-3.5 text-xs space-y-1.5 shadow-2xs flex flex-col justify-between",
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-rose-900", children: lock.code }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-rose-100 text-rose-900", children: lock.severity })
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-extrabold text-rose-950 leading-snug", children: getSafetyLockTitle(lock) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-900 shrink-0", children: formatSeverityLabel(lock.severity) })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-semibold text-[#141A17]", children: lock.reagentA }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58]", children: lock.clinicalRisk }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] font-extrabold text-rose-800", children: lock.mandatoryRule })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900", children: lock.reagentA }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-mono text-[10px] bg-slate-50 p-1.5 rounded border border-slate-200 text-slate-700", children: lock.hazardFormula }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-700", children: lock.clinicalRisk }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] font-extrabold text-rose-800", children: lock.mandatoryRule })
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-1.5 border-t border-[#E5E2DA] flex flex-wrap items-center justify-between gap-1 text-[10px] text-[#575E58]", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono", children: lock.hazardFormula }),
+                lock.code && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-mono", children: [
+                  "Rif. ",
+                  lock.code
+                ] })
+              ] })
             ]
           },
           lock.id
         )) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-3.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🚦 Verificatore Live Sicurezza Miscele & Contenitori (Semaforo Chimico P0)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Prima di mescolare due prodotti o travasarli in un contenitore, verifica la compatibilità chimica deterministica." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "Verifica prima di mescolare due prodotti" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Controlla subito se due prodotti insieme creano gas pericolosi o rovinano una superficie." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-3 text-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block font-bold text-slate-700 mb-1", children: "Prodotto / Reagente A" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block font-bold text-[#141A17] mb-1", children: "Primo prodotto" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "select",
               {
                 value: reagentA,
                 onChange: (e) => setReagentA(e.target.value),
-                className: "w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold",
+                className: "w-full p-2.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] font-semibold text-[#141A17]",
                 children: REAGENT_OPTIONS.map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: opt, children: opt }, opt))
               }
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block font-bold text-slate-700 mb-1", children: "Prodotto / Reagente B" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block font-bold text-[#141A17] mb-1", children: "Secondo prodotto" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "select",
               {
                 value: reagentB,
                 onChange: (e) => setReagentB(e.target.value),
-                className: "w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold",
+                className: "w-full p-2.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] font-semibold text-[#141A17]",
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "(Nessun secondo reagente)" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "(Nessun secondo prodotto)" }),
                   REAGENT_OPTIONS.map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: opt, children: opt }, opt))
                 ]
               }
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block font-bold text-slate-700 mb-1", children: "Contenitore / Superficie" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block font-bold text-[#141A17] mb-1", children: "Contenitore o superficie" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "select",
               {
                 value: targetContext,
                 onChange: (e) => setTargetContext(e.target.value),
-                className: "w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold",
+                className: "w-full p-2.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] font-semibold text-[#141A17]",
                 children: CONTAINER_OR_TARGET_OPTIONS.map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: opt.value, children: opt.label }, opt.label))
               }
             )
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 text-[11px]", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-500", children: "Test rapidi:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-[#575E58]", children: "Prove rapide:" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
@@ -29453,7 +29510,7 @@ function HomeChemistryView({
                 setReagentB("Anticalcare Acido (Viakal)");
                 setTargetContext("");
               },
-              className: "px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer",
+              className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer",
               children: "Candeggina + Viakal"
             }
           ),
@@ -29466,8 +29523,8 @@ function HomeChemistryView({
                 setReagentB("");
                 setTargetContext("flacone spray chiuso ermetico");
               },
-              className: "px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer",
-              children: "Percarbonato in Spray Chiuso"
+              className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer",
+              children: "Percarbonato in spruzzino chiuso"
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -29479,8 +29536,8 @@ function HomeChemistryView({
                 setReagentB("");
                 setTargetContext("Moka in alluminio / Filtro cappa alluminio");
               },
-              className: "px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer",
-              children: "Soda Solvay su Moka Alluminio"
+              className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer",
+              children: "Soda Solvay su moka in alluminio"
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -29492,30 +29549,35 @@ function HomeChemistryView({
                 setReagentB("");
                 setTargetContext("Marmo di Carrara / Ardesia Ligure");
               },
-              className: "px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer",
-              children: "Acido Citrico su Marmo Ligure"
+              className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer",
+              children: "Acido Citrico su marmo ligure"
             }
           )
         ] }),
         safetyResult && /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: `p-3.5 rounded-xl border-2 text-xs space-y-2 ${safetyResult.blockedByP0 ? "bg-rose-50 border-rose-500 text-rose-950" : safetyResult.blockedByP1 ? "bg-amber-50 border-amber-400 text-amber-950" : "bg-emerald-50 border-emerald-400 text-emerald-950"}`,
+            className: `p-3.5 rounded-xl border text-xs space-y-2 ${safetyResult.blockedByP0 ? "bg-rose-50 border-rose-400 text-rose-950" : safetyResult.blockedByP1 ? "bg-amber-50 border-amber-300 text-amber-950" : "bg-emerald-50/70 border-[#1B5E3A]/30 text-[#141A17]"}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-sm", children: safetyResult.blockedByP0 ? `🔴 BLOCCO CHIMICO ${safetyResult.highestSeverity} — VIETATO PROCEDERE!` : safetyResult.blockedByP1 ? `🟠 ALLERTA DANNO MATERIALI (${safetyResult.highestSeverity})` : "🟢 SEMAFORO VERDE — Nessuna incompatibilità chimica critica rilevata" }),
-              (safetyResult.violations || []).map((v) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white/90 p-2.5 rounded-lg border border-slate-200 space-y-1", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold", children: [
-                  "[",
-                  v.code,
-                  "] ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-sm", children: safetyResult.blockedByP0 ? "🔴 Pericolo chimico: non procedere assolutamente" : safetyResult.blockedByP1 ? "🟠 Rischio di rovinare il materiale" : "🟢 Combinazione sicura — Nessuna incompatibilità critica rilevata" }),
+              (safetyResult.violations || []).map((v) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white/95 p-2.5 rounded-lg border border-[#E5E2DA] space-y-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold text-[#141A17]", children: [
+                  getSafetyLockTitle(v),
+                  " — ",
                   v.reagentA,
                   " + ",
                   v.reagentB,
                   " → ",
                   v.toxicProduct
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-mono text-[11px] text-slate-700", children: v.hazardFormula }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-semibold", children: v.mandatoryRule })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-semibold text-[#141A17]", children: v.mandatoryRule }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-[#575E58]", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: v.hazardFormula }),
+                  v.code && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+                    "Rif. ",
+                    v.code
+                  ] })
+                ] })
               ] }, v.id))
             ]
           }
@@ -29523,21 +29585,21 @@ function HomeChemistryView({
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center justify-between gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm sm:text-base font-extrabold text-slate-900", children: [
-            "🧪 Il Kit Minimo Chimico a 7 Pilastri (Sostituisce ",
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm sm:text-base font-extrabold text-[#141A17]", children: [
+            "I 7 prodotti base per tutta la casa (sostituiscono ",
             kitGuide?.totalCommercialBottlesReplaced || 25,
-            "+ Flaconi Marketing)"
+            "+ flaconi diversi)"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-600", children: [
-            "Costo intero set di riferimento a Rapallo:",
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-[#575E58]", children: [
+            "Costo indicativo dell'intero set a Rapallo:",
             " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-[#141A17]", children: [
               "~€ ",
               Number(kitGuide?.fullKitReferenceCostEuro || 30.57).toFixed(2)
             ] }),
-            " • Calibrato su",
+            " • Dosi calibrate su",
             " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-[#141A17]", children: [
               waterHardnessF,
               " °f"
             ] }),
@@ -29549,18 +29611,18 @@ function HomeChemistryView({
           return /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "article",
             {
-              className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs flex flex-col justify-between gap-3 text-xs",
+              className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs flex flex-col justify-between gap-3 text-xs",
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-sky-100 text-sky-900", children: [
-                        "Pilastro #",
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]", children: [
+                        "Prodotto #",
                         p.pillarNumber
                       ] }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-extrabold text-slate-900 mt-1", children: p.name })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-extrabold text-[#141A17] mt-1", children: p.name })
                     ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold text-emerald-800 shrink-0", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold text-[#1B5E3A] shrink-0", children: [
                       "~€ ",
                       Number(p.referencePriceEuro).toFixed(2)
                     ] })
@@ -29568,35 +29630,35 @@ function HomeChemistryView({
                   /* @__PURE__ */ jsxRuntimeExports.jsxs(
                     "div",
                     {
-                      className: `p-2.5 rounded-xl border text-[11px] ${p.preparedSolutionRecipe?.allowedInClosedSprayBottle ? "bg-emerald-50/60 border-emerald-200 text-emerald-950" : "bg-amber-50/70 border-amber-300 text-amber-950"}`,
+                      className: `p-2.5 rounded-xl border text-[11px] ${p.preparedSolutionRecipe?.allowedInClosedSprayBottle ? "bg-emerald-50/60 border-emerald-200 text-[#141A17]" : "bg-amber-50/70 border-amber-200 text-amber-950"}`,
                       children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold", children: p.preparedSolutionRecipe?.allowedInClosedSprayBottle ? "✓ Stoccabile in flacone opaco child-proof etichettato" : "⛔ VIETATO chiudere in flacone spray — Solo uso estemporaneo aperto" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold", children: p.preparedSolutionRecipe?.allowedInClosedSprayBottle ? "✓ Si può conservare in flacone opaco ben etichettato" : "⛔ Mai chiudere in flacone spray — Usa al momento in contenitore aperto" }),
                         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-0.5", children: p.preparedSolutionRecipe?.formula })
                       ]
                     }
                   ),
                   p.preparedSolutionRecipe?.rapalloDosages && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold text-slate-700", children: [
-                      "Dosaggi Rapallo (",
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-bold text-[#141A17]", children: [
+                      "Dosi per Rapallo (",
                       waterHardnessF,
                       " °f):"
                     ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "list-disc list-inside text-[11px] text-slate-600 space-y-0.5", children: Object.values(p.preparedSolutionRecipe.rapalloDosages).map((d, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: d }, i)) })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "list-disc list-inside text-[11px] text-[#575E58] space-y-0.5", children: Object.values(p.preparedSolutionRecipe.rapalloDosages).map((d, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: d }, i)) })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-500", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Elimina dal carrello:" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58]", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Elimina dal carrello:" }),
                     " ",
                     (p.replacedCommercialProducts || []).join(" • ")
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 flex items-center justify-between gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-[#E5E2DA] flex items-center justify-between gap-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "button",
                     {
                       type: "button",
                       onClick: () => toggleOwnedKitKey(p.key),
-                      className: `px-3 py-1.5 rounded-lg font-extrabold cursor-pointer ${isOwned ? "bg-emerald-100 text-emerald-900 border border-emerald-300" : "bg-slate-100 text-slate-700 border border-slate-200"}`,
-                      children: isOwned ? "✓ Posseduto in casa" : "Segna come posseduto"
+                      className: `px-3 py-1.5 rounded-lg font-extrabold cursor-pointer ${isOwned ? "bg-emerald-50 text-[#1B5E3A] border border-emerald-200" : "bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]"}`,
+                      children: isOwned ? "✓ Già in casa" : "Segna come presente"
                     }
                   ),
                   !isOwned && onAddToShoppingList && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -29610,8 +29672,8 @@ function HomeChemistryView({
                         unitPriceEur: Number(p.referencePriceEuro || 2.99),
                         preferredChain: "Tigotà / PiùMe Rapallo"
                       }),
-                      className: "px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold cursor-pointer",
-                      children: "+ Aggiungi a Lista Spesa"
+                      className: "px-3 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white font-extrabold cursor-pointer",
+                      children: "+ Aggiungi alla lista"
                     }
                   )
                 ] })
@@ -29623,18 +29685,18 @@ function HomeChemistryView({
       ] })
     ] }),
     activeTab === "offers" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🔬 Decodificatore INCI Detergenti (Reg. CE 648/2004 — Anti-Greenwashing)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Incolla gli ingredienti dal retro del flacone o dalla scheda online per vedere i veri principi attivi e i divieti sui tessuti." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "Leggi l'etichetta sul retro del flacone" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Incolla la lista ingredienti dal retro del prodotto per vedere cosa pulisce davvero e su quali tessuti evitarlo." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-1.5", children: INCI_PRESETS.map((pr) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               onClick: () => setInciInput(pr.inci),
-              className: "px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 cursor-pointer",
+              className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[11px] font-bold text-[#141A17] cursor-pointer",
               children: pr.label
             },
             pr.label
@@ -29647,14 +29709,14 @@ function HomeChemistryView({
             value: inciInput,
             onChange: (e) => setInciInput(e.target.value),
             placeholder: "Es. Aqua, Sodium Laureth Sulfate, Sodium Carbonate Peroxide, TAED, Subtilisin...",
-            className: "w-full p-3 rounded-xl border border-slate-300 text-xs font-mono bg-slate-50"
+            className: "w-full p-3 rounded-xl border border-[#E5E2DA] text-xs font-mono bg-[#FAF9F6] text-[#141A17]"
           }
         ),
         inciDecoded && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-xs", children: [
           (inciDecoded.warnings || []).map((w, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: "p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 font-bold",
+              className: "p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 font-bold",
               children: [
                 "⚠️ ",
                 w
@@ -29667,75 +29729,65 @@ function HomeChemistryView({
             {
               className: "p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-200 space-y-0.5",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-emerald-950", children: act.name }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-700", children: act.primaryFunction })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-[#141A17]", children: act.name }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58]", children: act.primaryFunction })
               ]
             },
             act.id
           )) })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center justify-between gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-extrabold text-slate-900", children: [
-            "💶 Offerte Vere Detergenza a Rapallo (",
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-sm font-extrabold text-[#141A17]", children: [
+            "Offerte reali per la casa a Rapallo (",
             offersReport?.totalCleaningOffers || 0,
-            " attive · Zero Profumi/Bazar)"
+            " attive)"
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500", children: [
-            "Valutazione rigorosa ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "ADR-0006" }),
-            ": ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "€/ciclo" }),
-            " calcolato solo su formati espliciti e",
-            " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Dominanza d'Intervallo Reg. 648/2004" }),
-            " senza percentuali inventate."
-          ] })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Il costo per lavaggio viene calcolato solo quando peso o numero di cicli sono indicati chiaramente sul volantino, senza stime inventate." })
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3", children: (offersReport?.offers || []).map((off, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: "p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between gap-2.5 text-xs",
+            className: "p-3.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] flex flex-col justify-between gap-2.5 text-xs",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded bg-white border border-[#E5E2DA] text-[#575E58]", children: [
                     "📍 ",
                     off.storeName || off.storeId
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm font-extrabold text-emerald-800", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm font-extrabold text-[#1B5E3A]", children: [
                     "€ ",
                     Number(off.promoPrice || 0).toFixed(2)
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900", children: off.title }),
-                off.costPerRapalloCycleEur !== null ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-bold text-sky-900 bg-sky-50 border border-sky-200 rounded-lg px-2 py-1", children: [
-                  "🧺 Costo reale a ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-[#141A17]", children: off.title }),
+                off.costPerRapalloCycleEur !== null ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-bold text-[#141A17] bg-[#F3F1EC] border border-[#E5E2DA] rounded-lg px-2 py-1", children: [
+                  "Costo reale a ",
                   waterHardnessF,
                   " °f:",
                   " ",
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
                     "€ ",
                     off.costPerRapalloCycleEur.toFixed(2),
-                    " / ciclo"
+                    " / lavaggio"
                   ] }),
                   " (",
                   off.washCount,
-                  " cicli std)"
-                ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 italic", children: "Formato/lavaggi omessi sul testo volantino (nessuna stima sintetica per ADR-0006)" }),
+                  " cicli)"
+                ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] italic", children: "Formato o numero di lavaggi non indicato sul volantino" }),
                 off.intervalDominanceComparison?.dominanceProven && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-950", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "💡 Dominanza Kit Minimo:" }),
-                  " anche al tetto massimo legale (",
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Confronto coi prodotti base:" }),
+                  " anche considerando la massima concentrazione di legge (",
                   off.intervalDominanceComparison.assumedCommercialUpperBoundPct,
-                  "% attivo), il principio puro del Kit fa risparmiare",
+                  "%), il prodotto puro fa risparmiare almeno",
                   " ",
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
-                    "≥ ",
                     off.intervalDominanceComparison.certifiedMinSavingsPct,
                     "%"
                   ] }),
-                  "!"
+                  "."
                 ] }),
                 (off.safetyWarnings || []).map((sw, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-semibold text-rose-800", children: [
                   "⚠️ ",
@@ -29755,8 +29807,8 @@ function HomeChemistryView({
                     storeId: off.storeId || null,
                     onPromo: true
                   }),
-                  className: "w-full py-1.5 px-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-extrabold cursor-pointer",
-                  children: "+ Aggiungi a Lista Spesa"
+                  className: "w-full py-1.5 px-2.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-[11px] font-extrabold cursor-pointer",
+                  children: "+ Aggiungi alla lista"
                 }
               )
             ]
@@ -29768,79 +29820,79 @@ function HomeChemistryView({
     activeTab === "maintenance" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm sm:text-base font-extrabold text-slate-900", children: "🛡️ Piano Manutenzione Programmata Anti-Guasto (Tutela CapEx Elettrodomestici & Barca)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Pochi euro l'anno di Acido Citrico e Percarbonato raddoppiano la vita utile di lavatrice, lavastoviglie, frigo, cappa e dotazioni di bordo." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm sm:text-base font-extrabold text-[#141A17]", children: "Manutenzione per far durare gli elettrodomestici e la barca" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Pochi euro l'anno di acido citrico e percarbonato allungano la vita di lavatrice, lavastoviglie, frigorifero, cappa e dotazioni di bordo." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
           (appliancesData?.appliances || []).map((app) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "article",
             {
-              className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5 text-xs",
+              className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5 text-xs",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-start justify-between gap-2 border-b border-slate-100 pb-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-start justify-between gap-2 border-b border-[#E5E2DA] pb-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-900", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A] border border-emerald-200", children: [
                       "⏱️ ",
                       app.frequency
                     ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-extrabold text-slate-900 mt-1", children: app.applianceName })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-extrabold text-[#141A17] mt-1", children: app.applianceName })
                   ] }),
-                  app.capexProtectedRangeEuro && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded bg-slate-100 text-slate-700", children: [
+                  app.capexProtectedRangeEuro && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#F3F1EC] text-[#575E58]", children: [
                     "Protegge €",
                     app.capexProtectedRangeEuro[0],
                     "–",
                     app.capexProtectedRangeEuro[1]
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-sky-900 bg-sky-50 border border-sky-200 p-2 rounded-xl", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "💧 Nota Acqua Rapallo:" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-[#141A17] bg-[#F3F1EC] border border-[#E5E2DA] p-2.5 rounded-xl", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Acqua a Rapallo:" }),
                   " ",
                   app.rapalloWaterNote
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "list-decimal list-inside space-y-1 text-slate-700 leading-relaxed", children: (app.decoupledSteps || []).map((st, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: st }, i)) })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "list-decimal list-inside space-y-1 text-[#575E58] leading-relaxed", children: (app.decoupledSteps || []).map((st, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: st }, i)) })
               ]
             },
             app.id
           )),
-          appliancesData?.boatCareModule && /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "bg-sky-950 text-white rounded-2xl border border-sky-800 p-4 shadow-xs space-y-2.5 text-xs", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between gap-2 border-b border-sky-800 pb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-sky-700 text-white", children: "⚓ Modulo Nautico Golfo del Tigullio" }),
+          appliancesData?.boatCareModule && /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "bg-[#141A17] text-white rounded-2xl border border-[#141A17] p-4 shadow-xs space-y-2.5 text-xs", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center justify-between gap-2 border-b border-white/15 pb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/10 text-stone-200", children: "⚓ Cura della barca · Tigullio" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-extrabold mt-1", children: appliancesData.boatCareModule.title })
             ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-100 font-bold text-[11px]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-xl bg-rose-950 border border-rose-500 text-rose-100 font-bold text-[11px]", children: [
               "⛔ ",
               appliancesData.boatCareModule.doNotDoFirst
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "list-decimal list-inside space-y-1 text-sky-100 leading-relaxed", children: (appliancesData.boatCareModule.steps || []).map((st, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: st }, i)) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { className: "list-decimal list-inside space-y-1 text-stone-200 leading-relaxed", children: (appliancesData.boatCareModule.steps || []).map((st, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: st }, i)) })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "space-y-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm sm:text-base font-extrabold text-slate-900", children: "🧪 Myth-Buster Stechiometrico — Falsi Miti Domestici Smontati con la Chimica" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Perché le “ricette magiche del web” producono acqua salata inerte o corrodono silenziosamente lavatrice e tessuti." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm sm:text-base font-extrabold text-[#141A17]", children: "Falsi miti sulle pulizie spiegati bene" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Perché alcune “ricette casalinghe” popolari si annullano a vicenda o rovinano nel tempo lavatrice, cromature e tessuti." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: myths.map((m) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "article",
           {
-            className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2 text-xs",
+            className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2 text-xs",
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-sm font-extrabold text-slate-900", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "text-sm font-extrabold text-[#141A17]", children: [
                   "❌ “",
                   m.mythTitle,
                   "”"
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-extrabold shrink-0", children: m.verdict.split("(")[0].trim() })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-950 text-[10px] font-extrabold shrink-0", children: m.verdict.split("(")[0].trim() })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-mono text-[11px] bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800", children: m.stoichiometry }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-slate-500", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Illusione ottica:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-mono text-[11px] bg-[#FAF9F6] border border-[#E5E2DA] p-2 rounded-lg text-[#141A17]", children: m.stoichiometry }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-[#575E58]", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Cosa sembra succedere:" }),
                 " ",
                 m.visualIllusion
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-slate-800 leading-relaxed", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Realtà chimica:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-[#141A17] leading-relaxed", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Cosa succede davvero:" }),
                 " ",
                 m.chemicalTruth
               ] })
@@ -29854,10 +29906,10 @@ function HomeChemistryView({
 }
 
 const VERBOSITY_MODES = [
-  { id: "auto", label: "🎯 Automatica (Livello Utente)" },
-  { id: "novice", label: "🌱 Principiante Guidato" },
-  { id: "practitioner", label: "🔪 Intermedio Sintetico" },
-  { id: "master", label: "👨‍🍳 Maestro (Solo Target)" }
+  { id: "auto", label: "Automatica (sul tuo livello)" },
+  { id: "novice", label: "Principiante guidato" },
+  { id: "practitioner", label: "Intermedio sintetico" },
+  { id: "master", label: "Esperto (solo punti chiave)" }
 ];
 const SOS_QUICK_SYMPTOMS = [
   { key: "emulsion_broken", icon: "🫗", label: "Salsa slegata / Pozza d'olio" },
@@ -30069,39 +30121,30 @@ function CulinaryAcademyPanel({
     );
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-slate-900 text-white rounded-2xl p-5 shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white text-[#141A17] rounded-2xl border border-[#E5E2DA] p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded bg-emerald-500 text-slate-950", children: "Anima 2 · Scuola Scientifica d'Arte Culinaria" }),
-          curriculum && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-bold text-emerald-300", children: [
-            "Livello Attivo: ",
-            curriculum.globalLevel.toUpperCase(),
-            " (",
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]", children: "Scuola di cucina" }),
+          curriculum && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-bold text-[#1B5E3A]", children: [
             curriculum.practicedCount,
             "/",
             curriculum.totalSkills,
-            " praticate · ",
+            " tecniche provate · ",
             curriculum.masteredCount,
-            " padroneggiate)"
+            " padroneggiate"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-extrabold mt-1.5", children: "🎓 Accademia Culinaria, Ruhlman's Ratios & SOS Fornelli 30s" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-300 mt-1 max-w-3xl", children: [
-          "Dalle ricette da eseguire ai ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Principi Generativi" }),
-          " (McGee · Kenji · Ruhlman · Bressanini): governo del calore latente (2.260 J/g), emulsioni amido-EVO fuori fuoco (<65°C), cinetica proteica e moltiplicatore Umami 8× per una cucina ligure ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("em", { children: "Zero Formaggi" }),
-          " da maestro."
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg sm:text-xl font-extrabold text-[#141A17] mt-1.5", children: "Tecniche di base, proporzioni e salvataggi ai fornelli" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-1 max-w-3xl", children: "Capire come lavora il calore, legare le salse senza panna né formaggio, dosare a occhio e recuperare al volo un piatto in padella." })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2 shrink-0", children: [
         onOpenMaestro && /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
-            onClick: () => onOpenMaestro("Maestro, quale competenza tecnica mi consigli di allenare stasera con ciò che ho in casa?"),
-            className: "px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold cursor-pointer",
-            children: "💬 Chiedi Lezione al Maestro"
+            onClick: () => onOpenMaestro("Maestro, quale tecnica mi consigli di provare stasera con quello che ho in casa?"),
+            className: "px-3.5 py-2 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer transition-colors",
+            children: "💬 Chiedi al Maestro"
           }
         ),
         onNavigateRoom && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -30109,8 +30152,8 @@ function CulinaryAcademyPanel({
           {
             type: "button",
             onClick: () => onNavigateRoom("room-4-cucina"),
-            className: "px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 text-xs font-bold cursor-pointer",
-            children: "🍳 Officina Pentole & Lame →"
+            className: "px-3 py-2 rounded-xl bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-[#141A17] text-xs font-bold cursor-pointer",
+            children: "🍳 Pentole e lame →"
           }
         )
       ] })
@@ -30119,12 +30162,12 @@ function CulinaryAcademyPanel({
       "nav",
       {
         className: "grid grid-cols-2 lg:grid-cols-4 gap-2",
-        "aria-label": "Sezioni Accademia Culinaria",
+        "aria-label": "Sezioni Scuola di Cucina",
         children: [
-          { id: "skills", label: "🌳 12 Competenze & 5 Pilastri" },
-          { id: "sos", label: "🔥 SOS Fornelli (30s)" },
-          { id: "ratios", label: "📐 Ratios & Umami 8×" },
-          { id: "improvise", label: "🧑‍🔬 Frigo → Tecnica" }
+          { id: "skills", label: "12 competenze di base" },
+          { id: "sos", label: "SOS Fornelli (30s)" },
+          { id: "ratios", label: "Proporzioni & Sapore" },
+          { id: "improvise", label: "Cucina con quello che hai" }
         ].map((tab) => {
           const active = activeSection === tab.id;
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -30132,7 +30175,7 @@ function CulinaryAcademyPanel({
             {
               type: "button",
               onClick: () => setActiveSection(tab.id),
-              className: `px-3 py-2.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${active ? "bg-emerald-900 text-white border-emerald-700 shadow-xs" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-300"}`,
+              className: `px-3 py-2.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${active ? "bg-[#1B5E3A] text-white border-[#1B5E3A] shadow-xs" : "bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]"}`,
               children: tab.label
             },
             tab.id
@@ -30141,33 +30184,33 @@ function CulinaryAcademyPanel({
       }
     ),
     activeSection === "skills" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", children: [
-      curriculum?.fivePillars?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "⚛️ I 5 Pilastri Fisico-Chimici Generativi" }),
+      curriculum?.fivePillars?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "I 5 principi della buona cottura" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3", children: curriculum.fivePillars.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: "p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5",
+            className: "p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] text-xs space-y-1.5",
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-slate-900", children: p.title }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-mono text-[10px] text-emerald-800 bg-emerald-50 px-2 py-1 rounded border border-emerald-200", children: p.law }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-600 leading-relaxed", children: p.summary })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-[#141A17]", children: p.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] font-semibold text-[#1B5E3A] bg-emerald-50/70 px-2 py-1 rounded border border-emerald-200", children: p.law }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58] leading-relaxed", children: p.summary })
             ]
           },
           p.id
         )) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-4", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E5E2DA] pb-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🌳 Albero delle 12 Competenze Fondamentali" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "La guida si accorcia automaticamente man mano che padroneggi il gesto (3 sessioni perfette = Maestro)." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "Le 12 competenze fondamentali" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "La guida diventa più sintetica man mano che prendi confidenza (3 prove riuscite = padroneggiata)." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center gap-1.5", children: VERBOSITY_MODES.map((vm) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               onClick: () => setVerbosityOverride(vm.id),
-              className: `px-2.5 py-1.5 rounded-lg text-[11px] font-bold border cursor-pointer ${verbosityOverride === vm.id ? "bg-slate-900 text-white border-slate-900" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"}`,
+              className: `px-2.5 py-1.5 rounded-lg text-[11px] font-bold border cursor-pointer ${verbosityOverride === vm.id ? "bg-[#141A17] text-white border-[#141A17]" : "bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]"}`,
               children: vm.label
             },
             vm.id
@@ -30179,47 +30222,47 @@ function CulinaryAcademyPanel({
           return /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "article",
             {
-              className: `rounded-xl border p-3.5 text-xs flex flex-col justify-between space-y-3 ${isMaster ? "bg-emerald-50/50 border-emerald-300" : sk.unlocked ? "bg-white border-slate-200" : "bg-slate-50/80 border-slate-200 opacity-90"}`,
+              className: `rounded-xl border p-3.5 text-xs flex flex-col justify-between space-y-3 ${isMaster ? "bg-emerald-50/40 border-[#1B5E3A]/40" : sk.unlocked ? "bg-white border-[#E5E2DA]" : "bg-[#FAF9F6] border-[#E5E2DA] opacity-90"}`,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-900 text-white", children: [
-                      "#",
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#141A17] text-white", children: [
+                      "Passo ",
                       sk.order,
-                      " · Tier ",
+                      " · Livello ",
                       sk.tier
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx(
                       "span",
                       {
-                        className: `text-[10px] font-extrabold px-2 py-0.5 rounded ${isMaster ? "bg-emerald-600 text-white" : isPractitioner ? "bg-amber-100 text-amber-900" : sk.unlocked ? "bg-sky-100 text-sky-900" : "bg-slate-200 text-slate-700"}`,
-                        children: isMaster ? "★ Maestro" : isPractitioner ? `In pratica (${sk.perfectCount}/3)` : sk.unlocked ? "Sbloccata" : "Prerequisito consigliato"
+                        className: `text-[10px] font-extrabold px-2 py-0.5 rounded ${isMaster ? "bg-[#1B5E3A] text-white" : isPractitioner ? "bg-amber-100 text-amber-950" : sk.unlocked ? "bg-[#F3F1EC] text-[#141A17]" : "bg-stone-200 text-[#575E58]"}`,
+                        children: isMaster ? "★ Padroneggiata" : isPractitioner ? `In pratica (${sk.perfectCount}/3)` : sk.unlocked ? "Disponibile" : "Dopo le basi"
                       }
                     )
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-extrabold text-sm text-slate-900", children: sk.title }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-600", children: sk.corePhysicsLaw }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg bg-indigo-50/70 border border-indigo-200 text-[11px] text-indigo-950", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Guida adattiva:" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-extrabold text-sm text-[#141A17]", children: sk.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58]", children: sk.corePhysicsLaw }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg bg-[#F3F1EC] border border-[#E5E2DA] text-[11px] text-[#141A17]", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Guida pratica:" }),
                     " ",
                     resolveDisplayedGuidance(sk)
                   ] }),
-                  sk.sensoryCheckpoints && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-600 space-y-0.5 pt-1", children: [
+                  sk.sensoryCheckpoints && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58] space-y-0.5 pt-1", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "👁️ Vista:" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Cosa guardare:" }),
                       " ",
                       sk.sensoryCheckpoints.visual
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "👂 Udito:" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Cosa ascoltare:" }),
                       " ",
                       sk.sensoryCheckpoints.acoustic
                     ] })
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 pt-2 border-t border-slate-100", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-mono text-slate-500", children: [
-                    "Target: ",
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 pt-2 border-t border-[#E5E2DA]", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-medium text-[#575E58]", children: [
+                    "Temperatura: ",
                     sk.criticalTempRangeC?.[0],
                     "–",
                     sk.criticalTempRangeC?.[1],
@@ -30231,7 +30274,7 @@ function CulinaryAcademyPanel({
                       type: "button",
                       disabled: practicingSkillId === sk.id,
                       onClick: () => handlePracticeSkill(sk.id),
-                      className: "px-2.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-[11px] font-extrabold cursor-pointer",
+                      className: "px-2.5 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] disabled:opacity-60 text-white text-[11px] font-extrabold cursor-pointer",
                       children: practicingSkillId === sk.id ? "Salvataggio..." : "✓ Segna praticata"
                     }
                   )
@@ -30243,10 +30286,10 @@ function CulinaryAcademyPanel({
         }) })
       ] })
     ] }),
-    activeSection === "sos" && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border-2 border-rose-200 p-4 sm:p-5 shadow-xs space-y-4", children: [
+    activeSection === "sos" && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-600 text-white", children: "Pronto Soccorso Molecolare · 1 Mano Libera" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900 mt-1", children: "🔥 SOS Fornelli in 30 Secondi — Cosa sta succedendo adesso in padella?" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-900 border border-rose-200", children: "Salvataggio rapido ai fornelli · 30 secondi" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-[#141A17] mt-1.5", children: "Cosa sta succedendo adesso in padella?" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5", children: SOS_QUICK_SYMPTOMS.map((s) => {
         const selected = sosSymptomKey === s.key && !sosFreeQuery;
@@ -30258,7 +30301,7 @@ function CulinaryAcademyPanel({
               setSosFreeQuery("");
               setSosSymptomKey(s.key);
             },
-            className: `p-3 rounded-xl border text-left text-xs font-extrabold transition-all cursor-pointer ${selected ? "bg-rose-700 text-white border-rose-800 shadow-xs" : "bg-slate-50 text-slate-800 border-slate-200 hover:border-rose-300"}`,
+            className: `p-3 rounded-xl border text-left text-xs font-extrabold transition-all cursor-pointer ${selected ? "bg-[#141A17] text-white border-[#141A17] shadow-xs" : "bg-[#FAF9F6] text-[#141A17] border-[#E5E2DA] hover:border-[#1B5E3A]"}`,
             children: [
               s.icon,
               " ",
@@ -30268,14 +30311,14 @@ function CulinaryAcademyPanel({
           s.key
         );
       }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-2.5 bg-[#FAF9F6] p-3 rounded-xl border border-[#E5E2DA]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "select",
           {
             "aria-label": "Fornello in uso per SOS",
             value: sosHeatSource,
             onChange: (e) => setSosHeatSource(e.target.value),
-            className: "text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800",
+            className: "text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]",
             children: STOVE_OPTIONS.map((st) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: st.id, children: st.label }, st.id))
           }
         ),
@@ -30285,7 +30328,7 @@ function CulinaryAcademyPanel({
             "aria-label": "Pentola in uso per SOS",
             value: sosToolId,
             onChange: (e) => setSosToolId(e.target.value),
-            className: "text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800",
+            className: "text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]",
             children: PAN_OPTIONS.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: p.id, children: p.label }, p.id))
           }
         ),
@@ -30296,7 +30339,7 @@ function CulinaryAcademyPanel({
             value: sosFreeQuery,
             onChange: (e) => setSosFreeQuery(e.target.value),
             placeholder: "Oppure scrivi: es. pesto separato, polpo duro...",
-            className: "text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-800"
+            className: "text-xs border border-[#E5E2DA] rounded-lg px-3 py-2 bg-white text-[#141A17]"
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -30305,63 +30348,60 @@ function CulinaryAcademyPanel({
             type: "button",
             onClick: () => triggerSOS(null, sosFreeQuery),
             disabled: sosLoading,
-            className: "px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold cursor-pointer",
-            children: sosLoading ? "Analisi..." : "🚑 Diagnostica Subito"
+            className: "px-3 py-2 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer",
+            children: sosLoading ? "Analisi..." : "Trova rimedio subito"
           }
         )
       ] }),
       sosResult && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3 pt-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-rose-50 border-2 border-rose-300 text-xs text-rose-950", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold uppercase text-[11px] text-rose-800", children: "⛔ FERMATI — Cosa NON fare assolutamente adesso:" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-xs text-rose-950", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold uppercase text-[11px] text-rose-900", children: "⛔ Fermati: cosa non fare adesso" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-bold mt-0.5", children: sosResult.doNotDo })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold text-sm text-emerald-900", children: [
-            "🚑 Manovra di Salvataggio in 30 Secondi (",
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 rounded-xl bg-emerald-50/70 border border-[#1B5E3A]/30 text-xs text-[#141A17] space-y-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold text-sm text-[#1B5E3A]", children: [
+            "Come rimediare in 30 secondi (",
             sosResult.symptomLabel,
             ")"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1.5", children: (sosResult.rescueIn30Seconds || []).map((step, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "leading-relaxed font-medium", children: step }, idx)) }),
-          sosResult.equipmentContextNote && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-2 pt-2 border-t border-emerald-200 font-bold text-emerald-900", children: [
-            "🎛️ ",
-            sosResult.equipmentContextNote
-          ] })
+          sosResult.equipmentContextNote && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-2 pt-2 border-t border-emerald-200 font-bold text-[#1B5E3A]", children: sosResult.equipmentContextNote })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3 text-xs", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-slate-50 border border-slate-200", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-slate-900", children: "⚛️ Causa Molecolare:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Perché succede:" }),
             " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-700", children: sosResult.molecularCause })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#575E58]", children: sosResult.molecularCause })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-amber-50 border border-amber-200", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-amber-950", children: "📓 Calibrazione Prossima Volta:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Per la prossima volta:" }),
             " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-amber-900", children: sosResult.nextTimeCalibration })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[#575E58]", children: sosResult.nextTimeCalibration })
           ] })
         ] })
       ] })
     ] }),
     activeSection === "ratios" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "📐 Calcolatore Rapporti Aurei (Ruhlman's Ratios)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Scegli la struttura e inserisci i grammi dell'ingrediente guida: le proporzioni fisiche scalano all'istante." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "Proporzioni di base senza ricetta" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Scegli la preparazione e inserisci i grammi principali: tutte le dosi si aggiornano in proporzione." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-700 mb-1", children: "Formula Strutturale" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-[#141A17] mb-1", children: "Preparazione base" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "select",
               {
                 value: selectedRatioId,
                 onChange: (e) => setSelectedRatioId(e.target.value),
-                className: "w-full text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-900",
+                className: "w-full text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]",
                 children: ratiosCatalog.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: r.id, children: r.name }, r.id))
               }
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-700 mb-1", children: "Grammi Ingrediente Guida (g)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-[#141A17] mb-1", children: "Grammi ingrediente principale (g)" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "input",
@@ -30371,7 +30411,7 @@ function CulinaryAcademyPanel({
                   max: "3000",
                   value: anchorGrams,
                   onChange: (e) => setAnchorGrams(Number(e.target.value) || 100),
-                  className: "w-full text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-900"
+                  className: "w-full text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 text-[#141A17]"
                 }
               ),
               [100, 150, 250].map((presetG) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -30379,7 +30419,7 @@ function CulinaryAcademyPanel({
                 {
                   type: "button",
                   onClick: () => setAnchorGrams(presetG),
-                  className: "px-2 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-[10px] font-extrabold text-slate-700 cursor-pointer",
+                  className: "px-2 py-1.5 rounded bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[10px] font-extrabold text-[#141A17] cursor-pointer",
                   children: [
                     presetG,
                     "g"
@@ -30396,16 +30436,16 @@ function CulinaryAcademyPanel({
             {
               className: "flex items-center justify-between border-b border-emerald-100 last:border-0 pb-1 last:pb-0",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-medium text-slate-800", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-medium text-[#141A17]", children: [
                   part.component,
                   " ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-slate-500", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-[#575E58]", children: [
                     "(rapporto ",
                     part.weightRatio,
                     ")"
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-mono font-extrabold text-emerald-900", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-mono font-extrabold text-[#1B5E3A]", children: [
                   part.grams,
                   " g"
                 ] })
@@ -30413,29 +30453,24 @@ function CulinaryAcademyPanel({
             },
             idx
           )) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] text-xs space-y-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "⚛️ Regola Fisica:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Regola pratica:" }),
               " ",
               scaledRatio.physicsRule
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-emerald-800 font-semibold", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🛡️ Nota Zero Formaggi:" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[#1B5E3A] font-semibold", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Senza formaggi:" }),
               " ",
               scaledRatio.zeroDairyNote
             ] })
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-slate-900", children: "🧬 Moltiplicatore Sinergico Umami 8× (Senza Latticini)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500", children: [
-            "Seleziona gli ingredienti del piatto per verificare il blocco allosterico",
-            " ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("code", { children: "L-Glutammato + IMP/GMP" }),
-            " sul recettore T1R1/T1R3."
-          ] })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-extrabold text-[#141A17]", children: "Dare sapore pieno senza formaggio" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Abbina ingredienti ricchi di sapore naturale (pomodoro maturo, funghi, acciughe, olive) per moltiplicare la profondità del piatto senza latticini." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-1.5", children: UMAMI_PRESET_CHIPS.map((chip) => {
           const active = selectedUmamiChips.includes(chip);
@@ -30444,7 +30479,7 @@ function CulinaryAcademyPanel({
             {
               type: "button",
               onClick: () => toggleUmamiChip(chip),
-              className: `px-2.5 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${active ? "bg-amber-500 text-slate-950 border-amber-600" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"}`,
+              className: `px-2.5 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${active ? "bg-[#1B5E3A] text-white border-[#1B5E3A]" : "bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]"}`,
               children: [
                 active ? "✓ " : "+ ",
                 chip
@@ -30456,29 +30491,23 @@ function CulinaryAcademyPanel({
         umamiResult && /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
-            className: `p-4 rounded-xl border text-xs space-y-2 ${umamiResult.synergy8xActive ? "bg-emerald-50 border-emerald-300 text-emerald-950" : "bg-amber-50 border-amber-300 text-amber-950"}`,
+            className: `p-4 rounded-xl border text-xs space-y-2 ${umamiResult.synergy8xActive ? "bg-emerald-50/70 border-[#1B5E3A]/30 text-[#141A17]" : "bg-[#FAF9F6] border-[#E5E2DA] text-[#141A17]"}`,
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-sm", children: umamiResult.synergy8xActive ? "⚡ Sinergia Umami 8× ATTIVA!" : "⚖️ Canale Singolo (1×)" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-white/80 border border-current/20", children: [
-                  "Glu: ",
-                  umamiResult.hasGlutamate ? "SÌ" : "NO",
-                  " · IMP/GMP:",
-                  " ",
-                  umamiResult.hasNucleotide ? "SÌ" : "NO"
-                ] })
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-sm text-[#1B5E3A]", children: umamiResult.synergy8xActive ? "Abbinamento sapore pieno attivo" : "Sapore su un solo registro" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold px-2 py-0.5 rounded bg-white border border-[#E5E2DA] text-[#575E58]", children: umamiResult.synergy8xActive ? "Sapore moltiplicato" : "Aggiungi un secondo aroma" })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "leading-relaxed", children: umamiResult.suggestion })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "leading-relaxed text-[#575E58]", children: umamiResult.suggestion })
             ]
           }
         )
       ] })
     ] }),
-    activeSection === "improvise" && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4", children: [
+    activeSection === "improvise" && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900", children: "🧑‍🔬 Generatore “Frigo → Tecnica” (Cucinare Senza Ricetta)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Inserisci 2–4 ingredienti che hai in frigo: il motore assembla taglio, padella, turni anti-bollitura ed emulsione finale." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-[#141A17]", children: "Cucina dal frigo senza ricetta" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Scrivi 2–4 ingredienti che hai in casa: ottieni taglio, padella adatta, ordine di cottura e legatura finale." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap gap-1.5", children: FRIDGE_QUICK_PRESETS.map((pr, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
@@ -30490,13 +30519,13 @@ function CulinaryAcademyPanel({
               setFridgeHeat(pr.heatSource);
               setFridgeTool(pr.toolId);
             },
-            className: "px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 border border-slate-200 text-[11px] font-bold text-slate-700 cursor-pointer",
+            className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-[11px] font-bold text-[#141A17] cursor-pointer",
             children: pr.label
           },
           idx
         )) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleRunImprovise, className: "grid grid-cols-1 md:grid-cols-5 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleRunImprovise, className: "grid grid-cols-1 md:grid-cols-5 gap-2.5 bg-[#FAF9F6] p-3 rounded-xl border border-[#E5E2DA]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
@@ -30504,7 +30533,7 @@ function CulinaryAcademyPanel({
             value: fridgeInput,
             onChange: (e) => setFridgeInput(e.target.value),
             placeholder: "Ingredienti separati da virgola...",
-            className: "md:col-span-2 text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-900"
+            className: "md:col-span-2 text-xs border border-[#E5E2DA] rounded-lg px-3 py-2 bg-white text-[#141A17]"
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -30512,7 +30541,7 @@ function CulinaryAcademyPanel({
           {
             value: fridgeHeat,
             onChange: (e) => setFridgeHeat(e.target.value),
-            className: "text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800",
+            className: "text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]",
             children: STOVE_OPTIONS.map((st) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: st.id, children: st.label }, st.id))
           }
         ),
@@ -30521,7 +30550,7 @@ function CulinaryAcademyPanel({
           {
             value: fridgeTool,
             onChange: (e) => setFridgeTool(e.target.value),
-            className: "text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800",
+            className: "text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]",
             children: PAN_OPTIONS.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: p.id, children: p.label }, p.id))
           }
         ),
@@ -30530,18 +30559,18 @@ function CulinaryAcademyPanel({
           {
             type: "submit",
             disabled: improviseLoading,
-            className: "px-3 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold cursor-pointer",
-            children: improviseLoading ? "Generazione..." : "⚡ Costruisci Tecnica"
+            className: "px-3 py-2 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer",
+            children: improviseLoading ? "Preparazione..." : "Crea la sequenza"
           }
         )
       ] }),
-      improvisedPlan && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-emerald-200 bg-emerald-50/30 p-4 space-y-3 text-xs", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/70 pb-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "font-extrabold text-sm text-slate-900", children: [
+      improvisedPlan && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] p-4 space-y-3 text-xs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-2 border-b border-[#E5E2DA] pb-2", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "font-extrabold text-sm text-[#141A17]", children: [
             "🍽️ ",
             improvisedPlan.generatedTitle
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-bold text-emerald-900 bg-white px-2.5 py-1 rounded-lg border border-emerald-200", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-bold text-[#1B5E3A] bg-white px-2.5 py-1 rounded-lg border border-[#E5E2DA]", children: [
             "⏱️ ~",
             improvisedPlan.estimatedMinutes,
             " min · ",
@@ -30549,13 +30578,13 @@ function CulinaryAcademyPanel({
           ] })
         ] }),
         improvisedPlan.stoveAndSafety?.isBlockedP0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg bg-rose-50 border border-rose-300 text-rose-950 font-bold", children: [
-          "⛔ Guardia P0 Attivata: ",
+          "⛔ Attenzione sicurezza: ",
           improvisedPlan.stoveAndSafety.p0Blocks?.[0]?.message,
           " →",
           " ",
           improvisedPlan.stoveAndSafety.p0Blocks?.[0]?.safeAction
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: (improvisedPlan.steps || []).map((st, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg bg-white border border-slate-200", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: (improvisedPlan.steps || []).map((st, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg bg-white border border-[#E5E2DA] text-[#141A17]", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
             "Fase ",
             idx + 1,
@@ -30564,8 +30593,8 @@ function CulinaryAcademyPanel({
           " ",
           st
         ] }, idx)) }),
-        improvisedPlan.umamiZeroCheeseAnalysis && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-slate-700 pt-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🧬 Check Umami Zero-Formaggi:" }),
+        improvisedPlan.umamiZeroCheeseAnalysis && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] text-[#575E58] pt-1", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: "Equilibrio di sapore senza formaggi:" }),
           " ",
           improvisedPlan.umamiZeroCheeseAnalysis.suggestion
         ] })
@@ -30577,8 +30606,8 @@ function CulinaryAcademyPanel({
 const LAB_MEAL_SCENARIOS = [
   {
     id: "zero_cheese_high_ca",
-    label: "🥦 Calcio >30%: Cime di Rapa + Alici",
-    subtitle: "Ideale Zero Formaggi (basso ossalato + lisca)",
+    label: "🥦 Cime di rapa + Alici",
+    subtitle: "Ottimo assorbimento di calcio senza formaggi",
     defaultMethod: "steamed",
     defaultAddedFatG: 10,
     defaultCooledHours: 0,
@@ -30589,8 +30618,8 @@ const LAB_MEAL_SCENARIOS = [
   },
   {
     id: "oxalate_spinach_trap",
-    label: "⚠️ Trappola Ossalati: Spinaci Lessi",
-    subtitle: "Alto calcio lordo CREA ma assorbito <10%",
+    label: "⚠️ Spinaci lessi",
+    subtitle: "Tanto calcio sulla carta, ma quasi bloccato dagli ossalati",
     defaultMethod: "boiled_drained",
     defaultAddedFatG: 8,
     defaultCooledHours: 0,
@@ -30598,8 +30627,8 @@ const LAB_MEAL_SCENARIOS = [
   },
   {
     id: "iron_vitc_aa_synergy",
-    label: "🍋 Ferro×3 & AA 100%: Pasta, Lenticchie & Limone",
-    subtitle: "Complementazione lisina+solforati + Vit. C a crudo",
+    label: "🍋 Pasta, lenticchie e limone",
+    subtitle: "Proteine complete e ferro tre volte più assorbibile",
     defaultMethod: "stewed_liquid_kept",
     defaultAddedFatG: 10,
     defaultCooledHours: 0,
@@ -30611,8 +30640,8 @@ const LAB_MEAL_SCENARIOS = [
   },
   {
     id: "lycopene_evo_heat",
-    label: "🍅 Cis-Licopene: Pomodoro Cotto + EVO",
-    subtitle: "Isomerizzazione termica + micelle biliari",
+    label: "🍅 Pomodoro cotto + olio EVO",
+    subtitle: "La cottura con olio sprigiona più licopene assimilabile",
     defaultMethod: "stewed_liquid_kept",
     defaultAddedFatG: 12,
     defaultCooledHours: 0,
@@ -30623,8 +30652,8 @@ const LAB_MEAL_SCENARIOS = [
   },
   {
     id: "boat_rs3_retrograded",
-    label: "⛵ Barca RS3: Riso Freddo & Sgombro (+4°C 14h)",
-    subtitle: "Amido retrogradato anti-abbiocco al timone",
+    label: "⛵ Riso freddo e sgombro per la barca",
+    subtitle: "Raffreddato 14 ore in frigo per restare leggero al timone",
     defaultMethod: "boiled_drained",
     defaultAddedFatG: 10,
     defaultCooledHours: 14,
@@ -30636,18 +30665,18 @@ const LAB_MEAL_SCENARIOS = [
   }
 ];
 const COOKING_METHODS_UI = [
-  { id: "steamed", label: "💨 Vapore (Max Ritenzione USDA)" },
-  { id: "boiled_drained", label: "💧 Bollito & Scolato (Lisciviazione)" },
-  { id: "stewed_liquid_kept", label: "🍲 Zuppa / Risottato (Liquido Trattenuto)" },
-  { id: "pan_seared_gentle", label: "🍳 Padella Dolce ≤160°C" },
-  { id: "pan_seared_high", label: "🔥 Rosolatura / Forno >175°C" },
-  { id: "raw", label: "🥗 Crudo / Assemblaggio a Freddo" }
+  { id: "steamed", label: "💨 Cottura a vapore (preserva le vitamine)" },
+  { id: "boiled_drained", label: "💧 Bollito e scolato (disperde minerali nell'acqua)" },
+  { id: "stewed_liquid_kept", label: "🍲 Zuppa o risottato (tutto nel piatto)" },
+  { id: "pan_seared_gentle", label: "🍳 Padella dolce (≤160°C)" },
+  { id: "pan_seared_high", label: "🔥 Padella vivace o forno (>175°C)" },
+  { id: "raw", label: "🥗 Crudo / Assemblato a freddo" }
 ];
 const BADGE_TONE_CLASSES = {
-  emerald: "bg-emerald-50 text-emerald-900 border-emerald-200",
-  amber: "bg-amber-50 text-amber-900 border-amber-200",
-  rose: "bg-rose-50 text-rose-900 border-rose-200",
-  sky: "bg-sky-50 text-sky-900 border-sky-200"
+  emerald: "bg-emerald-50 text-emerald-950 border-emerald-200",
+  amber: "bg-amber-50 text-amber-950 border-amber-200",
+  rose: "bg-rose-50 text-rose-950 border-rose-200",
+  sky: "bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA]"
 };
 function NutritionCoachPanel({
   activeProfileId = "dany",
@@ -30762,24 +30791,24 @@ function NutritionCoachPanel({
   };
   const targets = activeTargets?.dailyTargets || null;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-5", "data-testid": "nutrition-coach-panel", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl", children: "🥗" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900", children: "Bussola Fisiologica LARN V Rev. & Guardia Calcio Zero-Formaggi" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-[#141A17]", children: "Obiettivi nutrizionali quotidiani" })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600 mt-0.5", children: "Preset zero-attrito su fabbisogni italiani ufficiali SINU 2024, con calibrazione antropometrica Mifflin-St Jeor opzionale." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58] mt-0.5", children: "Profili rapidi basati sui riferimenti nutrizionali italiani, con calcolo personale opzionale." })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-          activeTargets?.zeroCheeseCalciumGuardActive && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200", children: "🛡️ Guardia Calcio Zero-Formaggi Attiva" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
+          activeTargets?.zeroCheeseCalciumGuardActive && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-[#1B5E3A] border border-emerald-200", children: "Attenzione al calcio senza formaggi" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               onClick: () => setShowAdvancedLarn((v) => !v),
-              className: "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer",
-              children: showAdvancedLarn ? "Nascondi Mifflin-St Jeor" : "⚙️ Calibrazione Avanzata"
+              className: "px-3 py-1.5 rounded-xl text-xs font-bold bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA] hover:bg-[#E7E4DC] cursor-pointer",
+              children: showAdvancedLarn ? "Chiudi parametri personali" : "Calcola sul tuo profilo"
             }
           )
         ] })
@@ -30791,34 +30820,34 @@ function NutritionCoachPanel({
           {
             type: "button",
             onClick: () => setSelectedPresetId(p.id),
-            className: `text-left p-3 rounded-xl border transition-all cursor-pointer ${isSelected ? "bg-emerald-50/80 border-emerald-500 ring-1 ring-emerald-500" : "bg-slate-50/60 border-slate-200 hover:border-emerald-300"}`,
+            className: `text-left p-3 rounded-xl border transition-all cursor-pointer ${isSelected ? "bg-emerald-50/70 border-[#1B5E3A] ring-1 ring-[#1B5E3A]" : "bg-[#FAF9F6] border-[#E5E2DA] hover:border-[#1B5E3A]"}`,
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold text-slate-900", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold text-[#141A17]", children: [
                   p.icon,
                   " ",
                   p.shortLabel
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-bold text-emerald-800", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] font-bold text-[#1B5E3A]", children: [
                   p.dailyTargets?.kcal,
                   " kcal"
                 ] })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-600 mt-1 line-clamp-2", children: p.description })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58] mt-1 line-clamp-2", children: p.description })
             ]
           },
           p.id
         );
       }) }),
-      showAdvancedLarn && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 sm:grid-cols-6 gap-2.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200", children: [
+      showAdvancedLarn && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 sm:grid-cols-6 gap-2.5 p-3.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-slate-500", children: "Sesso" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-[#575E58]", children: "Sesso" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
             {
               value: advForm.sex,
               onChange: (e) => setAdvForm((f) => ({ ...f, sex: e.target.value })),
-              className: "w-full mt-0.5 text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-white",
+              className: "w-full mt-0.5 text-xs border border-[#E5E2DA] rounded-lg px-2 py-1.5 bg-white text-[#141A17]",
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "M", children: "Uomo (M)" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "F", children: "Donna (F)" })
@@ -30827,7 +30856,7 @@ function NutritionCoachPanel({
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-slate-500", children: "Età (anni)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-[#575E58]", children: "Età (anni)" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -30836,12 +30865,12 @@ function NutritionCoachPanel({
               max: 95,
               value: advForm.ageYears,
               onChange: (e) => setAdvForm((f) => ({ ...f, ageYears: Number(e.target.value) || 38 })),
-              className: "w-full mt-0.5 text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-white"
+              className: "w-full mt-0.5 text-xs border border-[#E5E2DA] rounded-lg px-2 py-1.5 bg-white text-[#141A17]"
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-slate-500", children: "Peso (kg)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-[#575E58]", children: "Peso (kg)" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -30850,12 +30879,12 @@ function NutritionCoachPanel({
               max: 160,
               value: advForm.weightKg,
               onChange: (e) => setAdvForm((f) => ({ ...f, weightKg: Number(e.target.value) || 72 })),
-              className: "w-full mt-0.5 text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-white"
+              className: "w-full mt-0.5 text-xs border border-[#E5E2DA] rounded-lg px-2 py-1.5 bg-white text-[#141A17]"
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-slate-500", children: "Altezza (cm)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-[#575E58]", children: "Altezza (cm)" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -30864,29 +30893,29 @@ function NutritionCoachPanel({
               max: 215,
               value: advForm.heightCm,
               onChange: (e) => setAdvForm((f) => ({ ...f, heightCm: Number(e.target.value) || 178 })),
-              className: "w-full mt-0.5 text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-white"
+              className: "w-full mt-0.5 text-xs border border-[#E5E2DA] rounded-lg px-2 py-1.5 bg-white text-[#141A17]"
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-slate-500", children: "LAF Attività" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-[#575E58]", children: "Livello di attività" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
             {
               value: advForm.laf,
               onChange: (e) => setAdvForm((f) => ({ ...f, laf: Number(e.target.value) })),
-              className: "w-full mt-0.5 text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-white",
+              className: "w-full mt-0.5 text-xs border border-[#E5E2DA] rounded-lg px-2 py-1.5 bg-white text-[#141A17]",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.45, children: "1.45 Sedentario" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.6, children: "1.60 Attivo" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.75, children: "1.75 Sportivo" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.95, children: "1.95 Intenso" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.45, children: "Sedentario" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.6, children: "Attivo" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.75, children: "Sportivo" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 1.95, children: "Molto intenso" })
               ]
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-slate-500", children: "Delta kcal" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-bold text-[#575E58]", children: "Variazione kcal" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -30896,7 +30925,7 @@ function NutritionCoachPanel({
               step: 50,
               value: advForm.goalDeltaKcal,
               onChange: (e) => setAdvForm((f) => ({ ...f, goalDeltaKcal: Number(e.target.value) || 0 })),
-              className: "w-full mt-0.5 text-xs border border-slate-300 rounded-lg px-2 py-1.5 bg-white"
+              className: "w-full mt-0.5 text-xs border border-[#E5E2DA] rounded-lg px-2 py-1.5 bg-white text-[#141A17]"
             }
           )
         ] })
@@ -30904,30 +30933,30 @@ function NutritionCoachPanel({
       targets && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 pt-1", children: [
         { label: "Energia", val: `${targets.kcal} kcal` },
         { label: "Proteine", val: `${targets.proteinG} g` },
-        { label: "Fibre min", val: `${targets.fiberG} g` },
-        { label: "Calcio PRI", val: `${targets.calciumMg} mg` },
-        { label: "Ferro PRI", val: `${targets.ironMg} mg` },
+        { label: "Fibre minime", val: `${targets.fiberG} g` },
+        { label: "Calcio", val: `${targets.calciumMg} mg` },
+        { label: "Ferro", val: `${targets.ironMg} mg` },
         { label: "Potassio", val: `${targets.potassiumMg} mg` },
-        { label: "EPA+DHA", val: `${targets.epaDhaMg} mg` },
-        { label: "Tetto Sodio", val: `<${targets.sodiumMaxMg} mg` }
-      ].map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200/80 rounded-lg px-2.5 py-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-semibold text-slate-500", children: item.label }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-slate-900", children: item.val })
+        { label: "Omega-3", val: `${targets.epaDhaMg} mg` },
+        { label: "Limite sodio", val: `<${targets.sodiumMaxMg} mg` }
+      ].map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg px-2.5 py-2", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-semibold text-[#575E58]", children: item.label }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold text-[#141A17]", children: item.val })
       ] }, item.label)) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-5 shadow-xs space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900", children: "🔬 Laboratorio Fisiologia del Pasto Cotto & Biodisponibilità (USDA + CREA 31+ Nutrienti)" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Confronta dal vivo ritenzione termica (Vapore vs Bollitura con scolo), Calcio biodisponibile vs ossalati, Ferro + Vitamina C, cis-Licopene e Amido Resistente RS3." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-[#141A17]", children: "Come cambia il piatto con la cottura" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Confronta cosa trattengono le verdure al vapore o bollite, quanto calcio assorbi davvero e come olio o riposo in frigo cambiano i nutrienti." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             type: "button",
             onClick: () => setShowGuidePillars((v) => !v),
-            className: "px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100 cursor-pointer shrink-0",
-            children: showGuidePillars ? "Chiudi Fonti Scientifiche" : "📖 5 Pilastri & Fonti"
+            className: "px-3 py-1.5 rounded-xl text-xs font-bold bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA] hover:bg-[#E7E4DC] cursor-pointer shrink-0",
+            children: showGuidePillars ? "Chiudi principi" : "📖 5 regole chiave"
           }
         )
       ] }),
@@ -30936,31 +30965,31 @@ function NutritionCoachPanel({
         {
           type: "button",
           onClick: () => handleSelectScenario(sc),
-          className: `px-3 py-2 rounded-xl text-left border shrink-0 transition-colors cursor-pointer ${selectedScenarioId === sc.id ? "bg-slate-900 text-white border-slate-900" : "bg-slate-50 text-slate-800 border-slate-200 hover:border-emerald-400"}`,
+          className: `px-3 py-2 rounded-xl text-left border shrink-0 transition-colors cursor-pointer ${selectedScenarioId === sc.id ? "bg-[#141A17] text-white border-[#141A17]" : "bg-[#FAF9F6] text-[#141A17] border-[#E5E2DA] hover:border-[#1B5E3A]"}`,
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs font-extrabold", children: sc.label }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[10px] ${selectedScenarioId === sc.id ? "text-slate-300" : "text-slate-500"}`, children: sc.subtitle })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `text-[10px] ${selectedScenarioId === sc.id ? "text-stone-300" : "text-[#575E58]"}`, children: sc.subtitle })
           ]
         },
         sc.id
       )) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#FAF9F6] p-3.5 rounded-xl border border-[#E5E2DA]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-slate-600 mb-1", children: "Tecnica Termica & Destino Acqua (USDA Rf)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[11px] font-bold text-[#575E58] mb-1", children: "Metodo di cottura" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "select",
             {
               value: cookingMethod,
               onChange: (e) => setCookingMethod(e.target.value),
-              className: "w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 bg-white font-semibold",
+              className: "w-full text-xs border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white font-semibold text-[#141A17]",
               children: COOKING_METHODS_UI.map((m) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: m.id, children: m.label }, m.id))
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-[11px] font-bold text-slate-600 mb-1", children: [
-            "Olio EVO Vettore Micellare: ",
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-[11px] font-bold text-[#575E58] mb-1", children: [
+            "Olio extravergine aggiunto: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-[#141A17]", children: [
               addedFatGrams,
               " g"
             ] })
@@ -30974,19 +31003,19 @@ function NutritionCoachPanel({
               step: 2,
               value: addedFatGrams,
               onChange: (e) => setAddedFatGrams(Number(e.target.value)),
-              className: "w-full accent-emerald-600 mt-1.5"
+              className: "w-full accent-[#1B5E3A] mt-1.5"
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between text-[10px] text-slate-500", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "0g (Scondito)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "≥5g Sblocco Carotenoidi" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "20g" })
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between text-[10px] text-[#575E58]", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "0 g (senza olio)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "≥5 g assorbe le vitamine" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "20 g" })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-[11px] font-bold text-slate-600 mb-1", children: [
-            "Riposo Frigo +4°C (RS3 Barca): ",
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-[11px] font-bold text-[#575E58] mb-1", children: [
+            "Riposo in frigo prima di mangiare: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { className: "text-[#141A17]", children: [
               cooledHours,
               " h"
             ] })
@@ -30997,8 +31026,8 @@ function NutritionCoachPanel({
               {
                 type: "button",
                 onClick: () => setCooledHours(0),
-                className: `flex-1 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${cooledHours < 12 ? "bg-amber-100 border-amber-400 text-amber-900" : "bg-white border-slate-300 text-slate-700"}`,
-                children: "🔥 Appena Cotto (0h)"
+                className: `flex-1 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${cooledHours < 12 ? "bg-amber-50 border-amber-400 text-amber-950" : "bg-white border-[#E5E2DA] text-[#575E58]"}`,
+                children: "Appena cotto (0 h)"
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -31006,14 +31035,14 @@ function NutritionCoachPanel({
               {
                 type: "button",
                 onClick: () => setCooledHours(14),
-                className: `flex-1 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${cooledHours >= 12 ? "bg-emerald-100 border-emerald-500 text-emerald-900" : "bg-white border-slate-300 text-slate-700"}`,
-                children: "⛵ Cambusa +4°C (14h RS3)"
+                className: `flex-1 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${cooledHours >= 12 ? "bg-emerald-50 border-[#1B5E3A] text-[#1B5E3A]" : "bg-white border-[#E5E2DA] text-[#575E58]"}`,
+                children: "In frigo 14 h (barca)"
               }
             )
           ] })
         ] })
       ] }),
-      evalLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-slate-500 py-4", children: "Calcolo fisiologia del pasto cotto su 31+ nutrienti CREA..." }) : mealEval && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+      evalLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-[#575E58] py-4", children: "Calcolo i valori reali del piatto cotto..." }) : mealEval && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
         mealEval.badges?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-2.5", children: mealEval.badges.map((b) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
           "div",
           {
@@ -31026,64 +31055,64 @@ function NutritionCoachPanel({
           b.code
         )) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "Peso Cotto" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Peso nel piatto" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#141A17]", children: [
               mealEval.weights?.cookedWeightGrams,
               " g"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "Densità Cotta" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Calorie su 100 g" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#141A17]", children: [
               mealEval.satietyAndVolumetrics?.cookedEnergyDensityKcalPer100g,
-              " kcal/100g"
+              " kcal"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "Proteine / AA" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Proteine" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#141A17]", children: [
               mealEval.nutrients?.proteinG,
               " g",
               " ",
-              mealEval.bioavailability?.aminoAcids?.chemicalScorePct != null && `(${mealEval.bioavailability.aminoAcids.chemicalScorePct}% FAO)`
+              mealEval.bioavailability?.aminoAcids?.chemicalScorePct != null && `(${mealEval.bioavailability.aminoAcids.chemicalScorePct}%)`
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "Vit. C Residua" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-emerald-800", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Vitamina C rimasta" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#1B5E3A]", children: [
               mealEval.nutrients?.vitaminCMg ?? "n.d.",
               " mg"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "Calcio Fascia >30%" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-emerald-800", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Calcio ben assorbito" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#1B5E3A]", children: [
               mealEval.bioavailability?.calcium?.highBioavailCalciumMg,
               " / ",
               mealEval.nutrients?.calciumMg ?? 0,
               " mg"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "Ferro (Eme/Tot)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Ferro (anim. / tot.)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#141A17]", children: [
               mealEval.bioavailability?.iron?.hemeIronMg,
               " / ",
               mealEval.nutrients?.ironMg ?? 0,
               " mg"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "Potassio Cotto" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Potassio rimasto" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#141A17]", children: [
               mealEval.nutrients?.potassiumMg ?? "n.d.",
               " mg"
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-200 rounded-lg p-2.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-slate-500 font-bold", children: "EPA+DHA / Fibre" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-slate-900", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#FAF9F6] border border-[#E5E2DA] rounded-lg p-2.5", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-[#575E58] font-bold", children: "Omega-3 · Fibre" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-extrabold text-[#141A17]", children: [
               mealEval.nutrients?.epaDhaG ?? 0,
               " g · ",
               mealEval.nutrients?.fiberG ?? 0,
@@ -31092,24 +31121,24 @@ function NutritionCoachPanel({
           ] })
         ] })
       ] }),
-      showGuidePillars && bioGuide?.pillars && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-2 border-t border-slate-200", children: bioGuide.pillars.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-indigo-950", children: p.title }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-700 mt-1", children: p.rule })
+      showGuidePillars && bioGuide?.pillars && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-2 border-t border-[#E5E2DA]", children: bioGuide.pillars.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] text-xs", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-extrabold text-[#141A17]", children: p.title }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58] mt-1", children: p.rule })
       ] }, p.id)) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-5", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-5 shadow-xs space-y-3.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900", children: "🧭 Coaching Adattivo 1-Tap (Zero Ortoressia)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Riequilibrio fisiologico su finestra mobile 3–7 giorni + salvataggio freschi aperti (T_open)." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-[#141A17]", children: "Adatta la giornata in un tocco" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Compensa con equilibrio su più giorni e usa prima i freschi già aperti in frigo." })
           ] }),
           onOpenMaestro && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               onClick: () => onOpenMaestro("Aiutami ad adattare la cena di stasera senza sprecare i freschi in frigo"),
-              className: "px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 cursor-pointer shrink-0",
+              className: "px-3 py-1.5 rounded-xl text-xs font-bold bg-[#141A17] text-white hover:bg-[#2A332E] cursor-pointer shrink-0",
               children: "💬 Chiedi al Maestro"
             }
           )
@@ -31122,7 +31151,7 @@ function NutritionCoachPanel({
               value: outDishInput,
               onChange: (e) => setOutDishInput(e.target.value),
               placeholder: "Cosa hai mangiato fuori? (es. Pansotti, Frittura...)",
-              className: "flex-1 text-xs border border-slate-300 rounded-xl px-3 py-2"
+              className: "flex-1 text-xs border border-[#E5E2DA] rounded-xl px-3 py-2 bg-white text-[#141A17]"
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -31131,7 +31160,7 @@ function NutritionCoachPanel({
               type: "button",
               disabled: adaptLoading,
               onClick: () => triggerAdaptiveCoach("eat_out"),
-              className: "px-3.5 py-2 rounded-xl text-xs font-extrabold bg-amber-600 text-white hover:bg-amber-700 cursor-pointer shrink-0",
+              className: "px-3.5 py-2 rounded-xl text-xs font-extrabold bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA] hover:bg-[#E7E4DC] cursor-pointer shrink-0",
               children: "🍽️ Ho mangiato fuori"
             }
           )
@@ -31142,20 +31171,20 @@ function NutritionCoachPanel({
             type: "button",
             disabled: adaptLoading,
             onClick: () => triggerAdaptiveCoach("emergency_5min"),
-            className: "w-full py-2.5 px-4 rounded-xl text-xs font-extrabold bg-emerald-700 text-white hover:bg-emerald-800 cursor-pointer",
-            children: "⚡ Sono stanco / Piatto Salvagente 5 min (Zero Pentole dalla Dispensa)"
+            className: "w-full py-2.5 px-4 rounded-xl text-xs font-extrabold bg-[#1B5E3A] text-white hover:bg-[#14492D] cursor-pointer transition-colors",
+            children: "⚡ Sono stanco: piatto veloce in 5 minuti (zero pentole)"
           }
         ),
-        adaptResult && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900", children: adaptResult.coachingMessage }),
+        adaptResult && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] space-y-2.5 text-xs", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-[#141A17]", children: adaptResult.coachingMessage }),
           adaptResult.eventType === "eat_out" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-semibold text-emerald-800", children: [
-              "✓ Pavimento calorico sano garantito (",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-semibold text-[#1B5E3A]", children: [
+              "✓ Equilibrio garantito senza tagli rigidi (",
               adaptResult.gentleAdjustedDailyTargetKcal,
-              " kcal/die su 4 gg, zero tagli punitivi)"
+              " kcal al giorno nei prossimi 4 giorni)"
             ] }),
-            adaptResult.rebalanceActions?.map((act) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2 rounded-lg bg-white border border-slate-200 text-[11px]", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-extrabold text-slate-800", children: [
+            adaptResult.rebalanceActions?.map((act) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2 rounded-lg bg-white border border-[#E5E2DA] text-[11px]", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "font-extrabold text-[#141A17]", children: [
                 act.horizon,
                 ":"
               ] }),
@@ -31163,56 +31192,56 @@ function NutritionCoachPanel({
               act.recommendation
             ] }, act.code))
           ] }),
-          adaptResult.eventType === "emergency_5min" && adaptResult.rescueMeals?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: adaptResult.rescueMeals.slice(0, 2).map((rm) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg bg-white border border-emerald-200", children: [
+          adaptResult.eventType === "emergency_5min" && adaptResult.rescueMeals?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-2", children: adaptResult.rescueMeals.slice(0, 2).map((rm) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-lg bg-white border border-[#E5E2DA]", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-slate-900", children: rm.title }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 shrink-0", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-extrabold text-[#141A17]", children: rm.title }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A] border border-emerald-200 shrink-0", children: [
                 rm.prepMinutes,
                 " min · 0 pentole"
               ] })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-slate-600 mt-1", children: rm.stepsSummary }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-bold text-slate-700 mt-1", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58] mt-1", children: rm.stepsSummary }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] font-bold text-[#141A17] mt-1", children: [
               rm.physiology?.nutrients?.kcal,
               " kcal · ",
               rm.physiology?.nutrients?.proteinG,
-              "g prot ·",
+              "g proteine ·",
               " ",
               rm.physiology?.nutrients?.epaDhaG ?? 0,
-              "g EPA+DHA · ",
+              "g omega-3 · ",
               rm.physiology?.nutrients?.vitaminCMg ?? 0,
-              "mg Vit.C"
+              "mg vit. C"
             ] })
           ] }, rm.id)) })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-3.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-2xl border border-[#E5E2DA] p-5 shadow-xs space-y-3.5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-slate-900", children: "🧾 Audit Passivo Scontrini LARN (21 Giorni)" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-600", children: "Analisi gruppi sentinella senza diario manuale: scorte lunghe ammortizzate, zero pesi sintetici (ADR-0006)." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-base font-extrabold text-[#141A17]", children: "Controllo nutrizionale dai tuoi scontrini" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Verifica cosa manca nella spesa delle ultime tre settimane, escludendo le cene con ospiti e usando solo pesi reali." })
           ] }),
           onNavigateRoom && /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
             {
               type: "button",
               onClick: () => onNavigateRoom("room-5-dispensa"),
-              className: "px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer shrink-0",
+              className: "px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA] hover:bg-[#E7E4DC] cursor-pointer shrink-0",
               children: "Scontrini →"
             }
           )
         ] }),
-        auditLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-slate-500 py-3", children: "Verifica copertura sentinella LARN..." }) : receiptAudit ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2.5 text-xs", children: [
+        auditLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-[#575E58] py-3", children: "Controllo i gruppi alimentari negli scontrini..." }) : receiptAudit ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2.5 text-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap gap-2 text-[11px]", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold", children: [
-              "Scontrini Casa: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] text-[#141A17] font-semibold", children: [
+              "Scontrini di casa: ",
               /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: receiptAudit.auditedPersonalReceiptsCount })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold", children: [
-              "Ospiti esclusi: ",
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2.5 py-1 rounded-lg bg-[#F3F1EC] text-[#141A17] font-semibold", children: [
+              "Cene con ospiti escluse: ",
               /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: receiptAudit.excludedGuestReceiptsCount })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200", children: "✓ Zero fallback 250g finti" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2.5 py-1 rounded-lg bg-emerald-50 text-[#1B5E3A] font-semibold border border-emerald-200", children: "✓ Solo pesi reali" })
           ] }),
           receiptAudit.warnings?.map((w) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-950", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
@@ -31225,13 +31254,13 @@ function NutritionCoachPanel({
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-1.5", children: (receiptAudit.groupEvaluations || []).slice(0, 5).map((g) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "div",
             {
-              className: "flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px]",
+              className: "flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] text-[11px]",
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-800 truncate", children: g.label }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-[#141A17] truncate", children: g.label }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "span",
                   {
-                    className: `px-2 py-0.5 rounded-full font-bold shrink-0 ${g.status === "covered" || g.status === "ok" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900"}`,
+                    className: `px-2 py-0.5 rounded-full font-bold shrink-0 ${g.status === "covered" || g.status === "ok" ? "bg-emerald-50 text-[#1B5E3A] border border-emerald-200" : "bg-amber-50 text-amber-900 border border-amber-200"}`,
                     children: g.status === "covered" || g.status === "ok" ? "Coperto ✓" : "Da integrare"
                   }
                 )
@@ -31239,15 +31268,15 @@ function NutritionCoachPanel({
             },
             g.groupId
           )) }),
-          receiptAudit.suggestedRapalloAction && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-indigo-50/70 border border-indigo-200 space-y-1", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-extrabold text-indigo-950", children: [
-              "💡 Micro-Correzione Spesa a Rapallo: ",
+          receiptAudit.suggestedRapalloAction && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 rounded-xl bg-[#F3F1EC] border border-[#E5E2DA] space-y-1", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-extrabold text-[#141A17]", children: [
+              "Consiglio spesa a Rapallo: ",
               receiptAudit.suggestedRapalloAction.advice
             ] }),
-            receiptAudit.suggestedRapalloAction.matchedRapalloOffer && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 text-[11px] text-indigo-900 pt-1", children: [
+            receiptAudit.suggestedRapalloAction.matchedRapalloOffer && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-2 text-[11px] text-[#575E58] pt-1", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
                 "Offerta attiva: ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: receiptAudit.suggestedRapalloAction.matchedRapalloOffer.title }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "text-[#141A17]", children: receiptAudit.suggestedRapalloAction.matchedRapalloOffer.title }),
                 " (",
                 receiptAudit.suggestedRapalloAction.matchedRapalloOffer.storeName,
                 " · €",
@@ -31259,8 +31288,8 @@ function NutritionCoachPanel({
                 {
                   type: "button",
                   onClick: () => onNavigateRoom("room-1-negozi"),
-                  className: "px-2 py-1 rounded-lg bg-indigo-700 text-white font-bold cursor-pointer shrink-0",
-                  children: "Vedi Offerta"
+                  className: "px-2.5 py-1 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white font-bold cursor-pointer shrink-0",
+                  children: "Vedi offerta"
                 }
               )
             ] })
@@ -44181,7 +44210,7 @@ function App() {
       setActiveFlyer(targetFlyer);
     }
   }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen flex flex-col bg-[#FAF9F6] text-[#141A17] font-sans selection:bg-emerald-100 selection:text-[#14492D]", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       OfflineNotice,
       {
@@ -44216,7 +44245,7 @@ function App() {
         onOpenMaestro: handleOpenMaestro
       }
     ),
-    shoppingToast && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-emerald-700 text-white text-xs font-extrabold py-2 px-4 text-center shadow-xs", children: shoppingToast }),
+    shoppingToast && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-[#1B5E3A] text-white text-xs font-bold py-2 px-4 text-center shadow-xs", children: shoppingToast }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       RhythmNavigation,
       {
@@ -44251,7 +44280,7 @@ function App() {
         "section",
         {
           "aria-label": "Sezioni Accademia & Atlante",
-          className: "bg-white border-b border-slate-200",
+          className: "bg-white border-b border-[#E5E2DA]",
           "data-testid": "atlante-section-switcher",
           children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar", children: ATLANTE_SECTIONS.map((sec) => {
             const isActive = atlanteSection === sec.id;
@@ -44263,7 +44292,7 @@ function App() {
                   setAtlanteSection(sec.id);
                   if (sec.id === "academy") setAcademySection("skills");
                 },
-                className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap transition-all cursor-pointer shrink-0 ${isActive ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40"}`,
+                className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap taste-btn cursor-pointer shrink-0 ${isActive ? "bg-[#141A17] text-white border-[#141A17]" : "bg-[#F3F1EC] text-[#4A524C] border-[#E5E2DA] hover:text-[#141A17] hover:bg-[#E7E4DC]"}`,
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: sec.icon }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: sec.label })
@@ -44302,32 +44331,32 @@ function App() {
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6", children: [
-            activeProfile && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-emerald-900/95 text-white rounded-xl p-3.5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
+            activeProfile && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white border border-[#E5E2DA] text-[#141A17] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-start sm:items-center gap-2.5", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xl", "aria-hidden": "true", children: "🛡️" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-extrabold uppercase tracking-wider bg-emerald-700 px-2 py-0.5 rounded", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-bold uppercase tracking-wider bg-[#1B5E3A] text-white px-2 py-0.5 rounded", children: [
                       "Profilo: ",
                       activeProfile.name
                     ] }),
-                    activeProfile.excludedIngredients?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-emerald-100", children: [
+                    activeProfile.excludedIngredients?.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[11px] text-[#575E58]", children: [
                       "Esclusioni attive: ",
                       activeProfile.excludedIngredients.slice(0, 5).join(", "),
                       activeProfile.excludedIngredients.length > 5 ? ` (+${activeProfile.excludedIngredients.length - 5})` : ""
                     ] })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-emerald-200 mt-0.5", children: activeProfile.description })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58] mt-0.5", children: activeProfile.description })
                 ] })
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 self-end sm:self-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-100 cursor-pointer", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 self-end sm:self-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] cursor-pointer", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
                   {
                     type: "checkbox",
                     checked: hideIncompatible,
                     onChange: (e) => setHideIncompatible(e.target.checked),
-                    className: "rounded border-emerald-400 text-emerald-500 focus:ring-emerald-400"
+                    className: "rounded border-[#DFDCD2] text-[#1B5E3A] focus:ring-[#1B5E3A]"
                   }
                 ),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Nascondi prodotti esclusi" })
@@ -44341,29 +44370,29 @@ function App() {
                 {
                   type: "button",
                   onClick: () => handleSelectDomain(isSelected ? null : dom.id),
-                  className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${isSelected ? "bg-slate-900 text-white border-slate-900 shadow-xs" : "bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40"}`,
+                  className: `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border taste-btn whitespace-nowrap cursor-pointer ${isSelected ? "bg-[#141A17] text-white border-[#141A17] shadow-xs" : "bg-white text-[#4A524C] border-[#E5E2DA] hover:border-[#1B5E3A]/40 hover:bg-[#F3F1EC]"}`,
                   children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx("span", { "aria-hidden": "true", children: dom.icon }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: dom.label }),
-                    count !== void 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? "bg-slate-700 text-slate-100" : "bg-slate-100 text-slate-600"}`, children: count })
+                    count !== void 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? "bg-[#2B332E] text-white" : "bg-[#F3F1EC] text-[#575E58]"}`, children: count })
                   ]
                 },
                 dom.id || "all"
               );
             }) }),
-            activeStore && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4", children: [
+            activeStore && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-xl border border-[#E5E2DA] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-2", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-slate-900", children: activeStore.name }),
-                  activeStore.isRegionalServing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200", children: "Servizio Rapallo & Tigullio" }),
-                  activeStore.loyaltyCard && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-800 border border-amber-200", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-lg font-bold text-[#141A17]", children: activeStore.name }),
+                  activeStore.isRegionalServing && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-[#F3F1EC] text-[#1B5E3A] border border-[#DFDCD2]", children: "Servizio Rapallo & Tigullio" }),
+                  activeStore.loyaltyCard && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-[#9A5B25] border border-amber-200", children: [
                     "💳",
                     " ",
                     typeof activeStore.loyaltyCard === "string" ? activeStore.loyaltyCard : activeStore.loyaltyCard?.name || "Carta Fedeltà",
                     typeof activeStore.loyaltyCard === "object" && activeStore.loyaltyCard?.requiredForPromo ? " (richiesta per promo)" : ""
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500 mt-0.5 truncate max-w-xl", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-[#575E58] mt-0.5 truncate max-w-xl", children: [
                   activeStore.address,
                   activeStore.logistics?.distanceKmFromHarbor != null ? ` • 📍 ${activeStore.logistics.distanceKmFromHarbor} km dal Porto` : "",
                   activeStore.logistics?.avgVisitMinutes != null ? ` • ⏱️ ~${activeStore.logistics.avgVisitMinutes} min visita` : ""
@@ -44375,7 +44404,7 @@ function App() {
                   {
                     type: "button",
                     onClick: () => handleOpenFlyer(flyerItem),
-                    className: "inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer",
+                    className: "inline-flex items-center gap-2 px-3.5 py-2 bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-semibold rounded-lg shadow-xs taste-btn whitespace-nowrap cursor-pointer",
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { className: "w-4 h-4 shrink-0", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" }) }),
                       /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: currentStoreFlyers.length > 1 ? `Volantino ${idx + 1}: ${flyerItem.title || "Sfoglia"} (${flyerItem.pageCount} pag.)` : `Sfoglia volantino (${flyerItem.pageCount} pag.)` })
@@ -44477,15 +44506,11 @@ function App() {
                 onResetFilters: handleClearFilters
               }
             ) }),
-            localShops.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
+            localShops.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white rounded-xl border border-[#E5E2DA] p-4 space-y-3", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between gap-3", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-bold text-slate-900", children: "🐟 Botteghe Storiche, Mercato & Casalinghi Osservati a Rapallo" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500", children: [
-                    "Canale ",
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("code", { className: "font-mono text-emerald-700", children: "receipt_observed" }),
-                    ": alimentato dai tuoi scontrini reali e dai prezzi visti al banco (zero finti volantini)."
-                  ] })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-sm font-bold text-[#141A17]", children: "🐟 Botteghe Storiche, Mercato & Casalinghi Osservati a Rapallo" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-[#575E58]", children: "Prezzi reali rilevati dai tuoi scontrini e al banco di quartiere (zero finti volantini)." })
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "button",
@@ -44495,7 +44520,7 @@ function App() {
                       setCounterDefaultStoreId("");
                       setIsCounterModalOpen(true);
                     },
-                    className: "px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer shrink-0",
+                    className: "px-3 py-1.5 text-xs font-bold bg-[#9A5B25] hover:bg-[#7F4A1D] text-white rounded-lg taste-btn cursor-pointer shrink-0",
                     children: "+ Prezzo visto al banco"
                   }
                 )
@@ -44508,17 +44533,17 @@ function App() {
                     setCounterDefaultStoreId(shop.id);
                     setIsCounterModalOpen(true);
                   },
-                  className: "p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-amber-50/60 hover:border-amber-300 text-left text-xs transition-colors cursor-pointer",
+                  className: "p-2.5 rounded-lg border border-[#E5E2DA] bg-[#FAF9F6] hover:bg-[#F3F1EC] hover:border-[#9A5B25]/50 text-left text-xs taste-card cursor-pointer",
                   children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-800 truncate", children: shop.name }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-slate-500 truncate", children: shop.address }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 inline-block text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded", children: "+ Registra prezzo al banco" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-[#141A17] truncate", children: shop.name }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[11px] text-[#575E58] truncate", children: shop.address }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 inline-block text-[10px] font-semibold bg-[#F3F1EC] text-[#9A5B25] border border-[#DFDCD2] px-1.5 py-0.5 rounded", children: "+ Registra prezzo al banco" })
                   ]
                 },
                 shop.id
               )) }),
-              counterObservations.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-slate-100 space-y-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-extrabold uppercase tracking-wider text-slate-600", children: [
+              counterObservations.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-2 border-t border-[#E5E2DA] space-y-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[11px] font-bold uppercase tracking-wider text-[#575E58]", children: [
                   "📌 Ultimi prezzi reali rilevati al banco a Rapallo (",
                   counterObservations.length,
                   ")"
@@ -44526,22 +44551,22 @@ function App() {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2", children: counterObservations.map((obs) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "div",
                   {
-                    className: "p-2.5 rounded-lg bg-emerald-50/40 border border-emerald-200 flex items-center justify-between gap-2 text-xs",
+                    className: "p-2.5 rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] flex items-center justify-between gap-2 text-xs",
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-0", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-900 truncate", children: obs.title }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500 truncate", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-[#141A17] truncate", children: obs.title }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-[#575E58] truncate", children: [
                           obs.storeName || obs.storeId,
                           " • ",
                           obs.unitString || "1 pz"
                         ] })
                       ] }),
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-right shrink-0", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold text-emerald-800", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "font-extrabold text-[#1B5E3A]", children: [
                           "€ ",
                           Number(obs.price || 0).toFixed(2).replace(".", ",")
                         ] }),
-                        obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-600", children: [
+                        obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-[#575E58]", children: [
                           Number(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg).toFixed(2).replace(".", ","),
                           " €/",
                           obs.referenceUnit || "kg"
@@ -44554,18 +44579,18 @@ function App() {
               ] })
             ] })
           ] })
-        ] }) : !profilesReady ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-slate-500", children: "Sincronizzazione profilo attivo in corso..." }) : activeRoom === "room-2-crea" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-emerald-900", children: [
+        ] }) : !profilesReady ? /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-[#575E58]", children: "Sincronizzazione profilo attivo in corso..." }) : activeRoom === "room-2-crea" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white border border-[#E5E2DA] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-[#141A17]", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "🥗 Coach Nutrizionale:" }),
-              " fisiologia del pasto cotto (ritenzione USDA), Calcio Zero-Formaggi biodisponibile, preset LARN e coaching adattivo 1-tap."
+              " fisiologia del pasto cotto (ritenzione USDA), Calcio Zero-Formaggi biodisponibile, preset LARN e adattamento 1-tap."
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
                 type: "button",
                 onClick: handleOpenNutritionCoach,
-                className: "px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold cursor-pointer shrink-0",
+                className: "px-3 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-bold taste-btn cursor-pointer shrink-0",
                 children: "Apri Coach Nutrizionale →"
               }
             )
@@ -44588,8 +44613,8 @@ function App() {
             }
           )
         ] }) : activeRoom === "room-3-ricette" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-amber-950", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "bg-white border border-[#E5E2DA] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-[#141A17]", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "👨‍🍳 Accademia Culinaria:" }),
               ' 12 competenze scientifiche, SOS Fornelli in 30 secondi, Ratios e "Frigo → Tecnica" senza ricetta.'
             ] }),
@@ -44599,7 +44624,7 @@ function App() {
                 {
                   type: "button",
                   onClick: () => handleOpenAcademy("sos"),
-                  className: "px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold cursor-pointer",
+                  className: "px-3 py-1.5 rounded-lg bg-[#9A5B25] hover:bg-[#7F4A1D] text-white text-xs font-bold taste-btn cursor-pointer",
                   children: "🔥 SOS Fornelli"
                 }
               ),
@@ -44608,7 +44633,7 @@ function App() {
                 {
                   type: "button",
                   onClick: () => handleOpenAcademy("skills"),
-                  className: "px-3 py-1.5 rounded-lg border border-amber-300 bg-white hover:bg-amber-100 text-amber-900 text-xs font-bold cursor-pointer",
+                  className: "px-3 py-1.5 rounded-lg border border-[#DFDCD2] bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] text-xs font-bold taste-btn cursor-pointer",
                   children: "Apri Accademia →"
                 }
               )
@@ -44760,15 +44785,16 @@ function App() {
         }
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-slate-700", children: "🌿 Basilico — Sistema Domestico, Nutrizionale (CREA), Gastronomico & Offerte Rapallo (16035 GE)" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Basko • Coop • Gulliver • Carrefour Market & Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet + Botteghe Locali" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-slate-400", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "border-t border-[#E5E2DA] bg-white py-6 mt-12 text-center text-xs text-[#575E58]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1.5", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium text-[#141A17]", children: "🌿 Basilico — Cucina, Nutrizione, Cura della Casa & Offerte Rapallo (16035 GE)" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[#575E58]", children: "Basko • Coop • Gulliver • Carrefour Market & Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet + Botteghe Locali" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[11px] text-[#575E58]", children: [
         "Sorgente dati: ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-slate-600", children: (status.dataSource || "live").toUpperCase() }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-[#141A17]", children: (status.dataSource || "live").toUpperCase() }),
         " • Supermercati attivi: ",
         stores.length
-      ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] text-[#575E58]", children: "Fotografie via Wikimedia Commons (CC0): Brooke Cagle, Markus Spiske, Leonie Wise" })
     ] }) })
   ] });
 }
@@ -44786,4 +44812,4 @@ window.addEventListener("error", (event) => {
 ReactDOM.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
 );
-//# sourceMappingURL=index-BSBfWzWT.js.map
+//# sourceMappingURL=index-BCOnEBme.js.map

@@ -35,6 +35,41 @@ function throwBadRequest(message) {
   throw err;
 }
 
+const HEAT_SOURCE_LABELS = {
+  gas: 'piano a gas',
+  induction: 'piano a induzione',
+  electric: 'piastra elettrica',
+  boat_no_stove: 'cambusa senza fornelli'
+};
+
+/**
+ * Extracts a clean display title and optional technical subtitle when a dish title
+ * ends with a descriptive parenthetical clause, preserving `dish.title` unchanged.
+ */
+function splitDishTitleAndSubtitle(rawTitle) {
+  const title = String(rawTitle || '').trim();
+  if (!title) return { cleanTitle: '', cleanSubtitle: null };
+  const match = title.match(/^(.*?)\s*\(([^()]+)\)\s*$/);
+  if (!match) {
+    return { cleanTitle: title, cleanSubtitle: null };
+  }
+  const baseTitle = match[1].trim();
+  const parenText = match[2].trim();
+  const isPortionOrShortMeta =
+    parenText.length < 18 &&
+    !/\b(senza|zero|estrazione|riduzione|mantecatura|emulsione|frittura|latticini|formaggi|barca|cambusa)\b/i.test(
+      parenText
+    );
+  if (!baseTitle || isPortionOrShortMeta) {
+    return { cleanTitle: title, cleanSubtitle: null };
+  }
+  const cleanSubtitle = parenText.replace(/\s*&\s*/g, ' e ').replace(/\s+/g, ' ').trim();
+  return {
+    cleanTitle: baseTitle,
+    cleanSubtitle: cleanSubtitle || null
+  };
+}
+
 /**
  * Classifies cooking technique, thermal regime, post-cooking soil & cleaning time deterministically
  * from a dish record + owned cookware + active heat source.
@@ -43,63 +78,69 @@ function analyzeDishCausalChain(dish, kitchenState, varReport, economicsSvc, rhy
   const titleNorm = normalizeSearchToken(dish.title || '');
   const bomText = normalizeSearchToken((dish.bom || []).map((b) => b.name || '').join(' '));
   const heatSource = kitchenState.heatSource || 'gas';
+  const heatSourceLabel = HEAT_SOURCE_LABELS[heatSource] || 'fornelli di casa';
   const reqTools = normalizeDishCookwareIds(dish.cookwareRequired || [], dish);
   const ownedMap = new Map((kitchenState.effectiveTools || []).map((t) => [t.id, t]));
 
   // Choose primary active pan/tool (preferring inox for high-heat searing if owned, else dish's mapped tool)
   let primaryTool = reqTools.map((id) => ownedMap.get(id)).find(Boolean) || kitchenState.effectiveTools?.[0] || {
     id: 'padella_antiaderente',
-    name: 'Padella Antiaderente PTFE',
+    name: 'Padella antiaderente',
     material: 'alluminio_rivestito_ptfe',
     maxTempC: 200
   };
 
   let cookingMethod = 'stovetop_medium';
-  let soilClass = 'lipidico_emulsionato';
   let cleaningResetMinutes = 2.0;
-  let cleaningProtocolSummary = 'Acqua tiepida + detersivo piatti a pH neutro su lato morbido spugna (90s).';
-  let culinaryTechniqueLabel = 'Cottura espressa con mantecatura/emulsione controllata (<65°C fuori fuoco)';
+  let cleaningProtocolSummary = 'Lavaggio rapido (90s): acqua tiepida e poco detersivo neutro sul lato morbido della spugna.';
+  let culinaryTechniqueLabel = 'Cottura espressa con mantecatura fuori fuoco sotto i 65°C per legare i succhi senza latticini.';
 
   if (dish.boatSafeCold || dish.course === 'piatto_unico_barca' || /\b(crud[oi]|insalat\w*|carpaccio|tartare)\b/.test(titleNorm)) {
     cookingMethod = 'cold_no_cook';
-    soilClass = 'organico_freddo_idrosolubile';
     cleaningResetMinutes = 1.0;
-    cleaningProtocolSummary = 'Risciacquo rapido a freddo + goccia pH neutro su ciotola e lama (45s, zero grassi polimerizzati).';
-    culinaryTechniqueLabel = 'Assemblaggio a freddo con bilanciamento osmotico acido-lipidico (zero fornelli)';
+    cleaningProtocolSummary = 'Risciacquo veloce a freddo (45s): acqua e una goccia di sapone neutro su ciotola e coltello, zero grassi cotti.';
+    culinaryTechniqueLabel = 'Assemblaggio a freddo senza fornelli: condimento equilibrato tra parte acida e olio extravergine.';
   } else if (reqTools.includes('teglia_forno') || /\b(forno|farinata|torta|gratin|ligure\s+al\s+forno)\b/.test(titleNorm)) {
     cookingMethod = 'oven_bake';
-    soilClass = ' Maillard_forno_bordi';
     cleaningResetMinutes = 3.5;
-    cleaningProtocolSummary = 'Ammollo tiepido 5 min (idratazione amidi/proteine) + detergente neutro; sgrassatore alcalino solo su inox/pirofila se bordi bruniti.';
-    culinaryTechniqueLabel = 'Convezione/irraggiamento in camera statica/ventilata (180–200°C)';
+    cleaningProtocolSummary = 'Ammollo tiepido di 5 minuti per ammorbidire i residui, poi spugna morbida e detersivo neutro (sgrassatore solo su acciaio o vetro se i bordi sono molto bruniti).';
+    culinaryTechniqueLabel = 'Cottura uniforme in forno (180–200°C) fino a doratura leggera in superficie.';
   } else if (/\b(scottat\w*|tagliata|arrosto|rosolat\w*|brace|grigli\w*|bistecc\w*)\b/.test(titleNorm)) {
     cookingMethod = primaryTool.material === 'alluminio_rivestito_ptfe' ? 'stovetop_medium' : 'stovetop_high';
-    soilClass = primaryTool.material === 'alluminio_rivestito_ptfe' ? 'lipidico_controllato' : 'proteico_maillard_sucs';
     cleaningResetMinutes = primaryTool.material === 'alluminio_rivestito_ptfe' ? 1.5 : 3.0;
     cleaningProtocolSummary =
       primaryTool.material === 'alluminio_rivestito_ptfe'
-        ? 'Raffreddamento naturale (<80°C per evitare shock termico) + spugna cellulosa e pH neutro (90s, VIETATI abrasivi/alcalini forti).'
-        : 'Deglassatura a caldo con 50ml acqua (scioglie l\'80% dei sucs per shock osmotico-termico) + lavaggio inox (2,5 min).';
+        ? 'Lascia intiepidire la padella sotto gli 80°C, poi lava in 90 secondi con spugna morbida e detersivo neutro (niente pagliette o sgrassatori forti).'
+        : 'Sfuma il fondo ancora caldo con poca acqua per sciogliere subito i succhi di cottura, poi lava la padella in circa 2 minuti.';
     culinaryTechniqueLabel =
       primaryTool.material === 'alluminio_rivestito_ptfe'
-        ? 'Scottatura protetta <190°C su PTFE (superficie asciutta per barriera 100°C, zero Boost)'
-        : 'Reazione di Maillard >165°C con test di Leidenfrost e deglassatura del fond';
+        ? 'Scottatura controllata sotto i 190°C su padella antiaderente ben asciutta, senza usare la funzione Boost.'
+        : 'Rosolatura vivace sopra i 165°C su padella ben calda, poi recupero dei succhi sul fondo.';
   } else if (/\b(vapore|lessat\w*|bollito|minestr\w*|zuppa|vellutat\w*)\b/.test(titleNorm)) {
     cookingMethod = 'stovetop_gentle';
-    soilClass = 'amidaceo_vegetale_idrosolubile';
     cleaningResetMinutes = 1.5;
-    cleaningProtocolSummary = 'Risciacquo immediato pre-retrogradazione amido + detersivo piatti pH neutro (60–90s).';
-    culinaryTechniqueLabel = 'Cottura umida sub-ebollizione / vapore per massima ritenzione micronutrienti idrosolubili';
+    cleaningProtocolSummary = 'Risciacquo immediato prima che l’amido si fissi, poi passata veloce con detersivo neutro (60–90 secondi).';
+    culinaryTechniqueLabel = 'Cottura dolce a vapore o sobbollitura leggera per preservare sapore, consistenza e vitamine.';
   }
 
   // Stove × Pan Physics Guardrail Note
-  let physicsNote = `${primaryTool.name} su ${heatSource}: conduzione termica regolare.`;
-  if (heatSource === 'induction' && primaryTool.material === 'alluminio_rivestito_ptfe') {
-    physicsNote = ` GUARDIA P0 PTFE: su Induzione usa max Livello 6/9 (MAI funzione Boost: porterebbe il fondo >260°C in <40s degradando il fluoropolimero!).`;
-  } else if (primaryTool.material === 'acciaio_inox_18_10') {
-    physicsNote = `Fisica Inox 18/10: preriscalda fino all'effetto Leidenfrost (goccia d'acqua che rotola come mercurio ~190°C) prima di aggiungere il velo d'olio; sala l'acqua solo a bollore.`;
+  let physicsNote = `${primaryTool.name} su ${heatSourceLabel}: calore stabile e facile da dosare.`;
+  if (cookingMethod === 'cold_no_cook') {
+    physicsNote =
+      heatSource === 'boat_no_stove'
+        ? 'Ideale in cambusa: nessuna fiamma a bordo, si conserva al sicuro in borsa termica.'
+        : 'Nessuna pentola sul fuoco: ti bastano tagliere, coltello e ciotola.';
   } else if (heatSource === 'boat_no_stove') {
-    physicsNote = `Modalità Cambusa Barca: zero fiamma a bordo, conservazione sicura in borsa termica.`;
+    physicsNote = 'Ideale in cambusa: nessuna fiamma a bordo, si conserva al sicuro in borsa termica.';
+  } else if (heatSource === 'induction' && primaryTool.material === 'alluminio_rivestito_ptfe') {
+    physicsNote = 'Su induzione fermati al livello 6 su 9 (niente Boost) per proteggere il rivestimento antiaderente.';
+  } else if (primaryTool.material === 'acciaio_inox_18_10') {
+    physicsNote =
+      cookingMethod === 'stovetop_high'
+        ? 'Su acciaio inox scalda la padella finché una goccia d’acqua scivola via intera (~190°C), poi aggiungi un velo d’olio.'
+        : 'Pentola o padella in acciaio inox: scalda con moderazione e sala l’acqua solo a bollore per proteggere il fondo.';
+  } else if (cookingMethod === 'oven_bake') {
+    physicsNote = 'Forno preriscaldato con teglia ben distanziata per una cottura uniforme.';
   }
 
   // Nutrition Synergy & Zero-Dairy Note
@@ -107,16 +148,16 @@ function analyzeDishCausalChain(dish, kitchenState, varReport, economicsSvc, rhy
   const prot = dish.nutritionPerServing?.proteinG ?? null;
   const nutritionHighlights = [];
   if (/\b(acciug\w*|alici|sgombro|sard\w*|salmone|tonno|orata|branzino)\b/.test(`${titleNorm} ${bomText}`)) {
-    nutritionHighlights.push('EPA+DHA marini (cottura dolce preserva i PUFA dall\'ossidazione)');
+    nutritionHighlights.push('Grassi buoni marini (Omega-3): la cottura dolce li protegge dall’ossidazione.');
   }
   if (/\b(acciug\w*|alici|cavolo|broccol\w*|rucola|mandorl\w*|ceci|sesamo)\b/.test(`${titleNorm} ${bomText}`)) {
-    nutritionHighlights.push('Fonte Calcio biodisponibile Fascia Alta/Media (chiave per profilo Zero Formaggi)');
+    nutritionHighlights.push('Buon apporto di calcio naturale senza bisogno di formaggi.');
   }
   if (/\b(lenticchi\w*|ceci|fagiol\w*|spinac\w*|bietol\w*|acciug\w*)\b/.test(`${titleNorm} ${bomText}`)) {
-    nutritionHighlights.push('Sinergia Ferro: aggiungi limone fresco a crudo a fine cottura (+Vit. C -> assorbimento 2–3x)');
+    nutritionHighlights.push('Assorbimento del ferro potenziato: aggiungi succo di limone fresco a crudo a fine cottura.');
   }
   if (nutritionHighlights.length === 0) {
-    nutritionHighlights.push('Equilibrio Mediterraneo CREA con grassi monoinsaturi da Olio EVO Ligure a crudo');
+    nutritionHighlights.push('Piatto mediterraneo equilibrato con grassi buoni da olio extravergine a crudo.');
   }
 
   // Match expiring VaR_48h items rescued by this dish!
@@ -166,9 +207,14 @@ function analyzeDishCausalChain(dish, kitchenState, varReport, economicsSvc, rhy
     (dish.sourceType === 'tigullio_restaurant' || dish.sourceType === 'starred_author' ? 35 : 15) +
     (reqTools.includes('mortaio') || cookingMethod === 'stovetop_high' ? 20 : 0);
 
+  const { cleanTitle, cleanSubtitle } = splitDishTitleAndSubtitle(dish.title);
+  const totalActiveMinutes = Math.round(activePrepMinutes + cleaningResetMinutes);
+
   return {
     dishId: dish.id,
     title: dish.title,
+    cleanTitle,
+    cleanSubtitle,
     course: dish.course,
     dishFamily: dish.dishFamily,
     sourceType: dish.sourceType,
@@ -192,14 +238,14 @@ function analyzeDishCausalChain(dish, kitchenState, varReport, economicsSvc, rhy
       highlights: nutritionHighlights
     },
     fiveSoulsChain: {
-      nutrizione: nutritionHighlights.join(' · '),
+      nutrizione: nutritionHighlights.join(' '),
       culinaria: culinaryTechniqueLabel,
       strumenti: physicsNote.trim(),
-      casa: `${soilClass} → ${cleaningProtocolSummary}`,
+      casa: cleaningProtocolSummary,
       economia:
         vaRSavedEuro > 0
-          ? `Materia prima €${purePortionCostEur.toFixed(2)} + Energia €${fullCost.breakdown.energyCostEur.toFixed(2)} − Salva €${vaRSavedEuro.toFixed(2)} dal frigo = Costo Pieno Netto €${fullCost.netGeneralizedCostEur.toFixed(2)}`
-          : `Materia prima €${purePortionCostEur.toFixed(2)} + Energia €${fullCost.breakdown.energyCostEur.toFixed(2)} + Tempo (${activePrepMinutes + cleaningResetMinutes}m attivi) = Costo Pieno €${fullCost.grossGeneralizedCostEur.toFixed(2)}`
+          ? `Ingredienti €${purePortionCostEur.toFixed(2)} + energia €${fullCost.breakdown.energyCostEur.toFixed(2)} + tuo tempo (${totalActiveMinutes} min: €${fullCost.breakdown.timeShadowCostEur.toFixed(2)}) − €${vaRSavedEuro.toFixed(2)} recuperati dal frigo = €${fullCost.netGeneralizedCostEur.toFixed(2)} netti.`
+          : `Ingredienti €${purePortionCostEur.toFixed(2)} + energia €${fullCost.breakdown.energyCostEur.toFixed(2)} + tuo tempo (${totalActiveMinutes} min: €${fullCost.breakdown.timeShadowCostEur.toFixed(2)}) = €${fullCost.grossGeneralizedCostEur.toFixed(2)} totali.`
     }
   };
 }
@@ -629,35 +675,32 @@ export class MaestroCoachService {
     if (pickFriction) {
       paretoCards.push({
         slotId: 'min_friction',
-        badge: '⚡ Minimo Attrito & Reset Rapido',
+        badge: 'Pronto subito',
         recommendedForRhythm: rhythmPreset === 'sera_stanca',
-        whyThisWins: `${pickFriction.totalHandsOnMinutes} min totali (incluso lavaggio), zero stress termico e costo pieno €${pickFriction.grossGeneralizedCostEur.toFixed(2)}.`,
+        whyThisWins: `In tavola in ${Math.round(pickFriction.totalHandsOnMinutes)} minuti lavaggio compreso, zero pentole impegnative.`,
         ...pickFriction
       });
     }
     if (pickVar && pickVar.dishId !== pickFriction?.dishId) {
       paretoCards.push({
         slotId: 'save_var_value',
-        badge:
-          pickVar.vaRSavedEuro > 0
-            ? `💶 Salva-Frigo (€${pickVar.vaRSavedEuro.toFixed(2)} VaR salvati!)`
-            : '💶 Massimo Valore Nutrizionale / €',
+        badge: pickVar.vaRSavedEuro > 0 ? 'Salva i freschi in frigo' : 'Spesa intelligente',
         recommendedForRhythm: rhythmPreset === 'feriale',
         whyThisWins:
           pickVar.vaRSavedEuro > 0
-            ? `Salva €${pickVar.vaRSavedEuro.toFixed(2)} in scadenza (${pickVar.rescuedVarTitles.join(', ')}), abbattendo il costo netto reale a €${pickVar.netGeneralizedCostEur.toFixed(2)}.`
-            : `Massima efficienza tra dispensa, offerte attive a Rapallo (€${pickVar.purePortionCostEur.toFixed(2)}/porzione) e copertura micronutrienti CREA.`,
+            ? `Recuperi €${pickVar.vaRSavedEuro.toFixed(2)} di ingredienti in scadenza (${pickVar.rescuedVarTitles.join(', ')}) evitando sprechi.`
+            : `Ottimo equilibrio tra dispensa e offerte attive a Rapallo con soli €${pickVar.purePortionCostEur.toFixed(2)} a porzione.`,
         ...pickVar
       });
     }
     if (pickCraft && !paretoCards.some((c) => c.dishId === pickCraft.dishId)) {
       paretoCards.push({
         slotId: 'maestro_craft',
-        badge: '👨‍🍳 Gesto da Maestro & Arbitraggio',
+        badge: 'Piatto d’autore a casa',
         recommendedForRhythm: rhythmPreset === 'weekend_relax',
         whyThisWins: pickCraft.menuPriceEuro
-          ? `Tecnica d'autore (al ristorante €${Number(pickCraft.menuPriceEuro).toFixed(2)} vs €${pickCraft.purePortionCostEur.toFixed(2)} a casa; richiede ${pickCraft.totalHandsOnMinutes} min tra fornelli e reset).`
-          : `Scuola di tecnica ligure/scientifica con controllo preciso del calore (${pickCraft.totalHandsOnMinutes} min complessivi dichiarati in anticipo).`,
+          ? `Al ristorante €${Number(pickCraft.menuPriceEuro).toFixed(2)}, a casa €${pickCraft.purePortionCostEur.toFixed(2)} di ingredienti (${Math.round(pickCraft.totalHandsOnMinutes)} min tra cottura e riordino).`
+          : `Ricetta curata con tecnica precisa, €${pickCraft.purePortionCostEur.toFixed(2)} di ingredienti (${Math.round(pickCraft.totalHandsOnMinutes)} min tra cottura e riordino).`,
         ...pickCraft
       });
     }

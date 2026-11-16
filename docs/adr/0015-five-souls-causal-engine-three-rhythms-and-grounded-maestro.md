@@ -106,3 +106,6 @@ flowchart BT
 - [x] **TASK-V2-06** (`#44`): **Estensione Suite `Domain Evals` (`npm run eval`), Test E2E/Integrazione e Verifica Pre-Release**
   - *File coinvolti*: `evals/run_evals.mjs`, `scripts/board.mjs`, `tests/api/`, `tests/e2e/`
   - *Verification Step*: `npm run build && npm run eval && npm test && python3 ~/.gemini/config/skills/adr-github-methodology/scripts/pre_release_check.py`
+- [x] **TASK-V2-07** (`#45`): **Restyling Anti-Slop (`tasteskill 2.5`): Sistema Editoriale Caldo, Motion Layer, Fotografie Reali & Linguaggio Umano**
+  - *File coinvolti*: `index.html`, `src/index.css`, `src/App.jsx`, `src/components/Header.jsx`, `src/components/RoomNavigation.jsx`, `src/components/today/{TodayCopilotView,WeeklyRegiaView}.jsx`, `src/components/maestro/MaestroDrawer.jsx`, `src/components/home/HomeChemistryView.jsx`, `src/components/academy/CulinaryAcademyPanel.jsx`, `src/components/crea/NutritionCoachPanel.jsx`, `server/services/maestroCoachService.js`, `public/assets/img/*`, `tests/e2e/v2_five_souls_ui.test.js`, `evals/run_evals.mjs`
+  - *Verification Step*: `npm run build && npm run eval && npm test`

@@ -718,6 +718,48 @@ export async function runAllDomainEvals(options = {}) {
         passed: varAccurate && has3Pareto && varRescued,
         detail: `VaR_48h=€${varReport.totalAtRiskEuro} (atteso 7.20€), ParetoOpzioni=${copilotBrief.tonightParetoCards?.length}, SalvaVaR=${varRescued}`
       });
+
+      const snakeSlopRx = /lipidico_emulsionato|organico_freddo_idrosolubile|amidaceo_vegetale_idrosolubile|proteico_maillard_sucs|[a-z]+_[a-z_]{2,}/;
+      const chainSlopHits = [];
+      for (const preset of ['sera_stanca', 'feriale', 'weekend_relax']) {
+        const brief = preset === 'feriale'
+          ? copilotBrief
+          : await maestroEvalSvc.getTodayCopilot({ profileId: 'dany', rhythmPreset: preset });
+        for (const card of brief.tonightParetoCards || []) {
+          for (const [soulKey, text] of Object.entries(card.fiveSoulsChain || {})) {
+            const m = String(text || '').match(snakeSlopRx);
+            if (m) chainSlopHits.push(`${preset}:${card.slotId}.${soulKey}=${m[0]}`);
+          }
+        }
+      }
+      const v2UiFiles = [
+        'src/components/today/TodayCopilotView.jsx',
+        'src/components/today/WeeklyRegiaView.jsx',
+        'src/components/maestro/MaestroDrawer.jsx',
+        'src/components/home/HomeChemistryView.jsx',
+        'src/components/academy/CulinaryAcademyPanel.jsx',
+        'src/components/crea/NutritionCoachPanel.jsx',
+        'src/components/Header.jsx',
+        'src/components/RoomNavigation.jsx',
+        'src/App.jsx'
+      ];
+      const forbiddenColorHits = [];
+      for (const relPath of v2UiFiles) {
+        const src = fs.readFileSync(path.resolve(__dirname, '..', relPath), 'utf8');
+        if (/(?:violet|indigo)-/.test(src)) {
+          forbiddenColorHits.push(relPath);
+        }
+      }
+      const photosOk =
+        fs.existsSync(path.resolve(__dirname, '../public/assets/img/photo-m61660576.jpg')) &&
+        fs.existsSync(path.resolve(__dirname, '../public/assets/img/photo-m61663250-960.jpg'));
+
+      checks.push({
+        id: 'V2-TASTE-NO-SLOP-COPY',
+        label: 'Restyling anti-slop (tasteskill 2.5): zero snake_case in fiveSoulsChain, zero violet-/indigo- nei componenti V2 e foto reali presenti',
+        passed: chainSlopHits.length === 0 && forbiddenColorHits.length === 0 && photosOk,
+        detail: `SnakeCase=${chainSlopHits.length}, VioletIndigo=${forbiddenColorHits.length}, PhotosOk=${photosOk}`
+      });
     } finally {
       try {
         if (fs.existsSync(tmpEconPantryPath)) fs.unlinkSync(tmpEconPantryPath);

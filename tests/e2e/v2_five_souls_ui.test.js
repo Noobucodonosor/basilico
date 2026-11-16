@@ -108,8 +108,10 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     installFakeWindow('?rhythm=regia');
     const html = renderToString(React.createElement(bundled.App));
     assert.match(html, /data-testid="weekly-regia-view"/);
-    assert.match(html, /Swipe Dispensa 5s/);
-    assert.match(html, /Giro Spesa €\/h/);
+    assert.match(html, /1\. Prezzi &amp; Strumenti/);
+    assert.match(html, /2\. Controllo Frigo/);
+    assert.match(html, /3\. Basi &amp; Barca/);
+    assert.match(html, /4\. Giro Spesa/);
     assert.doesNotMatch(html, /data-testid="today-copilot-view"/);
   });
 
@@ -159,7 +161,8 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     );
     assert.match(openHtml, /data-testid="maestro-drawer"/);
     assert.match(openHtml, /Basilico Maestro/);
-    assert.match(openHtml, /Grounded Deterministico Offline/);
+    assert.match(openHtml, /Motore locale verificato/);
+    assert.doesNotMatch(openHtml, /VaR_48h|ADR-0006/);
     for (const chip of ['Nutrizione', 'Arte Culinaria', 'Fisica Strumenti', 'Chimica Casa', 'Economia Rapallo']) {
       assert.match(openHtml, new RegExp(chip));
     }
@@ -169,17 +172,21 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     const todayHtml = renderToString(
       React.createElement(bundled.TodayCopilotView, { activeProfileId: 'dany', rhythmPreset: 'sera_stanca' })
     );
+    assert.match(todayHtml, /Cosa cucinare stasera/);
     assert.match(todayHtml, /Sera Stanca/);
     assert.match(todayHtml, /Feriale/);
     assert.match(todayHtml, /Weekend/);
-    assert.match(todayHtml, /SOS Fornelli 30s/);
-    assert.match(todayHtml, /SOS Macchia 3-Tap/);
-    assert.match(todayHtml, /Stasera in Cucina/);
+    assert.match(todayHtml, /SOS Fornelli/);
+    assert.match(todayHtml, /SOS Macchia/);
+    assert.match(todayHtml, /Le tre proposte per cena/);
+    assert.match(todayHtml, /\/assets\/img\/photo-m61660576\.jpg/);
+    assert.match(todayHtml, /\/assets\/img\/photo-m61663250-960\.jpg/);
+    assert.doesNotMatch(todayHtml, /Scelte di Pareto|Zero Punteggi Magici|CO-PILOTA OGGI|lipidico_emulsionato/i);
 
     const regiaHtml = renderToString(
       React.createElement(bundled.WeeklyRegiaView, { activeProfileId: 'dany' })
     );
-    for (const step of ['1. Inflazione', '2. Swipe Dispensa', '3. Batch', '4. Giro Spesa']) {
+    for (const step of ['1\\. Prezzi &amp; Strumenti', '2\\. Controllo Frigo', '3\\. Basi &amp; Barca', '4\\. Giro Spesa']) {
       assert.match(regiaHtml, new RegExp(step));
     }
   });

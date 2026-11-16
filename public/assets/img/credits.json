@@ -1,0 +1,49 @@
+{
+ "note": "Credits for the photographs in this folder: photos.mjs credits prints the footer block for the ones the pages use.",
+ "photos": [
+  {
+   "file": "photo-m61660576.jpg",
+   "files": [
+    "photo-m61660576-500.jpg",
+    "photo-m61660576-960.jpg",
+    "photo-m61660576.jpg"
+   ],
+   "id": "m61660576",
+   "alt": "Copper wire basket of courgettes, yellow squash and tomatoes on a dark wooden counter",
+   "by": "Brooke Cagle",
+   "licence": "CC0",
+   "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Healthy_Harvest_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-m61663250-960.jpg",
+   "files": [
+    "photo-m61663250-500.jpg",
+    "photo-m61663250-960.jpg"
+   ],
+   "id": "m61663250",
+   "alt": "Wooden crate of carrots with their tops, red onions and beetroot on weathered blue-grey boards",
+   "by": "Markus Spiske",
+   "licence": "CC0",
+   "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Basket_of_Vegetables_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-m61757972.jpg",
+   "files": [
+    "photo-m61757972-500.jpg",
+    "photo-m61757972-960.jpg",
+    "photo-m61757972.jpg"
+   ],
+   "id": "m61757972",
+   "alt": "Woven basket of groceries on a dark floor: asparagus, avocados, yellow peppers and tomatoes",
+   "by": "Leonie Wise",
+   "licence": "CC0",
+   "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Healthy_Grocery_Shopping_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  }
+ ]
+}

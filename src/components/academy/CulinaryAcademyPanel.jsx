@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 const VERBOSITY_MODES = [
-  { id: 'auto', label: '🎯 Automatica (Livello Utente)' },
-  { id: 'novice', label: '🌱 Principiante Guidato' },
-  { id: 'practitioner', label: '🔪 Intermedio Sintetico' },
-  { id: 'master', label: '👨‍🍳 Maestro (Solo Target)' }
+  { id: 'auto', label: 'Automatica (sul tuo livello)' },
+  { id: 'novice', label: 'Principiante guidato' },
+  { id: 'practitioner', label: 'Intermedio sintetico' },
+  { id: 'master', label: 'Esperto (solo punti chiave)' }
 ];
 
 const SOS_QUICK_SYMPTOMS = [
@@ -245,27 +245,24 @@ export function CulinaryAcademyPanel({
 
   return (
     <div className="space-y-6">
-      {/* Header Accademia Scientifica */}
-      <section className="bg-slate-900 text-white rounded-2xl p-5 shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* Header Scuola di Cucina */}
+      <section className="bg-white text-[#141A17] rounded-2xl border border-[#E5E2DA] p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded bg-emerald-500 text-slate-950">
-              Anima 2 · Scuola Scientifica d&apos;Arte Culinaria
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]">
+              Scuola di cucina
             </span>
             {curriculum && (
-              <span className="text-xs font-bold text-emerald-300">
-                Livello Attivo: {curriculum.globalLevel.toUpperCase()} ({curriculum.practicedCount}/
-                {curriculum.totalSkills} praticate · {curriculum.masteredCount} padroneggiate)
+              <span className="text-xs font-bold text-[#1B5E3A]">
+                {curriculum.practicedCount}/{curriculum.totalSkills} tecniche provate · {curriculum.masteredCount} padroneggiate
               </span>
             )}
           </div>
-          <h2 className="text-xl font-extrabold mt-1.5">
-            🎓 Accademia Culinaria, Ruhlman&apos;s Ratios &amp; SOS Fornelli 30s
+          <h2 className="text-lg sm:text-xl font-extrabold text-[#141A17] mt-1.5">
+            Tecniche di base, proporzioni e salvataggi ai fornelli
           </h2>
-          <p className="text-xs text-slate-300 mt-1 max-w-3xl">
-            Dalle ricette da eseguire ai <strong>Principi Generativi</strong> (McGee · Kenji · Ruhlman · Bressanini):
-            governo del calore latente (2.260 J/g), emulsioni amido-EVO fuori fuoco (&lt;65°C), cinetica proteica e
-            moltiplicatore Umami 8× per una cucina ligure <em>Zero Formaggi</em> da maestro.
+          <p className="text-xs text-[#575E58] mt-1 max-w-3xl">
+            Capire come lavora il calore, legare le salse senza panna né formaggio, dosare a occhio e recuperare al volo un piatto in padella.
           </p>
         </div>
 
@@ -274,20 +271,20 @@ export function CulinaryAcademyPanel({
             <button
               type="button"
               onClick={() =>
-                onOpenMaestro('Maestro, quale competenza tecnica mi consigli di allenare stasera con ciò che ho in casa?')
+                onOpenMaestro('Maestro, quale tecnica mi consigli di provare stasera con quello che ho in casa?')
               }
-              className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer transition-colors"
             >
-              💬 Chiedi Lezione al Maestro
+              💬 Chiedi al Maestro
             </button>
           )}
           {onNavigateRoom && (
             <button
               type="button"
               onClick={() => onNavigateRoom('room-4-cucina')}
-              className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 text-xs font-bold cursor-pointer"
+              className="px-3 py-2 rounded-xl bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-[#141A17] text-xs font-bold cursor-pointer"
             >
-              🍳 Officina Pentole &amp; Lame →
+              🍳 Pentole e lame →
             </button>
           )}
         </div>
@@ -296,13 +293,13 @@ export function CulinaryAcademyPanel({
       {/* Navigation Sub-Tabs */}
       <nav
         className="grid grid-cols-2 lg:grid-cols-4 gap-2"
-        aria-label="Sezioni Accademia Culinaria"
+        aria-label="Sezioni Scuola di Cucina"
       >
         {[
-          { id: 'skills', label: '🌳 12 Competenze & 5 Pilastri' },
-          { id: 'sos', label: '🔥 SOS Fornelli (30s)' },
-          { id: 'ratios', label: '📐 Ratios & Umami 8×' },
-          { id: 'improvise', label: '🧑‍🔬 Frigo → Tecnica' }
+          { id: 'skills', label: '12 competenze di base' },
+          { id: 'sos', label: 'SOS Fornelli (30s)' },
+          { id: 'ratios', label: 'Proporzioni & Sapore' },
+          { id: 'improvise', label: 'Cucina con quello che hai' }
         ].map((tab) => {
           const active = activeSection === tab.id;
           return (
@@ -312,8 +309,8 @@ export function CulinaryAcademyPanel({
               onClick={() => setActiveSection(tab.id)}
               className={`px-3 py-2.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
                 active
-                  ? 'bg-emerald-900 text-white border-emerald-700 shadow-xs'
-                  : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'
+                  ? 'bg-[#1B5E3A] text-white border-[#1B5E3A] shadow-xs'
+                  : 'bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]'
               }`}
             >
               {tab.label}
@@ -325,23 +322,23 @@ export function CulinaryAcademyPanel({
       {/* SECTION 1: 12 SKILLS & 5 PILLARS */}
       {activeSection === 'skills' && (
         <div className="space-y-5">
-          {/* 5 Generative Pillars */}
+          {/* 5 Cooking Principles */}
           {curriculum?.fivePillars?.length > 0 && (
-            <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
-              <h3 className="text-sm font-extrabold text-slate-900">
-                ⚛️ I 5 Pilastri Fisico-Chimici Generativi
+            <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-3">
+              <h3 className="text-sm font-extrabold text-[#141A17]">
+                I 5 principi della buona cottura
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {curriculum.fivePillars.map((p) => (
                   <div
                     key={p.id}
-                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5"
+                    className="p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] text-xs space-y-1.5"
                   >
-                    <div className="font-extrabold text-slate-900">{p.title}</div>
-                    <div className="font-mono text-[10px] text-emerald-800 bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+                    <div className="font-extrabold text-[#141A17]">{p.title}</div>
+                    <div className="text-[11px] font-semibold text-[#1B5E3A] bg-emerald-50/70 px-2 py-1 rounded border border-emerald-200">
                       {p.law}
                     </div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed">{p.summary}</p>
+                    <p className="text-[11px] text-[#575E58] leading-relaxed">{p.summary}</p>
                   </div>
                 ))}
               </div>
@@ -349,14 +346,14 @@ export function CulinaryAcademyPanel({
           )}
 
           {/* Verbosity Switch + 12 Skills Grid */}
-          <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E5E2DA] pb-3">
               <div>
-                <h3 className="text-sm font-extrabold text-slate-900">
-                  🌳 Albero delle 12 Competenze Fondamentali
+                <h3 className="text-sm font-extrabold text-[#141A17]">
+                  Le 12 competenze fondamentali
                 </h3>
-                <p className="text-xs text-slate-500">
-                  La guida si accorcia automaticamente man mano che padroneggi il gesto (3 sessioni perfette = Maestro).
+                <p className="text-xs text-[#575E58]">
+                  La guida diventa più sintetica man mano che prendi confidenza (3 prove riuscite = padroneggiata).
                 </p>
               </div>
 
@@ -368,8 +365,8 @@ export function CulinaryAcademyPanel({
                     onClick={() => setVerbosityOverride(vm.id)}
                     className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border cursor-pointer ${
                       verbosityOverride === vm.id
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-[#141A17] text-white border-[#141A17]'
+                        : 'bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]'
                     }`}
                   >
                     {vm.label}
@@ -387,66 +384,66 @@ export function CulinaryAcademyPanel({
                     key={sk.id}
                     className={`rounded-xl border p-3.5 text-xs flex flex-col justify-between space-y-3 ${
                       isMaster
-                        ? 'bg-emerald-50/50 border-emerald-300'
+                        ? 'bg-emerald-50/40 border-[#1B5E3A]/40'
                         : sk.unlocked
-                          ? 'bg-white border-slate-200'
-                          : 'bg-slate-50/80 border-slate-200 opacity-90'
+                          ? 'bg-white border-[#E5E2DA]'
+                          : 'bg-[#FAF9F6] border-[#E5E2DA] opacity-90'
                     }`}
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-900 text-white">
-                           #{sk.order} · Tier {sk.tier}
+                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#141A17] text-white">
+                          Passo {sk.order} · Livello {sk.tier}
                         </span>
                         <span
                           className={`text-[10px] font-extrabold px-2 py-0.5 rounded ${
                             isMaster
-                              ? 'bg-emerald-600 text-white'
+                              ? 'bg-[#1B5E3A] text-white'
                               : isPractitioner
-                                ? 'bg-amber-100 text-amber-900'
+                                ? 'bg-amber-100 text-amber-950'
                                 : sk.unlocked
-                                  ? 'bg-sky-100 text-sky-900'
-                                  : 'bg-slate-200 text-slate-700'
+                                  ? 'bg-[#F3F1EC] text-[#141A17]'
+                                  : 'bg-stone-200 text-[#575E58]'
                           }`}
                         >
                           {isMaster
-                            ? '★ Maestro'
+                            ? '★ Padroneggiata'
                             : isPractitioner
                               ? `In pratica (${sk.perfectCount}/3)`
                               : sk.unlocked
-                                ? 'Sbloccata'
-                                : 'Prerequisito consigliato'}
+                                ? 'Disponibile'
+                                : 'Dopo le basi'}
                         </span>
                       </div>
 
-                      <h4 className="font-extrabold text-sm text-slate-900">{sk.title}</h4>
-                      <p className="text-[11px] text-slate-600">{sk.corePhysicsLaw}</p>
+                      <h4 className="font-extrabold text-sm text-[#141A17]">{sk.title}</h4>
+                      <p className="text-[11px] text-[#575E58]">{sk.corePhysicsLaw}</p>
 
-                      <div className="p-2.5 rounded-lg bg-indigo-50/70 border border-indigo-200 text-[11px] text-indigo-950">
-                        <strong>Guida adattiva:</strong> {resolveDisplayedGuidance(sk)}
+                      <div className="p-2.5 rounded-lg bg-[#F3F1EC] border border-[#E5E2DA] text-[11px] text-[#141A17]">
+                        <strong>Guida pratica:</strong> {resolveDisplayedGuidance(sk)}
                       </div>
 
                       {sk.sensoryCheckpoints && (
-                        <div className="text-[11px] text-slate-600 space-y-0.5 pt-1">
+                        <div className="text-[11px] text-[#575E58] space-y-0.5 pt-1">
                           <div>
-                            <strong>👁️ Vista:</strong> {sk.sensoryCheckpoints.visual}
+                            <strong className="text-[#141A17]">Cosa guardare:</strong> {sk.sensoryCheckpoints.visual}
                           </div>
                           <div>
-                            <strong>👂 Udito:</strong> {sk.sensoryCheckpoints.acoustic}
+                            <strong className="text-[#141A17]">Cosa ascoltare:</strong> {sk.sensoryCheckpoints.acoustic}
                           </div>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                      <span className="text-[10px] font-mono text-slate-500">
-                        Target: {sk.criticalTempRangeC?.[0]}–{sk.criticalTempRangeC?.[1]}°C
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#E5E2DA]">
+                      <span className="text-[10px] font-medium text-[#575E58]">
+                        Temperatura: {sk.criticalTempRangeC?.[0]}–{sk.criticalTempRangeC?.[1]}°C
                       </span>
                       <button
                         type="button"
                         disabled={practicingSkillId === sk.id}
                         onClick={() => handlePracticeSkill(sk.id)}
-                        className="px-2.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-[11px] font-extrabold cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] disabled:opacity-60 text-white text-[11px] font-extrabold cursor-pointer"
                       >
                         {practicingSkillId === sk.id ? 'Salvataggio...' : '✓ Segna praticata'}
                       </button>
@@ -461,13 +458,13 @@ export function CulinaryAcademyPanel({
 
       {/* SECTION 2: SOS FORNELLI IN 30 SECONDS */}
       {activeSection === 'sos' && (
-        <section className="bg-white rounded-2xl border-2 border-rose-200 p-4 sm:p-5 shadow-xs space-y-4">
+        <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-600 text-white">
-              Pronto Soccorso Molecolare · 1 Mano Libera
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-900 border border-rose-200">
+              Salvataggio rapido ai fornelli · 30 secondi
             </span>
-            <h3 className="text-base font-extrabold text-slate-900 mt-1">
-              🔥 SOS Fornelli in 30 Secondi — Cosa sta succedendo adesso in padella?
+            <h3 className="text-base font-extrabold text-[#141A17] mt-1.5">
+              Cosa sta succedendo adesso in padella?
             </h3>
           </div>
 
@@ -485,8 +482,8 @@ export function CulinaryAcademyPanel({
                   }}
                   className={`p-3 rounded-xl border text-left text-xs font-extrabold transition-all cursor-pointer ${
                     selected
-                      ? 'bg-rose-700 text-white border-rose-800 shadow-xs'
-                      : 'bg-slate-50 text-slate-800 border-slate-200 hover:border-rose-300'
+                      ? 'bg-[#141A17] text-white border-[#141A17] shadow-xs'
+                      : 'bg-[#FAF9F6] text-[#141A17] border-[#E5E2DA] hover:border-[#1B5E3A]'
                   }`}
                 >
                   {s.icon} {s.label}
@@ -496,12 +493,12 @@ export function CulinaryAcademyPanel({
           </div>
 
           {/* Stove, Pan & Free-Text Diagnostic Bar */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5 bg-[#FAF9F6] p-3 rounded-xl border border-[#E5E2DA]">
             <select
               aria-label="Fornello in uso per SOS"
               value={sosHeatSource}
               onChange={(e) => setSosHeatSource(e.target.value)}
-              className="text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800"
+              className="text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]"
             >
               {STOVE_OPTIONS.map((st) => (
                 <option key={st.id} value={st.id}>
@@ -514,7 +511,7 @@ export function CulinaryAcademyPanel({
               aria-label="Pentola in uso per SOS"
               value={sosToolId}
               onChange={(e) => setSosToolId(e.target.value)}
-              className="text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800"
+              className="text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]"
             >
               {PAN_OPTIONS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -528,32 +525,32 @@ export function CulinaryAcademyPanel({
               value={sosFreeQuery}
               onChange={(e) => setSosFreeQuery(e.target.value)}
               placeholder="Oppure scrivi: es. pesto separato, polpo duro..."
-              className="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-800"
+              className="text-xs border border-[#E5E2DA] rounded-lg px-3 py-2 bg-white text-[#141A17]"
             />
 
             <button
               type="button"
               onClick={() => triggerSOS(null, sosFreeQuery)}
               disabled={sosLoading}
-              className="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold cursor-pointer"
+              className="px-3 py-2 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer"
             >
-              {sosLoading ? 'Analisi...' : '🚑 Diagnostica Subito'}
+              {sosLoading ? 'Analisi...' : 'Trova rimedio subito'}
             </button>
           </div>
 
           {/* Rescue Card */}
           {sosResult && (
             <div className="space-y-3 pt-1">
-              <div className="p-3.5 rounded-xl bg-rose-50 border-2 border-rose-300 text-xs text-rose-950">
-                <div className="font-extrabold uppercase text-[11px] text-rose-800">
-                  ⛔ FERMATI — Cosa NON fare assolutamente adesso:
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-xs text-rose-950">
+                <div className="font-extrabold uppercase text-[11px] text-rose-900">
+                  ⛔ Fermati: cosa non fare adesso
                 </div>
                 <p className="font-bold mt-0.5">{sosResult.doNotDo}</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 space-y-2">
-                <div className="font-extrabold text-sm text-emerald-900">
-                  🚑 Manovra di Salvataggio in 30 Secondi ({sosResult.symptomLabel})
+              <div className="p-4 rounded-xl bg-emerald-50/70 border border-[#1B5E3A]/30 text-xs text-[#141A17] space-y-2">
+                <div className="font-extrabold text-sm text-[#1B5E3A]">
+                  Come rimediare in 30 secondi ({sosResult.symptomLabel})
                 </div>
                 <div className="space-y-1.5">
                   {(sosResult.rescueIn30Seconds || []).map((step, idx) => (
@@ -563,20 +560,20 @@ export function CulinaryAcademyPanel({
                   ))}
                 </div>
                 {sosResult.equipmentContextNote && (
-                  <div className="mt-2 pt-2 border-t border-emerald-200 font-bold text-emerald-900">
-                    🎛️ {sosResult.equipmentContextNote}
+                  <div className="mt-2 pt-2 border-t border-emerald-200 font-bold text-[#1B5E3A]">
+                    {sosResult.equipmentContextNote}
                   </div>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                  <strong className="text-slate-900">⚛️ Causa Molecolare:</strong>{' '}
-                  <span className="text-slate-700">{sosResult.molecularCause}</span>
+                <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA]">
+                  <strong className="text-[#141A17]">Perché succede:</strong>{' '}
+                  <span className="text-[#575E58]">{sosResult.molecularCause}</span>
                 </div>
-                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-                  <strong className="text-amber-950">📓 Calibrazione Prossima Volta:</strong>{' '}
-                  <span className="text-amber-900">{sosResult.nextTimeCalibration}</span>
+                <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA]">
+                  <strong className="text-[#141A17]">Per la prossima volta:</strong>{' '}
+                  <span className="text-[#575E58]">{sosResult.nextTimeCalibration}</span>
                 </div>
               </div>
             </div>
@@ -584,29 +581,29 @@ export function CulinaryAcademyPanel({
         </section>
       )}
 
-      {/* SECTION 3: RUHLMAN'S RATIOS & 8X UMAMI ZERO-CHEESE */}
+      {/* SECTION 3: PROPORTIONS & FLAVOR WITHOUT DAIRY */}
       {activeSection === 'ratios' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Generative Ratios Calculator */}
-          <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-4">
+          <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-4">
             <div>
-              <h3 className="text-sm font-extrabold text-slate-900">
-                📐 Calcolatore Rapporti Aurei (Ruhlman&apos;s Ratios)
+              <h3 className="text-sm font-extrabold text-[#141A17]">
+                Proporzioni di base senza ricetta
               </h3>
-              <p className="text-xs text-slate-500">
-                Scegli la struttura e inserisci i grammi dell&apos;ingrediente guida: le proporzioni fisiche scalano all&apos;istante.
+              <p className="text-xs text-[#575E58]">
+                Scegli la preparazione e inserisci i grammi principali: tutte le dosi si aggiornano in proporzione.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                  Formula Strutturale
+                <label className="block text-[11px] font-bold text-[#141A17] mb-1">
+                  Preparazione base
                 </label>
                 <select
                   value={selectedRatioId}
                   onChange={(e) => setSelectedRatioId(e.target.value)}
-                  className="w-full text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-900"
+                  className="w-full text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]"
                 >
                   {ratiosCatalog.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -617,8 +614,8 @@ export function CulinaryAcademyPanel({
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                  Grammi Ingrediente Guida (g)
+                <label className="block text-[11px] font-bold text-[#141A17] mb-1">
+                  Grammi ingrediente principale (g)
                 </label>
                 <div className="flex items-center gap-1.5">
                   <input
@@ -627,14 +624,14 @@ export function CulinaryAcademyPanel({
                     max="3000"
                     value={anchorGrams}
                     onChange={(e) => setAnchorGrams(Number(e.target.value) || 100)}
-                    className="w-full text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 text-slate-900"
+                    className="w-full text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 text-[#141A17]"
                   />
                   {[100, 150, 250].map((presetG) => (
                     <button
                       key={presetG}
                       type="button"
                       onClick={() => setAnchorGrams(presetG)}
-                      className="px-2 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-[10px] font-extrabold text-slate-700 cursor-pointer"
+                      className="px-2 py-1.5 rounded bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[10px] font-extrabold text-[#141A17] cursor-pointer"
                     >
                       {presetG}g
                     </button>
@@ -651,36 +648,35 @@ export function CulinaryAcademyPanel({
                       key={idx}
                       className="flex items-center justify-between border-b border-emerald-100 last:border-0 pb-1 last:pb-0"
                     >
-                      <span className="font-medium text-slate-800">
+                      <span className="font-medium text-[#141A17]">
                         {part.component}{' '}
-                        <span className="text-[10px] text-slate-500">(rapporto {part.weightRatio})</span>
+                        <span className="text-[10px] text-[#575E58]">(rapporto {part.weightRatio})</span>
                       </span>
-                      <span className="font-mono font-extrabold text-emerald-900">{part.grams} g</span>
+                      <span className="font-mono font-extrabold text-[#1B5E3A]">{part.grams} g</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+                <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] text-xs space-y-1">
                   <div>
-                    <strong>⚛️ Regola Fisica:</strong> {scaledRatio.physicsRule}
+                    <strong className="text-[#141A17]">Regola pratica:</strong> {scaledRatio.physicsRule}
                   </div>
-                  <div className="text-emerald-800 font-semibold">
-                    <strong>🛡️ Nota Zero Formaggi:</strong> {scaledRatio.zeroDairyNote}
+                  <div className="text-[#1B5E3A] font-semibold">
+                    <strong>Senza formaggi:</strong> {scaledRatio.zeroDairyNote}
                   </div>
                 </div>
               </div>
             )}
           </section>
 
-          {/* 8x Umami Synergy Builder (Zero-Cheese) */}
-          <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-4">
+          {/* Zero-Cheese Flavor Synergy */}
+          <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-4">
             <div>
-              <h3 className="text-sm font-extrabold text-slate-900">
-                🧬 Moltiplicatore Sinergico Umami 8× (Senza Latticini)
+              <h3 className="text-sm font-extrabold text-[#141A17]">
+                Dare sapore pieno senza formaggio
               </h3>
-              <p className="text-xs text-slate-500">
-                Seleziona gli ingredienti del piatto per verificare il blocco allosterico{' '}
-                <code>L-Glutammato + IMP/GMP</code> sul recettore T1R1/T1R3.
+              <p className="text-xs text-[#575E58]">
+                Abbina ingredienti ricchi di sapore naturale (pomodoro maturo, funghi, acciughe, olive) per moltiplicare la profondità del piatto senza latticini.
               </p>
             </div>
 
@@ -694,8 +690,8 @@ export function CulinaryAcademyPanel({
                     onClick={() => toggleUmamiChip(chip)}
                     className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border cursor-pointer ${
                       active
-                        ? 'bg-amber-500 text-slate-950 border-amber-600'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        ? 'bg-[#1B5E3A] text-white border-[#1B5E3A]'
+                        : 'bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]'
                     }`}
                   >
                     {active ? '✓ ' : '+ '}
@@ -709,36 +705,35 @@ export function CulinaryAcademyPanel({
               <div
                 className={`p-4 rounded-xl border text-xs space-y-2 ${
                   umamiResult.synergy8xActive
-                    ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
-                    : 'bg-amber-50 border-amber-300 text-amber-950'
+                    ? 'bg-emerald-50/70 border-[#1B5E3A]/30 text-[#141A17]'
+                    : 'bg-[#FAF9F6] border-[#E5E2DA] text-[#141A17]'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-sm">
-                    {umamiResult.synergy8xActive ? '⚡ Sinergia Umami 8× ATTIVA!' : '⚖️ Canale Singolo (1×)'}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-extrabold text-sm text-[#1B5E3A]">
+                    {umamiResult.synergy8xActive ? 'Abbinamento sapore pieno attivo' : 'Sapore su un solo registro'}
                   </span>
-                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-white/80 border border-current/20">
-                    Glu: {umamiResult.hasGlutamate ? 'SÌ' : 'NO'} · IMP/GMP:{' '}
-                    {umamiResult.hasNucleotide ? 'SÌ' : 'NO'}
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-white border border-[#E5E2DA] text-[#575E58]">
+                    {umamiResult.synergy8xActive ? 'Sapore moltiplicato' : 'Aggiungi un secondo aroma'}
                   </span>
                 </div>
-                <p className="leading-relaxed">{umamiResult.suggestion}</p>
+                <p className="leading-relaxed text-[#575E58]">{umamiResult.suggestion}</p>
               </div>
             )}
           </section>
         </div>
       )}
 
-      {/* SECTION 4: IMPROVISE "FRIGO -> TECNICA" */}
+      {/* SECTION 4: IMPROVISE FROM FRIDGE */}
       {activeSection === 'improvise' && (
-        <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
+        <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">
-                🧑‍🔬 Generatore &ldquo;Frigo → Tecnica&rdquo; (Cucinare Senza Ricetta)
+              <h3 className="text-base font-extrabold text-[#141A17]">
+                Cucina dal frigo senza ricetta
               </h3>
-              <p className="text-xs text-slate-500">
-                Inserisci 2–4 ingredienti che hai in frigo: il motore assembla taglio, padella, turni anti-bollitura ed emulsione finale.
+              <p className="text-xs text-[#575E58]">
+                Scrivi 2–4 ingredienti che hai in casa: ottieni taglio, padella adatta, ordine di cottura e legatura finale.
               </p>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -752,7 +747,7 @@ export function CulinaryAcademyPanel({
                     setFridgeHeat(pr.heatSource);
                     setFridgeTool(pr.toolId);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 border border-slate-200 text-[11px] font-bold text-slate-700 cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#E5E2DA] text-[11px] font-bold text-[#141A17] cursor-pointer"
                 >
                   {pr.label}
                 </button>
@@ -760,18 +755,18 @@ export function CulinaryAcademyPanel({
             </div>
           </div>
 
-          <form onSubmit={handleRunImprovise} className="grid grid-cols-1 md:grid-cols-5 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <form onSubmit={handleRunImprovise} className="grid grid-cols-1 md:grid-cols-5 gap-2.5 bg-[#FAF9F6] p-3 rounded-xl border border-[#E5E2DA]">
             <input
               type="text"
               value={fridgeInput}
               onChange={(e) => setFridgeInput(e.target.value)}
               placeholder="Ingredienti separati da virgola..."
-              className="md:col-span-2 text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-900"
+              className="md:col-span-2 text-xs border border-[#E5E2DA] rounded-lg px-3 py-2 bg-white text-[#141A17]"
             />
             <select
               value={fridgeHeat}
               onChange={(e) => setFridgeHeat(e.target.value)}
-              className="text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800"
+              className="text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]"
             >
               {STOVE_OPTIONS.map((st) => (
                 <option key={st.id} value={st.id}>
@@ -782,7 +777,7 @@ export function CulinaryAcademyPanel({
             <select
               value={fridgeTool}
               onChange={(e) => setFridgeTool(e.target.value)}
-              className="text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-2 bg-white text-slate-800"
+              className="text-xs font-bold border border-[#E5E2DA] rounded-lg px-2.5 py-2 bg-white text-[#141A17]"
             >
               {PAN_OPTIONS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -793,41 +788,41 @@ export function CulinaryAcademyPanel({
             <button
               type="submit"
               disabled={improviseLoading}
-              className="px-3 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold cursor-pointer"
+              className="px-3 py-2 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold cursor-pointer"
             >
-              {improviseLoading ? 'Generazione...' : '⚡ Costruisci Tecnica'}
+              {improviseLoading ? 'Preparazione...' : 'Crea la sequenza'}
             </button>
           </form>
 
           {improvisedPlan && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/30 p-4 space-y-3 text-xs">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/70 pb-2">
-                <h4 className="font-extrabold text-sm text-slate-900">
+            <div className="rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] p-4 space-y-3 text-xs">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E5E2DA] pb-2">
+                <h4 className="font-extrabold text-sm text-[#141A17]">
                   🍽️ {improvisedPlan.generatedTitle}
                 </h4>
-                <span className="font-bold text-emerald-900 bg-white px-2.5 py-1 rounded-lg border border-emerald-200">
+                <span className="font-bold text-[#1B5E3A] bg-white px-2.5 py-1 rounded-lg border border-[#E5E2DA]">
                   ⏱️ ~{improvisedPlan.estimatedMinutes} min · {improvisedPlan.panPhysicsAndBatching?.guidance}
                 </span>
               </div>
 
               {improvisedPlan.stoveAndSafety?.isBlockedP0 && (
                 <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-300 text-rose-950 font-bold">
-                  ⛔ Guardia P0 Attivata: {improvisedPlan.stoveAndSafety.p0Blocks?.[0]?.message} →{' '}
+                  ⛔ Attenzione sicurezza: {improvisedPlan.stoveAndSafety.p0Blocks?.[0]?.message} →{' '}
                   {improvisedPlan.stoveAndSafety.p0Blocks?.[0]?.safeAction}
                 </div>
               )}
 
               <div className="space-y-2">
                 {(improvisedPlan.steps || []).map((st, idx) => (
-                  <div key={idx} className="p-2.5 rounded-lg bg-white border border-slate-200">
+                  <div key={idx} className="p-2.5 rounded-lg bg-white border border-[#E5E2DA] text-[#141A17]">
                     <strong>Fase {idx + 1}:</strong> {st}
                   </div>
                 ))}
               </div>
 
               {improvisedPlan.umamiZeroCheeseAnalysis && (
-                <div className="text-[11px] text-slate-700 pt-1">
-                  <strong>🧬 Check Umami Zero-Formaggi:</strong>{' '}
+                <div className="text-[11px] text-[#575E58] pt-1">
+                  <strong className="text-[#141A17]">Equilibrio di sapore senza formaggi:</strong>{' '}
                   {improvisedPlan.umamiZeroCheeseAnalysis.suggestion}
                 </div>
               )}

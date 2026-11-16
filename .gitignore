@@ -8,3 +8,4 @@ node_modules/
 data/cache/
 .agents/
 test_render.jsx
+.taste-skill/

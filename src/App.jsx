@@ -498,7 +498,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#141A17] font-sans selection:bg-emerald-100 selection:text-[#14492D]">
       {/* Offline / Stale Cache Warning Banner */}
       <OfflineNotice
         isOnline={status.isOnline}
@@ -532,7 +532,7 @@ export function App() {
       />
 
       {shoppingToast && (
-        <div className="bg-emerald-700 text-white text-xs font-extrabold py-2 px-4 text-center shadow-xs">
+        <div className="bg-[#1B5E3A] text-white text-xs font-bold py-2 px-4 text-center shadow-xs">
           {shoppingToast}
         </div>
       )}
@@ -572,7 +572,7 @@ export function App() {
           {/* 🎓 Accademia & Atlante — section selector */}
           <section
             aria-label="Sezioni Accademia & Atlante"
-            className="bg-white border-b border-slate-200"
+            className="bg-white border-b border-[#E5E2DA]"
             data-testid="atlante-section-switcher"
           >
             <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
@@ -586,10 +586,10 @@ export function App() {
                       setAtlanteSection(sec.id);
                       if (sec.id === 'academy') setAcademySection('skills');
                     }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap taste-btn cursor-pointer shrink-0 ${
                       isActive
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40'
+                        ? 'bg-[#141A17] text-white border-[#141A17]'
+                        : 'bg-[#F3F1EC] text-[#4A524C] border-[#E5E2DA] hover:text-[#141A17] hover:bg-[#E7E4DC]'
                     }`}
                   >
                     <span aria-hidden="true">{sec.icon}</span>
@@ -636,33 +636,33 @@ export function App() {
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
             {/* Active Dietary Profile & Local Shops Banner */}
             {activeProfile && (
-              <section className="bg-emerald-900/95 text-white rounded-xl p-3.5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <section className="bg-white border border-[#E5E2DA] text-[#141A17] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-start sm:items-center gap-2.5">
                   <span className="text-xl" aria-hidden="true">🛡️</span>
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-extrabold uppercase tracking-wider bg-emerald-700 px-2 py-0.5 rounded">
+                      <span className="text-xs font-bold uppercase tracking-wider bg-[#1B5E3A] text-white px-2 py-0.5 rounded">
                         Profilo: {activeProfile.name}
                       </span>
                       {activeProfile.excludedIngredients?.length > 0 && (
-                        <span className="text-[11px] text-emerald-100">
+                        <span className="text-[11px] text-[#575E58]">
                           Esclusioni attive: {activeProfile.excludedIngredients.slice(0, 5).join(', ')}
                           {activeProfile.excludedIngredients.length > 5 ? ` (+${activeProfile.excludedIngredients.length - 5})` : ''}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-emerald-200 mt-0.5">
+                    <p className="text-[11px] text-[#575E58] mt-0.5">
                       {activeProfile.description}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                  <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-100 cursor-pointer">
+                  <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={hideIncompatible}
                       onChange={(e) => setHideIncompatible(e.target.checked)}
-                      className="rounded border-emerald-400 text-emerald-500 focus:ring-emerald-400"
+                      className="rounded border-[#DFDCD2] text-[#1B5E3A] focus:ring-[#1B5E3A]"
                     />
                     <span>Nascondi prodotti esclusi</span>
                   </label>
@@ -680,16 +680,16 @@ export function App() {
                     key={dom.id || 'all'}
                     type="button"
                     onClick={() => handleSelectDomain(isSelected ? null : dom.id)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border taste-btn whitespace-nowrap cursor-pointer ${
                       isSelected
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40'
+                        ? 'bg-[#141A17] text-white border-[#141A17] shadow-xs'
+                        : 'bg-white text-[#4A524C] border-[#E5E2DA] hover:border-[#1B5E3A]/40 hover:bg-[#F3F1EC]'
                     }`}
                   >
                     <span aria-hidden="true">{dom.icon}</span>
                     <span>{dom.label}</span>
                     {count !== undefined && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-slate-700 text-slate-100' : 'bg-slate-100 text-slate-600'}`}>
+                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-[#2B332E] text-white' : 'bg-[#F3F1EC] text-[#575E58]'}`}>
                         {count}
                       </span>
                     )}
@@ -700,17 +700,17 @@ export function App() {
 
             {/* Active Store Promo & Flyer Banner */}
             {activeStore && (
-              <section className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <section className="bg-white rounded-xl border border-[#E5E2DA] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-lg font-bold text-slate-900">{activeStore.name}</h2>
+                    <h2 className="text-lg font-bold text-[#141A17]">{activeStore.name}</h2>
                     {activeStore.isRegionalServing && (
-                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-[#F3F1EC] text-[#1B5E3A] border border-[#DFDCD2]">
                         Servizio Rapallo & Tigullio
                       </span>
                     )}
                     {activeStore.loyaltyCard && (
-                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-[#9A5B25] border border-amber-200">
                         💳{' '}
                         {typeof activeStore.loyaltyCard === 'string'
                           ? activeStore.loyaltyCard
@@ -721,7 +721,7 @@ export function App() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5 truncate max-w-xl">
+                  <p className="text-xs text-[#575E58] mt-0.5 truncate max-w-xl">
                     {activeStore.address}
                     {activeStore.logistics?.distanceKmFromHarbor != null
                       ? ` • 📍 ${activeStore.logistics.distanceKmFromHarbor} km dal Porto`
@@ -740,7 +740,7 @@ export function App() {
                           key={flyerItem.id || idx}
                           type="button"
                           onClick={() => handleOpenFlyer(flyerItem)}
-                          className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors whitespace-nowrap cursor-pointer"
+                          className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-semibold rounded-lg shadow-xs taste-btn whitespace-nowrap cursor-pointer"
                         >
                           <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -864,14 +864,14 @@ export function App() {
 
             {/* Local Observed Shops Directory in Rapallo */}
             {localShops.length > 0 && (
-              <section className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
+              <section className="bg-white rounded-xl border border-[#E5E2DA] p-4 space-y-3">
+                <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      🐟 Botteghe Storiche, Mercato & Casalinghi Osservati a Rapallo
+                    <h3 className="text-sm font-bold text-[#141A17]">
+                      🐟 Botteghe Storiche, Mercato &amp; Casalinghi Osservati a Rapallo
                     </h3>
-                    <p className="text-xs text-slate-500">
-                      Canale <code className="font-mono text-emerald-700">receipt_observed</code>: alimentato dai tuoi scontrini reali e dai prezzi visti al banco (zero finti volantini).
+                    <p className="text-xs text-[#575E58]">
+                      Prezzi reali rilevati dai tuoi scontrini e al banco di quartiere (zero finti volantini).
                     </p>
                   </div>
                   <button
@@ -880,7 +880,7 @@ export function App() {
                       setCounterDefaultStoreId('');
                       setIsCounterModalOpen(true);
                     }}
-                    className="px-3 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer shrink-0"
+                    className="px-3 py-1.5 text-xs font-bold bg-[#9A5B25] hover:bg-[#7F4A1D] text-white rounded-lg taste-btn cursor-pointer shrink-0"
                   >
                     + Prezzo visto al banco
                   </button>
@@ -894,39 +894,39 @@ export function App() {
                         setCounterDefaultStoreId(shop.id);
                         setIsCounterModalOpen(true);
                       }}
-                      className="p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-amber-50/60 hover:border-amber-300 text-left text-xs transition-colors cursor-pointer"
+                      className="p-2.5 rounded-lg border border-[#E5E2DA] bg-[#FAF9F6] hover:bg-[#F3F1EC] hover:border-[#9A5B25]/50 text-left text-xs taste-card cursor-pointer"
                     >
-                      <div className="font-bold text-slate-800 truncate">{shop.name}</div>
-                      <div className="text-[11px] text-slate-500 truncate">{shop.address}</div>
-                      <div className="mt-1 inline-block text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
+                      <div className="font-bold text-[#141A17] truncate">{shop.name}</div>
+                      <div className="text-[11px] text-[#575E58] truncate">{shop.address}</div>
+                      <div className="mt-1 inline-block text-[10px] font-semibold bg-[#F3F1EC] text-[#9A5B25] border border-[#DFDCD2] px-1.5 py-0.5 rounded">
                         + Registra prezzo al banco
                       </div>
                     </button>
                   ))}
                 </div>
                 {counterObservations.length > 0 && (
-                  <div className="pt-2 border-t border-slate-100 space-y-2">
-                    <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
+                  <div className="pt-2 border-t border-[#E5E2DA] space-y-2">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#575E58]">
                       📌 Ultimi prezzi reali rilevati al banco a Rapallo ({counterObservations.length})
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                       {counterObservations.map((obs) => (
                         <div
                           key={obs.id}
-                          className="p-2.5 rounded-lg bg-emerald-50/40 border border-emerald-200 flex items-center justify-between gap-2 text-xs"
+                          className="p-2.5 rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] flex items-center justify-between gap-2 text-xs"
                         >
                           <div className="min-w-0">
-                            <div className="font-bold text-slate-900 truncate">{obs.title}</div>
-                            <div className="text-[10px] text-slate-500 truncate">
+                            <div className="font-bold text-[#141A17] truncate">{obs.title}</div>
+                            <div className="text-[10px] text-[#575E58] truncate">
                               {obs.storeName || obs.storeId} • {obs.unitString || '1 pz'}
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <div className="font-extrabold text-emerald-800">
+                            <div className="font-extrabold text-[#1B5E3A]">
                               € {Number(obs.price || 0).toFixed(2).replace('.', ',')}
                             </div>
                             {(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg) ? (
-                              <div className="text-[10px] text-slate-600">
+                              <div className="text-[10px] text-[#575E58]">
                                 {Number(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg).toFixed(2).replace('.', ',')} €/{obs.referenceUnit || 'kg'}
                               </div>
                             ) : null}
@@ -941,19 +941,19 @@ export function App() {
           </main>
         </>
       ) : !profilesReady ? (
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-slate-500">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-[#575E58]">
           Sincronizzazione profilo attivo in corso...
         </main>
       ) : activeRoom === 'room-2-crea' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-          <section className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <p className="text-xs text-emerald-900">
-              <strong>🥗 Coach Nutrizionale:</strong> fisiologia del pasto cotto (ritenzione USDA), Calcio Zero-Formaggi biodisponibile, preset LARN e coaching adattivo 1-tap.
+          <section className="bg-white border border-[#E5E2DA] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-xs text-[#141A17]">
+              <strong>🥗 Coach Nutrizionale:</strong> fisiologia del pasto cotto (ritenzione USDA), Calcio Zero-Formaggi biodisponibile, preset LARN e adattamento 1-tap.
             </p>
             <button
               type="button"
               onClick={handleOpenNutritionCoach}
-              className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold cursor-pointer shrink-0"
+              className="px-3 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-bold taste-btn cursor-pointer shrink-0"
             >
               Apri Coach Nutrizionale →
             </button>
@@ -975,22 +975,22 @@ export function App() {
         </main>
       ) : activeRoom === 'room-3-ricette' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-          <section className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <p className="text-xs text-amber-950">
-              <strong>👨‍🍳 Accademia Culinaria:</strong> 12 competenze scientifiche, SOS Fornelli in 30 secondi, Ratios e "Frigo → Tecnica" senza ricetta.
+          <section className="bg-white border border-[#E5E2DA] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-xs text-[#141A17]">
+              <strong>👨‍🍳 Accademia Culinaria:</strong> 12 competenze scientifiche, SOS Fornelli in 30 secondi, Ratios e &quot;Frigo → Tecnica&quot; senza ricetta.
             </p>
             <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => handleOpenAcademy('sos')}
-                className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-[#9A5B25] hover:bg-[#7F4A1D] text-white text-xs font-bold taste-btn cursor-pointer"
               >
                 🔥 SOS Fornelli
               </button>
               <button
                 type="button"
                 onClick={() => handleOpenAcademy('skills')}
-                className="px-3 py-1.5 rounded-lg border border-amber-300 bg-white hover:bg-amber-100 text-amber-900 text-xs font-bold cursor-pointer"
+                className="px-3 py-1.5 rounded-lg border border-[#DFDCD2] bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] text-xs font-bold taste-btn cursor-pointer"
               >
                 Apri Accademia →
               </button>
@@ -1147,16 +1147,19 @@ export function App() {
         )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
-          <p className="font-medium text-slate-700">
-            🌿 Basilico — Sistema Domestico, Nutrizionale (CREA), Gastronomico & Offerte Rapallo (16035 GE)
+      <footer className="border-t border-[#E5E2DA] bg-white py-6 mt-12 text-center text-xs text-[#575E58]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1.5">
+          <p className="font-medium text-[#141A17]">
+            🌿 Basilico — Cucina, Nutrizione, Cura della Casa &amp; Offerte Rapallo (16035 GE)
           </p>
-          <p className="text-slate-400">
-            Basko • Coop • Gulliver • Carrefour Market & Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet + Botteghe Locali
+          <p className="text-[#575E58]">
+            Basko • Coop • Gulliver • Carrefour Market &amp; Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet + Botteghe Locali
           </p>
-          <p className="text-[11px] text-slate-400">
-            Sorgente dati: <span className="font-semibold text-slate-600">{(status.dataSource || 'live').toUpperCase()}</span> • Supermercati attivi: {stores.length}
+          <p className="text-[11px] text-[#575E58]">
+            Sorgente dati: <span className="font-semibold text-[#141A17]">{(status.dataSource || 'live').toUpperCase()}</span> • Supermercati attivi: {stores.length}
+          </p>
+          <p className="text-[11px] text-[#575E58]">
+            Fotografie via Wikimedia Commons (CC0): Brooke Cagle, Markus Spiske, Leonie Wise
           </p>
         </div>
       </footer>

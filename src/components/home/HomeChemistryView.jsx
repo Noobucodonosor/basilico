@@ -1,11 +1,36 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 const TABS = [
-  { id: 'sos', label: '⚡ SOS Macchia 3-Tap', shortLabel: '⚡ SOS 3-Tap' },
-  { id: 'kit', label: '🧪 Kit 7 Pilastri & P0', shortLabel: '🧪 Kit & P0' },
-  { id: 'offers', label: '💶 Offerte €/ciclo & INCI', shortLabel: '💶 €/ciclo & INCI' },
-  { id: 'maintenance', label: '🛡️ Elettrodomestici & Miti', shortLabel: '🛡️ Casa & Miti' }
+  { id: 'sos', label: 'Smacchiatore guidato', shortLabel: 'Smacchiatore' },
+  { id: 'kit', label: 'I 7 prodotti base & Sicurezza', shortLabel: 'Base & Sicurezza' },
+  { id: 'offers', label: 'Prezzi a lavaggio & Etichette', shortLabel: 'Prezzi & Etichette' },
+  { id: 'maintenance', label: 'Elettrodomestici & Falsi miti', shortLabel: 'Cura & Miti' }
 ];
+
+const SAFETY_LOCK_TITLES = {
+  'P0-PRESSURE-BURST': 'Mai chiudere il percarbonato in uno spruzzino',
+  'P0-CAV-INGESTION': "Mai travasare in bottiglie d'acqua",
+  'P0-DUST-AEROSOL': 'Usa erogatori a schiuma o un panno, mai aerosol',
+  'P0-CL2-LETHAL': 'Mai mescolare candeggina e acidi (gas tossico)',
+  'P0-NH2CL-LETHAL': 'Mai mescolare candeggina e ammoniaca',
+  'P0-PERACETIC': 'Mai mescolare aceto e acqua ossigenata',
+  'P0-ALUMINUM-CORROSION': "Mai sgrassatori forti o soda sull'alluminio",
+  'P0-BIOCIDE-FAIL': 'Risciacqua il sapone prima di disinfettare',
+  'P1-ACID-MARBLE-SLATE': 'Mai acidi o aceto su marmo, ardesia e graniglia',
+  'P1-BLEACH-INOX-PITTING': "Mai candeggina sull'acciaio inox"
+};
+
+function getSafetyLockTitle(lock) {
+  if (!lock) return 'Avviso di sicurezza';
+  return SAFETY_LOCK_TITLES[lock.code] || lock.reagentA || lock.title || 'Avviso di sicurezza';
+}
+
+function formatSeverityLabel(severity) {
+  if (severity === 'P0-LETHAL') return 'Pericolo grave';
+  if (severity === 'P0-CRITICAL') return 'Attenzione critica';
+  if (severity === 'P1-DAMAGE') return 'Rischio danni';
+  return 'Avviso';
+}
 
 const SURFACE_ICONS = {
   marmo_ardesia_graniglia: '🏛️',
@@ -265,24 +290,22 @@ export function HomeChemistryView({
   return (
     <div className="space-y-5" data-testid="room-7-home-chemistry">
       {/* 1. HEADER STANZA 7 */}
-      <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
+      <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-100 text-sky-900">
-                Stanza 7 · Chimica Applicata (Reg. CE 648/2004)
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]">
+                Casa e barca · Pulizie sicure
               </span>
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
-                💧 Acqua Iren Rapallo: 14–22 °f (Attuale: {waterHardnessF} °f)
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A] border border-emerald-200">
+                💧 Acqua Iren Rapallo: 14–22 °f (attuale: {waterHardnessF} °f)
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
-              🧼 Chimica & Cura Scientifica della Casa e della Barca
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#141A17] pt-1">
+              Pulizie sicure per casa e barca
             </h2>
-            <p className="text-xs text-slate-600 max-w-3xl">
-              Motore deterministico a 4 assi (<em>Sporco × Substrato × Principio Attivo × Cerchio di Sinner</em>) con
-              guardie salvavita <strong>P0</strong>, tutela marmi/ardesie liguri e arbitraggio reale <code>€/ciclo</code> su{' '}
-              <strong>Tigotà</strong>, <strong>PiùMe</strong> e supermercati di Rapallo.
+            <p className="text-xs text-[#575E58] max-w-3xl">
+              Scegli la superficie e il tipo di sporco per avere i prodotti giusti, proteggere marmi e ardesie liguri e confrontare i veri prezzi a lavaggio tra Tigotà, PiùMe e supermercati di Rapallo.
             </p>
           </div>
 
@@ -292,11 +315,11 @@ export function HomeChemistryView({
               onClick={handleToggleBoatMode}
               className={`px-3 py-2 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
                 boatMode
-                  ? 'bg-sky-900 text-white border-sky-800 shadow-xs'
-                  : 'bg-slate-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                  ? 'bg-[#141A17] text-white border-[#141A17] shadow-xs'
+                  : 'bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]'
               }`}
             >
-              ⚓ Modalità Barca (AISI 316 / Mare): {boatMode ? 'ATTIVA' : 'OFF'}
+              ⚓ Modalità barca: {boatMode ? 'Attiva' : 'Spenta'}
             </button>
 
             {onOpenMaestro && (
@@ -304,12 +327,12 @@ export function HomeChemistryView({
                 type="button"
                 onClick={() =>
                   onOpenMaestro(
-                    'Ho un dubbio chimico sulle pulizie di casa a Rapallo: cosa uso in sicurezza senza rovinare le superfici?'
+                    'Ho un dubbio sulle pulizie di casa a Rapallo: cosa uso in sicurezza senza rovinare le superfici?'
                   )
                 }
-                className="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold rounded-xl cursor-pointer"
+                className="px-3 py-2 bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-extrabold rounded-xl cursor-pointer transition-colors"
               >
-                💬 Chiedi al Chimico (Maestro)
+                💬 Chiedi al Maestro
               </button>
             )}
 
@@ -317,19 +340,19 @@ export function HomeChemistryView({
               <button
                 type="button"
                 onClick={() => onNavigateRoom('room-4-cucina')}
-                className="px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold rounded-xl cursor-pointer"
+                className="px-3 py-2 bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] border border-[#E5E2DA] text-xs font-bold rounded-xl cursor-pointer"
               >
-                🍳 Officina Pentole →
+                🍳 Pentole e fornelli →
               </button>
             )}
           </div>
         </div>
 
         {/* Calibrazione rapida Durezza Acqua Rapallo */}
-        <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="pt-3 border-t border-[#E5E2DA] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-3">
-            <label htmlFor="rapallo-hardness-slider" className="font-bold text-slate-700 shrink-0">
-              💧 Durezza Acqua (°f):
+            <label htmlFor="rapallo-hardness-slider" className="font-bold text-[#141A17] shrink-0">
+              💧 Durezza acqua (°f):
             </label>
             <input
               id="rapallo-hardness-slider"
@@ -338,24 +361,24 @@ export function HomeChemistryView({
               max={38}
               value={waterHardnessF}
               onChange={(e) => setWaterHardnessF(Number(e.target.value))}
-              className="w-36 sm:w-48 accent-sky-700 cursor-pointer"
+              className="w-36 sm:w-48 accent-[#1B5E3A] cursor-pointer"
             />
-            <span className="font-extrabold text-sky-900 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded">
+            <span className="font-extrabold text-[#141A17] bg-[#F3F1EC] border border-[#E5E2DA] px-2 py-0.5 rounded">
               {waterHardnessF} °f
             </span>
             {waterHardnessF !== 18 && (
               <button
                 type="button"
                 onClick={() => setWaterHardnessF(18)}
-                className="text-[11px] underline text-slate-500 hover:text-slate-800 cursor-pointer"
+                className="text-[11px] underline text-[#575E58] hover:text-[#141A17] cursor-pointer"
               >
-                Reset Rapallo (18 °f)
+                Ripristina Rapallo (18 °f)
               </button>
             )}
           </div>
-          <div className="text-[11px] text-slate-600">
-            Fattore dosaggio detersivo vs standard UE (25 °f):{' '}
-            <strong className="text-slate-900">
+          <div className="text-[11px] text-[#575E58]">
+            Dosaggio consigliato rispetto allo standard UE (25 °f):{' '}
+            <strong className="text-[#141A17]">
               {kitGuide?.waterHardness?.detergentMultiplierVsEu25F ?? 1.0}×
             </strong>{' '}
             ({kitGuide?.waterHardness?.label || 'Acqua Media — Tipica Rapallo'})
@@ -363,7 +386,7 @@ export function HomeChemistryView({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 pt-1" role="tablist" aria-label="Sezioni Chimica Casa">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 pt-1" role="tablist" aria-label="Sezioni Cura della Casa">
           {TABS.map((tab) => {
             const active = activeTab === tab.id;
             return (
@@ -375,8 +398,8 @@ export function HomeChemistryView({
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-2.5 px-3 rounded-xl text-xs font-extrabold border text-center transition-all cursor-pointer ${
                   active
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-[#1B5E3A] text-white border-[#1B5E3A] shadow-xs'
+                    : 'bg-[#F3F1EC] text-[#141A17] border-[#E5E2DA] hover:bg-[#E7E4DC]'
                 }`}
               >
                 <span className="hidden sm:inline">{tab.label}</span>
@@ -388,20 +411,20 @@ export function HomeChemistryView({
       </section>
 
       {/* =====================================================================
-          TAB 1: SOS MACCHIA & INCROSTAZIONE IN 3 TAP
+          TAB 1: SMACCHIATORE GUIDATO
          ===================================================================== */}
       {activeTab === 'sos' && (
         <div className="space-y-5">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
             {/* Left Column: 3-Tap Inputs */}
             <div className="lg:col-span-7 space-y-4">
-              {/* Tap 1: Superficie / Tessuto */}
-              <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5">
+              {/* Step 1: Superficie / Tessuto */}
+              <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-extrabold text-slate-900">
-                    1️⃣ Tap 1 — Quale superficie o tessuto devi trattare?
+                  <h3 className="text-sm font-extrabold text-[#141A17]">
+                    1. Quale superficie o tessuto devi pulire?
                   </h3>
-                  <span className="text-[11px] text-slate-500">{surfaces.length} substrati</span>
+                  <span className="text-[11px] text-[#575E58]">{surfaces.length} materiali</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {surfaces.map((surf) => {
@@ -413,8 +436,8 @@ export function HomeChemistryView({
                         onClick={() => setSelectedSurface(surf.id)}
                         className={`p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-emerald-900 text-white border-emerald-800 shadow-xs'
-                            : 'bg-slate-50 text-slate-800 border-slate-200 hover:border-emerald-300'
+                            ? 'bg-[#1B5E3A] text-white border-[#1B5E3A] shadow-xs'
+                            : 'bg-[#FAF9F6] text-[#141A17] border-[#E5E2DA] hover:border-[#1B5E3A]'
                         }`}
                       >
                         <div className="font-bold leading-snug">
@@ -422,7 +445,7 @@ export function HomeChemistryView({
                         </div>
                         <div
                           className={`text-[10px] mt-0.5 ${
-                            isSelected ? 'text-emerald-200' : 'text-slate-500'
+                            isSelected ? 'text-emerald-100' : 'text-[#575E58]'
                           }`}
                         >
                           pH sicuro: {surf.safePhRange?.[0]}–{surf.safePhRange?.[1]}
@@ -433,10 +456,10 @@ export function HomeChemistryView({
                 </div>
               </section>
 
-              {/* Tap 2: Natura dello Sporco */}
-              <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5">
-                <h3 className="text-sm font-extrabold text-slate-900">
-                  2️⃣ Tap 2 — Qual è la natura chimica dello sporco o della macchia?
+              {/* Step 2: Natura dello Sporco */}
+              <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5">
+                <h3 className="text-sm font-extrabold text-[#141A17]">
+                  2. Che tipo di sporco o macchia devi togliere?
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {soils.map((soil) => {
@@ -448,16 +471,14 @@ export function HomeChemistryView({
                         onClick={() => setSelectedSoil(soil.id)}
                         className={`p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-sky-900 text-white border-sky-800 shadow-xs'
-                            : 'bg-slate-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                            ? 'bg-[#141A17] text-white border-[#141A17] shadow-xs'
+                            : 'bg-[#FAF9F6] text-[#141A17] border-[#E5E2DA] hover:border-[#1B5E3A]'
                         }`}
                       >
-                        <div className="font-extrabold">
-                          [{soil.code}] {soil.name}
-                        </div>
+                        <div className="font-extrabold">{soil.name}</div>
                         <div
                           className={`text-[10px] mt-0.5 line-clamp-1 ${
-                            isSelected ? 'text-sky-200' : 'text-slate-500'
+                            isSelected ? 'text-stone-300' : 'text-[#575E58]'
                           }`}
                         >
                           Es: {(soil.examples || []).slice(0, 3).join(', ')}
@@ -468,14 +489,14 @@ export function HomeChemistryView({
                 </div>
               </section>
 
-              {/* Tap 3: Checklist Sottolavello / Kit posseduto */}
-              <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5">
+              {/* Step 3: Checklist Sottolavello / Kit posseduto */}
+              <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5">
                 <div>
-                  <h3 className="text-sm font-extrabold text-slate-900">
-                    3️⃣ Tap 3 — Cosa hai già in casa nel tuo Armadietto Chimico?
+                  <h3 className="text-sm font-extrabold text-[#141A17]">
+                    3. Cosa hai già in casa sotto il lavello?
                   </h3>
-                  <p className="text-[11px] text-slate-500">
-                    Spunta i pilastri che possiedi: il protocollo evidenzierà cosa puoi usare subito e cosa comprare da Tigotà/PiùMe.
+                  <p className="text-[11px] text-[#575E58]">
+                    Spunta i prodotti base che possiedi per usare subito quello che hai già in armadietto.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -488,8 +509,8 @@ export function HomeChemistryView({
                         onClick={() => toggleOwnedKitKey(pillar.key)}
                         className={`px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                           isOwned
-                            ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            ? 'bg-emerald-50 text-[#1B5E3A] border-[#1B5E3A]/40'
+                            : 'bg-white text-[#575E58] border-[#E5E2DA] hover:bg-[#FAF9F6]'
                         }`}
                       >
                         {isOwned ? '✓ ' : '+ '}
@@ -501,93 +522,97 @@ export function HomeChemistryView({
               </section>
             </div>
 
-            {/* Right Column: Deterministic Sinner Protocol Output */}
+            {/* Right Column: Protocol Output */}
             <div className="lg:col-span-5">
-              <section className="bg-white rounded-2xl border-2 border-slate-900 p-4 sm:p-5 shadow-sm space-y-4 sticky top-4">
+              <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-4 sticky top-4">
                 {solving && !solvedProtocol ? (
-                  <div className="py-10 text-center text-xs text-slate-500">
-                    Calcolo stechiometria e Cerchio di Sinner...
+                  <div className="py-10 text-center text-xs text-[#575E58]">
+                    Calcolo la soluzione migliore...
                   </div>
                 ) : solvedProtocol ? (
                   <>
-                    <div className="border-b border-slate-100 pb-3">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-900">
-                        Protocollo Scientifico Validato
+                    <div className="border-b border-[#E5E2DA] pb-3">
+                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A] border border-emerald-200">
+                        Procedura sicura
                       </span>
-                      <h3 className="text-base font-extrabold text-slate-900 mt-1.5">
+                      <h3 className="text-base font-extrabold text-[#141A17] mt-1.5">
                         {solvedProtocol.title}
                       </h3>
-                      <p className="text-[11px] text-slate-600 mt-1">
+                      <p className="text-[11px] text-[#575E58] mt-1">
                         {solvedProtocol.soil?.chemicalMechanism}
                       </p>
                     </div>
 
-                    {/* RED P0 / P1 ALERT: DO NOT DO FIRST */}
-                    <div className="p-3.5 rounded-xl bg-rose-50 border-2 border-rose-400 text-xs text-rose-950 space-y-1.5">
+                    {/* Genuine Safety Warning */}
+                    <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-xs text-rose-950 space-y-1.5">
                       <div className="font-extrabold text-rose-900 uppercase tracking-wide flex items-center gap-1.5">
-                        <span>⛔ COSA NON FARE PER PRIMO (Guardia P0/P1)</span>
+                        <span>⛔ Cosa non fare per prima cosa</span>
                       </div>
                       <p className="font-bold leading-relaxed">{solvedProtocol.doNotDoFirst}</p>
                       {(solvedProtocol.p0SafetyLocks || []).map((lock) => (
                         <div
                           key={lock.id}
-                          className="mt-1.5 pt-1.5 border-t border-rose-200 text-[11px] text-rose-900"
+                          className="mt-1.5 pt-1.5 border-t border-rose-200 text-[11px] text-rose-900 space-y-0.5"
                         >
-                          <strong>[{lock.code}]</strong> {lock.mandatoryRule}
+                          <div className="font-extrabold">{getSafetyLockTitle(lock)}</div>
+                          <div>{lock.mandatoryRule}</div>
+                          {lock.code && (
+                            <div className="text-[10px] font-mono text-rose-700/80">Rif.: {lock.code}</div>
+                          )}
                         </div>
                       ))}
                     </div>
 
-                    {/* SINNER'S CIRCLE BAR (C + T + t + M = 100%) */}
+                    {/* Sinner's Circle Bar */}
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-extrabold text-slate-800">
-                          🔄 Cerchio di Sinner ({solvedProtocol.sinnerCircle?.totalPct || 100}%)
+                        <span className="font-extrabold text-[#141A17]">
+                          Equilibrio della pulizia ({solvedProtocol.sinnerCircle?.totalPct || 100}%)
                         </span>
-                        <span className="text-[10px] text-slate-500">Bilanciamento energia</span>
+                        <span className="text-[10px] text-[#575E58]">Fattori in gioco</span>
                       </div>
-                      <div className="w-full h-3 rounded-full overflow-hidden flex bg-slate-100 border border-slate-200">
+                      <div className="w-full h-3 rounded-full overflow-hidden flex bg-[#F3F1EC] border border-[#E5E2DA]">
                         <div
                           style={{ width: `${solvedProtocol.sinnerCircle?.chemistryPct || 25}%` }}
-                          className="bg-emerald-600"
-                          title="Chimica"
+                          className="bg-[#1B5E3A]"
+                          title="Prodotto"
                         />
                         <div
                           style={{ width: `${solvedProtocol.sinnerCircle?.tempPct || 25}%` }}
-                          className="bg-amber-500"
+                          className="bg-[#9A5B25]"
                           title="Temperatura"
                         />
                         <div
                           style={{ width: `${solvedProtocol.sinnerCircle?.timePct || 25}%` }}
-                          className="bg-sky-600"
-                          title="Tempo di contatto"
+                          className="bg-stone-500"
+                          title="Tempo di posa"
                         />
                         <div
                           style={{ width: `${solvedProtocol.sinnerCircle?.mechanicalPct || 25}%` }}
-                          className="bg-purple-600"
-                          title="Azione Meccanica"
+                          className="bg-[#141A17]"
+                          title="Azione meccanica"
                         />
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px] font-bold pt-0.5">
-                        <span className="text-emerald-800">
-                          🧪 Chimica: {solvedProtocol.sinnerCircle?.chemistryPct}%
+                        <span className="text-[#1B5E3A]">
+                          Prodotto: {solvedProtocol.sinnerCircle?.chemistryPct}%
                         </span>
-                        <span className="text-amber-800">
-                          🌡️ Temp: {solvedProtocol.sinnerCircle?.tempPct}%
+                        <span className="text-[#9A5B25]">
+                          Calore: {solvedProtocol.sinnerCircle?.tempPct}%
                         </span>
-                        <span className="text-sky-800">
-                          ⏱️ Tempo: {solvedProtocol.sinnerCircle?.timePct}%
+                        <span className="text-[#575E58]">
+                          Tempo: {solvedProtocol.sinnerCircle?.timePct}%
                         </span>
-                        <span className="text-purple-800">
-                          🧽 Meccanica: {solvedProtocol.sinnerCircle?.mechanicalPct}%
+                        <span className="text-[#141A17]">
+                          Olio di gomito: {solvedProtocol.sinnerCircle?.mechanicalPct}%
                         </span>
                       </div>
                     </div>
 
-                    {/* Active Molecules / Required Kit Pillars */}
+                    {/* Active Ingredients */}
                     <div className="space-y-2">
-                      <div className="text-xs font-extrabold text-slate-800">
-                        🧴 Principi Attivi Consigliati (calibrati su {waterHardnessF} °f):
+                      <div className="text-xs font-extrabold text-[#141A17]">
+                        Prodotti consigliati (calibrati su {waterHardnessF} °f):
                       </div>
                       <div className="space-y-2">
                         {(solvedProtocol.requiredKitPillars || []).map((req) => (
@@ -595,16 +620,16 @@ export function HomeChemistryView({
                             key={req.key}
                             className={`p-2.5 rounded-xl border text-xs flex items-start justify-between gap-2 ${
                               req.owned
-                                ? 'bg-emerald-50/60 border-emerald-200'
-                                : 'bg-amber-50/60 border-amber-200'
+                                ? 'bg-[#FAF9F6] border-[#E5E2DA]'
+                                : 'bg-amber-50/50 border-amber-200'
                             }`}
                           >
                             <div>
-                              <div className="font-bold text-slate-900">
-                                {req.owned ? '✓ Già in casa: ' : '🛒 Ti manca: '}
+                              <div className="font-bold text-[#141A17]">
+                                {req.owned ? '✓ Già in casa: ' : 'Da comprare: '}
                                 {req.name}
                               </div>
-                              <div className="text-[11px] text-slate-600 mt-0.5">{req.formula}</div>
+                              <div className="text-[11px] text-[#575E58] mt-0.5">{req.formula}</div>
                             </div>
                             {!req.owned && onAddToShoppingList && (
                               <button
@@ -618,7 +643,7 @@ export function HomeChemistryView({
                                     preferredChain: 'Tigotà / PiùMe Rapallo'
                                   })
                                 }
-                                className="px-2 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-extrabold shrink-0 cursor-pointer"
+                                className="px-2 py-1 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-[10px] font-extrabold shrink-0 cursor-pointer"
                               >
                                 + Lista
                               </button>
@@ -629,21 +654,21 @@ export function HomeChemistryView({
                     </div>
 
                     {/* Step-by-Step Procedure */}
-                    <div className="space-y-1.5 pt-2 border-t border-slate-100">
-                      <div className="text-xs font-extrabold text-slate-900">
-                        📋 Procedura Operativa Step-by-Step:
+                    <div className="space-y-1.5 pt-2 border-t border-[#E5E2DA]">
+                      <div className="text-xs font-extrabold text-[#141A17]">
+                        Passaggi da seguire:
                       </div>
-                      <ol className="list-decimal list-inside text-xs text-slate-700 space-y-1.5 leading-relaxed">
+                      <ol className="list-decimal list-inside text-xs text-[#141A17] space-y-1.5 leading-relaxed">
                         {(solvedProtocol.steps || []).map((st, idx) => (
                           <li key={idx}>{st}</li>
                         ))}
                       </ol>
                     </div>
 
-                    {/* Material Science Footnote */}
+                    {/* Material Footnote */}
                     {solvedProtocol.surface?.materialNote && (
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
-                        <strong>🔬 Scienza del Substrato:</strong> {solvedProtocol.surface.materialNote}
+                      <div className="p-2.5 rounded-xl bg-[#F3F1EC] border border-[#E5E2DA] text-[11px] text-[#575E58]">
+                        <strong className="text-[#141A17]">Nota sul materiale:</strong> {solvedProtocol.surface.materialNote}
                       </div>
                     )}
                   </>
@@ -655,19 +680,19 @@ export function HomeChemistryView({
       )}
 
       {/* =====================================================================
-          TAB 2: IL KIT MINIMO CHIMICO (7 PILASTRI) & GUARDIE P0 POLVERI PURE
+          TAB 2: I 7 PRODOTTI BASE & SICUREZZA
          ===================================================================== */}
       {activeTab === 'kit' && (
         <div className="space-y-5">
-          {/* 3 Guardie P0 Salvavita Polveri Pure */}
-          <section className="bg-rose-50 rounded-2xl border-2 border-rose-400 p-4 sm:p-5 space-y-3">
+          {/* 3 Regole Essenziali sulle Polveri Pure */}
+          <section className="bg-rose-50/80 rounded-2xl border border-rose-300 p-4 sm:p-5 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-700 text-white">
-                  Guardie Inviolabili P0 · Autoproduzione Sicura
+                <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-700 text-white">
+                  Sicurezza essenziale · Uso corretto
                 </span>
-                <h3 className="text-sm sm:text-base font-extrabold text-rose-950 mt-1">
-                  ☠️ I 3 Divieti Salvavita sulle Polveri Pure (Contro la fallacia &ldquo;Naturale = Innocuo&rdquo;)
+                <h3 className="text-sm sm:text-base font-extrabold text-rose-950 mt-1.5">
+                  I 3 divieti essenziali sulle polveri pure
                 </h3>
               </div>
             </div>
@@ -675,43 +700,48 @@ export function HomeChemistryView({
               {(kitGuide?.purePowderSafetyLocksP0 || []).map((lock) => (
                 <div
                   key={lock.id}
-                  className="bg-white rounded-xl border border-rose-300 p-3.5 text-xs space-y-1.5 shadow-2xs"
+                  className="bg-white rounded-xl border border-rose-200 p-3.5 text-xs space-y-1.5 shadow-2xs flex flex-col justify-between"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-extrabold text-rose-900">{lock.code}</span>
-                    <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-rose-100 text-rose-900">
-                      {lock.severity}
-                    </span>
+                  <div className="space-y-1.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="font-extrabold text-rose-950 leading-snug">
+                        {getSafetyLockTitle(lock)}
+                      </h4>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-900 shrink-0">
+                        {formatSeverityLabel(lock.severity)}
+                      </span>
+                    </div>
+                    <div className="font-semibold text-[#141A17]">{lock.reagentA}</div>
+                    <p className="text-[11px] text-[#575E58]">{lock.clinicalRisk}</p>
+                    <p className="text-[11px] font-extrabold text-rose-800">{lock.mandatoryRule}</p>
                   </div>
-                  <div className="font-bold text-slate-900">{lock.reagentA}</div>
-                  <div className="font-mono text-[10px] bg-slate-50 p-1.5 rounded border border-slate-200 text-slate-700">
-                    {lock.hazardFormula}
+                  <div className="pt-1.5 border-t border-[#E5E2DA] flex flex-wrap items-center justify-between gap-1 text-[10px] text-[#575E58]">
+                    <span className="font-mono">{lock.hazardFormula}</span>
+                    {lock.code && <span className="font-mono">Rif. {lock.code}</span>}
                   </div>
-                  <p className="text-[11px] text-slate-700">{lock.clinicalRisk}</p>
-                  <p className="text-[11px] font-extrabold text-rose-800">{lock.mandatoryRule}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {/* Verificatore Sicurezza Miscele Live */}
-          <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3.5">
+          <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-3.5">
             <div>
-              <h3 className="text-sm font-extrabold text-slate-900">
-                🚦 Verificatore Live Sicurezza Miscele & Contenitori (Semaforo Chimico P0)
+              <h3 className="text-sm font-extrabold text-[#141A17]">
+                Verifica prima di mescolare due prodotti
               </h3>
-              <p className="text-xs text-slate-500">
-                Prima di mescolare due prodotti o travasarli in un contenitore, verifica la compatibilità chimica deterministica.
+              <p className="text-xs text-[#575E58]">
+                Controlla subito se due prodotti insieme creano gas pericolosi o rovinano una superficie.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Prodotto / Reagente A</label>
+                <label className="block font-bold text-[#141A17] mb-1">Primo prodotto</label>
                 <select
                   value={reagentA}
                   onChange={(e) => setReagentA(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] font-semibold text-[#141A17]"
                 >
                   {REAGENT_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>
@@ -721,13 +751,13 @@ export function HomeChemistryView({
                 </select>
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Prodotto / Reagente B</label>
+                <label className="block font-bold text-[#141A17] mb-1">Secondo prodotto</label>
                 <select
                   value={reagentB}
                   onChange={(e) => setReagentB(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] font-semibold text-[#141A17]"
                 >
-                  <option value="">(Nessun secondo reagente)</option>
+                  <option value="">(Nessun secondo prodotto)</option>
                   {REAGENT_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>
                       {opt}
@@ -736,11 +766,11 @@ export function HomeChemistryView({
                 </select>
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Contenitore / Superficie</label>
+                <label className="block font-bold text-[#141A17] mb-1">Contenitore o superficie</label>
                 <select
                   value={targetContext}
                   onChange={(e) => setTargetContext(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] font-semibold text-[#141A17]"
                 >
                   {CONTAINER_OR_TARGET_OPTIONS.map((opt) => (
                     <option key={opt.label} value={opt.value}>
@@ -751,9 +781,9 @@ export function HomeChemistryView({
               </div>
             </div>
 
-            {/* Preset rapidi di test P0 */}
+            {/* Preset rapidi di test */}
             <div className="flex flex-wrap items-center gap-2 text-[11px]">
-              <span className="font-bold text-slate-500">Test rapidi:</span>
+              <span className="font-bold text-[#575E58]">Prove rapide:</span>
               <button
                 type="button"
                 onClick={() => {
@@ -761,7 +791,7 @@ export function HomeChemistryView({
                   setReagentB('Anticalcare Acido (Viakal)');
                   setTargetContext('');
                 }}
-                className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer"
               >
                 Candeggina + Viakal
               </button>
@@ -772,9 +802,9 @@ export function HomeChemistryView({
                   setReagentB('');
                   setTargetContext('flacone spray chiuso ermetico');
                 }}
-                className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer"
               >
-                Percarbonato in Spray Chiuso
+                Percarbonato in spruzzino chiuso
               </button>
               <button
                 type="button"
@@ -783,9 +813,9 @@ export function HomeChemistryView({
                   setReagentB('');
                   setTargetContext('Moka in alluminio / Filtro cappa alluminio');
                 }}
-                className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer"
               >
-                Soda Solvay su Moka Alluminio
+                Soda Solvay su moka in alluminio
               </button>
               <button
                 type="button"
@@ -794,53 +824,56 @@ export function HomeChemistryView({
                   setReagentB('');
                   setTargetContext('Marmo di Carrara / Ardesia Ligure');
                 }}
-                className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] font-semibold text-[#141A17] cursor-pointer"
               >
-                Acido Citrico su Marmo Ligure
+                Acido Citrico su marmo ligure
               </button>
             </div>
 
             {safetyResult && (
               <div
-                className={`p-3.5 rounded-xl border-2 text-xs space-y-2 ${
+                className={`p-3.5 rounded-xl border text-xs space-y-2 ${
                   safetyResult.blockedByP0
-                    ? 'bg-rose-50 border-rose-500 text-rose-950'
+                    ? 'bg-rose-50 border-rose-400 text-rose-950'
                     : safetyResult.blockedByP1
-                      ? 'bg-amber-50 border-amber-400 text-amber-950'
-                      : 'bg-emerald-50 border-emerald-400 text-emerald-950'
+                      ? 'bg-amber-50 border-amber-300 text-amber-950'
+                      : 'bg-emerald-50/70 border-[#1B5E3A]/30 text-[#141A17]'
                 }`}
               >
                 <div className="font-extrabold text-sm">
                   {safetyResult.blockedByP0
-                    ? `🔴 BLOCCO CHIMICO ${safetyResult.highestSeverity} — VIETATO PROCEDERE!`
+                    ? '🔴 Pericolo chimico: non procedere assolutamente'
                     : safetyResult.blockedByP1
-                      ? `🟠 ALLERTA DANNO MATERIALI (${safetyResult.highestSeverity})`
-                      : '🟢 SEMAFORO VERDE — Nessuna incompatibilità chimica critica rilevata'}
+                      ? '🟠 Rischio di rovinare il materiale'
+                      : '🟢 Combinazione sicura — Nessuna incompatibilità critica rilevata'}
                 </div>
                 {(safetyResult.violations || []).map((v) => (
-                  <div key={v.id} className="bg-white/90 p-2.5 rounded-lg border border-slate-200 space-y-1">
-                    <div className="font-bold">
-                      [{v.code}] {v.reagentA} + {v.reagentB} → {v.toxicProduct}
+                  <div key={v.id} className="bg-white/95 p-2.5 rounded-lg border border-[#E5E2DA] space-y-1">
+                    <div className="font-bold text-[#141A17]">
+                      {getSafetyLockTitle(v)} — {v.reagentA} + {v.reagentB} → {v.toxicProduct}
                     </div>
-                    <div className="font-mono text-[11px] text-slate-700">{v.hazardFormula}</div>
-                    <div className="text-[11px] font-semibold">{v.mandatoryRule}</div>
+                    <div className="text-[11px] font-semibold text-[#141A17]">{v.mandatoryRule}</div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-[#575E58]">
+                      <span>{v.hazardFormula}</span>
+                      {v.code && <span>Rif. {v.code}</span>}
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </section>
 
-          {/* I 7 Pilastri del Kit Minimo Chimico */}
+          {/* I 7 prodotti base */}
           <section className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
-                  🧪 Il Kit Minimo Chimico a 7 Pilastri (Sostituisce {kitGuide?.totalCommercialBottlesReplaced || 25}+ Flaconi Marketing)
+                <h3 className="text-sm sm:text-base font-extrabold text-[#141A17]">
+                  I 7 prodotti base per tutta la casa (sostituiscono {kitGuide?.totalCommercialBottlesReplaced || 25}+ flaconi diversi)
                 </h3>
-                <p className="text-xs text-slate-600">
-                  Costo intero set di riferimento a Rapallo:{' '}
-                  <strong>~€ {Number(kitGuide?.fullKitReferenceCostEuro || 30.57).toFixed(2)}</strong> • Calibrato su{' '}
-                  <strong>{waterHardnessF} °f</strong>.
+                <p className="text-xs text-[#575E58]">
+                  Costo indicativo dell&apos;intero set a Rapallo:{' '}
+                  <strong className="text-[#141A17]">~€ {Number(kitGuide?.fullKitReferenceCostEuro || 30.57).toFixed(2)}</strong> • Dosi calibrate su{' '}
+                  <strong className="text-[#141A17]">{waterHardnessF} °f</strong>.
                 </p>
               </div>
             </div>
@@ -851,17 +884,17 @@ export function HomeChemistryView({
                 return (
                   <article
                     key={p.id}
-                    className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs flex flex-col justify-between gap-3 text-xs"
+                    className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs flex flex-col justify-between gap-3 text-xs"
                   >
                     <div className="space-y-2">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-sky-100 text-sky-900">
-                            Pilastro #{p.pillarNumber}
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]">
+                            Prodotto #{p.pillarNumber}
                           </span>
-                          <h4 className="text-sm font-extrabold text-slate-900 mt-1">{p.name}</h4>
+                          <h4 className="text-sm font-extrabold text-[#141A17] mt-1">{p.name}</h4>
                         </div>
-                        <span className="text-xs font-extrabold text-emerald-800 shrink-0">
+                        <span className="text-xs font-extrabold text-[#1B5E3A] shrink-0">
                           ~€ {Number(p.referencePriceEuro).toFixed(2)}
                         </span>
                       </div>
@@ -869,22 +902,22 @@ export function HomeChemistryView({
                       <div
                         className={`p-2.5 rounded-xl border text-[11px] ${
                           p.preparedSolutionRecipe?.allowedInClosedSprayBottle
-                            ? 'bg-emerald-50/60 border-emerald-200 text-emerald-950'
-                            : 'bg-amber-50/70 border-amber-300 text-amber-950'
+                            ? 'bg-emerald-50/60 border-emerald-200 text-[#141A17]'
+                            : 'bg-amber-50/70 border-amber-200 text-amber-950'
                         }`}
                       >
                         <div className="font-extrabold">
                           {p.preparedSolutionRecipe?.allowedInClosedSprayBottle
-                            ? '✓ Stoccabile in flacone opaco child-proof etichettato'
-                            : '⛔ VIETATO chiudere in flacone spray — Solo uso estemporaneo aperto'}
+                            ? '✓ Si può conservare in flacone opaco ben etichettato'
+                            : '⛔ Mai chiudere in flacone spray — Usa al momento in contenitore aperto'}
                         </div>
                         <p className="mt-0.5">{p.preparedSolutionRecipe?.formula}</p>
                       </div>
 
                       {p.preparedSolutionRecipe?.rapalloDosages && (
                         <div className="space-y-1">
-                          <div className="font-bold text-slate-700">Dosaggi Rapallo ({waterHardnessF} °f):</div>
-                          <ul className="list-disc list-inside text-[11px] text-slate-600 space-y-0.5">
+                          <div className="font-bold text-[#141A17]">Dosi per Rapallo ({waterHardnessF} °f):</div>
+                          <ul className="list-disc list-inside text-[11px] text-[#575E58] space-y-0.5">
                             {Object.values(p.preparedSolutionRecipe.rapalloDosages).map((d, i) => (
                               <li key={i}>{d}</li>
                             ))}
@@ -892,23 +925,23 @@ export function HomeChemistryView({
                         </div>
                       )}
 
-                      <div className="text-[11px] text-slate-500">
-                        <strong>Elimina dal carrello:</strong>{' '}
+                      <div className="text-[11px] text-[#575E58]">
+                        <strong className="text-[#141A17]">Elimina dal carrello:</strong>{' '}
                         {(p.replacedCommercialProducts || []).join(' • ')}
                       </div>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div className="pt-2 border-t border-[#E5E2DA] flex items-center justify-between gap-2">
                       <button
                         type="button"
                         onClick={() => toggleOwnedKitKey(p.key)}
                         className={`px-3 py-1.5 rounded-lg font-extrabold cursor-pointer ${
                           isOwned
-                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                            : 'bg-slate-100 text-slate-700 border border-slate-200'
+                            ? 'bg-emerald-50 text-[#1B5E3A] border border-emerald-200'
+                            : 'bg-[#F3F1EC] text-[#141A17] border border-[#E5E2DA]'
                         }`}
                       >
-                        {isOwned ? '✓ Posseduto in casa' : 'Segna come posseduto'}
+                        {isOwned ? '✓ Già in casa' : 'Segna come presente'}
                       </button>
                       {!isOwned && onAddToShoppingList && (
                         <button
@@ -922,9 +955,9 @@ export function HomeChemistryView({
                               preferredChain: 'Tigotà / PiùMe Rapallo'
                             })
                           }
-                          className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white font-extrabold cursor-pointer"
                         >
-                          + Aggiungi a Lista Spesa
+                          + Aggiungi alla lista
                         </button>
                       )}
                     </div>
@@ -937,19 +970,19 @@ export function HomeChemistryView({
       )}
 
       {/* =====================================================================
-          TAB 3: OFFERTE TIGOTÀ / PIÙME / GDO (€/CICLO) & DECODIFICA INCI
+          TAB 3: PREZZI A LAVAGGIO & ETICHETTE
          ===================================================================== */}
       {activeTab === 'offers' && (
         <div className="space-y-5">
-          {/* Decodificatore INCI Detergenti Reg. CE 648/2004 */}
-          <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3">
+          {/* Lettore Etichette */}
+          <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h3 className="text-sm font-extrabold text-slate-900">
-                  🔬 Decodificatore INCI Detergenti (Reg. CE 648/2004 — Anti-Greenwashing)
+                <h3 className="text-sm font-extrabold text-[#141A17]">
+                  Leggi l&apos;etichetta sul retro del flacone
                 </h3>
-                <p className="text-xs text-slate-500">
-                  Incolla gli ingredienti dal retro del flacone o dalla scheda online per vedere i veri principi attivi e i divieti sui tessuti.
+                <p className="text-xs text-[#575E58]">
+                  Incolla la lista ingredienti dal retro del prodotto per vedere cosa pulisce davvero e su quali tessuti evitarlo.
                 </p>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -958,7 +991,7 @@ export function HomeChemistryView({
                     key={pr.label}
                     type="button"
                     onClick={() => setInciInput(pr.inci)}
-                    className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 cursor-pointer"
+                    className="px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[11px] font-bold text-[#141A17] cursor-pointer"
                   >
                     {pr.label}
                   </button>
@@ -971,7 +1004,7 @@ export function HomeChemistryView({
               value={inciInput}
               onChange={(e) => setInciInput(e.target.value)}
               placeholder="Es. Aqua, Sodium Laureth Sulfate, Sodium Carbonate Peroxide, TAED, Subtilisin..."
-              className="w-full p-3 rounded-xl border border-slate-300 text-xs font-mono bg-slate-50"
+              className="w-full p-3 rounded-xl border border-[#E5E2DA] text-xs font-mono bg-[#FAF9F6] text-[#141A17]"
             />
 
             {inciDecoded && (
@@ -979,7 +1012,7 @@ export function HomeChemistryView({
                 {(inciDecoded.warnings || []).map((w, i) => (
                   <div
                     key={i}
-                    className="p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 font-bold"
+                    className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 font-bold"
                   >
                     ⚠️ {w}
                   </div>
@@ -990,8 +1023,8 @@ export function HomeChemistryView({
                       key={act.id}
                       className="p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-200 space-y-0.5"
                     >
-                      <div className="font-extrabold text-emerald-950">{act.name}</div>
-                      <p className="text-[11px] text-slate-700">{act.primaryFunction}</p>
+                      <div className="font-extrabold text-[#141A17]">{act.name}</div>
+                      <p className="text-[11px] text-[#575E58]">{act.primaryFunction}</p>
                     </div>
                   ))}
                 </div>
@@ -1000,15 +1033,14 @@ export function HomeChemistryView({
           </section>
 
           {/* Offerte Vere Cura Casa Rapallo */}
-          <section className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3">
+          <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 shadow-xs space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-sm font-extrabold text-slate-900">
-                  💶 Offerte Vere Detergenza a Rapallo ({offersReport?.totalCleaningOffers || 0} attive · Zero Profumi/Bazar)
+                <h3 className="text-sm font-extrabold text-[#141A17]">
+                  Offerte reali per la casa a Rapallo ({offersReport?.totalCleaningOffers || 0} attive)
                 </h3>
-                <p className="text-xs text-slate-500">
-                  Valutazione rigorosa <code>ADR-0006</code>: <code>€/ciclo</code> calcolato solo su formati espliciti e{' '}
-                  <strong>Dominanza d&apos;Intervallo Reg. 648/2004</strong> senza percentuali inventate.
+                <p className="text-xs text-[#575E58]">
+                  Il costo per lavaggio viene calcolato solo quando peso o numero di cicli sono indicati chiaramente sul volantino, senza stime inventate.
                 </p>
               </div>
             </div>
@@ -1017,36 +1049,35 @@ export function HomeChemistryView({
               {(offersReport?.offers || []).map((off, idx) => (
                 <div
                   key={off.id || idx}
-                  className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between gap-2.5 text-xs"
+                  className="p-3.5 rounded-xl border border-[#E5E2DA] bg-[#FAF9F6] flex flex-col justify-between gap-2.5 text-xs"
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-white border border-[#E5E2DA] text-[#575E58]">
                         📍 {off.storeName || off.storeId}
                       </span>
-                      <span className="text-sm font-extrabold text-emerald-800">
+                      <span className="text-sm font-extrabold text-[#1B5E3A]">
                         € {Number(off.promoPrice || 0).toFixed(2)}
                       </span>
                     </div>
-                    <div className="font-bold text-slate-900">{off.title}</div>
+                    <div className="font-bold text-[#141A17]">{off.title}</div>
 
                     {off.costPerRapalloCycleEur !== null ? (
-                      <div className="text-[11px] font-bold text-sky-900 bg-sky-50 border border-sky-200 rounded-lg px-2 py-1">
-                        🧺 Costo reale a {waterHardnessF} °f:{' '}
-                        <strong>€ {off.costPerRapalloCycleEur.toFixed(2)} / ciclo</strong> ({off.washCount} cicli std)
+                      <div className="text-[11px] font-bold text-[#141A17] bg-[#F3F1EC] border border-[#E5E2DA] rounded-lg px-2 py-1">
+                        Costo reale a {waterHardnessF} °f:{' '}
+                        <strong>€ {off.costPerRapalloCycleEur.toFixed(2)} / lavaggio</strong> ({off.washCount} cicli)
                       </div>
                     ) : (
-                      <div className="text-[10px] text-slate-500 italic">
-                        Formato/lavaggi omessi sul testo volantino (nessuna stima sintetica per ADR-0006)
+                      <div className="text-[10px] text-[#575E58] italic">
+                        Formato o numero di lavaggi non indicato sul volantino
                       </div>
                     )}
 
                     {off.intervalDominanceComparison?.dominanceProven && (
                       <div className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-950">
-                        <strong>💡 Dominanza Kit Minimo:</strong> anche al tetto massimo legale (
-                        {off.intervalDominanceComparison.assumedCommercialUpperBoundPct}% attivo), il principio puro del
-                        Kit fa risparmiare{' '}
-                        <strong>≥ {off.intervalDominanceComparison.certifiedMinSavingsPct}%</strong>!
+                        <strong>Confronto coi prodotti base:</strong> anche considerando la massima concentrazione di legge (
+                        {off.intervalDominanceComparison.assumedCommercialUpperBoundPct}%), il prodotto puro fa risparmiare almeno{' '}
+                        <strong>{off.intervalDominanceComparison.certifiedMinSavingsPct}%</strong>.
                       </div>
                     )}
 
@@ -1071,9 +1102,9 @@ export function HomeChemistryView({
                           onPromo: true
                         })
                       }
-                      className="w-full py-1.5 px-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-extrabold cursor-pointer"
+                      className="w-full py-1.5 px-2.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-[11px] font-extrabold cursor-pointer"
                     >
-                      + Aggiungi a Lista Spesa
+                      + Aggiungi alla lista
                     </button>
                   )}
                 </div>
@@ -1084,18 +1115,18 @@ export function HomeChemistryView({
       )}
 
       {/* =====================================================================
-          TAB 4: MANUTENZIONE ELETTRODOMESTICI & MYTH-BUSTER STECHIOMETRICO
+          TAB 4: ELETTRODOMESTICI & FALSI MITI
          ===================================================================== */}
       {activeTab === 'maintenance' && (
         <div className="space-y-5">
-          {/* Piani Anti-Guasto Elettrodomestici */}
+          {/* Piani Manutenzione Elettrodomestici */}
           <section className="space-y-3">
             <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
-                🛡️ Piano Manutenzione Programmata Anti-Guasto (Tutela CapEx Elettrodomestici & Barca)
+              <h3 className="text-sm sm:text-base font-extrabold text-[#141A17]">
+                Manutenzione per far durare gli elettrodomestici e la barca
               </h3>
-              <p className="text-xs text-slate-600">
-                Pochi euro l&apos;anno di Acido Citrico e Percarbonato raddoppiano la vita utile di lavatrice, lavastoviglie, frigo, cappa e dotazioni di bordo.
+              <p className="text-xs text-[#575E58]">
+                Pochi euro l&apos;anno di acido citrico e percarbonato allungano la vita di lavatrice, lavastoviglie, frigorifero, cappa e dotazioni di bordo.
               </p>
             </div>
 
@@ -1103,25 +1134,25 @@ export function HomeChemistryView({
               {(appliancesData?.appliances || []).map((app) => (
                 <article
                   key={app.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5 text-xs"
+                  className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2.5 text-xs"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-2 border-b border-slate-100 pb-2">
+                  <div className="flex flex-wrap items-start justify-between gap-2 border-b border-[#E5E2DA] pb-2">
                     <div>
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-900">
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-50 text-[#1B5E3A] border border-emerald-200">
                         ⏱️ {app.frequency}
                       </span>
-                      <h4 className="text-sm font-extrabold text-slate-900 mt-1">{app.applianceName}</h4>
+                      <h4 className="text-sm font-extrabold text-[#141A17] mt-1">{app.applianceName}</h4>
                     </div>
                     {app.capexProtectedRangeEuro && (
-                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#F3F1EC] text-[#575E58]">
                         Protegge €{app.capexProtectedRangeEuro[0]}–{app.capexProtectedRangeEuro[1]}
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-sky-900 bg-sky-50 border border-sky-200 p-2 rounded-xl">
-                    <strong>💧 Nota Acqua Rapallo:</strong> {app.rapalloWaterNote}
+                  <p className="text-[11px] text-[#141A17] bg-[#F3F1EC] border border-[#E5E2DA] p-2.5 rounded-xl">
+                    <strong>Acqua a Rapallo:</strong> {app.rapalloWaterNote}
                   </p>
-                  <ol className="list-decimal list-inside space-y-1 text-slate-700 leading-relaxed">
+                  <ol className="list-decimal list-inside space-y-1 text-[#575E58] leading-relaxed">
                     {(app.decoupledSteps || []).map((st, i) => (
                       <li key={i}>{st}</li>
                     ))}
@@ -1130,21 +1161,21 @@ export function HomeChemistryView({
               ))}
 
               {appliancesData?.boatCareModule && (
-                <article className="bg-sky-950 text-white rounded-2xl border border-sky-800 p-4 shadow-xs space-y-2.5 text-xs">
-                  <div className="flex items-center justify-between gap-2 border-b border-sky-800 pb-2">
+                <article className="bg-[#141A17] text-white rounded-2xl border border-[#141A17] p-4 shadow-xs space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between gap-2 border-b border-white/15 pb-2">
                     <div>
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-sky-700 text-white">
-                        ⚓ Modulo Nautico Golfo del Tigullio
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/10 text-stone-200">
+                        ⚓ Cura della barca · Tigullio
                       </span>
                       <h4 className="text-sm font-extrabold mt-1">
                         {appliancesData.boatCareModule.title}
                       </h4>
                     </div>
                   </div>
-                  <div className="p-2 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-100 font-bold text-[11px]">
+                  <div className="p-2.5 rounded-xl bg-rose-950 border border-rose-500 text-rose-100 font-bold text-[11px]">
                     ⛔ {appliancesData.boatCareModule.doNotDoFirst}
                   </div>
-                  <ol className="list-decimal list-inside space-y-1 text-sky-100 leading-relaxed">
+                  <ol className="list-decimal list-inside space-y-1 text-stone-200 leading-relaxed">
                     {(appliancesData.boatCareModule.steps || []).map((st, i) => (
                       <li key={i}>{st}</li>
                     ))}
@@ -1154,14 +1185,14 @@ export function HomeChemistryView({
             </div>
           </section>
 
-          {/* Myth-Buster Stechiometrico */}
+          {/* Falsi miti spiegati semplicemente */}
           <section className="space-y-3">
             <div>
-              <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
-                🧪 Myth-Buster Stechiometrico — Falsi Miti Domestici Smontati con la Chimica
+              <h3 className="text-sm sm:text-base font-extrabold text-[#141A17]">
+                Falsi miti sulle pulizie spiegati bene
               </h3>
-              <p className="text-xs text-slate-600">
-                Perché le &ldquo;ricette magiche del web&rdquo; producono acqua salata inerte o corrodono silenziosamente lavatrice e tessuti.
+              <p className="text-xs text-[#575E58]">
+                Perché alcune &ldquo;ricette casalinghe&rdquo; popolari si annullano a vicenda o rovinano nel tempo lavatrice, cromature e tessuti.
               </p>
             </div>
 
@@ -1169,22 +1200,22 @@ export function HomeChemistryView({
               {myths.map((m) => (
                 <article
                   key={m.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2 text-xs"
+                  className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs space-y-2 text-xs"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="text-sm font-extrabold text-slate-900">❌ &ldquo;{m.mythTitle}&rdquo;</h4>
-                    <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-900 text-[10px] font-extrabold shrink-0">
+                    <h4 className="text-sm font-extrabold text-[#141A17]">❌ &ldquo;{m.mythTitle}&rdquo;</h4>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-950 text-[10px] font-extrabold shrink-0">
                       {m.verdict.split('(')[0].trim()}
                     </span>
                   </div>
-                  <div className="font-mono text-[11px] bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800">
+                  <div className="font-mono text-[11px] bg-[#FAF9F6] border border-[#E5E2DA] p-2 rounded-lg text-[#141A17]">
                     {m.stoichiometry}
                   </div>
-                  <p className="text-[11px] text-slate-500">
-                    <strong>Illusione ottica:</strong> {m.visualIllusion}
+                  <p className="text-[11px] text-[#575E58]">
+                    <strong className="text-[#141A17]">Cosa sembra succedere:</strong> {m.visualIllusion}
                   </p>
-                  <p className="text-[11px] text-slate-800 leading-relaxed">
-                    <strong>Realtà chimica:</strong> {m.chemicalTruth}
+                  <p className="text-[11px] text-[#141A17] leading-relaxed">
+                    <strong>Cosa succede davvero:</strong> {m.chemicalTruth}
                   </p>
                 </article>
               ))}
