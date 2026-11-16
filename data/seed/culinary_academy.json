@@ -1,0 +1,517 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "adrCompliance": ["ADR-0006", "ADR-0011", "ADR-0015"],
+    "references": [
+      "Harold McGee — On Food and Cooking",
+      "J. Kenji López-Alt — The Food Lab",
+      "Michael Ruhlman — Ratio: The Simple Codes Behind the Craft of Everyday Cooking",
+      "Dario Bressanini — La Scienza della Carne / La Scienza delle Verdure / La Scienza delle Uova",
+      "Harvard John A. Paulson SEAS — Science & Cooking Lecture Series"
+    ]
+  },
+  "fivePillars": [
+    {
+      "id": "pillar-1-latent-heat-maillard",
+      "title": "Termodinamica & Barriera dei 100°C (Calore Latente vs Maillard)",
+      "law": "Delta_H_vap(H2O) = 2260 J/g a 100°C; Reazione di Maillard attiva >140–155°C",
+      "summary": "Finché sulla superficie di un alimento c'è acqua libera, ogni grammo che evapora sottrae 2.260 Joule inchiodando l'interfaccia a <=100°C (effetto bollito grigio). Asciugare a secco e non affollare la padella sono gli unici modi per far saltare la superficie oltre i 145°C."
+    },
+    {
+      "id": "pillar-2-osmosis-brining",
+      "title": "Osmosi, Forza Ionica & Chimica Vegetale",
+      "law": "Legge di Fick & Depolimerizzazione parziale della miosina a NaCl 1.0–1.2%",
+      "summary": "Salare pesce o carne 45 min prima scioglie parte dei filamenti proteici creando un gel che trattiene +12–15% di succhi in cottura mentre asciuga la pelle; nelle verdure verdi la cottura scoperta a pH neutro impedisce agli ioni H+ di scalzare il Magnesio (Mg2+) dalla clorofilla."
+    },
+    {
+      "id": "pillar-3-colloidal-emulsions",
+      "title": "Fisica Colloidale ed Emulsioni Zero-Latticini",
+      "law": "Finestra termica critica 55–65°C & Amilosio lineare (~1.8–2.5 g/L) come surfattante sterico",
+      "summary": "Olio e acqua legano stabilmente senza panna né formaggio grazie ad amilosio concentrato (cottura pasta in acqua ridotta), fosfolipidi o proteine di semi oleosi liguri (pinoli/noci/mandorle pestati <28°C), purché si mantechi fuori fuoco sotto i 65°C per evitare coalescenza e coagulazione."
+    },
+    {
+      "id": "pillar-4-protein-vs-collagen",
+      "title": "Cinetica Proteica Differenziale vs Idrolisi del Collagene",
+      "law": "Miosina marina 48–52°C · Actina >60–65°C · Collagene -> Gelatina 68–85°C × tempo",
+      "summary": "I tagli poveri di connettivo (filetti di pesce del Golfo, petto, lombata) richiedono cotture brevi con cuore controllato per non spremere fuori l'acqua; i tessuti ricchi di collagene (polpo, totani, muscolo, tuccu) richiedono calore umido prolungato a 75–85°C per sciogliere la tripla elica in gelatina setosa."
+    },
+    {
+      "id": "pillar-5-ratios-and-umami-8x",
+      "title": "Grammatica dei Rapporti Aurei & Sinergia Umami 8×",
+      "law": "Amplificazione allosterica recettore T1R1/T1R3: L-Glutammato + 5'-Ribonucleotidi (IMP/GMP) = fino a 8× intensità percepita",
+      "summary": "Chi conosce i rapporti strutturali in peso (3:1 emulsione, 1:3 farinata, 3:2 pasta) cucina senza ricetta; chi accoppia glutammato vegetale/fermentato (pomodoro, funghi, olive, alici maturate) con inosinato/guanilato (pesce azzurro, carni, porcini secchi) ottiene profondità da alta cucina senza un grammo di formaggio."
+    }
+  ],
+  "skillsTree": [
+    {
+      "id": "skill-01-knife-mechanics",
+      "order": 1,
+      "tier": 1,
+      "title": "Taglio a Scorrimento & Tutela Cellulare",
+      "prerequisites": [],
+      "corePhysicsLaw": "Il movimento assiale della lama (push/pull cut) riduce la pressione normale evitando lo schiacciamento dei vacuoli e il rilascio di polifenolossidasi e lacrimogeni solforati.",
+      "criticalTempRangeC": [0, 25],
+      "sensoryCheckpoints": {
+        "visual": "Tagliere asciutto senza pozze di succo verde/rosso; sezioni geometriche identiche per cottura simultanea.",
+        "acoustic": "Contatto sordo e pulito sul legno/PEHD, zero raschiamento laterale della lama.",
+        "olfactory": "Minima irritazione pungente tagliando cipolla/scalogno."
+      },
+      "practiceDishIds": ["base-barca-insalata-mare-ceci", "tigullio-dish-4"],
+      "verbosityAdaptation": {
+        "noviceGuide": " Mano guida ad 'artiglio' con nocche avanzate rispetto ai polpastrelli; fai scorrere la lama avanti-basso su tagliere in legno/PEHD (mai vetro/piatto!). Non trascinare mai il filo di lato per raccogliere il trito: usa il dorso.",
+        "intermediateCue": "Taglio a scorrimento netto senza pressione verticale; raccogli col dorso lama.",
+        "masterTarget": "Brunoise/filettatura uniforme ±1mm · Zero essudato su tagliere."
+      }
+    },
+    {
+      "id": "skill-02-latent-heat-maillard",
+      "order": 2,
+      "tier": 1,
+      "title": "Sconfiggere la Barriera dei 100°C & Maillard Pulita",
+      "prerequisites": ["skill-01-knife-mechanics"],
+      "corePhysicsLaw": "L'evaporazione di 1g d'acqua assorbe 2.260 J bloccando la superficie a 100°C: solo tamponando a secco e lasciando almeno il 30% di fondo libero il vapore sfugge e la crosta tocca 155–180°C.",
+      "criticalTempRangeC": [145, 185],
+      "sensoryCheckpoints": {
+        "visual": "Crosta ambrata-nocciola uniforme (mai grigia da vapore né nera carbonizzata).",
+        "acoustic": "Sfrigolio fitto e acuto all'appoggio (mai gorgoglio sordo di liquido che bolle).",
+        "olfactory": "Note tostate di pane, nocciola e pirazine."
+      },
+      "practiceDishIds": ["starred-cedroni-pesce-azzurro-agrumi", "base-single-acciughe-padella-limone"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Tampona due volte pesce o carne con carta assorbente finché la carta resta asciutta. Lascia spazio largo tra un pezzo e l'altro (se serve dividi in 2 turni) e non toccare per i primi 90 secondi.",
+        "intermediateCue": "Superficie tamponata a secco + max 65% copertura fondo per fuga vapore -> Maillard >155°C.",
+        "masterTarget": "a_w sup. minima · Carico in batch entro capacità termica · Crosta 170°C."
+      }
+    },
+    {
+      "id": "skill-03-leidenfrost-inox",
+      "order": 3,
+      "tier": 1,
+      "title": "Effetto Leidenfrost (~193°C) & Antiaderenza Dinamica su Inox",
+      "prerequisites": ["skill-02-latent-heat-maillard"],
+      "corePhysicsLaw": "A ~193°C una goccia d'acqua levita su un cuscino del proprio vapore (Leidenfrost): a questa temperatura i pori microscopici dell'inox sono dilatati e l'olio crea una barriera idrodinamica che rilascia da sola le proteine appena coagulate.",
+      "criticalTempRangeC": [185, 200],
+      "sensoryCheckpoints": {
+        "visual": "La goccia d'acqua non frigge evaporando subito ma corre intera come una biglia d'argento.",
+        "acoustic": "Silenzio della biglia che scivola invece del 'tss' immediato.",
+        "olfactory": "Olio lucido che increspa senza mai emettere fumo azzurrognolo."
+      },
+      "practiceDishIds": ["starred-cedroni-pesce-azzurro-agrumi"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Scalda la padella Inox vuota a fuoco medio per 2 minuti. Lancia mezza goccia d'acqua: se evapora sfrigolando è fredda; quando rimbalza come una perlina di mercurio, asciuga, versa il velo d'olio, attendi 5 secondi e adagia l'alimento. Non tirarlo finché non si stacca da solo!",
+        "intermediateCue": "Test perlina di Leidenfrost (~193°C) -> velo EVO 5s -> attendi rilascio spontaneo della crosta.",
+        "masterTarget": "Inox Leidenfrost check · Zero forzatura pre-rilascio."
+      }
+    },
+    {
+      "id": "skill-04-osmotic-dry-brining",
+      "order": 4,
+      "tier": 1,
+      "title": "Osmosi & Dry-Brining Calibrato (1,0–1,2% Sale)",
+      "prerequisites": ["skill-01-knife-mechanics"],
+      "corePhysicsLaw": "Il sale richiama inizialmente gocce per osmosi, vi si scioglie e rientra per diffusione rilassando i fasci di miosina: trattiene i succhi fino a +15% in più durante la cottura.",
+      "criticalTempRangeC": [2, 6],
+      "sensoryCheckpoints": {
+        "visual": "Dopo 40+ min in frigo su griglia la superficie torna asciutta, traslucida e compatta.",
+        "acoustic": "Pelle che suona secca al tocco prima di entrare in padella.",
+        "olfactory": "Aroma marino/carneo pulito e concentrato."
+      },
+      "practiceDishIds": ["starred-cedroni-pesce-azzurro-agrumi", "tigullio-dish-5"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Pesa il trancio e calcola l'1% di sale fino (es. 2g per 200g). Distribuiscilo in anticipo (30–45 min per pesce, 1–12h per carni su griglia scoperta in frigo): mai salare 3 minuti prima di cuocere (avresti solo l'acqua estratta in superficie senza il tempo di riassorbirla!).",
+        "intermediateCue": "Salatura 1% o >=40 min prima (dry-brine completo) o istantanea pre-padella; mai nella finestra morta 3–25 min.",
+        "masterTarget": "Dry-brine 1.1% p/p scoperto a +4°C."
+      }
+    },
+    {
+      "id": "skill-05-starch-evo-emulsion",
+      "order": 5,
+      "tier": 2,
+      "title": "Mantecatura Amido–Olio EVO Fuori Fuoco (55–65°C)",
+      "prerequisites": ["skill-02-latent-heat-maillard"],
+      "corePhysicsLaw": "L'amilosio rilasciato dalla semola agisce da colloide protettore attorno alle micro-gocce di Olio EVO frantumate dal salto meccanico, purché sotto i 65°C.",
+      "criticalTempRangeC": [55, 65],
+      "sensoryCheckpoints": {
+        "visual": "Cremina lucida opalescente aggrappata agli spaghetti senza pozza d'acqua né d'olio sul fondo.",
+        "acoustic": "Suono morbido e cremoso ('ciac-ciac' vellutato) durante l'onda.",
+        "olfactory": "Fruttato verde intatto dell'Olio EVO Ligure aggiunto a crudo."
+      },
+      "practiceDishIds": ["starred-cracco-spaghetto-pomodoro-studio", "tigullio-dish-10"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Cuoci la pasta nel 30% di acqua in meno per avere acqua torbida ricca d'amido. Scola 2 min indietro nel sugo, poi TOGLI LA PADELLA DAL FORNELLO, aspetta 30 secondi, versa l'Olio EVO freddo a filo e salta/mescola con forza aggiungendo cucchiaiate d'acqua amidacea tiepida.",
+        "intermediateCue": "Acqua ridotta ad alto amilosio -> ultimi 2 min risottati -> fuori fuoco <65°C + EVO freddo a filo + salto energico.",
+        "masterTarget": "Mantecatura O/W off-heat 60°C · Amilosio ~2g/L · Zero latticini."
+      }
+    },
+    {
+      "id": "skill-06-cold-nut-herb-emulsion",
+      "order": 6,
+      "tier": 2,
+      "title": "Emulsioni Liguri a Freddo (<28°C): Pesto & Salsa di Noci",
+      "prerequisites": ["skill-05-starch-evo-emulsion"],
+      "corePhysicsLaw": "La polifenolossidasi (PPO) del basilico annerisce i fenoli sopra i 30°C in presenza di O2, e oltre i 65°C le proteine di pinoli/noci coagulano slegando l'olio.",
+      "criticalTempRangeC": [10, 28],
+      "sensoryCheckpoints": {
+        "visual": "Verde smeraldo vivo (pesto) o avorio liscio (noci), zero separazione oleosa.",
+        "acoustic": "Rotazione pastosa nel mortaio o impulsi brevi da 2s con bicchiere refrigerato.",
+        "olfactory": "Esplosione fresca di linalolo ed eugenolo senza nota di 'erba bollita'."
+      },
+      "practiceDishIds": ["tigullio-dish-8", "tigullio-dish-9"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Rivesti subito le foglie asciutte con Olio EVO (barriera contro l'ossigeno) e lavora sotto i 28°C (mortaio rotatorio o lame messe 20 min in freezer). Stempera sempre il pesto in una ciotola lontana dai fornelli con 2 cucchiai di acqua di cottura tiepida (<60°C) prima di unire le trofie!",
+        "intermediateCue": "Lavorazione <28°C sotto velo d'EVO; temperaggio in boule fredda con acqua amidacea <60°C.",
+        "masterTarget": "PPO inibita (<28°C + barriera EVO) · Temperaggio fuori fuoco <60°C."
+      }
+    },
+    {
+      "id": "skill-07-marine-myosin-52c",
+      "order": 7,
+      "tier": 2,
+      "title": "Cottura Millimetrica del Pesce (Cuore 48–52°C)",
+      "prerequisites": ["skill-02-latent-heat-maillard", "skill-04-osmotic-dry-brining"],
+      "corePhysicsLaw": "La miosina dei pesci marini a sangue freddo denatura già a 46–52°C: superare i 58–60°C strizza le fibre ed espelle grumi bianchi di albumina coagulata rendendo il filetto stopposo.",
+      "criticalTempRangeC": [48, 54],
+      "sensoryCheckpoints": {
+        "visual": "Sfogliatura a petali lucidi e perlacei al centro; zero schiuma bianca solida sui lati.",
+        "acoustic": "Pelle che scrocchia sotto la punta del coltello.",
+        "olfactory": "Iodio pulito e dolce, zero odore di pesce stracotto."
+      },
+      "practiceDishIds": ["base-single-acciughe-padella-limone", "starred-cedroni-pesce-azzurro-agrumi", "tigullio-dish-3"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Cuoci il filetto per l'80–90% del tempo solo dal lato della pelle premendolo piatto i primi 15 secondi perché non si arricci. Spegni il fuoco quando il centro superiore è ancora leggermente traslucido (48–50°C alla sonda): il calore residuo (carry-over) lo porterà a 52°C perfetti nel piatto.",
+        "intermediateCue": "85% cottura lato pelle + pressione anti-curling 15s; spegni a 49°C per carry-over a 52°C.",
+        "masterTarget": "Unilateral skin sear · Pull @ 49°C -> Rest 52°C · Zero albumina espulsa."
+      }
+    },
+    {
+      "id": "skill-08-egg-differential-coagulation",
+      "order": 8,
+      "tier": 2,
+      "title": "Coagulazione Differenziale delle Uova (62°C -> 70°C)",
+      "prerequisites": ["skill-04-osmotic-dry-brining"],
+      "corePhysicsLaw": "Ovotransferrina (62°C) e proteine del tuorlo (68°C) formano una crema setosa molto prima dell'ovoalbumina (80°C); oltre gli 82°C il reticolo collassa per sineresi liberando acqua e H2S.",
+      "criticalTempRangeC": [62, 72],
+      "sensoryCheckpoints": {
+        "visual": "Onde lucide e cremose ('baveuse'), zero pellicola bruna o porosa sotto.",
+        "acoustic": "Assenza totale di sfrigolio (se frigge la padella supera i 100°C!).",
+        "olfactory": "Nota burrosa-delicata d'uovo fresco, zero odore solforato."
+      },
+      "practiceDishIds": ["base-single-acciughe-padella-limone"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Batti le uova con una forchetta e un pizzico di sale 5 min prima (gli ioni Na+ impediscono alle proteine di stringersi troppo). Cuoci su antiaderente a fiamma minima muovendo continuamente con spatola e togli dal fuoco quando appaiono ancora un filo troppo morbide.",
+        "intermediateCue": "Pre-salatura 5m + forchetta senza schiuma; padella <80°C silenziosa; togli al 90% di rassodamento.",
+        "masterTarget": "Na+ shielding · Coagulazione 65–70°C zero sineresi · Pull anticipato."
+      }
+    },
+    {
+      "id": "skill-09-chlorophyll-pectin-veg",
+      "order": 9,
+      "tier": 2,
+      "title": "Chimica della Clorofilla & Croccantezza delle Pectine",
+      "prerequisites": ["skill-01-knife-mechanics"],
+      "corePhysicsLaw": "Gli acidi organici liberati dalle cellule vegetali sostituiscono Mg2+ nella clorofilla trasformandola in feofitina grigio-oliva se intrappolati da un coperchio o da cotture >7 minuti.",
+      "criticalTempRangeC": [98, 100],
+      "sensoryCheckpoints": {
+        "visual": "Fagiolini, zucchine e bietole di un verde brillante acceso.",
+        "acoustic": "Morso croccante-tenero ('al dente' vegetale).",
+        "olfactory": "Profumo erbaceo fresco senza note sulfuree stagnanti."
+      },
+      "practiceDishIds": ["tigullio-dish-8", "tigullio-dish-3"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Sbianchisci fagiolini, broccoli o erbe verdi in acqua abbondante già bollente e salata (10g/L) SENZA COPERCHIO per 3–5 minuti così gli acidi volatili sfuggono. Aggiungi limone o aceto solo all'ultimo secondo nel piatto, mai in cottura!",
+        "intermediateCue": "Bollitura viva scoperta (dispersione acidi volatili) <=5 min + shock freddo se non serviti subito; acido solo al servizio.",
+        "masterTarget": "Tutela anello Mg2+-clorofilla · Pectine integre · Condimento acido post-cottura."
+      }
+    },
+    {
+      "id": "skill-10-deglazing-pan-sauce",
+      "order": 10,
+      "tier": 3,
+      "title": "Costruzione del Fond, Deglassatura & Riduzione Espressa",
+      "prerequisites": ["skill-03-leidenfrost-inox", "skill-05-starch-evo-emulsion"],
+      "corePhysicsLaw": "I 'sucs' bruni rimasti sull'inox dopo Maillard sono polimeri idrosolubili concentrati di sapore: un liquido freddo/tiepido (vino, acqua, fumetto) li dissolve per shock locale e riducendo si emulsiona fuori fuoco con EVO.",
+      "criticalTempRangeC": [95, 180],
+      "sensoryCheckpoints": {
+        "visual": "Fondo ambrato sull'inox che si scioglie in pochi secondi lasciando l'acciaio pulito e una glassa lucida.",
+        "acoustic": "Vampata sonora di vapore alla versata del liquido che poi rallenta in bolle dense.",
+        "olfactory": "Sfumata alcolica pungente nei primi 15s che vira a profumo rotondo e vinoso."
+      },
+      "practiceDishIds": ["starred-cedroni-pesce-azzurro-agrumi", "tigullio-dish-7"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Tolto il pesce o la carne dall'Inox, se il fondo è dorato (mai nero!), versa subito mezzo bicchiere di vino bianco secco ligure o acqua calda raschiando con cucchiaio di legno. Fai ridurre di due terzi a fiamma viva, spegni e monta con 1 cucchiaio di EVO freddo.",
+        "intermediateCue": "Check colore fond (ambrato = sì, nero = scarta) -> deglassatura -> riduzione 2/3 -> montatura EVO fuori fuoco (che fa già metà del Kitchen Reset!).",
+        "masterTarget": "Dissoluzione sucs su Inox -> riduzione a nappage -> emulsione EVO <65°C."
+      }
+    },
+    {
+      "id": "skill-11-collagen-hydrolysis",
+      "order": 11,
+      "tier": 3,
+      "title": "Idrolisi Lenta del Collagene in Gelatina (Polpo, Totani & Brasati)",
+      "prerequisites": ["skill-07-marine-myosin-52c"],
+      "corePhysicsLaw": "Nei cefalopodi e nei tagli muscolari di fatica il collagene reticolato si contrae a 60°C indurendosi, ma tra 72°C e 88°C in ambiente umido per 45–120 min si idrolizza in gelatina fondente.",
+      "criticalTempRangeC": [75, 88],
+      "sensoryCheckpoints": {
+        "visual": "Liquido di cottura che raffreddandosi gelifica naturalmente; tentacoli o fibre che si tagliano con la forchetta.",
+        "acoustic": "Sobbollizione appena percettibile (1–2 bolle al secondo, mai bollore violento a 100°C).",
+        "olfactory": "Aroma profondo, dolce e avvolgente di mare o ragù ligure."
+      },
+      "practiceDishIds": ["tigullio-dish-7", "tigullio-dish-2"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Col polpo o lo spezzatino dimentica la fretta: tieni la casseruola chiusa a fremito dolcissimo (~85°C, appena una bollicina ogni tanto) finché i rebbi della forchetta entrano senza resistenza, poi lascia intiepidire nel suo stesso liquido per riassorbire gelatina prima dell'eventuale piastratura croccante finale.",
+        "intermediateCue": "Sub-ebollizione coperta 80–88°C in tall_stockpot + raffreddamento parziale nel liquido gelatinoso.",
+        "masterTarget": "Idrolisi collagene 82°C umido · Raffreddamento in brodo · Doppia cottura se piastrato."
+      }
+    },
+    {
+      "id": "skill-12-umami-synergy-zero-dairy",
+      "order": 12,
+      "tier": 3,
+      "title": "Architettura Umami 8× & Improvvisazione Senza Ricetta",
+      "prerequisites": ["skill-06-cold-nut-herb-emulsion", "skill-10-deglazing-pan-sauce"],
+      "corePhysicsLaw": "Il legame simultaneo del glutammato sul sito attivo e dell'IMP/GMP sul sito allosterico del recettore linguale T1R1/T1R3 moltiplica fino a 8 volte il segnale sapido, sostituendo completamente il Parmigiano.",
+      "criticalTempRangeC": [20, 110],
+      "sensoryCheckpoints": {
+        "visual": "Piatto pulito ed essenziale con contrasto visivo morbido/croccante.",
+        "acoustic": "Elemento finale croccante (pinoli/mandorle tostate o briciole dorate all'EVO).",
+        "olfactory": "Persistenza sapida lunga al centro lingua senza pesantezza di grassi saturi."
+      },
+      "practiceDishIds": ["starred-cracco-spaghetto-pomodoro-studio", "base-barca-insalata-mare-ceci"],
+      "verbosityAdaptation": {
+        "noviceGuide": "Quando cucini senza formaggi, abbina sempre 1 ingrediente ricco di Glutammato (pomodoro maturo/concentrato, mezza acciuga sotto sale sciolta nell'olio tiepido, olive taggiasche, funghi) con 1 fonte di Nucleotidi (pesce azzurro, funghi porcini secchi, gamberi, carne) + 1 acido fresco finale.",
+        "intermediateCue": "Formula Zero-Formaggi: [Glutammato] × [IMP/GMP] + [Emulsione EVO/Amido o Semi] + [Goccia Acida finale].",
+        "masterTarget": "Lock allosterico Glu+IMP/GMP · Bilanciamento 5 assi sensoriali autonomo."
+      }
+    }
+  ],
+  "ruhlmanRatios": [
+    {
+      "id": "ratio-vinaigrette-ligure",
+      "name": "Emulsione a Freddo / Citronette Ligure",
+      "parts": [
+        { "component": "Olio Extra Vergine di Oliva Ligure", "weightRatio": 3 },
+        { "component": "Fase Acida (Succo di limone o Aceto di vino)", "weightRatio": 1 },
+        { "component": "Sale fino marino (opz. punta di senape/acciuga)", "weightRatio": 0.06 }
+      ],
+      "physicsRule": "Sbattere prima sale e acido (il sale non si scioglie nell'olio!), poi versare l'EVO a filo o agitare in vasetto chiuso per 15s creando un'emulsione temporanea O/W.",
+      "zeroDairyNote": "Aggiungendo 5g di pinoli pestati o mezza acciuga dissalata si ottiene una salsa stabile e cremosa senza yogurt né maionese."
+    },
+    {
+      "id": "ratio-farinata-ligure",
+      "name": "Farinata di Ceci Tradizionale Genovese",
+      "parts": [
+        { "component": "Farina di ceci macinata fine", "weightRatio": 1 },
+        { "component": "Acqua naturale a temperatura ambiente", "weightRatio": 3 },
+        { "component": "Olio Extra Vergine di Oliva (in teglia + superficie)", "weightRatio": 0.35 },
+        { "component": "Sale marino fino", "weightRatio": 0.036 }
+      ],
+      "physicsRule": "Riposo obbligatorio 4–6h a temperatura ambiente schiumando le saponine: idrata completamente le globuline del cece evitando sedimentazione farinosa sul fondo del testo.",
+      "zeroDairyNote": "Naturalmente 100% priva di glutine e latticini; cuocere su testo stagnato/teglia già unta (mai a secco!) a massima temperatura forno."
+    },
+    {
+      "id": "ratio-pasta-acqua-pansotti",
+      "name": "Sfoglia Ligure Bianca (Pansotti, Mandilli, Trofie)",
+      "parts": [
+        { "component": "Farina di grano tenero tipo 0 / Semola rimacinata", "weightRatio": 2 },
+        { "component": "Acqua tiepida (~35°C)", "weightRatio": 1 },
+        { "component": "Vino bianco secco ligure (Pigato/Vermentino)", "weightRatio": 0.08 }
+      ],
+      "physicsRule": "L'etanolo e la debole acidità del vino modulano i ponti disolfuro della gliadina/glutenina, permettendo di tirare una sfoglia elastica, sottilissima e resistente in bollitura.",
+      "zeroDairyNote": "Abbinata al ripieno ligure 'di magro' (borragine/bietole + patata schiacciata + mandorle pelate + maggiorana)."
+    },
+    {
+      "id": "ratio-pasta-fresca-uovo",
+      "name": "Pasta Fresca all'Uovo Classica",
+      "parts": [
+        { "component": "Farina 00 + Semola di grano duro", "weightRatio": 3 },
+        { "component": "Uova intere a temperatura ambiente", "weightRatio": 2 }
+      ],
+      "physicsRule": "I lipidi e la lecitina del tuorlo lubrificano la maglia glutinica riducendo l'assorbimento d'acqua in cottura; riposo di 30 min avvolta per rilassamento viscoelastico.",
+      "zeroDairyNote": "100% compatibile col profilo Zero Formaggi (le uova sono ammesse)."
+    },
+    {
+      "id": "ratio-dry-brine",
+      "name": "Dry-Brining Osmotico di Precisione (Carne & Pesce)",
+      "parts": [
+        { "component": "Filetto di pesce o taglio di carne", "weightRatio": 100 },
+        { "component": "Sale marino fino pesato", "weightRatio": 1.1 }
+      ],
+      "physicsRule": "Concentrazione stechiometrica 1,1% p/p: salatura perfetta dal bordo al cuore senza mai eccedere e massima ritenzione idrica delle miofibrille.",
+      "zeroDairyNote": "Esalta la succosità naturale eliminando il bisogno di salse grasse al burro/panna."
+    },
+    {
+      "id": "ratio-wet-brine-express",
+      "name": "Salamoia Liquida Rapida per Pesce Bianco e Pollame",
+      "parts": [
+        { "component": "Acqua fredda", "weightRatio": 100 },
+        { "component": "Sale marino", "weightRatio": 5 }
+      ],
+      "physicsRule": "Soluzione al 5%: bastano 15–20 minuti per filetti di orata/merluzzo e 30–45 minuti per petto di pollo, seguiti da asciugatura rigorosa.",
+      "zeroDairyNote": "Garantisce carne bianchissima, succosa e mai fibrosa."
+    },
+    {
+      "id": "ratio-risottatura-pasta",
+      "name": "Bollitura Concentrata ad Alto Amilosio (Mantecatura)",
+      "parts": [
+        { "component": "Acqua leggermente salata (5g/L)", "weightRatio": 3.5 },
+        { "component": "Pasta secca trafilata al bronzo", "weightRatio": 1 }
+      ],
+      "physicsRule": "Usare 3,5 parti d'acqua invece delle classiche 10 triplica la concentrazione di amido in soluzione (~2,2 g/L), trasformando l'acqua di cottura in un emulsionante naturale potente.",
+      "zeroDairyNote": "Il segreto fisico degli spaghetti cremosissimi con solo pomodoro/aglio e Olio EVO."
+    },
+    {
+      "id": "ratio-pan-sauce-deglaze",
+      "name": "Salsa Espressa per Deglassatura (Pan Sauce)",
+      "parts": [
+        { "component": "Liquido aromatico (Vino bianco secco + acqua/fumetto)", "weightRatio": 3 },
+        { "component": "Olio EVO Ligure freddo da montare fuori fuoco", "weightRatio": 1 },
+        { "component": "Succo di limone fresco finale", "weightRatio": 0.25 }
+      ],
+      "physicsRule": "Ridurre il liquido sul fond fino a 1/3 del volume iniziale (concentrazione gelatina/zuccheri), spegnere e montare a frusta con l'EVO freddo sotto i 65°C.",
+      "zeroDairyNote": "Sostituisce la classica 'monter au beurre' francese con un'emulsione mediterranea lucida e leggerissima."
+    }
+  ],
+  "umamiSynergyCatalog": {
+    "glutamateSources": [
+      { "key": "acciughe_salate", "label": "Acciughe sotto sale liguri dissalate (1 filetto sciolto a <100°C)", "freeGlutamateMg100g": 1200 },
+      { "key": "concentrato_pomodoro", "label": "Concentrato / Pomodori datterini maturi ridotti", "freeGlutamateMg100g": 240 },
+      { "key": "olive_capperi", "label": "Olive Taggiasche & Capperi sotto sale sciacquati", "freeGlutamateMg100g": 180 },
+      { "key": "funghi_aglio_arrosto", "label": "Funghi coltivati / Aglio dolce infuso nell'EVO", "freeGlutamateMg100g": 180 }
+    ],
+    "nucleotideSources": [
+      { "key": "pesce_azzurro_imp", "label": "Sgombro, Palamita, Acciughe fresche o Tonno (ricchissimi di IMP)", "nucleotideType": "IMP", "concentrationMg100g": 280 },
+      { "key": "porcini_secchi_gmp", "label": "Funghi Porcini secchi liguri/acqua di rinvenimento filtrata (ricchi di GMP)", "nucleotideType": "GMP", "concentrationMg100g": 150 },
+      { "key": "crostacei_molluschi_imp", "label": "Gamberi, Cozze, Vongole o Fumetto di lische (IMP + succinato)", "nucleotideType": "IMP", "concentrationMg100g": 190 },
+      { "key": "carne_fondo_imp", "label": "Manzo, Pollo o Coniglio rosolato (IMP)", "nucleotideType": "IMP", "concentrationMg100g": 210 }
+    ]
+  },
+  "cookingSosTrees": {
+    "emulsion_broken": {
+      "id": "emulsion_broken",
+      "symptomLabel": "Salsa slegata / Pesto o mantecatura separata con pozza d'olio",
+      "triggers": ["slegat", "separat", "impazzit", "stracciat", "pozza d'olio", "olio sul fondo", "emulsione"],
+      "molecularCause": "Superamento dei 68–70°C (denaturazione delle proteine emulsionanti e crollo della viscosità dell'amido) oppure frazione volumetrica d'olio >74% per evaporazione eccessiva della fase acquosa.",
+      "rescueIn30Seconds": [
+        "1. Sposta IMMEDIATAMENTE la padella fuori dalla zona calda.",
+        "2. Metti 1 cucchiaio d'acqua tiepida amidacea (o 1 cubetto di ghiaccio piccolo / 1 cucchiaio d'acqua fredda) in una ciotolina pulita.",
+        "3. Trasferisci la salsa/pasta fuori fuoco versandola sopra quel cucchiaio d'acqua e sbatti/salta vigorosamente per 20 secondi: l'abbassamento a <60°C e la nuova fase continua acquosa riformano subito la micro-emulsione."
+      ],
+      "doNotDo": "NON accendere di nuovo il fuoco per 'far ritirare l'olio': evaporeresti l'ultima goccia d'acqua peggiorando la separazione!",
+      "nextTimeCalibration": "Spegni il fornello 30 secondi prima di unire EVO/pesto e tieni sempre da parte mezzo bicchiere di acqua di cottura."
+    },
+    "fish_meat_boiling": {
+      "id": "fish_meat_boiling",
+      "symptomLabel": "Pesce o carne grigi che bollono nella propria acqua invece di rosolare",
+      "triggers": ["bolle", "bollito", "tira fuori acqua", "fa acqua", "grigio", "non rosola", "pallido", "lesso"],
+      "molecularCause": "Crollo della temperatura superficiale della padella sotto i 100–115°C per sovraffollamento (troppi grammi freddi rispetto alla capacità termica del metallo) o mancata asciugatura superficiale (2.260 J/g rubati dall'acqua).",
+      "rescueIn30Seconds": [
+        "1. Togli SUBITO i pezzi di pesce/carne su un piatto caldo con una pinza (altrimenti cuoceranno diventando duri prima che l'acqua evapori!).",
+        "2. Alza la potenza (entro i limiti della pentola: max 6/9 se PTFE, 8/9 se Inox/Ferro) e fai evaporare/ridurre il liquido in padella finché non sparisce l'acqua.",
+        "3. Rimetti metà dei pezzi ben distanziati per soli 30–45 secondi per lato solo per creare la crosticina esterna, poi unisci i succhi ridotti fuori fuoco."
+      ],
+      "doNotDo": "NON lasciare la carne o il pesce in padella aspettando che tutta la pozza d'acqua evapori: porteresti il cuore oltre i 75°C ottenendo suola di scarpa!",
+      "nextTimeCalibration": "Tampona con carta assorbente e dividi la cottura in 2 turni separati."
+    },
+    "food_stuck_to_pan": {
+      "id": "food_stuck_to_pan",
+      "symptomLabel": "Filetto di pesce, carne o uovo incollato al fondo della padella",
+      "triggers": ["attaccat", "incollat", "strappa", "pelle rimasta", "si rompe", "non si stacca"],
+      "molecularCause": "Legami chimici covalenti/coordinativi tra i gruppi tiolici/amminici delle proteine crude e gli atomi metallici dell'acciaio (padella troppo fredda sotto la soglia di Leidenfrost ~193°C, oppure tentativo di girare troppo presto prima che la crosta di Maillard si irrigidisca).",
+      "rescueIn30Seconds": [
+        "1. FERMATI: non forzare con la spatola o strapperai tutte le fibre.",
+        "2. Se non sta bruciando (niente fumo acre), attendi altri 30–40 secondi: completando la coagulazione/Maillard le proteine si contraggono e mollano spontaneamente il metallo.",
+        "3. Se è già cotto e ancora bloccato, spegni il fuoco, copri con un coperchio per 45 secondi o fai scivolare 1 cucchiaino d'acqua lungo il bordo: il vapore condensa sotto la crosta staccandola intatta."
+      ],
+      "doNotDo": "NON raschiare violentemente e NON usare mai utensili metallici se sei su PTFE o rame stagnato!",
+      "nextTimeCalibration": "Su Inox esegui sempre il test della goccia di Leidenfrost prima di mettere l'olio; col pesce premi delicatamente 15s e poi non toccare per 2 minuti."
+    },
+    "bitter_burnt_fond": {
+      "id": "bitter_burnt_fond",
+      "symptomLabel": "Aglio, pinoli o fondo di cottura diventato scuro/nero e amaro",
+      "triggers": ["bruciat", "amaro", "nero", "aglio scuro", "fumo", "carbonizzat"],
+      "molecularCause": "Pirolisi oltre i 165–180°C dei composti solforati dell'aglio (allicina/solfuri) o degradazione avanzata degli zuccheri in polimeri carboniosi amari e acroleina.",
+      "rescueIn30Seconds": [
+        "1. Togli subito la padella dal fuoco e trasferisci immediatamente con una pinza/schiumarola solo gli ingredienti sani in una ciotola o in una seconda padella pulita (lasciando indietro l'olio e i pezzetti neri!).",
+        "2. NON versare vino o acqua nella padella bruciata: scioglieresti l'amaro contaminando l'intero piatto.",
+        "3. Ripandi nella padella pulita a fuoco dolce con 1 cucchiaio d'Olio EVO nuovo e una goccia di limone/erbe fresche."
+      ],
+      "doNotDo": "MAI deglassare un fondo nero carbonizzato (deglassa solo fondi color ambra/nocciola!).",
+      "nextTimeCalibration": "Avvia sempre l'aglio schiacciato partendo da padella e olio FREDDI a fiamma minima (<110°C)."
+    },
+    "grey_mushy_greens": {
+      "id": "grey_mushy_greens",
+      "symptomLabel": "Verdure verdi (fagiolini, zucchine, erbette) diventate grigio-oliva e molli",
+      "triggers": ["grig", "oliva", "spente", "sfatte", "molli", "scure", "clorofilla"],
+      "molecularCause": "Feofitinizzazione della clorofilla (gli acidi cellulari o il limone aggiunto presto hanno sostituito lo ione Mg2+ centrale con 2H+) unita a beta-eliminazione prolungata delle pectine della parete cellulare.",
+      "rescueIn30Seconds": [
+        "1. Scola all'istante e immergi per 20 secondi in acqua freddissima per bloccare la cottura residua.",
+        "2. Il colore della clorofilla ormai convertita in feofitina è chimicamente irreversibile, ma puoi salvare il piatto trasformando la texture: frulla metà o tutto a freddo con foglie di basilico/prezzemolo crudo, 1 cucchiaio d'EVO e pinoli ottenendo una crema verde brillante vellutata!",
+        "3. Aggiungi crostini o mandorle tostate sopra per restituire il contrasto croccante perduto."
+      ],
+      "doNotDo": "NON continuare a ripassarle in padella sperando che si asciughino.",
+      "nextTimeCalibration": "Bollire senza coperchio per max 4–5 min e aggiungere il limone solo a tavola."
+    },
+    "tough_rubbery_protein": {
+      "id": "tough_rubbery_protein",
+      "symptomLabel": "Polpo/totano gommoso oppure petto/filetto diventato asciutto e stopposo",
+      "triggers": ["gommos", "duro", "stoppos", "asciutt", "secco", "fibros"],
+      "molecularCause": "Due cause opposte: (A) su filetti magri/pesce hai superato i 62–72°C spremendo fuori l'acqua; (B) su polpo/calamari grandi/spezzatino hai cotto nella 'terra di mezzo' (5–25 min) dove l'actina è contratta ma il collagene non si è ancora sciolto in gelatina.",
+      "rescueIn30Seconds": [
+        "1. Se è un FILETTO/PETTO magro già cotto: togli subito dal calore, taglia a fettine sottili rigorosamente CONTROFIBRA (accorciando meccanicamente i fasci muscolari a 3–4 mm) e nappa subito con un'emulsione tiepida acqua-EVO-limone (l'olio lubrifica il palato sostituendo i succhi persi).",
+        "2. Se è POLPO / SPEZZATINO in umido: NON è troppo cotto, è cotto troppo poco! Aggiungi mezzo bicchiere d'acqua calda, copri col coperchio e prosegui a fremito dolcissimo (~85°C) per altri 25–35 minuti finché il collagene cede."
+      ],
+      "doNotDo": "Non alzare la fiamma sul polpo gommoso (a 100°C violenti si strappa fuori e resta duro dentro).",
+      "nextTimeCalibration": "Calamari/totani: o lampo <90 secondi ad altissimo calore, o lento >35 minuti in umido; mai 8–15 minuti!"
+    }
+  },
+  "fridgeToTechniqueTemplates": [
+    {
+      "id": "frame-quick-fish-pan-emulsion",
+      "matchesCategory": "seafood",
+      "titleTemplate": "Scottatura Millimetrica Marina & Emulsione Espressa Agrumata",
+      "minMinutes": 10,
+      "preferredMaterials": ["aluminum_ptfe", "stainless_triply_18_10", "carbon_steel_seasoned"],
+      "stepsTemplate": [
+        "Osmosi & Taglio: tampona perfettamente {main} e sala all'1%; prepara la linea aromatica ({aromatics}).",
+        "Termica Calibrata ({panLabel}): cuoci su un velo di EVO senza affollare la padella fino a 52°C al cuore.",
+        "Chiusura Fuori Fuoco (<60°C): spegni, unisci {acidOrVeg} e monta un cucchiaio d'acqua tiepida con EVO crudo creando una salsa lucida."
+      ]
+    },
+    {
+      "id": "frame-starch-risottatura-zero-dairy",
+      "matchesCategory": "pasta_grain",
+      "titleTemplate": "Risottatura ad Alto Amilosio & Sinergia Umami Ligure",
+      "minMinutes": 14,
+      "preferredMaterials": ["stainless_triply_18_10", "aluminum_ptfe"],
+      "stepsTemplate": [
+        "Base Liposolubile (<110°C): infondi dolcemente nell'EVO freddo gli aromi e la base sapida ({aromatics}) senza mai bruciare.",
+        "Concentrazione Amido: cuoci {main} in acqua ridotta (3,5:1), scola 2 min al dente nella padella con {secondary} e lega con acqua amidacea.",
+        "Mantecatura O/W (<65°C): fuori dal fornello, incorpora EVO crudo a filo saltando energicamente e completa con nota croccante/fresca."
+      ]
+    },
+    {
+      "id": "frame-cold-boat-osmotic-bowl",
+      "matchesCategory": "cold_cambusa",
+      "titleTemplate": "Insalata Scientifica da Cambusa a Drenaggio Osmotico",
+      "minMinutes": 7,
+      "preferredMaterials": ["stainless_aisi_316_marine", "borosilicate_glass"],
+      "stepsTemplate": [
+        "Drenaggio: sciacqua e asciuga {main} per rimuovere liquidi ad alta forza ionica; taglia netto {secondary}.",
+        "Citronette 3:1: emulsiona a parte 3 parti di Olio EVO con 1 parte di limone/aceto per chelare i minerali e proteggere dall'ossidazione.",
+        "Assemblaggio Anti-Rammollimento: condisci la matrice e tieni eventuali elementi secchi/croccanti separati fino al servizio."
+      ]
+    },
+    {
+      "id": "frame-veg-protein-saute-deglaze",
+      "matchesCategory": "meat_or_veg",
+      "titleTemplate": "Rosolatura di Maillard & Deglassatura Mediterranea",
+      "minMinutes": 15,
+      "preferredMaterials": ["stainless_triply_18_10", "cast_iron_seasoned", "carbon_steel_seasoned", "aluminum_ptfe"],
+      "stepsTemplate": [
+        "Asciugatura Anti-Vapore: porta {main} a superficie asciutta e taglia {secondary} a sezioni uniformi.",
+        "Rosolatura in Turni ({panLabel}): dora sopra i 155°C senza sovrapporre i pezzi; riposa fuori fuoco per rilassare le fibre.",
+        "Pan Sauce Veloce: sfuma il fondo ambrato con liquido aromatico, riduci di 2/3 e nappa montando con EVO freddo."
+      ]
+    }
+  ]
+}
