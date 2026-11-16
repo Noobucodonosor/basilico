@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADR) & Master Task Backlog — Basilico
 
-Questa cartella raccoglie gli **Architecture Decision Records (ADR)** e il **Backlog Operativo** del progetto **Basilico — Sistema Domestico, Nutrizionale, Gastronomico e Catalogo Offerte di Rapallo (GE)** (`Noobucodonosor/basilico`), consolidando le decisioni architetturali, di sicurezza/hardening, di interfaccia utente, di fedeltà territoriale dei dati e l'evoluzione modulare **Bottom-Up a 6 Stanze Principali**.
+Questa cartella raccoglie gli **Architecture Decision Records (ADR)** e il **Backlog Operativo** del progetto **Basilico — Sistema Domestico, Nutrizionale, Gastronomico e Catalogo Offerte di Rapallo (GE)** (`Noobucodonosor/basilico`), consolidando le decisioni architetturali, di sicurezza/hardening, di interfaccia utente, di fedeltà territoriale dei dati e l'evoluzione modulare **Bottom-Up fino al Motore Causale "Le 5 Anime" sui 3 Ritmi e 7 Stanze dell'Atlante**.
 
 ---
 
@@ -22,10 +22,11 @@ Questa cartella raccoglie gli **Architecture Decision Records (ADR)** e il **Bac
 | **[ADR-0012](./0012-zero-waste-whole-pack-meal-planner-and-multi-store-shopping-list.md)** | **Milestone 6 (Stanza 6):** Pianificatore Settimanale "Neo-Dieta" a Confezioni Intere Zero-Spreco & Lista della Spesa Smart Multi-Negozio a Rapallo | Accettato | **P1 — Alta** | Direttore di Prodotto (@Noobucodonosor) |
 | **[ADR-0013](./0013-product-realism-culinary-granularity-and-cross-room-coherence.md)** | **Maturazione Prodotto Finito (Stanze 1–6):** Realismo Prezzi/Domini, Conversione FAO Omega-3 CREA, Ricettario & Matcher Rigoroso, ROI Pentole/Scontrini & Solver Dieta Anti-Monotonia | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
 | **[ADR-0014](./0014-ai-native-product-engineering-specs-evals-agentation-and-board.md)** | **Stack AI-Native Product Engineering:** Living Specs (`specs/`), Domain Evals (`evals/`), Visual Point-to-Agent (`Agentation`) & GitHub State Machine | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
+| **[ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md)** | **Basilico 2.0 ("Le 5 Anime"):** Motore Causale Dual-Layer, Navigazione sui "3 Ritmi" (`⚡ Oggi` Default), Separazione Stanza 4 (`Officina Cucina`) / Stanza 7 (`Chimica Casa/Barca`) & Chat Ibrida Grounded col Maestro | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
 
 ---
 
-## Diagramma Architetturale Bottom-Up del Sistema (6 Stanze Principali)
+## Diagramma Architetturale Bottom-Up del Sistema (3 Ritmi · 5 Anime · 7 Stanze dell'Atlante)
 
 ```mermaid
 flowchart BT
@@ -33,31 +34,44 @@ flowchart BT
     S1["14+ Negozi & Botteghe Rapallo · Volantini & Offerte Live/Cache/Seed\n5 Domini Chiusi (Food / Detergenza / Pentole / Igiene / Pet)\nPrezzo €/kg Sgocciolato · Storico 'È un vero sconto?' · Profilo Esclusioni"]
   end
 
-  subgraph L2["LIVELLO 2 (ADR-0008) — Stanza 2: Scienza & CREA"]
-    S2["832 Alimenti CREA × 26.622 Valori in 7 Sezioni Complete\nRicalcolo 100g Edibili/Lordi/LARN · Switch Crudo↔Cotto (Y)\nPonte Head-Noun Offerta↔CREA · Classifica 'Nutrienti per € Edibili'"]
+  subgraph L2["LIVELLO 2 (ADR-0008 & ADR-0015) — Stanza 2: Scienza & CREA (Fisiologia Cotta)"]
+    S2["832 Alimenti CREA × 26.622 Valori + nutritionPhysiologyService\n24+ Nutrienti Post-Cottura (Ritenzione USDA) · Biodisponibilità Ca/Fe · RS3 Barca\nPonte Head-Noun Offerta↔CREA · Classifica 'Nutrienti per € Edibili'"]
   end
 
-  subgraph L3["LIVELLO 3 (ADR-0009 & ADR-0010) — Stanze 4 & 5: Inventario Fisico"]
-    S5["Stanza 5: Dispensa & Scontrini\nQuadratura al Centesimo -> Prezzi Fuori Offerta\n3 Luoghi (Secca / Frigo / Barca) + Orologio T_open Freschi Aperti"]
-    S4["Stanza 4: Cucina, Pentole & Pulizia\nPiano Cottura (Gas/Induzione) · Pentole & ROI Piatti Sbloccati\nProtocollo Chimico 'Kitchen Reset' + Offerte Tigotà/PiùMe"]
+  subgraph L3["LIVELLO 3 (ADR-0009, ADR-0010 & ADR-0015) — Stanze 4, 5 & 7: Fisica, Dispensa & Chimica"]
+    S5["Stanza 5: Dispensa, Scontrini & VaR_48h\nQuadratura al Centesimo -> lineTotalEuro & Prezzi Fuori Offerta\n3 Luoghi (Secca / Frigo / Barca) · Orologio T_open · Swipe Check 5s"]
+    S4["Stanza 4: Officina Cucina (Fornelli, Pentole, Lame)\ncookwarePhysicsEngine (Diffusività/Inerzia C_A, Batching, Blocchi P0 PTFE/Sn)\nROI Piatti Sbloccati · TCO Pentole · Contenitori AISI 316 · Ponte Kitchen Reset"]
+    S7["Stanza 7: Chimica & Cura della Casa/Barca\nhomeChemistryService (8 Sporchi × Superfici × Sinner · Pietre Liguri pH>=6)\nAcqua Rapallo 14-22 °f · Kit 7 Pilastri · Guardie P0 · €/ciclo Tigotà/PiùMe"]
   end
 
-  subgraph L4["LIVELLO 4 (ADR-0011) — Stanza 3: Ricette, Ristoranti & Fornelli"]
-    S3["Ricette Single + 23/32 Ristoranti Tigullio con Menu Verificato (368 Piatti, 1.797 BOM) + Stellati\nCosto Porzione Pura vs Cassa Reale · Arbitraggio · Analisi 80/20\nModalità Fornelli 'Science & Cooking' + Timer + Quaderno Lab"]
+  subgraph L4["LIVELLO 4 (ADR-0011 & ADR-0015) — Stanza 3: Ricette, Ristoranti GE & Accademia"]
+    S3["Ricette Single + Ristoranti Verificati Provincia GE + Stellati (BOM + Arbitraggio)\nculinaryAcademyService (12 Competenze, Ratios, Umami 8x Zero-Formaggi)\nSOS Fornelli 30s · Frigo->Tecnica · Quaderno Lab 1-Tap"]
   end
 
-  subgraph L5["LIVELLO 5 (ADR-0012) — Stanza 6: Pianificatore & Lista Spesa"]
-    S6["6 Modelli 'Neo-Dieta' · Giorni Barca / Terra / Fuori\nPriorità Freschi Aperti + Concatenazione Confezioni Intere Zero-Spreco\nSimulatore 1 vs 2 vs 3 Negozi Rapallo · Modalità 'In Corsia' · Export"]
+  subgraph L5["LIVELLO 5 (ADR-0012 & ADR-0015) — Stanza 6: Pianificatore Adattivo & Economia Spesa"]
+    S6["6 Modelli 'Neo-Dieta' · Giorni Barca/Terra · Coaching Adattivo Non-Punitivo\nhouseholdEconomicsService (Costo Pieno C_full, Shadow Price w_t €/h, Laspeyres)\nSimulatore Tappe Rapallo €/h · Concatenazione Zero-Spreco · Modalità 'In Corsia'"]
+  end
+
+  subgraph L6["LIVELLO 6 (ADR-0015) — I 3 Ritmi & Basilico Maestro Ibrido Grounded"]
+    M0["⚡ Ritmo 1: Oggi (Co-pilota Default: Preset Rapidi + 3 Card Pareto 5 Anime + SOS)\n🧭 Ritmo 2: Regia Settimanale (4 Passi) · 🎓 Ritmo 3: Accademia & Atlante (7 Stanze)\n💬 MaestroDrawer (maestroCoachService: Guardie P0 + LLM Read-Only / Locale Deterministico)"]
   end
 
   S1 --> S2
   S1 --> S5
   S1 --> S4
+  S1 --> S7
   S2 --> S3
   S5 --> S3
   S4 --> S3
+  S7 -. "Kitchen Reset" .-> S4
   S3 --> S6
   S5 --> S6
+  S2 --> M0
+  S3 --> M0
+  S4 --> M0
+  S5 --> M0
+  S6 --> M0
+  S7 --> M0
 ```
 
 ---
@@ -99,3 +113,9 @@ flowchart BT
 | **TASK-SWARM-01** | `#36` | [ADR-0013](./0013-product-realism-culinary-granularity-and-cross-room-coherence.md) / [ADR-0014](./0014-ai-native-product-engineering-specs-evals-agentation-and-board.md) | Risoluzione Integrale 39 Bug Verificati dallo Swarm (10 P0, 20 P1, 9 P2) sulle 6 Stanze: Protezione Cache/Input, Purezza Domini/CREA, Identità Zero-Formaggi & Chimica Rame/Gres, Persistenza Piano 21/21 & Hardening Evals | `server/services/*.js`, `server/routes/*.js`, `data/seed/{recipes_and_dishes,cookware_archetypes,cleaning_chemistry}.json`, `src/App.jsx`, `src/components/**`, `evals/run_evals.mjs`, `tests/**` | **P0 — Critica** | Team |
 | **TASK-M5-03** | `#37` | [ADR-0006](./0006-honest-data-integrity-no-synthetic-fields.md) / [ADR-0011](./0011-recipes-tigullio-restaurants-arbitrage-and-science-cooking-coach.md) | Acquisizione Menu Pubblici Reali con Prezzi nel Tigullio (6 nuovi locali verificati, +104 piatti reali → 23/32 ristoranti attivi, 368 piatti, 1.797 BOM) e Filtro Esclusivo Ristoranti con Listino Verificato in Stanza 3 | `data/seed/recipes_and_dishes.json`, `data/seed/restaurants_tigullio.json`, `server/services/recipeAndArbitrageService.js`, `server/routes/recipes.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `specs/03-ricette.spec.md`, `evals/run_evals.mjs`, `tests/**` | **P1 — Alta** | Team |
 | **TASK-M5-04** | `#38` | [ADR-0006](./0006-honest-data-integrity-no-synthetic-fields.md) / [ADR-0011](./0011-recipes-tigullio-restaurants-arbitrage-and-science-cooking-coach.md) | Espansione Ristoranti Verificati all'intera Provincia di Genova (GE, Zero Pizzerie) con Menu Pubblici Prezzati Reali e Filtro per Zone/Comuni in Stanza 3 | `data/seed/recipes_and_dishes.json`, `data/seed/restaurants_tigullio.json`, `server/services/recipeAndArbitrageService.js`, `server/routes/recipes.js`, `src/components/recipes/RecipesAndRestaurantsView.jsx`, `specs/03-ricette.spec.md`, `evals/run_evals.mjs`, `tests/**` | **P1 — Alta** | Team |
+| **TASK-V2-01** | `#39` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Fix P0 Detergenza/Inox/Tigotà e Motore Chimico Universale Casa/Barca (`homeChemistryService`) | `server/services/qualityLensService.js`, `server/services/domainClassifier.js`, `data/seed/home_chemistry_matrix.json`, `server/services/homeChemistryService.js`, `server/routes/homeChemistry.js`, `tests/unit/home_chemistry_v2.test.js` | **P0 — Critica** | Team |
+| **TASK-V2-02** | `#40` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Motore Termofisico Strumenti (`cookwarePhysicsEngine`) e Accademia Culinaria / SOS Fornelli (`culinaryAcademyService`) | `data/seed/materials_physics.json`, `data/seed/cookware_archetypes.json`, `data/seed/culinary_academy.json`, `server/services/cookwarePhysicsEngine.js`, `server/services/culinaryAcademyService.js`, `server/routes/academy.js`, `tests/unit/cookware_and_academy_v2.test.js` | **P0 — Critica** | Team |
+| **TASK-V2-03** | `#41` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Motore Fisiologia del Pasto Cotto (24+ nutrienti, ritenzione USDA, biodisponibilità Ca/Fe, RS3) e Coaching Adattivo (`nutritionPhysiologyService`) | `data/seed/nutrition_physiology_rules.json`, `server/services/nutritionPhysiologyService.js`, `server/routes/nutritionCoach.js`, `tests/unit/nutrition_physiology_v2.test.js` | **P1 — Alta** | Team |
+| **TASK-V2-04** | `#42` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Economia Domestica (`VaR_48h`, `w_t`, TCO, `€/h`) e Motore Ibrido `maestroCoachService` (Oggi Pareto + Chat Maestro Grounded) | `server/services/pantryService.js`, `server/services/householdEconomicsService.js`, `server/services/maestroCoachService.js`, `server/routes/maestro.js`, `tests/unit/economics_and_maestro_v2.test.js` | **P0 — Critica** | Team |
+| **TASK-V2-05** | `#43` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Integrazione API Backend, UI "3 Ritmi" (`⚡ Oggi`, `Regia Settimanale`, `Accademia & Atlante` a 7 Stanze) e `MaestroDrawer` Conversazionale | `server/index.js`, `server/services/recipeAndArbitrageService.js`, `src/App.jsx`, `src/components/Header.jsx`, `src/components/RoomNavigation.jsx`, `src/components/maestro/**`, `src/components/chemistry/HomeChemistryView.jsx`, `src/components/kitchen/KitchenCareView.jsx` | **P1 — Alta** | Team |
+| **TASK-V2-06** | `#44` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Estensione Suite `Domain Evals` (`npm run eval`), Test E2E/Integrazione e Verifica Pre-Release | `evals/run_evals.mjs`, `scripts/board.mjs`, `tests/api/**`, `tests/e2e/**` | **P0 — Critica** | Team |

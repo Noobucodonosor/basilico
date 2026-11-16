@@ -24,9 +24,10 @@ const ROOMS = [
   { room: 1, key: 'room-1-negozi', name: 'Negozi & Offerte Rapallo', spec: '01-negozi.spec.md', issue: 28 },
   { room: 2, key: 'room-2-crea', name: 'Scienza & CREA', spec: '02-crea.spec.md', issue: 29 },
   { room: 3, key: 'room-3-ricette', name: 'Ricette, Ristoranti & Fornelli', spec: '03-ricette.spec.md', issue: 30 },
-  { room: 4, key: 'room-4-cucina', name: 'Cucina, Pentole & Pulizia', spec: '04-cucina.spec.md', issue: 31 },
+  { room: 4, key: 'room-4-cucina', name: 'Officina Cucina (Fornelli, Pentole, Lame)', spec: '04-cucina.spec.md', issue: 31 },
   { room: 5, key: 'room-5-dispensa', name: 'Dispensa & Scontrini', spec: '05-dispensa.spec.md', issue: 32 },
-  { room: 6, key: 'room-6-pianificatore', name: 'Pianificatore & Lista Spesa', spec: '06-pianificatore.spec.md', issue: 33 }
+  { room: 6, key: 'room-6-pianificatore', name: 'Pianificatore & Lista Spesa', spec: '06-pianificatore.spec.md', issue: 33 },
+  { room: 7, key: 'room-7-chimica', name: 'Chimica & Cura della Casa/Barca', spec: '07-chimica-casa.spec.md', issue: 39 }
 ];
 
 function extractDirectorNotes(specFilename) {
@@ -46,7 +47,7 @@ function fetchGithubRoomIssues() {
   try {
     const out = execFileSync(
       'gh',
-      ['issue', 'list', '--search', '[ROOM-', '--state', 'all', '--limit', '20', '--json', 'number,title,state,labels'],
+      ['issue', 'list', '--state', 'all', '--limit', '50', '--json', 'number,title,state,labels'],
       { cwd: ROOT_DIR, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 4500 }
     );
     const parsed = JSON.parse(out);

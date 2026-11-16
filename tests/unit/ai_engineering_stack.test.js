@@ -45,9 +45,9 @@ test('ADR-0014: All 6 Living Specs exist and follow the 4-section human contract
   }
 });
 
-test('ADR-0014: Domain & Common-Sense Evals Suite passes 100% across all 6 Rooms', async () => {
+test('ADR-0014: Domain & Common-Sense Evals Suite passes 100% across all Rooms', async () => {
   const scorecard = await runAllDomainEvals({ quiet: true });
-  assert.equal(scorecard.suites.length, 6, 'Must evaluate all 6 Rooms');
+  assert.ok(scorecard.suites.length >= 6, 'Must evaluate all Rooms (at least 6)');
   assert.equal(scorecard.allPassed, true, `Expected 100% eval score, got ${scorecard.overallScorePct}%`);
   assert.equal(scorecard.overallScorePct, 100);
 });

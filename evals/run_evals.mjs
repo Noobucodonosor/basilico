@@ -41,6 +41,18 @@ import {
 } from '../server/services/receiptService.js';
 import { MealPlannerService, mealPlannerService } from '../server/services/mealPlannerService.js';
 import { ShoppingListService } from '../server/services/shoppingListService.js';
+// ADR-0015 / TASK-V2-06 — Basilico 2.0 "5 Anime" deterministic engines
+import { PantryService } from '../server/services/pantryService.js';
+import { PriceHistoryService } from '../server/services/priceHistoryService.js';
+import { HouseholdEconomicsService } from '../server/services/householdEconomicsService.js';
+import { MaestroCoachService, evaluateMaestroSafetyP0 } from '../server/services/maestroCoachService.js';
+import {
+  resolveStainOrSoil,
+  checkChemicalSafetyP0,
+  getMinimalKitGuide
+} from '../server/services/homeChemistryService.js';
+import { cookwarePhysicsEngine } from '../server/services/cookwarePhysicsEngine.js';
+import { evaluateCookedMealPhysiology } from '../server/services/nutritionPhysiologyService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -300,6 +312,40 @@ export async function runAllDomainEvals(options = {}) {
       detail: `Omega3Valide=${omegaRanked.length}, IntrusoOmega=${badOmegaItems.length}, Passata=${passataCheck.referencePackEstimate?.estimatedPackGrams}g, NociGuscioEdibile=€${inShellWalnutCheck.creaMatch?.trueEdibleEuroPerKg}/kg`
     });
 
+    // ADR-0015 / TASK-V2-03: Cooked meal physiology & bioavailability
+    const rawBroccoli = [{ creaId: '005090', name: 'Broccoletti di rapa, crudi', grams: 200 }];
+    const boiledDrained = evaluateCookedMealPhysiology(rawBroccoli, 'boiled_drained', 'discarded', 0, 0);
+    const steamed = evaluateCookedMealPhysiology(rawBroccoli, 'steamed', 'none', 0, 0);
+    const vitCRetainedOk = steamed.nutrients.vitaminCMg > boiledDrained.nutrients.vitaminCMg * 1.45;
+
+    const spinachMeal = evaluateCookedMealPhysiology(
+      [{ creaId: '005700', name: 'Spinaci, crudi', grams: 200 }],
+      'steamed',
+      'none',
+      8,
+      0
+    );
+    const brassicaAnchovyMeal = evaluateCookedMealPhysiology(
+      [
+        { creaId: '005090', name: 'Broccoletti di rapa, crudi', grams: 150 },
+        { creaId: '120010', name: 'Acciuga o alice', grams: 100 }
+      ],
+      'pan_seared_gentle',
+      'retained',
+      8,
+      0
+    );
+    const calciumTiersOk =
+      spinachMeal.bioavailability.calcium.zeroCheeseCalciumTier === 'oxalate_trapped_poor' &&
+      brassicaAnchovyMeal.bioavailability.calcium.zeroCheeseCalciumTier === 'high_bioavailability_verified';
+
+    checks.push({
+      id: 'R2-COOKED-MEAL-PHYSIOLOGY-AND-BIOAVAILABILITY',
+      label: 'Fisiologia pasto cotto (ritenzione termica Vit C USDA e penalizzazione biodisponibilità Calcio da ossalati)',
+      passed: vitCRetainedOk && calciumTiersOk,
+      detail: `VitC Vapore=${steamed.nutrients.vitaminCMg}mg vs Bollito=${boiledDrained.nutrients.vitaminCMg}mg; Calcio Spinaci=${spinachMeal.bioavailability.calcium.zeroCheeseCalciumTier}, Broccoletti+Acciughe=${brassicaAnchovyMeal.bioavailability.calcium.zeroCheeseCalciumTier}`
+    });
+
     recordSuite(2, 'Scienza & CREA', 'specs/02-crea.spec.md', 29, checks);
   }
 
@@ -452,6 +498,18 @@ export async function runAllDomainEvals(options = {}) {
       detail: `ZoneGE=${geZones.length} (${geZones.map((z) => `${z.zona}:${z.restaurantCount}`).join(' · ')}), Comuni=${geCities.length}, RistorantiAttivi=${danyDishesRes.activeMenuRestaurantsCount}, NuovePizze=${newPizzaLeaks.length}`
     });
 
+    // ADR-0015 / TASK-V2-04: Maestro P0 safety deterministic guard
+    const lethalAlerts1 = evaluateMaestroSafetyP0('Posso mescolare candeggina e acido muriatico per sbiancare la ceramica?');
+    const lethalAlerts2 = evaluateMaestroSafetyP0('Vorrei fare uno spray con percarbonato e acqua calda da conservare nello spruzzino chiuso');
+    const p0Blocked1 = Array.isArray(lethalAlerts1) && lethalAlerts1.some((a) => /CHLORINE|CL2/i.test(a.code || ''));
+    const p0Blocked2 = Array.isArray(lethalAlerts2) && lethalAlerts2.some((a) => /PRESSURE-BURST/i.test(a.code || ''));
+    checks.push({
+      id: 'R3-MAESTRO-SAFETY-P0-DETERMINISTIC-GUARD',
+      label: 'Guardia deterministica P0 Maestro (blocco tassativo miscele letali Cl2 e flaconi chiusi con percarbonato)',
+      passed: p0Blocked1 && p0Blocked2,
+      detail: `Candeggina+AcidoBloccato=${p0Blocked1}, PercarbonatoChiusoBloccato=${p0Blocked2}`
+    });
+
     recordSuite(3, 'Ricette, Ristoranti & Fornelli', 'specs/03-ricette.spec.md', 30, checks);
   }
 
@@ -536,7 +594,31 @@ export async function runAllDomainEvals(options = {}) {
       detail: `PiattiManoOk=${dishSoapPromosOk} (${dishSoapSupply?.matchedOffers?.[0]?.promoPrice ?? 'n/a'}€), SpugneOk=${spongePromosOk}, PanniOk=${clothPromosOk}`
     });
 
-    recordSuite(4, 'Cucina, Pentole & Pulizia', 'specs/04-cucina.spec.md', 31, checks);
+    // ADR-0015 / TASK-V2-02: Cookware Physics & Materials P0 Guards
+    const ptfeBoostCheck = cookwarePhysicsEngine.translateStovePowerAndValidateP0({
+      heatSource: 'induction',
+      requestedLevel: 'boost',
+      toolId: 'padella_antiaderente'
+    });
+    const tinDryCheck = cookwarePhysicsEngine.translateStovePowerAndValidateP0({
+      heatSource: 'gas',
+      requestedLevel: 'high',
+      toolId: 'testo_rame_stagnato',
+      isDryPreheat: true
+    });
+    const materialsCatalog = cookwarePhysicsEngine.getMaterialsCatalog();
+    const copperMat = materialsCatalog.materials.copper_tinned;
+    const terraMat = materialsCatalog.materials.terracotta_glazed;
+    const diffRatioOk = (copperMat.thermalDiffusivityMm2S / terraMat.thermalDiffusivityMm2S) > 180;
+
+    checks.push({
+      id: 'R4-COOKWARE-PHYSICS-AND-P0-SAFETY',
+      label: 'Fisica dei materiali e guardie P0: blocco PTFE su Induction Boost, blocco preriscaldo secco rame stagnato (Sn 232°C), e ratio diffusività rame/terracotta >180x',
+      passed: ptfeBoostCheck.isBlockedP0 && tinDryCheck.isBlockedP0 && diffRatioOk,
+      detail: `PTFE_BoostBlock=${ptfeBoostCheck.isBlockedP0}, TinDryBlock=${tinDryCheck.isBlockedP0}, DiffusivityRatio=${Math.round(copperMat.thermalDiffusivityMm2S / terraMat.thermalDiffusivityMm2S)}x`
+    });
+
+    recordSuite(4, 'Officina Cucina (Fornelli, Pentole, Lame)', 'specs/04-cucina.spec.md', 31, checks);
   }
 
   // =========================================================================
@@ -604,6 +686,44 @@ export async function runAllDomainEvals(options = {}) {
     } finally {
       try {
         if (fs.existsSync(tmpReceiptsPath)) fs.unlinkSync(tmpReceiptsPath);
+      } catch (_) {}
+    }
+
+    // ADR-0015 / TASK-V2-04: Household Economics VaR_48h & Today Pareto Prescription
+    const tmpEconPantryPath = path.join(os.tmpdir(), `basilico-eval-econ-pantry-${process.pid}-${Date.now()}.json`);
+    const tmpEconPath = path.join(os.tmpdir(), `basilico-eval-econ-${process.pid}-${Date.now()}.json`);
+    try {
+      const econPantry = new PantryService({ storagePath: tmpEconPantryPath });
+      econPantry.addItem({
+        title: 'Calamari freschi puliti',
+        zone: 'fridge_freezer',
+        lineTotalEuro: 7.20,
+        status: 'closed',
+        closedExpiresAt: new Date(Date.now() + 20 * 3600 * 1000).toISOString()
+      });
+      const varReport = econPantry.getValueAtRisk48h();
+      const varAccurate = varReport.totalAtRiskEuro >= 7.20 && (varReport.atRiskItems || []).some((i) => /calamari/i.test(i.title || ''));
+
+      const maestroEvalSvc = new MaestroCoachService({ pantryService: econPantry });
+      const copilotBrief = await maestroEvalSvc.getTodayCopilot({
+        profileId: 'dany',
+        rhythmPreset: 'feriale'
+      });
+      const has3Pareto = copilotBrief.tonightParetoCards?.length === 3;
+      const varRescued = copilotBrief.tonightParetoCards?.some((c) => c.slotId === 'save_var_value' && c.vaRSavedEuro > 0);
+
+      checks.push({
+        id: 'R5-VA48-AND-TODAY-PARETO-COACH',
+        label: 'Economia domestica (VaR 48h stock a rischio e Co-pilota Oggi con 3 opzioni Pareto che salvano il fresco in scadenza)',
+        passed: varAccurate && has3Pareto && varRescued,
+        detail: `VaR_48h=€${varReport.totalAtRiskEuro} (atteso 7.20€), ParetoOpzioni=${copilotBrief.tonightParetoCards?.length}, SalvaVaR=${varRescued}`
+      });
+    } finally {
+      try {
+        if (fs.existsSync(tmpEconPantryPath)) fs.unlinkSync(tmpEconPantryPath);
+      } catch (_) {}
+      try {
+        if (fs.existsSync(tmpEconPath)) fs.unlinkSync(tmpEconPath);
       } catch (_) {}
     }
 
@@ -752,6 +872,80 @@ export async function runAllDomainEvals(options = {}) {
     }
 
     recordSuite(6, 'Pianificatore & Lista Spesa', 'specs/06-pianificatore.spec.md', 33, checks);
+  }
+
+  // =========================================================================
+  // STANZA 7 — Chimica & Cura della Casa/Barca (`specs/07-chimica-casa.spec.md`)
+  // =========================================================================
+  {
+    const checks = [];
+
+    // 1. P0 Matrix: LETHAL reactions blocked
+    const cl2Check = checkChemicalSafetyP0({ reagents: ['Candeggina Ace', 'Acido Citrico'] });
+    const nh2clCheck = checkChemicalSafetyP0('Posso unire candeggina e ammoniaca per igienizzare i pavimenti?');
+    const burstCheck = checkChemicalSafetyP0({
+      reagents: ['Sodio percarbonato'],
+      containerType: 'flacone spray chiuso ermetico'
+    });
+    const ingestionCheck = checkChemicalSafetyP0({
+      reagents: ['Acido citrico al 15%'],
+      containerType: 'bottiglia acqua minerale PET'
+    });
+    const p0Safe =
+      cl2Check.blockedByP0 &&
+      nh2clCheck.blockedByP0 &&
+      burstCheck.blockedByP0 &&
+      ingestionCheck.blockedByP0;
+
+    checks.push({
+      id: 'R7-P0-CHEMICAL-SAFETY-LETHAL-REACTIONS',
+      label: 'Matrice sicurezza chimica P0-LETHAL (blocco Cl2, clorammine, scoppio percarbonato in flacone chiuso e travaso PET)',
+      passed: p0Safe,
+      detail: `Cl2Bloccato=${cl2Check.blockedByP0}, NH2ClBloccato=${nh2clCheck.blockedByP0}, BurstBloccato=${burstCheck.blockedByP0}, TravasoPETBloccato=${ingestionCheck.blockedByP0}`
+    });
+
+    // 2. Home Chemistry: Ligurian surfaces protection & Rapallo water hardness
+    const marbleAcidCheck = checkChemicalSafetyP0({
+      reagents: ['Acido citrico'],
+      surface: 'Marmo di Carrara e Ardesia Ligure'
+    });
+    const marbleProtected = marbleAcidCheck.safe === false && marbleAcidCheck.blockedByP1;
+
+    const stainSolution = resolveStainOrSoil({
+      stainType: 'calcare',
+      surface: 'ardesia_ligure'
+    });
+    const stainSafe = !stainSolution.primaryReagent || !/citrico|aceto|cloridrico/i.test(stainSolution.primaryReagent.name || '');
+
+    const minimalKit = getMinimalKitGuide();
+    const has7Pillars = (minimalKit.pillars || minimalKit.reagents || []).length >= 7;
+
+    checks.push({
+      id: 'R7-HOME-CHEMISTRY-LIGURIA-AND-WATER',
+      label: 'Chimica applicata ligure (protezione marmo/ardesia da acidi, Kit 7 Reagenti Puri)',
+      passed: marbleProtected && (stainSafe || Boolean(stainSolution.hasSurfaceWarning)) && has7Pillars,
+      detail: `MarmoProtettoDaAcido=${marbleProtected}, SoluzioneArdesiaSicura=${stainSafe || Boolean(stainSolution.hasSurfaceWarning)}, ReagentiKit=${(minimalKit.pillars || minimalKit.reagents || []).length}`
+    });
+
+    // 3. Drugstore classification purity: Tigotà / PiùMe
+    const pureReagent = classifyProductDomain({
+      title: 'Acido Citrico Anidro Puro 1kg',
+      storeId: 'rapallo-tigota-lamarmora'
+    });
+    const perfumeCoveri = classifyProductDomain({
+      title: 'Coveri - Enrico Eau De Toilette 100ml',
+      brand: 'Coveri',
+      storeId: 'rapallo-tigota-lamarmora',
+      category: 'Cura Casa e Bucato'
+    });
+    checks.push({
+      id: 'R7-DRUGSTORE-DOMAIN-PURITY',
+      label: 'Purezza classificazione drugstore Tigotà/PiùMe (0 profumi/cosmetici in pulizie casa, reagenti puri in home_cleaning)',
+      passed: pureReagent === 'home_cleaning' && perfumeCoveri === 'personal_care',
+      detail: `AcidoCitrico=${pureReagent}, CoveriProfumo=${perfumeCoveri}`
+    });
+
+    recordSuite(7, 'Chimica & Cura della Casa/Barca', 'specs/07-chimica-casa.spec.md', 39, checks);
   }
 
   // =========================================================================
