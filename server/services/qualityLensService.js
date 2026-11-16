@@ -91,7 +91,12 @@ export function evaluateQualityLens(item = {}) {
     const isLaundryProduct =
       /\b(lavatrice|bucato|ammorbident\w*|smacchiator\w*|acchiappacolore|curalavatrice|calgon|\bcapi\b|dash\b|dixan|omino\s+bianco|coccolino|vernel|lenor|napisan\s+bucato|perlana|sole\s+bucato)\b/i.test(text);
 
-    if (isLaundryProduct && !/\b(sgrassator\w*\s+universale|pulitore\s+forno|lavastoviglie)\b/i.test(text)) {
+    if (
+      isLaundryProduct &&
+      !/\b(sgrassator\w*\s+universale|pulitore\s+forno|lavastoviglie|percarbonato|ossigeno\s+attivo|candeggina\s+(?:delicata|gentile)|perossido\s+d['’]?idrogeno)\b/i.test(
+        text
+      )
+    ) {
       badges.push({ label: 'Cura Bucato & Lavatrice', tone: 'sky' });
     } else if (/\b(anticalcare|viakal|acido citrico|aceto\s+pulizie|disincrostant\w*|wc net|anitra\s+wc|bref\s+wc|duck\b)\b/i.test(text)) {
       technicalSpec = {
@@ -103,16 +108,36 @@ export function evaluateQualityLens(item = {}) {
       };
       badges.push({ label: 'Chimica Acida — Anticalcare & Brillantante Inox', tone: 'sky' });
       warnings.push('VIETATO su marmo, ardesia e alluminio nudo (corrosione chimica); MAI miscelare con candeggina');
-    } else if (/\b(sgrassator\w*|chanteclair|pulitore\s+forno|griglia|candeggina|ipoclorito|ace\b)\b/i.test(text)) {
+    } else if (/\b(percarbonato|ossigeno\s+attivo|candeggina\s+(?:delicata|gentile)|perossido\s+d['’]?idrogeno|acqua\s+ossigenata\s+pulizie)\b/i.test(text)) {
+      technicalSpec = {
+        phClass: 'oxygen_oxidizer',
+        phLabel: 'Ossidante Perossidico / Ossigeno Attivo (Percarbonato pH ~10.5 / H2O2 pH 4.5)',
+        function: 'Sbiancamento ossidativo dei cromofori (vino, caffè, frutta) e igienizzazione senza ioni cloruro',
+        safeSurfaces: ['Acciaio Inox 18/10', 'Ceramica', 'Gres porcellanato', 'Cotone bianco/resistente'],
+        forbiddenSurfaces: ['Marmo e Ardesia', 'Alluminio nudo (se percarbonato alcalino)', 'Lana e Seta (se percarbonato alcalino)', 'Flaconi spray chiusi ermeticamente']
+      };
+      badges.push({ label: 'Ossigeno Attivo — Sbiancante Senza Cloro (Zero Pitting su Inox)', tone: 'sky' });
+      warnings.push('P0-PRESSURE-BURST: MAI chiudere percarbonato disciolto in bottiglie o spray ermetici (sviluppo continuo di O2 con rischio scoppio)');
+    } else if (/\b(candeggina|ipoclorito(?:\s+di\s+sodio)?|cloro\s+attivo|euclorina|amuchina\s+superfici|\bace\b(?!\s+(?:gentile|delicata|detersivo|lavatrice|bucato|spray\s+mousse\s+sgrassatore)))\b/i.test(text)) {
+      technicalSpec = {
+        phClass: 'chlorine_oxidizer',
+        phLabel: 'Ossidante Clorato Alcalino (NaClO, pH 11.5 – 12.5)',
+        function: 'Ossidazione chimica di biofilm, muffe (Cladosporium) e pigmenti su superfici inerti GIA deterse; NON saponifica i grassi e NON scioglie il calcare (CaCO3)',
+        safeSurfaces: ['Ceramica sanitaria smaltata', 'Gres porcellanato bianco', 'Fughe cementizie bianche (a freddo)'],
+        forbiddenSurfaces: ['Acciaio Inox 18/10 (corrosione per pitting del film Cr2O3)', 'Marmo e Ardesia', 'Alluminio nudo', 'Rame e Ottone', 'Ghisa stagionata', 'Lana, Seta ed Elastan']
+      };
+      badges.push({ label: 'Ossidante Clorato (NaClO) — Antimuffa & Biocida (NON Sgrassante · Vietato su Inox)', tone: 'rose' });
+      warnings.push('P0-LETHAL: MAI miscelare con acidi/anticalcare/aceto (sviluppa gas Cloro Cl2 mortale) né con ammoniaca (clorammine); VIETATO su Acciaio Inox 18/10 (vaiolatura/pitting)');
+    } else if (/\b(sgrassator\w*|chanteclair|pulitore\s+forno|fornet\b|griglia|soda\s+solvay|carbonato\s+di\s+sodio)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'alkaline',
-        phLabel: 'pH Alcalino / Ossidante (10.5 – 13.0)',
+        phLabel: 'pH Alcalino Saponificante (10.5 – 13.0)',
         function: 'Saponifica e scioglie grassi polimerizzati, oli cotti e residui organici',
         safeSurfaces: ['Acciaio Inox 18/10', 'Vetroceramica Induzione (a freddo)', 'Piani Gas smaltati', 'Pirofile Pyrex'],
-        forbiddenSurfaces: ['Alluminio nudo (annerisce)', 'Ghisa stagionata (rimuove la patina)', 'Legno non trattato']
+        forbiddenSurfaces: ['Alluminio nudo (annerisce / sviluppa H2)', 'Ghisa stagionata (rimuove la patina)', 'Marmo naturale', 'Legno non trattato', 'Rame stagnato']
       };
       badges.push({ label: 'Chimica Alcalina — Sgrassante Grassi Cotti', tone: 'amber' });
-      warnings.push('Risciacquare bene su antiaderente PTFE; non usare su alluminio nudo o ghisa stagionata');
+      warnings.push('Risciacquare bene su antiaderente PTFE; non usare su alluminio nudo (moka/filtri cappa) o ghisa stagionata');
     } else if (/\b(spugn\w*\s+abrasiv\w*|pagliett\w*|inox\s+spirale|lana\s+d['’]?acciaio)\b/i.test(text)) {
       technicalSpec = {
         phClass: 'mechanical_abrasive',
@@ -137,7 +162,7 @@ export function evaluateQualityLens(item = {}) {
         phLabel: 'pH Neutro / Tensioattivo Stoviglie (6.5 – 8.0)',
         function: 'Emulsiona grassi freschi, amidi e proteine a mano senza aggredire i rivestimenti delicati',
         safeSurfaces: ['Padelle Antiaderenti PTFE', 'Acciaio Inox', 'Ghisa', 'Vetroceramica Induzione', 'Lame Coltelli'],
-        forbiddenSurfaces: []
+        forbiddenSurfaces: ['Marmo naturale poroso (Mortaio di Carrara: assorbe profumi)']
       };
       badges.push({ label: 'pH Neutro — Sicuro su Antiaderente PTFE e Induzione', tone: 'emerald' });
     } else if (/\b(lavapavimenti|pavimenti|vetril|quasar|ajax|mastro\s+lindo|lysoform|cif\b|igienizzant\w*\s+superfici|panni\s+pavimenti)\b/i.test(text)) {
