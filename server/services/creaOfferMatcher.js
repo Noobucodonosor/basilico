@@ -56,7 +56,7 @@ const CANONICAL_HEAD_PATTERNS = [
   { regex: /^(?:polpa\s+di\s+pomodoro|pomodori\s+pelati|datterini\s+pelati|pelati)\b/, creaQuery: 'Pomodori, pelati in scatola' },
   { regex: /^(?:olio\s+extra\s*vergine(?:\s+(?:di\s+oliva|d\s*oliva))?|olio\s+evo)\b/, creaQuery: 'Olio di oliva extra vergine' },
   { regex: /^(?:tonno\b.*\b(?:al\s+naturale|in\s+salamoia|all\s*acqua))\b/, creaQuery: 'Tonno in salamoia, sgocciolato' },
-  { regex: /^(?:tonno\b.*\b(?:all\s*olio|in\s+olio|sott\s*olio|leggero)|(?:tranci|filetti)\s+di\s+tonno)\b/, creaQuery: 'Tonno sott\'olio, sgocciolato' },
+  { regex: /^(?:tonno\b.*\b(?:all\s*olio|in\s+olio|sott\s*olio|filo\s+d\s*olio|leggero)|(?:tranci|filetti)\s+di\s+tonno)\b/, creaQuery: 'Tonno sott\'olio, sgocciolato' },
   { regex: /^(?:salmone\s+affumicato|salmone\s+norvegese)\b/, creaQuery: 'Salmone, affumicato' },
   { regex: /^(?:salmone\s+fresco|trancio\s+di\s+salmone|filetto\s+di\s+salmone|salmone)\b/, creaQuery: 'Salmone' },
   { regex: /^(?:filett[oi]\s+di\s+baccala|baccala\s+dissalato|baccala\s+ammollato|baccala)\b/, creaQuery: 'Merluzzo o nasello, baccalà, ammollato' },
