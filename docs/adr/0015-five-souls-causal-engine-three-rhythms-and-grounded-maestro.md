@@ -1,6 +1,9 @@
 # ADR-0015: Basilico 2.0 ("Le 5 Anime") — Motore Causale Dual-Layer, Navigazione sui "3 Ritmi", Separazione Stanza 4 / Stanza 7 e Chat Ibrida Grounded col Maestro
 
-- **Stato:** Accettato (`Accepted`)
+> [!NOTE]
+> **Aggiornamento architetturale ([ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md)):** la sezione **§2.2** (navigazione a *"3 Ritmi"* e ingresso predefinito su `⚡ Oggi`) è stata **superata da `ADR-0016`**, che riorganizza la UI sulle **4 Fasi del Ciclo Causale Domestico** e introduce il tracciamento token per singolo task su GitHub. I **5 motori scientifici deterministici (§2.1)** e le **guardie P0** restano pienamente vigenti.
+
+- **Stato:** Accettato (`Accepted` — §2.2 superata da [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md))
 - **Priorità:** **P0 — Critica (Evoluzione a Sistema Operativo Fisico-Economico della Casa & Sicurezza Scientifica)**
 - **Data:** 2026-11-16
 - **Autori:** Direttore di Prodotto (@Noobucodonosor) & Team Basilico

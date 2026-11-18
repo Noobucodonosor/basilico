@@ -397,11 +397,13 @@ export class OfferService {
     if (rawQ && typeof rawQ === 'string' && rawQ.trim()) {
       const normalizedQ = normalizeSearchToken(rawQ);
       if (normalizedQ.length > 0) {
+        const foldCompounds = (s) => s.replace(/\bextra\s+vergine\b/g, 'extravergine');
+        const foldedQ = foldCompounds(normalizedQ);
         baseFiltered = baseFiltered.filter((o) => {
           const itemText = o._searchNorm || normalizeSearchToken(
             `${o.title} ${o.brand || ''} ${o.category || ''} ${o.description || ''}`
           );
-          return itemText.includes(normalizedQ);
+          return itemText.includes(normalizedQ) || foldCompounds(itemText).includes(foldedQ);
         });
       }
     }

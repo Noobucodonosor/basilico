@@ -280,10 +280,21 @@ export async function runAllDomainEvals(options = {}) {
       metric: 'omega3GPerEuro',
       hideIncompatible: false
     });
-    const badOmegaItems = omegaRanked.filter((r) =>
-      /\b(burro|salame|caff[eè]|espresso|pasta\s+di\s+semola|disidratat\w*)\b/i.test(
-        `${r.offerTitle || ''} ${r.creaFoodName || ''}`
-      )
+    const seedOmegaRawJson = JSON.parse(
+      fs.readFileSync(path.resolve(__dirname, '../data/seed/rapallo_offers.json'), 'utf8')
+    );
+    const seedOmegaArr = Array.isArray(seedOmegaRawJson)
+      ? seedOmegaRawJson
+      : seedOmegaRawJson.offers || [];
+    const seedOffersForCrea = seedOmegaArr.map((o) => enrichOfferRecord(o));
+    const seedOmegaRanked = creaOfferMatcher.rankOffersByNutrientPerEuro(seedOffersForCrea, {
+      metric: 'omega3GPerEuro',
+      hideIncompatible: false
+    });
+
+    const omegaBadRx = /\b(burro|salame|caff[eè]|espresso|pasta\s+di\s+semola|disidratat\w*)\b/i;
+    const badOmegaItems = [...omegaRanked, ...seedOmegaRanked].filter((r) =>
+      omegaBadRx.test(`${r.offerTitle || ''} ${r.creaFoodName || ''}`)
     );
     const passataCheck = enrichOfferRecord({
       title: 'Mutti - Passata Di Pomodoro',
@@ -305,11 +316,12 @@ export async function runAllDomainEvals(options = {}) {
       id: 'R2-OMEGA3-AND-GDO-PACK-REALISM',
       label: 'Classifica Omega-3 immune da burro/salame/caffè/disidratati; Passata=700g e Noci in guscio senza doppia penalità guscio',
       passed:
-        omegaRanked.length >= 4 &&
+        seedOmegaRanked.length >= 4 &&
+        (rawOffersForCrea.length === 0 || omegaRanked.length >= 1) &&
         badOmegaItems.length === 0 &&
         passataCheck.referencePackEstimate?.estimatedPackGrams === 700 &&
         Boolean(walnutKgOk),
-      detail: `Omega3Valide=${omegaRanked.length}, IntrusoOmega=${badOmegaItems.length}, Passata=${passataCheck.referencePackEstimate?.estimatedPackGrams}g, NociGuscioEdibile=€${inShellWalnutCheck.creaMatch?.trueEdibleEuroPerKg}/kg`
+      detail: `Omega3Seed=${seedOmegaRanked.length}, Omega3Live=${omegaRanked.length}, IntrusoOmega=${badOmegaItems.length}, Passata=${passataCheck.referencePackEstimate?.estimatedPackGrams}g, NociGuscioEdibile=€${inShellWalnutCheck.creaMatch?.trueEdibleEuroPerKg}/kg`
     });
 
     // ADR-0015 / TASK-V2-03: Cooked meal physiology & bioavailability

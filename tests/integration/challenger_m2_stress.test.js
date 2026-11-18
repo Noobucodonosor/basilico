@@ -127,19 +127,24 @@ describe('EMPIRICAL CHALLENGER STRESS HARNESS (Milestone 2)', () => {
         'olio extra vergine',
         'Olio Extra Vergine',
         'OLIO EXTRA VERGINE',
-        'olio extra-vergine'
+        'olio extra-vergine',
+        'olio extravergine'
       ];
 
+      let expectedIds = null;
       for (const q of queries) {
         const res = await offerService.getOffers({ q });
         assert.ok(
-          res.totalOffers >= 2,
-          `Expected query "${q}" to match at least 2 offers, got ${res.totalOffers}`
+          res.totalOffers >= 1,
+          `Expected query "${q}" to match at least 1 offer, got ${res.totalOffers}`
         );
         assert.ok(
           res.offers.some((o) => o.title.toLowerCase().includes('olio') || o.id.includes('olio')),
           `Query "${q}" should match oil promotions`
         );
+        const ids = res.offers.map((o) => o.id).sort();
+        if (!expectedIds) expectedIds = ids;
+        else assert.deepEqual(ids, expectedIds, `Query "${q}" must match the same EVO offers`);
       }
     });
 

@@ -16,7 +16,10 @@
     "test:m1": "node --test tests/unit/cache-manager.test.js tests/integration/ingestion-service.test.js",
     "eval": "node evals/run_evals.mjs",
     "board": "node scripts/board.mjs",
-    "inbox": "node scripts/board.mjs --inbox"
+    "inbox": "node scripts/board.mjs --inbox",
+    "task:start": "node scripts/tokenLedger.mjs start",
+    "task:status": "node scripts/tokenLedger.mjs status",
+    "task:close": "node scripts/tokenLedger.mjs close"
   },
   "dependencies": {
     "express": "^4.21.2",

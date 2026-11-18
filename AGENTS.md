@@ -45,14 +45,18 @@
 | [`specs/`](./specs/README.md) | **Living Specs** (contratti umani di 1 pagina: `00-oggi-e-maestro.spec.md` + le 7 Stanze `01-negozi.spec.md` .. `07-chimica-casa.spec.md`). |
 | [`evals/run_evals.mjs`](./evals/run_evals.mjs) | **Domain & Common-Sense Evals Suite** (`npm run eval`) con scorecard quantitativa per i 3 Ritmi, il Maestro e le 7 Stanze. |
 | [`server/routes/agentation.js`](./server/routes/agentation.js) | Bridge REST per la toolbar visuale **Agentation** (`data/cache/agentation_inbox.json` & `.md`). |
-| [`scripts/board.mjs`](./scripts/board.mjs) | **Mission Control CLI** (`npm run board` / `npm run inbox`) sincronizzata con le Room/V2 Issues GitHub (`#28`..`#33`, `#39`..`#44`). |
+| [`scripts/board.mjs`](./scripts/board.mjs) | **Mission Control CLI** (`npm run board` / `npm run inbox`) sincronizzata con GitHub (`#28`..`#52`) e contabilità token. |
+| [`scripts/tokenLedger.mjs`](./scripts/tokenLedger.mjs) | **Token Accounting CLI** (`npm run task:start` / `task:status` / `task:close`): delta reale token da `transcript.jsonl` -> GitHub & [`TOKEN_LEDGER.md`](./docs/adr/TOKEN_LEDGER.md). |
 | [`tests/`](./tests/) | Suite di test automatizzata a 5 Tier (`unit`, `integration`, `api`, `e2e`) eseguita con `node --test`. |
 
 ---
 
-## 3. Metodologia di Lavoro (ADR + Living Specs + Evals + Agentation)
+## 3. Metodologia di Lavoro (ADR + Living Specs + Evals + Governance Token su GitHub)
 
-1. **Ogni decisione architetturale o di sicurezza** è documentata in un file `docs/adr/NNNN-titolo.md`.
+1. **Regola "1 Issue GitHub = 1 Agente Singolo + Contabilità Token" ([ADR-0016](./docs/adr/0016-causal-cycle-ontology-and-github-token-governance.md)):**
+   - **NON usare `/swarm` né sub-agenti multipli** salvo richiesta esplicita del Regista. Lavora sempre **su una sola GitHub Issue alla volta**, dopo approvazione esplicita del piano.
+   - Avvia sempre il contatore prima di iniziare (`npm run task:start -- <issue> --tier S|M|L --task TASK-...`) e chiudi a fine commit (`npm run task:close -- <issue> --commit <sha> --summary "..."`), pubblicando i token reali consumati sulla Issue e in [`docs/adr/TOKEN_LEDGER.md`](./docs/adr/TOKEN_LEDGER.md).
+2. **Ogni decisione architetturale o di sicurezza** è documentata in un file `docs/adr/NNNN-titolo.md`.
 2. **Living Specs (`specs/`):** Ogni Ritmo e ciascuna delle 7 Stanze possiede un contratto umano di 1 pagina (`specs/00-oggi-e-maestro.spec.md` e `specs/01-negozi.spec.md` .. `07-chimica-casa.spec.md`) collegato alle Issues su GitHub (`#28`..`#33` e `#39`..`#44`, con label `status:spec-review`, `status:agent-ready`, `status:taste-check`). Prima di modificare un Ritmo o una Stanza, leggi sempre la sua spec (inclusa la sezione `## 4. Note & Cambiamenti Richiesti dal Regista`).
 3. **Visual Point-to-Agent Inbox (`Agentation`):** Quando l'utente annota elementi nel browser tramite `<Agentation />` (`localhost`), le annotazioni strutturate (selettore DOM, React component stack, URL stanza, commento) vengono salvate automaticamente in `data/cache/agentation_inbox.json` e `data/cache/agentation_inbox.md`. Quando l'utente chiede *"smaltisci inbox"*, leggi `data/cache/agentation_inbox.json`, applica le modifiche, verifica con `npm run eval` + `npm test`, e marca gli ID risolti (`POST /api/agentation/resolve` o helper).
 4. **Ogni task operativo** ha un codice univoco (`TASK-<MODULO>-XX`) censito sia nell'ADR di origine, sia in `docs/adr/README.md`, sia come **GitHub Issue**.
@@ -99,9 +103,14 @@ npm test
 # Scorecard automatica di dominio e buon senso sui 3 Ritmi, Maestro e 7 Stanze (Eval-Driven Development)
 npm run eval
 
-# Mission Control CLI (stato Stanze/Task GitHub + Eval Score + Agentation Inbox)
+# Mission Control CLI (stato Stanze/Roadmap GitHub + Eval Score + Token Attivi + Inbox)
 npm run board
 npm run inbox
+
+# Tracciamento esatto token su GitHub per singola Issue (ADR-0016)
+npm run task:start -- <issue> --tier S|M|L --task TASK-XXX-01
+npm run task:status
+npm run task:close -- <issue> --commit <sha> --summary "..."
 
 # Audit di sicurezza e conformità ADR pre-release
 python3 ~/.gemini/config/skills/adr-github-methodology/scripts/pre_release_check.py

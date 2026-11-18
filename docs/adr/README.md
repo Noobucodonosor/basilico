@@ -22,56 +22,20 @@ Questa cartella raccoglie gli **Architecture Decision Records (ADR)** e il **Bac
 | **[ADR-0012](./0012-zero-waste-whole-pack-meal-planner-and-multi-store-shopping-list.md)** | **Milestone 6 (Stanza 6):** Pianificatore Settimanale "Neo-Dieta" a Confezioni Intere Zero-Spreco & Lista della Spesa Smart Multi-Negozio a Rapallo | Accettato | **P1 — Alta** | Direttore di Prodotto (@Noobucodonosor) |
 | **[ADR-0013](./0013-product-realism-culinary-granularity-and-cross-room-coherence.md)** | **Maturazione Prodotto Finito (Stanze 1–6):** Realismo Prezzi/Domini, Conversione FAO Omega-3 CREA, Ricettario & Matcher Rigoroso, ROI Pentole/Scontrini & Solver Dieta Anti-Monotonia | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
 | **[ADR-0014](./0014-ai-native-product-engineering-specs-evals-agentation-and-board.md)** | **Stack AI-Native Product Engineering:** Living Specs (`specs/`), Domain Evals (`evals/`), Visual Point-to-Agent (`Agentation`) & GitHub State Machine | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
-| **[ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md)** | **Basilico 2.0 ("Le 5 Anime"):** Motore Causale Dual-Layer, Navigazione sui "3 Ritmi" (`⚡ Oggi` Default), Separazione Stanza 4 (`Officina Cucina`) / Stanza 7 (`Chimica Casa/Barca`) & Chat Ibrida Grounded col Maestro | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
+| **[ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md)** | **Basilico 2.0 ("Le 5 Anime"):** Motore Causale Dual-Layer, 5 Motori Scientifici Deterministici, Separazione Stanza 4 / Stanza 7 & Chat Grounded Maestro *(§2.2 UI superata da ADR-0016)* | Accettato (Parz. superato) | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
+| **[ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md)** | **Ontologia a 4 Fasi del Ciclo Causale & Governance Token GitHub:** Rimozione Doppia Barra Oggi/Regia, Restyling Integrale per Fasi & Contabilità Token per Task (`TOKEN_LEDGER.md`) | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
 
 ---
 
-## Diagramma Architetturale Bottom-Up del Sistema (3 Ritmi · 5 Anime · 7 Stanze dell'Atlante)
+## Diagramma Architetturale — Ciclo Causale Domestico a 4 Fasi (`ADR-0016` + Motori `ADR-0015`)
 
 ```mermaid
-flowchart BT
-  subgraph L01["FONDAMENTA (ADR-0001..0007) — Stanza 1: Negozi & Offerte Rapallo"]
-    S1["14+ Negozi & Botteghe Rapallo · Volantini & Offerte Live/Cache/Seed\n5 Domini Chiusi (Food / Detergenza / Pentole / Igiene / Pet)\nPrezzo €/kg Sgocciolato · Storico 'È un vero sconto?' · Profilo Esclusioni"]
-  end
-
-  subgraph L2["LIVELLO 2 (ADR-0008 & ADR-0015) — Stanza 2: Scienza & CREA (Fisiologia Cotta)"]
-    S2["832 Alimenti CREA × 26.622 Valori + nutritionPhysiologyService\n24+ Nutrienti Post-Cottura (Ritenzione USDA) · Biodisponibilità Ca/Fe · RS3 Barca\nPonte Head-Noun Offerta↔CREA · Classifica 'Nutrienti per € Edibili'"]
-  end
-
-  subgraph L3["LIVELLO 3 (ADR-0009, ADR-0010 & ADR-0015) — Stanze 4, 5 & 7: Fisica, Dispensa & Chimica"]
-    S5["Stanza 5: Dispensa, Scontrini & VaR_48h\nQuadratura al Centesimo -> lineTotalEuro & Prezzi Fuori Offerta\n3 Luoghi (Secca / Frigo / Barca) · Orologio T_open · Swipe Check 5s"]
-    S4["Stanza 4: Officina Cucina (Fornelli, Pentole, Lame)\ncookwarePhysicsEngine (Diffusività/Inerzia C_A, Batching, Blocchi P0 PTFE/Sn)\nROI Piatti Sbloccati · TCO Pentole · Contenitori AISI 316 · Ponte Kitchen Reset"]
-    S7["Stanza 7: Chimica & Cura della Casa/Barca\nhomeChemistryService (8 Sporchi × Superfici × Sinner · Pietre Liguri pH>=6)\nAcqua Rapallo 14-22 °f · Kit 7 Pilastri · Guardie P0 · €/ciclo Tigotà/PiùMe"]
-  end
-
-  subgraph L4["LIVELLO 4 (ADR-0011 & ADR-0015) — Stanza 3: Ricette, Ristoranti GE & Accademia"]
-    S3["Ricette Single + Ristoranti Verificati Provincia GE + Stellati (BOM + Arbitraggio)\nculinaryAcademyService (12 Competenze, Ratios, Umami 8x Zero-Formaggi)\nSOS Fornelli 30s · Frigo->Tecnica · Quaderno Lab 1-Tap"]
-  end
-
-  subgraph L5["LIVELLO 5 (ADR-0012 & ADR-0015) — Stanza 6: Pianificatore Adattivo & Economia Spesa"]
-    S6["6 Modelli 'Neo-Dieta' · Giorni Barca/Terra · Coaching Adattivo Non-Punitivo\nhouseholdEconomicsService (Costo Pieno C_full, Shadow Price w_t €/h, Laspeyres)\nSimulatore Tappe Rapallo €/h · Concatenazione Zero-Spreco · Modalità 'In Corsia'"]
-  end
-
-  subgraph L6["LIVELLO 6 (ADR-0015) — I 3 Ritmi & Basilico Maestro Ibrido Grounded"]
-    M0["⚡ Ritmo 1: Oggi (Co-pilota Default: Preset Rapidi + 3 Card Pareto 5 Anime + SOS)\n🧭 Ritmo 2: Regia Settimanale (4 Passi) · 🎓 Ritmo 3: Accademia & Atlante (7 Stanze)\n💬 MaestroDrawer (maestroCoachService: Guardie P0 + LLM Read-Only / Locale Deterministico)"]
-  end
-
-  S1 --> S2
-  S1 --> S5
-  S1 --> S4
-  S1 --> S7
-  S2 --> S3
-  S5 --> S3
-  S4 --> S3
-  S7 -. "Kitchen Reset" .-> S4
-  S3 --> S6
-  S5 --> S6
-  S2 --> M0
-  S3 --> M0
-  S4 --> M0
-  S5 --> M0
-  S6 --> M0
-  S7 --> M0
+flowchart LR
+  OV["Panoramica Ciclo (Ingresso)\nOfferte attive Rapallo · Dispensa reale · Prossimo passo"] --> F1
+  F1["Fase 1: Sapere & Obiettivi\nScienza CREA + Fisiologia USDA\nScuola Culinaria · Materiali & Chimica"] --> F2
+  F2["Fase 2: Mercato & Spesa\n14+ Negozi Rapallo · Volantini €/kg\nPianificatore & Lista Spesa (€/h tappe)"] --> F3
+  F3["Fase 3: Dispensa & Dotazione Casa\nScontrini al Centesimo & Storico Prezzi\nDispensa 3 Zone · Officina Pentole/Lame"] --> F4
+  F4["Fase 4: Azione (Cucina & Pulizie)\nRicette da Dispensa Reale & Ristoranti GE\nFornelli & Smacchiatore Casa/Barca"]
 ```
 
 ---
@@ -120,3 +84,10 @@ flowchart BT
 | **TASK-V2-05** | `#43` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Integrazione API Backend, UI "3 Ritmi" (`⚡ Oggi`, `Regia Settimanale`, `Accademia & Atlante` a 7 Stanze) e `MaestroDrawer` Conversazionale | `server/index.js`, `server/services/recipeAndArbitrageService.js`, `src/App.jsx`, `src/components/Header.jsx`, `src/components/RoomNavigation.jsx`, `src/components/maestro/**`, `src/components/chemistry/HomeChemistryView.jsx`, `src/components/kitchen/KitchenCareView.jsx` | **P1 — Alta** | Team |
 | **TASK-V2-06** | `#44` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Estensione Suite `Domain Evals` (`npm run eval`), Test E2E/Integrazione e Verifica Pre-Release | `evals/run_evals.mjs`, `scripts/board.mjs`, `tests/api/**`, `tests/e2e/**` | **P0 — Critica** | Team |
 | **TASK-V2-07** | `#45` | [ADR-0015](./0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md) | Restyling Anti-Slop (`tasteskill 2.5`): Sistema Editoriale Caldo, Motion Layer, Fotografie Reali & Linguaggio Umano | `index.html`, `src/index.css`, `src/App.jsx`, `src/components/{Header,RoomNavigation}.jsx`, `src/components/{today,maestro,home,academy,crea}/**`, `server/services/maestroCoachService.js`, `public/assets/img/*`, `tests/e2e/v2_five_souls_ui.test.js`, `evals/run_evals.mjs` | **P1 — Alta** | Team |
+| **TASK-GOV-01** | `#46` | [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md) | Infrastruttura Contabilità Token Reali (`transcript.jsonl`), `ADR-0016` Ontologia a 4 Fasi e Roadmap GitHub (`budget:S`) | `scripts/tokenLedger.mjs`, `scripts/board.mjs`, `evals/run_evals.mjs`, `server/services/offerService.js`, `package.json`, `docs/adr/{0016-*.md,TOKEN_LEDGER.md,README.md}`, `AGENTS.md`, `tests/unit/token_ledger.test.js`, `tests/integration/challenger_m2_stress.test.js` | **P0 — Critica** | Agente Singolo |
+| **TASK-CICLO-01** | `#47` | [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md) | Nuova Navigazione Unica sulle 4 Fasi del Ciclo Causale e Panoramica d'Ingresso (rimozione doppia barra Oggi/Regia) (`budget:M`) | `src/App.jsx`, `src/components/RoomNavigation.jsx`, `src/components/Header.jsx`, `src/components/cycle/CycleOverviewView.jsx`, `tests/e2e/v2_five_souls_ui.test.js` | **P0 — Critica** | Agente Singolo |
+| **TASK-CICLO-02** | `#48` | [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md) | Fase 1 "Sapere & Obiettivi": Restyling editoriale di Scienza & CREA e integrazione coerente con Obiettivi Nutrizionali e Scuola Culinaria (`budget:M`) | `src/components/crea/{CreaExplorerView,CreaFoodModal,CreaCompareTray,NutritionCoachPanel}.jsx`, `src/components/academy/CulinaryAcademyPanel.jsx` | **P1 — Alta** | Agente Singolo |
+| **TASK-CICLO-03** | `#49` | [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md) | Fase 2 "Mercato & Spesa": Restyling editoriale profondo di Negozi & Offerte Rapallo e Pianificatore/Lista Spesa (con tappe `€/h`) (`budget:L`) | `src/components/{StoreSwitcher,SearchBar,CategoryFilters,OfferGrid,OfferCard}.jsx`, `src/components/planner/{PlannerAndShoppingView,AisleChecklistModal}.jsx` | **P1 — Alta** | Agente Singolo |
+| **TASK-CICLO-04** | `#50` | [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md) | Fase 3 "Dispensa & Dotazione Casa": Restyling editoriale di Dispensa & Scontrini (storico prezzi) e Officina Strumenti (`budget:M`) | `src/components/pantry/{PantryAndReceiptsView,ReceiptScannerModal}.jsx`, `src/components/kitchen/KitchenCareView.jsx` | **P1 — Alta** | Agente Singolo |
+| **TASK-CICLO-05** | `#51` | [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md) | Fase 4 "Azione: Cucina & Pulizie": Restyling editoriale di Ricette, Ristoranti GE & Fornelli (con proposte da dispensa reale) e Chimica Casa (`budget:L`) | `src/components/recipes/{RecipesAndRestaurantsView,CookingModeModal,LabNotebookModal}.jsx`, `src/components/home/HomeChemistryView.jsx` | **P1 — Alta** | Agente Singolo |
+| **TASK-CICLO-06** | `#52` | [ADR-0016](./0016-causal-cycle-ontology-and-github-token-governance.md) | Pulizia codice superato (`Oggi/Regia` standalone), riallineamento Living Specs, Domain Evals e chiusura Milestone (`budget:S`) | `src/components/today/`, `specs/*.spec.md`, `evals/run_evals.mjs`, `tests/e2e/v2_five_souls_ui.test.js` | **P2 — Media** | Agente Singolo |

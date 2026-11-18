@@ -14,6 +14,11 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { readAgentationInbox } from '../server/routes/agentation.js';
 import { SCORECARD_JSON_PATH } from '../evals/run_evals.mjs';
+import {
+  formatInt,
+  getDefaultLedgerMarkdownPath,
+  getTaskLiveStatus
+} from './tokenLedger.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +29,7 @@ const ROOMS = [
   { room: 1, key: 'room-1-negozi', name: 'Negozi & Offerte Rapallo', spec: '01-negozi.spec.md', issue: 28 },
   { room: 2, key: 'room-2-crea', name: 'Scienza & CREA', spec: '02-crea.spec.md', issue: 29 },
   { room: 3, key: 'room-3-ricette', name: 'Ricette, Ristoranti & Fornelli', spec: '03-ricette.spec.md', issue: 30 },
-  { room: 4, key: 'room-4-cucina', name: 'Officina Cucina (Fornelli, Pentole, Lame)', spec: '04-cucina.spec.md', issue: 31 },
+  { room: 4, key: 'room-4-cucina', name: 'Officina Cucina (Pentole/Lame)', spec: '04-cucina.spec.md', issue: 31 },
   { room: 5, key: 'room-5-dispensa', name: 'Dispensa & Scontrini', spec: '05-dispensa.spec.md', issue: 32 },
   { room: 6, key: 'room-6-pianificatore', name: 'Pianificatore & Lista Spesa', spec: '06-pianificatore.spec.md', issue: 33 },
   { room: 7, key: 'room-7-chimica', name: 'Chimica & Cura della Casa/Barca', spec: '07-chimica-casa.spec.md', issue: 39 }
@@ -47,7 +52,7 @@ function fetchGithubRoomIssues() {
   try {
     const out = execFileSync(
       'gh',
-      ['issue', 'list', '--state', 'all', '--limit', '50', '--json', 'number,title,state,labels'],
+      ['issue', 'list', '--state', 'all', '--limit', '100', '--json', 'number,title,state,labels'],
       { cwd: ROOT_DIR, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 4500 }
     );
     const parsed = JSON.parse(out);
@@ -179,7 +184,69 @@ function printMissionControl() {
       : `${Y}${B}${pendingAnnotations.length} annotazioni visive da smaltire${X} ${D}(vedi 'npm run inbox')${X}`;
 
   console.log(`  📊 ${B}Domain Eval Score:${X} ${globalEval}    🎯 ${B}Agentation Inbox:${X} ${inboxSummary}`);
-  console.log(`  📂 ${B}Living Specs:${X}      ${D}specs/01-negozi.spec.md .. specs/06-pianificatore.spec.md${X}`);
+  console.log(`  📂 ${B}Living Specs:${X}      ${D}specs/01-negozi.spec.md .. specs/07-chimica-casa.spec.md${X}`);
+
+  // ADR-0016 Roadmap Pianificata (ciclo-causale / status:planned / status:in-progress / status:taste-check)
+  if (ghMap) {
+    const roadmapIssues = Array.from(ghMap.values())
+      .filter((iss) => {
+        if (iss.state !== 'OPEN') return false;
+        const lbls = (iss.labels || []).map((l) => l.name);
+        return (
+          lbls.includes('ciclo-causale') ||
+          lbls.includes('status:planned') ||
+          lbls.includes('status:in-progress')
+        );
+      })
+      .sort((a, b) => Number(a.number) - Number(b.number));
+
+    if (roadmapIssues.length > 0) {
+      console.log('─'.repeat(92));
+      console.log(`  🗺️  ${B}Roadmap GitHub Pianificata (ADR-0016 — 1 Issue = 1 Agente Singolo):${X}`);
+      for (const iss of roadmapIssues) {
+        const lbls = (iss.labels || []).map((l) => l.name);
+        const budgetLbl = lbls.find((l) => l.startsWith('budget:')) || 'budget:M';
+        const stateLbl = lbls.includes('status:in-progress')
+          ? `${C}▶ in-progress${X}`
+          : lbls.includes('status:taste-check')
+            ? `${Y}👁 taste-check${X}`
+            : lbls.includes('status:planned')
+              ? `${G}⏳ planned${X}`
+              : `${D}open${X}`;
+        const shortTitle = String(iss.title || '').slice(0, 62);
+        console.log(`     #${String(iss.number).padEnd(3, ' ')} [${budgetLbl}] ${stateLbl}  ${shortTitle}`);
+      }
+    }
+  }
+
+  // Contabilità Token Attiva & Ultima Registrazione Storica
+  console.log('─'.repeat(92));
+  try {
+    const liveTok = getTaskLiveStatus();
+    if (liveTok.active) {
+      const pctColor = liveTok.overBudget ? R : G;
+      console.log(
+        `  ⏱️  ${B}Token Task Attivo:${X} #${liveTok.task.issueNumber} (${liveTok.task.taskId}, budget:${liveTok.task.tier}) → ${pctColor}${formatInt(liveTok.delta.input_tokens)} input nuovi (${liveTok.budgetPct}%)${X} · ${formatInt(liveTok.delta.output_tokens)} out · ${liveTok.delta.steps} step`
+      );
+    } else {
+      console.log(`  ⏱️  ${B}Token Task Attivo:${X} ${D}nessuno (usa 'npm run task:start -- <issue> --tier S|M|L')${X}`);
+    }
+  } catch (_) {}
+
+  try {
+    const ledgerPath = getDefaultLedgerMarkdownPath();
+    if (fs.existsSync(ledgerPath)) {
+      const ledgerRows = fs
+        .readFileSync(ledgerPath, 'utf8')
+        .split(/\r?\n/)
+        .filter((l) => /^\| \[\#\d+\]/.test(l));
+      if (ledgerRows.length > 0) {
+        console.log(`  🧾 ${B}Ultimo Rendiconto (${path.basename(ledgerPath)}):${X}`);
+        console.log(`     ${D}${ledgerRows[ledgerRows.length - 1]}${X}`);
+      }
+    }
+  } catch (_) {}
+
   console.log('═'.repeat(92) + '\n');
 }
 
