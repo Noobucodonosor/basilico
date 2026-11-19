@@ -1,5 +1,9 @@
 # Basilico — Offerte & Volantini Rapallo (GE)
 
+[![Anteprima Basilico — Offerte & Volantini Rapallo](./docs/preview/social-preview.png)](https://basilico-txfxsxuuma-ew.a.run.app)
+
+**Demo Live (Cloud Run):** [https://basilico-txfxsxuuma-ew.a.run.app](https://basilico-txfxsxuuma-ew.a.run.app)
+
 Applicazione web full-stack responsive per consultare in tempo reale (e con resilienza offline) offerte promozionali e volantini dei supermercati di **Rapallo (GE)**, sviluppata con architettura **ADR-Driven**.
 
 ## Funzionalità Principali
