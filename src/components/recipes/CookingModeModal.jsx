@@ -165,10 +165,10 @@ export function CookingModeModal({
     >
       <div className="max-w-5xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-slate-900 text-white px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="bg-[#141A17] text-white px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-600 text-white">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-[#1B5E3A] text-white">
                 Harvard Science & Cooking Coach
               </span>
               {session?.dish?.restaurantName && (
@@ -199,7 +199,7 @@ export function CookingModeModal({
               type="button"
               onClick={handleConsumeFromPantry}
               disabled={consumingPantry || Boolean(pantryConsumeResult)}
-              className="px-3 py-2 text-xs font-extrabold bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white rounded-lg cursor-pointer whitespace-nowrap"
+              className="px-3 py-2 text-xs font-extrabold bg-[#1B5E3A] hover:bg-[#14472C] disabled:opacity-60 text-white rounded-lg cursor-pointer whitespace-nowrap"
             >
               {pantryConsumeResult ? '✓ Scalato da Dispensa' : '🍳 Ho cucinato (Scala Dispensa)'}
             </button>
@@ -290,7 +290,7 @@ export function CookingModeModal({
                         onChange={() =>
                           setCheckedIngredients((prev) => ({ ...prev, [idx]: !prev[idx] }))
                         }
-                        className="mt-0.5 rounded text-emerald-600"
+                        className="mt-0.5 rounded accent-[#1B5E3A]"
                       />
                       <div className="flex-1">
                         <div className="font-bold">
@@ -339,7 +339,7 @@ export function CookingModeModal({
                             type="button"
                             onClick={() => toggleTimer(st.stepNumber, st.durationSeconds || 120)}
                             className={`px-2.5 py-1 rounded text-[11px] font-extrabold text-white cursor-pointer ${
-                              timer.running ? 'bg-amber-600' : 'bg-emerald-600 hover:bg-emerald-700'
+                              timer.running ? 'bg-[#9A5B25]' : 'bg-[#1B5E3A] hover:bg-[#14472C]'
                             }`}
                           >
                             {timer.running ? 'Pausa' : 'Avvia'}
@@ -363,7 +363,7 @@ export function CookingModeModal({
                       <p className="text-xs text-slate-800 leading-relaxed">{st.instructions}</p>
 
                       {/* Physics / Chemistry Box */}
-                      <div className="p-3 rounded-xl bg-indigo-50/70 border border-indigo-200 text-xs text-indigo-950">
+                      <div className="p-3 rounded-xl bg-[#F3F1EC] border border-[#DFDCD2] text-xs text-[#141A17]">
                         <strong>⚛️ Perché fisico-chimico:</strong> {st.scientificPrinciple}
                       </div>
 
