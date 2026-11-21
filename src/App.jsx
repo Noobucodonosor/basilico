@@ -25,8 +25,12 @@ import MaestroDrawer from './components/maestro/MaestroDrawer.jsx';
 import HomeChemistryView from './components/home/HomeChemistryView.jsx';
 import CulinaryAcademyPanel from './components/academy/CulinaryAcademyPanel.jsx';
 import NutritionCoachPanel from './components/crea/NutritionCoachPanel.jsx';
-import { Agentation } from 'agentation';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
+
+const isViteDev = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV;
+const DevAgentation = isViteDev
+  ? React.lazy(() => import('agentation').then((m) => ({ default: m.Agentation })))
+  : null;
 
 const DOMAIN_PILLS = [
   { id: null, label: 'Tutti i Domini', icon: '🌐' },
@@ -1090,11 +1094,13 @@ export function App() {
         onClose={() => setIsSyncModalOpen(false)}
       />
 
-      {/* Agentation Visual Point-to-Agent Toolbar (ADR-0014: active on localhost / local dev) */}
-      {typeof window !== 'undefined' &&
+      {/* Agentation Visual Point-to-Agent Toolbar (ADR-0014: active only in Vite dev on localhost) */}
+      {DevAgentation &&
+        typeof window !== 'undefined' &&
         (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
-          <Agentation
-            appName={`Basilico (${activeRoom})`}
+          <React.Suspense fallback={null}>
+            <DevAgentation
+              appName={`Basilico (${activeRoom})`}
             onAnnotationAdd={(annotation) => {
               fetch('/api/agentation', {
                 method: 'POST',
@@ -1143,7 +1149,8 @@ export function App() {
                 })
                 .catch(() => {});
             }}
-          />
+            />
+          </React.Suspense>
         )}
 
       {/* Footer */}

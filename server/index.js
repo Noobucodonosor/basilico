@@ -296,7 +296,9 @@ export function createApp(options = {}) {
   if (recipesRouter) app.use('/api/recipes', recipesRouter);
   if (plannerRouter) app.use('/api/planner', plannerRouter);
   if (shoppingListRouter) app.use('/api/shopping-list', shoppingListRouter);
-  if (agentationRouter) app.use('/api/agentation', agentationRouter);
+  if (agentationRouter && process.env.NODE_ENV !== 'production') {
+    app.use('/api/agentation', agentationRouter);
+  }
   if (maestroRouter) app.use('/api/maestro', maestroRouter);
   if (homeChemistryRouter) app.use('/api/home-chemistry', homeChemistryRouter);
   if (academyRouter) app.use('/api/academy', academyRouter);
