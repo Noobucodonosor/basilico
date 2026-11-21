@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Basilico - Rapallo Supermarket Promotional Offers and Flyers",
   "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
