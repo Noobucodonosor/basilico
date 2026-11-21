@@ -7,41 +7,28 @@ import RoomNavigation, {
   CausalPhaseNavigation,
   getPhaseForRoom
 } from './components/RoomNavigation.jsx';
-import StoreSwitcher from './components/StoreSwitcher.jsx';
-import SearchBar from './components/SearchBar.jsx';
-import CategoryFilters from './components/CategoryFilters.jsx';
-import OfferGrid from './components/OfferGrid.jsx';
-import EmptyState from './components/EmptyState.jsx';
-import FlyerModal from './components/FlyerModal.jsx';
-import SyncStatusModal from './components/SyncStatusModal.jsx';
-import CounterPriceModal from './components/CounterPriceModal.jsx';
 import OfflineNotice from './components/OfflineNotice.jsx';
-import CreaExplorerView from './components/crea/CreaExplorerView.jsx';
-import PantryAndReceiptsView from './components/pantry/PantryAndReceiptsView.jsx';
-import KitchenCareView from './components/kitchen/KitchenCareView.jsx';
-import RecipesAndRestaurantsView from './components/recipes/RecipesAndRestaurantsView.jsx';
-import PlannerAndShoppingView from './components/planner/PlannerAndShoppingView.jsx';
 import CycleOverviewView from './components/cycle/CycleOverviewView.jsx';
-import MaestroDrawer from './components/maestro/MaestroDrawer.jsx';
-import HomeChemistryView from './components/home/HomeChemistryView.jsx';
-import CulinaryAcademyPanel from './components/academy/CulinaryAcademyPanel.jsx';
-import NutritionCoachPanel from './components/crea/NutritionCoachPanel.jsx';
+import RapalloMarketView from './components/market/RapalloMarketView.jsx';
 import { useSupermarketData } from './hooks/useSupermarketData.js';
+
+const FlyerModal = React.lazy(() => import('./components/FlyerModal.jsx'));
+const SyncStatusModal = React.lazy(() => import('./components/SyncStatusModal.jsx'));
+const CounterPriceModal = React.lazy(() => import('./components/CounterPriceModal.jsx'));
+const CreaExplorerView = React.lazy(() => import('./components/crea/CreaExplorerView.jsx'));
+const PantryAndReceiptsView = React.lazy(() => import('./components/pantry/PantryAndReceiptsView.jsx'));
+const KitchenCareView = React.lazy(() => import('./components/kitchen/KitchenCareView.jsx'));
+const RecipesAndRestaurantsView = React.lazy(() => import('./components/recipes/RecipesAndRestaurantsView.jsx'));
+const PlannerAndShoppingView = React.lazy(() => import('./components/planner/PlannerAndShoppingView.jsx'));
+const MaestroDrawer = React.lazy(() => import('./components/maestro/MaestroDrawer.jsx'));
+const HomeChemistryView = React.lazy(() => import('./components/home/HomeChemistryView.jsx'));
+const CulinaryAcademyPanel = React.lazy(() => import('./components/academy/CulinaryAcademyPanel.jsx'));
+const NutritionCoachPanel = React.lazy(() => import('./components/crea/NutritionCoachPanel.jsx'));
 
 const isViteDev = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV;
 const DevAgentation = isViteDev
   ? React.lazy(() => import('agentation').then((m) => ({ default: m.Agentation })))
   : null;
-
-const DOMAIN_PILLS = [
-  { id: null, label: 'Tutti i Domini', icon: '🌐' },
-  { id: 'food_human', label: 'Alimentari & Bevande', icon: '🥩' },
-  { id: 'home_cleaning', label: 'Chimica & Cura Casa', icon: '🧼' },
-  { id: 'kitchen_cookware', label: 'Pentole & Elettrodomestici', icon: '🍳' },
-  { id: 'personal_care', label: 'Igiene Persona', icon: '🧴' },
-  { id: 'pet_care', label: 'Animali (Pet)', icon: '🐾' },
-  { id: 'bazar_seasonal', label: 'Giocattoli, Natale & Bazar', icon: '🎄' }
-];
 
 const DOMAIN_ALLOWED_CATEGORIES = {
   food_human: [
@@ -577,6 +564,8 @@ export function App() {
         shoppingCount={shoppingCount}
         onOpenShoppingList={() => handleNavigateRoom('room-6-pianificatore')}
         onOpenMaestro={handleOpenMaestro}
+        onGoHome={() => handleSelectPhase('overview')}
+        showCounterPrice={activePhase === 'phase-2' || activePhase === 'phase-3'}
       />
 
       {shoppingToast && (
@@ -602,6 +591,7 @@ export function App() {
             onSelectPhase={handleSelectPhase}
             onNavigateRoom={handleNavigateRoom}
             onOpenMaestro={handleOpenMaestro}
+            onTriggerSync={handleDeepSync}
           />
         </main>
       ) : (
@@ -651,347 +641,79 @@ export function App() {
 
           {activePhase === 'phase-1' && phase1Panel === 'academy' ? (
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <CulinaryAcademyPanel
-                key={`academy-${academySection}`}
-                activeProfileId={activeProfileId}
-                onNavigateRoom={handleNavigateRoom}
-                onOpenMaestro={handleOpenMaestro}
-                initialSection={academySection}
-              />
+              <React.Suspense fallback={<div className="p-6 text-xs text-[#575E58]">Caricamento Scuola Culinaria…</div>}>
+                <CulinaryAcademyPanel
+                  key={`academy-${academySection}`}
+                  activeProfileId={activeProfileId}
+                  onNavigateRoom={handleNavigateRoom}
+                  onOpenMaestro={handleOpenMaestro}
+                  initialSection={academySection}
+                />
+              </React.Suspense>
             </main>
           ) : activePhase === 'phase-1' && phase1Panel === 'nutrition' ? (
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <NutritionCoachPanel
-                activeProfileId={activeProfileId}
-                onNavigateRoom={handleNavigateRoom}
-                onOpenMaestro={handleOpenMaestro}
-              />
+              <React.Suspense fallback={<div className="p-6 text-xs text-[#575E58]">Caricamento Coach Nutrizionale…</div>}>
+                <NutritionCoachPanel
+                  activeProfileId={activeProfileId}
+                  onNavigateRoom={handleNavigateRoom}
+                  onOpenMaestro={handleOpenMaestro}
+                />
+              </React.Suspense>
             </main>
           ) : (
             <>
 
       {activeRoom === 'room-1-negozi' ? (
-        <>
-          {/* Store Switcher Tab Bar */}
-          <StoreSwitcher
-            stores={stores}
-            selectedStoreId={selectedStoreId}
-            onSelectStore={(id) => setSelectedStoreId(id)}
-          />
-
-          {/* Main Content Area: Cap at max-w-7xl (1280px, Tier 2 test 10.7) */}
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
-            {/* Active Dietary Profile & Local Shops Banner */}
-            {activeProfile && (
-              <section className="bg-white border border-[#E5E2DA] text-[#141A17] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-start sm:items-center gap-2.5">
-                  <span className="text-xl" aria-hidden="true">🛡️</span>
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-bold uppercase tracking-wider bg-[#1B5E3A] text-white px-2 py-0.5 rounded">
-                        Profilo: {activeProfile.name}
-                      </span>
-                      {activeProfile.excludedIngredients?.length > 0 && (
-                        <span className="text-[11px] text-[#575E58]">
-                          Esclusioni attive: {activeProfile.excludedIngredients.slice(0, 5).join(', ')}
-                          {activeProfile.excludedIngredients.length > 5 ? ` (+${activeProfile.excludedIngredients.length - 5})` : ''}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-[#575E58] mt-0.5">
-                      {activeProfile.description}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                  <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={hideIncompatible}
-                      onChange={(e) => setHideIncompatible(e.target.checked)}
-                      className="rounded border-[#DFDCD2] text-[#1B5E3A] focus:ring-[#1B5E3A]"
-                    />
-                    <span>Nascondi prodotti esclusi</span>
-                  </label>
-                </div>
-              </section>
-            )}
-
-            {/* 5 Closed Product Domains Selector (ADR-0007) */}
-            <section className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" aria-label="Domini merceologici">
-              {DOMAIN_PILLS.map((dom) => {
-                const isSelected = selectedDomain === dom.id;
-                const count = dom.id ? facets?.domains?.[dom.id] : totalOffers;
-                return (
-                  <button
-                    key={dom.id || 'all'}
-                    type="button"
-                    onClick={() => handleSelectDomain(isSelected ? null : dom.id)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border taste-btn whitespace-nowrap cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#141A17] text-white border-[#141A17] shadow-xs'
-                        : 'bg-white text-[#4A524C] border-[#E5E2DA] hover:border-[#1B5E3A]/40 hover:bg-[#F3F1EC]'
-                    }`}
-                  >
-                    <span aria-hidden="true">{dom.icon}</span>
-                    <span>{dom.label}</span>
-                    {count !== undefined && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-[#2B332E] text-white' : 'bg-[#F3F1EC] text-[#575E58]'}`}>
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </section>
-
-            {/* Active Store Promo & Flyer Banner */}
-            {activeStore && (
-              <section className="bg-white rounded-xl border border-[#E5E2DA] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-lg font-bold text-[#141A17]">{activeStore.name}</h2>
-                    {activeStore.isRegionalServing && (
-                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-[#F3F1EC] text-[#1B5E3A] border border-[#DFDCD2]">
-                        Servizio Rapallo & Tigullio
-                      </span>
-                    )}
-                    {activeStore.loyaltyCard && (
-                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-[#9A5B25] border border-amber-200">
-                        💳{' '}
-                        {typeof activeStore.loyaltyCard === 'string'
-                          ? activeStore.loyaltyCard
-                          : activeStore.loyaltyCard?.name || 'Carta Fedeltà'}
-                        {typeof activeStore.loyaltyCard === 'object' && activeStore.loyaltyCard?.requiredForPromo
-                          ? ' (richiesta per promo)'
-                          : ''}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-[#575E58] mt-0.5 truncate max-w-xl">
-                    {activeStore.address}
-                    {activeStore.logistics?.distanceKmFromHarbor != null
-                      ? ` • 📍 ${activeStore.logistics.distanceKmFromHarbor} km dal Porto`
-                      : ''}
-                    {activeStore.logistics?.avgVisitMinutes != null
-                      ? ` • ⏱️ ~${activeStore.logistics.avgVisitMinutes} min visita`
-                      : ''}
-                  </p>
-                </div>
-
-                <div className="flex flex-col items-start sm:items-end gap-1.5">
-                  {currentStoreFlyers.length > 0 && (
-                    <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2">
-                      {currentStoreFlyers.map((flyerItem, idx) => (
-                        <button
-                          key={flyerItem.id || idx}
-                          type="button"
-                          onClick={() => handleOpenFlyer(flyerItem)}
-                          className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-semibold rounded-lg shadow-xs taste-btn whitespace-nowrap cursor-pointer"
-                        >
-                          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                          </svg>
-                          <span>
-                            {currentStoreFlyers.length > 1
-                              ? `Volantino ${idx + 1}: ${flyerItem.title || 'Sfoglia'} (${flyerItem.pageCount} pag.)`
-                              : `Sfoglia volantino (${flyerItem.pageCount} pag.)`}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  {currentStoreFlyers.some((f) => f.upstreamIndexedCap) && (
-                    <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium">
-                      ℹ️ Nota trasparenza: PromoQui indicizza max {currentStoreFlyers.find((f) => f.upstreamIndexedCap)?.upstreamIndexedCap} prodotti per volantino (verificato prov. GE)
-                    </span>
-                  )}
-                </div>
-              </section>
-            )}
-
-            {/* Search & Sort Controls (Always visible on desktop >=640px, toggleable on mobile <640px) */}
-            <section className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-3 ${
-              isMobileSearchOpen ? 'flex' : 'hidden sm:flex'
-            }`}>
-              <div className="flex-1">
-                <SearchBar
-                  value={searchQuery}
-                  onChange={setSearchQuery}
-                  onClear={() => setSearchQuery('')}
-                  matchCount={totalOffers}
-                  autoFocus={isMobileSearchOpen}
-                />
-              </div>
-
-              {/* Sort Selector */}
-              <div className="flex items-center gap-2 shrink-0">
-                <label htmlFor="sort-select" className="text-xs font-semibold text-slate-500 whitespace-nowrap">
-                  Ordina:
-                </label>
-                <select
-                  id="sort-select"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="text-xs font-medium bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-xs"
-                >
-                  <option value="discountDesc">Sconto più alto (% decrescente)</option>
-                  <option value="pricePerKgAsc">Prezzo €/kg edibile più basso</option>
-                  <option value="priceAsc">Prezzo confezione più basso (€ crescente)</option>
-                  <option value="priceDesc">Prezzo confezione più alto (€ decrescente)</option>
-                </select>
-              </div>
-            </section>
-
-            {/* Category Filter Pills (shown when multiple food/department categories apply; hidden on single-bucket non-food domains to avoid redundant pills) */}
-            {(!visibleCategoriesForDomain || visibleCategoriesForDomain.length > 1) ? (
-              <section>
-                <CategoryFilters
-                  categories={visibleCategoriesForDomain}
-                  selectedCategory={selectedCategory}
-                  onToggleCategory={handleToggleCategory}
-                  categoryCounts={facets?.categories || {}}
-                  activeFilterCount={activeFilterCount}
-                  onClearFilters={handleClearFilters}
-                />
-              </section>
-            ) : activeFilterCount > 0 ? (
-              <section className="flex items-center justify-end">
-                <button
-                  type="button"
-                  onClick={handleClearFilters}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer"
-                >
-                  ✕ Azzera filtri ({activeFilterCount})
-                </button>
-              </section>
-            ) : null}
-
-            {/* Offer Grid or Empty State */}
-            <section aria-label="Offerte promozionali">
-              {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 py-6">
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="bg-white rounded-xl border border-slate-200 p-4 h-80 animate-pulse flex flex-col gap-3">
-                      <div className="bg-slate-200 rounded-lg aspect-square w-full" />
-                      <div className="h-4 bg-slate-200 rounded w-3/4" />
-                      <div className="h-3 bg-slate-200 rounded w-1/2" />
-                      <div className="mt-auto h-6 bg-slate-200 rounded w-1/3" />
-                    </div>
-                  ))}
-                </div>
-              ) : offers.length === 0 ? (
-                <EmptyState
-                  searchQuery={searchQuery}
-                  selectedCategory={selectedCategory}
-                  selectedDomain={selectedDomain}
-                  selectedStoreName={activeStore ? activeStore.name : null}
-                  hideIncompatible={hideIncompatible}
-                  onClearFilters={handleClearFilters}
-                  onApplyQuery={(term) => setSearchQuery(term)}
-                />
-              ) : (
-                <OfferGrid
-                  offers={offers}
-                  totalOffers={totalOffers}
-                  hasMoreOffers={hasMoreOffers}
-                  loadingMore={loadingMore}
-                  onLoadMore={loadMoreOffers}
-                  loading={loading}
-                  onAddToShoppingList={handleAddToShoppingList}
-                  onOpenCreaFood={(creaId) => {
-                    setSelectedCreaFoodId(creaId);
-                    setActiveRoom('room-2-crea');
-                  }}
-                  onOpenFlyer={handleOpenOfferFlyer}
-                  onResetFilters={handleClearFilters}
-                />
-              )}
-            </section>
-
-            {/* Local Observed Shops Directory in Rapallo */}
-            {localShops.length > 0 && (
-              <section className="bg-white rounded-xl border border-[#E5E2DA] p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-bold text-[#141A17]">
-                      🐟 Botteghe Storiche, Mercato &amp; Casalinghi Osservati a Rapallo
-                    </h3>
-                    <p className="text-xs text-[#575E58]">
-                      Prezzi reali rilevati dai tuoi scontrini e al banco di quartiere (zero finti volantini).
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCounterDefaultStoreId('');
-                      setIsCounterModalOpen(true);
-                    }}
-                    className="px-3 py-1.5 text-xs font-bold bg-[#9A5B25] hover:bg-[#7F4A1D] text-white rounded-lg taste-btn cursor-pointer shrink-0"
-                  >
-                    + Prezzo visto al banco
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-                  {localShops.map((shop) => (
-                    <button
-                      key={shop.id}
-                      type="button"
-                      onClick={() => {
-                        setCounterDefaultStoreId(shop.id);
-                        setIsCounterModalOpen(true);
-                      }}
-                      className="p-2.5 rounded-lg border border-[#E5E2DA] bg-[#FAF9F6] hover:bg-[#F3F1EC] hover:border-[#9A5B25]/50 text-left text-xs taste-card cursor-pointer"
-                    >
-                      <div className="font-bold text-[#141A17] truncate">{shop.name}</div>
-                      <div className="text-[11px] text-[#575E58] truncate">{shop.address}</div>
-                      <div className="mt-1 inline-block text-[10px] font-semibold bg-[#F3F1EC] text-[#9A5B25] border border-[#DFDCD2] px-1.5 py-0.5 rounded">
-                        + Registra prezzo al banco
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                {counterObservations.length > 0 && (
-                  <div className="pt-2 border-t border-[#E5E2DA] space-y-2">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#575E58]">
-                      📌 Ultimi prezzi reali rilevati al banco a Rapallo ({counterObservations.length})
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                      {counterObservations.map((obs) => (
-                        <div
-                          key={obs.id}
-                          className="p-2.5 rounded-lg bg-[#FAF9F6] border border-[#E5E2DA] flex items-center justify-between gap-2 text-xs"
-                        >
-                          <div className="min-w-0">
-                            <div className="font-bold text-[#141A17] truncate">{obs.title}</div>
-                            <div className="text-[10px] text-[#575E58] truncate">
-                              {obs.storeName || obs.storeId} • {obs.unitString || '1 pz'}
-                            </div>
-                          </div>
-                          <div className="text-right shrink-0">
-                            <div className="font-extrabold text-[#1B5E3A]">
-                              € {Number(obs.price || 0).toFixed(2).replace('.', ',')}
-                            </div>
-                            {(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg) ? (
-                              <div className="text-[10px] text-[#575E58]">
-                                {Number(obs.normalizedPricePerKgOrL ?? obs.ediblePricePerKg).toFixed(2).replace('.', ',')} €/{obs.referenceUnit || 'kg'}
-                              </div>
-                            ) : null}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </section>
-            )}
-          </main>
-        </>
+        <RapalloMarketView
+          stores={stores}
+          selectedStoreId={selectedStoreId}
+          onSelectStore={(id) => setSelectedStoreId(id)}
+          activeProfile={activeProfile}
+          hideIncompatible={hideIncompatible}
+          onChangeHideIncompatible={setHideIncompatible}
+          selectedDomain={selectedDomain}
+          onSelectDomain={handleSelectDomain}
+          facets={facets}
+          totalOffers={totalOffers}
+          activeStore={activeStore}
+          currentStoreFlyers={currentStoreFlyers}
+          onOpenFlyer={handleOpenFlyer}
+          isMobileSearchOpen={isMobileSearchOpen}
+          searchQuery={searchQuery}
+          onChangeSearchQuery={setSearchQuery}
+          sortBy={sortBy}
+          onChangeSortBy={setSortBy}
+          visibleCategoriesForDomain={visibleCategoriesForDomain}
+          selectedCategory={selectedCategory}
+          onToggleCategory={handleToggleCategory}
+          activeFilterCount={activeFilterCount}
+          onClearFilters={handleClearFilters}
+          loading={loading}
+          offers={offers}
+          hasMoreOffers={hasMoreOffers}
+          loadingMore={loadingMore}
+          onLoadMore={loadMoreOffers}
+          onAddToShoppingList={handleAddToShoppingList}
+          onOpenCreaFood={(creaId) => {
+            setSelectedCreaFoodId(creaId);
+            setActiveRoom('room-2-crea');
+          }}
+          onOpenOfferFlyer={handleOpenOfferFlyer}
+          localShops={localShops}
+          counterObservations={counterObservations}
+          onOpenCounterModal={(storeId) => {
+            setCounterDefaultStoreId(storeId || '');
+            setIsCounterModalOpen(true);
+          }}
+        />
       ) : !profilesReady ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-sm text-[#575E58]">
           Sincronizzazione profilo attivo in corso...
         </main>
-      ) : activeRoom === 'room-2-crea' ? (
+      ) : (
+        <React.Suspense fallback={<main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center text-xs text-[#575E58]">Caricamento sezione…</main>}>
+          {activeRoom === 'room-2-crea' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
           <section className="bg-white border border-[#E5E2DA] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <p className="text-xs text-[#141A17]">
@@ -1094,48 +816,64 @@ export function App() {
           />
         </main>
       ) : null}
+        </React.Suspense>
+      )}
             </>
           )}
         </>
       )}
 
       {/* Global single instance: Basilico Maestro Hybrid Grounded Chat (ADR-0015) */}
-      <MaestroDrawer
-        isOpen={isMaestroOpen}
-        onClose={handleCloseMaestro}
-        activeProfileId={activeProfileId}
-        rhythmPreset={rhythmPreset}
-        initialPrompt={maestroPrompt}
-      />
+      {isMaestroOpen && (
+        <React.Suspense fallback={null}>
+          <MaestroDrawer
+            isOpen={isMaestroOpen}
+            onClose={handleCloseMaestro}
+            activeProfileId={activeProfileId}
+            rhythmPreset={rhythmPreset}
+            initialPrompt={maestroPrompt}
+          />
+        </React.Suspense>
+      )}
 
       {/* Modal Flyer Viewer */}
       {activeFlyer && (
-        <FlyerModal
-          flyer={activeFlyer}
-          isOpen={Boolean(activeFlyer)}
-          onClose={() => setActiveFlyer(null)}
-        />
+        <React.Suspense fallback={null}>
+          <FlyerModal
+            flyer={activeFlyer}
+            isOpen={Boolean(activeFlyer)}
+            onClose={() => setActiveFlyer(null)}
+          />
+        </React.Suspense>
       )}
 
       {/* Counter Price Observation Modal */}
-      <CounterPriceModal
-        isOpen={isCounterModalOpen}
-        onClose={() => setIsCounterModalOpen(false)}
-        stores={stores}
-        localShops={localShops}
-        defaultStoreId={counterDefaultStoreId}
-        onSaved={() => {
-          refetchOffers();
-          refreshCounterObservations();
-        }}
-      />
+      {isCounterModalOpen && (
+        <React.Suspense fallback={null}>
+          <CounterPriceModal
+            isOpen={isCounterModalOpen}
+            onClose={() => setIsCounterModalOpen(false)}
+            stores={stores}
+            localShops={localShops}
+            defaultStoreId={counterDefaultStoreId}
+            onSaved={() => {
+              refetchOffers();
+              refreshCounterObservations();
+            }}
+          />
+        </React.Suspense>
+      )}
 
       {/* Informative Operation Status Dialog (ADR-0005) */}
-      <SyncStatusModal
-        isOpen={isSyncModalOpen}
-        progress={syncProgress}
-        onClose={() => setIsSyncModalOpen(false)}
-      />
+      {isSyncModalOpen && (
+        <React.Suspense fallback={null}>
+          <SyncStatusModal
+            isOpen={isSyncModalOpen}
+            progress={syncProgress}
+            onClose={() => setIsSyncModalOpen(false)}
+          />
+        </React.Suspense>
+      )}
 
       {/* Agentation Visual Point-to-Agent Toolbar (ADR-0014: active only in Vite dev on localhost) */}
       {DevAgentation &&
