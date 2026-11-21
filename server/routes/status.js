@@ -35,7 +35,8 @@ export async function getStatusHandler(req, res, next) {
       lastSyncTimestamp: status.lastSyncTimestamp || new Date().toISOString(),
       storeCount: typeof status.storeCount === 'number' ? status.storeCount : 5,
       flyerCount: typeof status.flyerCount === 'number' ? status.flyerCount : 0,
-      offerCount: typeof status.offerCount === 'number' ? status.offerCount : 0
+      offerCount: typeof status.offerCount === 'number' ? status.offerCount : 0,
+      seedHealth: status.seedHealth || null
     });
   } catch (err) {
     console.error('[statusRoute] Error fetching status:', err);

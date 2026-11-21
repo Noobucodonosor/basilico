@@ -1310,6 +1310,40 @@ export class IngestionService {
   }
 
   /**
+   * Computes honest freshness telemetry for offline seed flyers (ADR-0018 / ADR-0006).
+   */
+  async getSeedHealth(nowMs = Date.now()) {
+    let seedFlyers = [];
+    try {
+      const flyersRaw = await fs.readFile(path.join(this.seedDir, 'rapallo_flyers.json'), 'utf-8');
+      const parsed = JSON.parse(flyersRaw);
+      seedFlyers = Array.isArray(parsed) ? parsed : [];
+    } catch (_) {
+      seedFlyers = [];
+    }
+
+    const totalSeedFlyers = seedFlyers.length;
+    let activeSeedFlyers = 0;
+    let expiredSeedFlyers = 0;
+
+    for (const f of seedFlyers) {
+      const validToMs = f?.validTo ? Date.parse(f.validTo) : NaN;
+      if (!Number.isFinite(validToMs) || validToMs >= nowMs) {
+        activeSeedFlyers += 1;
+      } else {
+        expiredSeedFlyers += 1;
+      }
+    }
+
+    return {
+      totalSeedFlyers,
+      activeSeedFlyers,
+      expiredSeedFlyers,
+      seedNeedsRefresh: totalSeedFlyers > 0 && activeSeedFlyers < Math.ceil(totalSeedFlyers / 2)
+    };
+  }
+
+  /**
    * Health and status query
    */
   async getStatus() {
@@ -1337,7 +1371,8 @@ export class IngestionService {
       storeCount: Array.isArray(stores) && stores.length > 0 ? stores.length : 14,
       flyerCount: Array.isArray(flyers) ? flyers.length : 0,
       offerCount: Array.isArray(offers) ? offers.length : 0,
-      cacheFresh: !isCacheExpired
+      cacheFresh: !isCacheExpired,
+      seedHealth: await this.getSeedHealth()
     };
   }
 }
