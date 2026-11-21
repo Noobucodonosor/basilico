@@ -227,9 +227,17 @@ export function createApp(options = {}) {
 
   // Security headers & path traversal guard for static requests
   app.use((req, res, next) => {
-    // Basic security headers
+    // Basic security headers (ADR-0002 & ADR-0017)
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    if (process.env.NODE_ENV === 'production') {
+      res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+      );
+    }
 
     // Test for directory traversal attempts in URL path
     try {

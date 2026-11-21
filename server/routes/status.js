@@ -9,8 +9,14 @@
 
 import express from 'express';
 import { ingestionService } from '../services/ingestionService.js';
+import { createRateLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
+const syncRateLimiter = createRateLimiter({
+  windowMs: 5 * 60 * 1000,
+  maxRequests: 3,
+  message: 'Sincronizzazione già eseguita di recente. Riprova tra qualche minuto.'
+});
 
 /**
  * Controller handler for GET /api/status
@@ -89,7 +95,7 @@ router.get('/', getStatusHandler);
 router.get('/status', getStatusHandler);
 router.get('/progress', getSyncProgressHandler);
 router.get('/sync/progress', getSyncProgressHandler);
-router.post('/', postSyncHandler);
-router.post('/sync', postSyncHandler);
+router.post('/', syncRateLimiter, postSyncHandler);
+router.post('/sync', syncRateLimiter, postSyncHandler);
 
 export default router;
