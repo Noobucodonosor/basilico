@@ -17,13 +17,25 @@ const MEAL_CONTEXT_PILLS = [
   { id: 'sunday_lab', label: '🔬 Laboratorio Domenicale' }
 ];
 
-export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onPantryUpdated }) {
+export function RecipesAndRestaurantsView({
+  activeProfileId,
+  onOpenCreaFood,
+  onPantryUpdated,
+  initialSearchQuery = ''
+}) {
   const [activeViewTab, setActiveViewTab] = useState('catalog'); // 'catalog' | 'pareto_8020' | 'deconstruct' | 'lab_notebook'
   const [sourceType, setSourceType] = useState('all');
   const [zona, setZona] = useState('all');
   const [restaurantId, setRestaurantId] = useState('all');
   const [mealContext, setMealContext] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
+
+  useEffect(() => {
+    if (typeof initialSearchQuery === 'string' && initialSearchQuery.trim()) {
+      setSearchQuery(initialSearchQuery.trim());
+      setActiveViewTab('catalog');
+    }
+  }, [initialSearchQuery]);
   const [servings, setServings] = useState(1);
   const [sortBy, setSortBy] = useState('arbitrage_desc');
   const [deduplicateTwins, setDeduplicateTwins] = useState(false);

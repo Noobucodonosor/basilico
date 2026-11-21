@@ -150,6 +150,7 @@ export function App() {
   const [localShops, setLocalShops] = useState([]);
   const [counterObservations, setCounterObservations] = useState([]);
   const [selectedCreaFoodId, setSelectedCreaFoodId] = useState(null);
+  const [initialRecipeSearch, setInitialRecipeSearch] = useState('');
 
   const setActiveRoom = useCallback((nextRoom) => {
     const normalized = normalizeRoomId(nextRoom);
@@ -160,6 +161,9 @@ export function App() {
     setActiveRoomState((prev) => {
       if (prev === 'room-2-crea' && normalized !== 'room-2-crea') {
         setSelectedCreaFoodId(null);
+      }
+      if (prev === 'room-3-ricette' && normalized !== 'room-3-ricette') {
+        setInitialRecipeSearch('');
       }
       if (normalized !== 'room-1-negozi') {
         setIsMobileSearchOpen(false);
@@ -183,6 +187,7 @@ export function App() {
     (nextPhase) => {
       const phaseId = VALID_PHASE_IDS.has(nextPhase) ? nextPhase : 'overview';
       setActivePhase(phaseId);
+      setInitialRecipeSearch('');
       if (phaseId === 'overview') {
         setIsMobileSearchOpen(false);
       } else {
@@ -198,6 +203,7 @@ export function App() {
 
   const handleNavigateRoom = useCallback(
     (roomId) => {
+      setInitialRecipeSearch('');
       setActiveRoom(roomId);
       scrollToTop();
     },
@@ -221,6 +227,34 @@ export function App() {
     setPhase1Panel('nutrition');
     scrollToTop();
   }, [scrollToTop]);
+
+  const handleCookWithIngredient = useCallback(
+    (ingredientName = '') => {
+      const cleaned = String(ingredientName || '')
+        .split(/[,(]/)[0]
+        .trim();
+      setInitialRecipeSearch(cleaned);
+      setActiveRoom('room-3-ricette');
+      scrollToTop();
+    },
+    [setActiveRoom, scrollToTop]
+  );
+
+  const handleSearchMarketOffer = useCallback(
+    (query = '') => {
+      const cleaned = String(query || '')
+        .split(/[,(]/)[0]
+        .trim();
+      setSelectedStoreId(null);
+      setSelectedDomain(null);
+      setSelectedCategory(null);
+      setSearchQuery(cleaned);
+      setSelectedCreaFoodId(null);
+      setActiveRoom('room-1-negozi');
+      scrollToTop();
+    },
+    [setActiveRoom, scrollToTop]
+  );
 
   const handleOpenMaestro = useCallback((prompt = '') => {
     setMaestroPrompt(typeof prompt === 'string' ? prompt : '');
@@ -592,6 +626,7 @@ export function App() {
             onNavigateRoom={handleNavigateRoom}
             onOpenMaestro={handleOpenMaestro}
             onTriggerSync={handleDeepSync}
+            onCookWithIngredient={handleCookWithIngredient}
           />
         </main>
       ) : (
@@ -732,6 +767,7 @@ export function App() {
             initialFoodId={selectedCreaFoodId}
             onCloseInitialFood={() => setSelectedCreaFoodId(null)}
             onAddToShoppingList={handleAddToShoppingList}
+            onSearchMarketOffer={handleSearchMarketOffer}
             onNavigateToOfferStore={(storeId) => {
               setSelectedStoreId(storeId || null);
               setSelectedDomain('food_human');
@@ -767,6 +803,7 @@ export function App() {
           </section>
           <RecipesAndRestaurantsView
             activeProfileId={activeProfileId}
+            initialSearchQuery={initialRecipeSearch}
             onAddToShoppingList={handleAddToShoppingList}
             onPantryUpdated={refreshShoppingCount}
             onOpenCreaFood={(creaId) => {
@@ -796,6 +833,7 @@ export function App() {
           <PantryAndReceiptsView
             stores={stores}
             onPantryUpdated={refreshShoppingCount}
+            onCookWithIngredient={handleCookWithIngredient}
           />
         </main>
       ) : activeRoom === 'room-6-pianificatore' ? (

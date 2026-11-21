@@ -5,7 +5,8 @@ export function CreaFoodModal({
   activeProfileId = 'dany',
   isOpen,
   onClose,
-  onSelectOfferStore
+  onSelectOfferStore,
+  onSearchMarketOffer
 }) {
   const [sheet, setSheet] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -103,14 +104,26 @@ export function CreaFoodModal({
               </p>
             )}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 cursor-pointer shrink-0"
-            aria-label="Chiudi scheda CREA"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {onSearchMarketOffer && sheet?.name && (
+              <button
+                type="button"
+                onClick={() => onSearchMarketOffer(sheet.name)}
+                className="px-2.5 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-bold cursor-pointer transition-colors"
+                title="Cerca offerte compatibili nei 14 negozi di Rapallo"
+              >
+                🏪 Cerca a Rapallo →
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-slate-300 hover:text-white p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 cursor-pointer shrink-0"
+              aria-label="Chiudi scheda CREA"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Dynamic Calculation Controls (100g edibili / 100g lordi / LARN / grammi liberi + Crudo/Cotto) */}

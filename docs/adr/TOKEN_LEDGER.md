@@ -27,3 +27,4 @@ Questo file traccia in modo trasparente e riproducibile i **token reali consumat
 | [#51](https://github.com/Noobucodonosor/basilico/issues/51) | `TASK-CICLO-05` | `budget:L` | 4 | 11.436 | 1.054.676 | 1956 | 1.4% | 0 | `645c022` | 2026-11-21 |
 | [#52](https://github.com/Noobucodonosor/basilico/issues/52) | `TASK-CICLO-06` | `budget:S` | 8 | 434.848 | 2.839.646 | 3730 | 289.9% | 0 | `4fdabaa` | 2026-11-21 |
 | [#68](https://github.com/Noobucodonosor/basilico/issues/68) | `TASK-UX-01` | `budget:M` | 27 | 630.388 | 7.264.616 | 24.427 | 157.6% | 0 | `e3d1598` | 2026-11-21 |
+| [#70](https://github.com/Noobucodonosor/basilico/issues/70) | `TASK-PWA-01` | `budget:M` | 20 | 191.623 | 1.394.674 | 25.045 | 47.9% | 0 | `ccf8be9` | 2026-11-21 |
