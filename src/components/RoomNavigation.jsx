@@ -1,40 +1,83 @@
 import React from 'react';
 
 /**
- * Basilico 2.0 — Navigation Shell (ADR-0015 / TASK-V2-05)
- *  - `BASILICO_RHYTHMS`: the 3 Daily Rhythms (⚡ Oggi · 🧭 Regia Settimanale · 🎓 Accademia & Atlante)
- *  - `BASILICO_ROOMS`:   the 7 Rooms of the Atlas (deep-linkable via `?room=room-X-...`)
+ * Basilico — Causal Cycle Navigation Shell (ADR-0016 / TASK-CICLO-01)
+ *  - `BASILICO_PHASES`: Panoramica + 4 Fasi del Ciclo Causale Domestico (`?phase=1..4`)
+ *  - `BASILICO_ROOMS`:  7 Stanze dell'Atlante (deep-linkable via `?room=room-X-...`)
  */
 
-export const BASILICO_RHYTHMS = [
+export const BASILICO_PHASES = [
   {
-    id: 'oggi',
-    icon: '⚡',
-    shortTitle: 'Oggi',
-    fullTitle: '⚡ Oggi (Co-pilota)',
-    subtitle: 'Stasera in cucina in 5 secondi: tre proposte su misura, freschi in scadenza, SOS Fornelli e Smacchiatore'
+    id: 'overview',
+    number: 0,
+    icon: '🌿',
+    shortTitle: 'Panoramica',
+    fullTitle: '🌿 Panoramica Ciclo',
+    subtitle: 'Stato reale della casa: offerte attive a Rapallo, scorte in dispensa e prossimo passo',
+    rooms: []
   },
   {
-    id: 'regia',
-    icon: '🧭',
-    shortTitle: 'Regia',
-    fullTitle: '🧭 Regia Settimanale',
-    subtitle: 'Weekend in 10 minuti: andamento prezzi, controllo frigo rapido, cotture multiple e giro spesa'
+    id: 'phase-1',
+    number: 1,
+    icon: '🔬',
+    shortTitle: '1. Sapere & Obiettivi',
+    fullTitle: '1. Sapere & Obiettivi',
+    subtitle: 'Nutrizione scientifica CREA, biodisponibilità, Coach nutrizionale e Scuola culinaria',
+    rooms: [
+      { id: 'room-2-crea', icon: '🔬', label: 'Scienza & CREA' }
+    ],
+    extraPanels: [
+      { id: 'nutrition', icon: '🥗', label: 'Coach Nutrizionale' },
+      { id: 'academy', icon: '👨‍🍳', label: 'Scuola Culinaria & SOS' }
+    ]
   },
   {
-    id: 'atlante',
-    icon: '🎓',
-    shortTitle: 'Accademia & Atlante',
-    fullTitle: '🎓 Accademia & Atlante',
-    subtitle: 'Scuola culinaria scientifica, Coach nutrizionale e le 7 Stanze di Basilico'
+    id: 'phase-2',
+    number: 2,
+    icon: '🏪',
+    shortTitle: '2. Mercato & Spesa',
+    fullTitle: '2. Mercato & Spesa',
+    subtitle: '14+ insegne di Rapallo, prezzi €/kg edibili, Pianificatore Neo-Dieta e tappe €/h',
+    rooms: [
+      { id: 'room-1-negozi', icon: '🏪', label: 'Negozi & Offerte Rapallo' },
+      { id: 'room-6-pianificatore', icon: '🛒', label: 'Pianificatore & Spesa' }
+    ],
+    extraPanels: []
+  },
+  {
+    id: 'phase-3',
+    number: 3,
+    icon: '🥫',
+    shortTitle: '3. Dispensa & Casa',
+    fullTitle: '3. Dispensa & Dotazione Casa',
+    subtitle: 'Scontrini al centesimo, storico prezzi, dispensa a 3 zone e Officina Pentole/Lame',
+    rooms: [
+      { id: 'room-5-dispensa', icon: '🥫', label: 'Dispensa & Scontrini' },
+      { id: 'room-4-cucina', icon: '🍳', label: 'Officina Cucina' }
+    ],
+    extraPanels: []
+  },
+  {
+    id: 'phase-4',
+    number: 4,
+    icon: '🍽️',
+    shortTitle: '4. Cucina & Pulizie',
+    fullTitle: '4. Azione: Cucina & Pulizie',
+    subtitle: 'Ricette da dispensa reale, Ristoranti Provincia GE, Fornelli e Chimica Casa/Barca',
+    rooms: [
+      { id: 'room-3-ricette', icon: '🍽️', label: 'Ricette, Ristoranti & Fornelli' },
+      { id: 'room-7-chimica', icon: '🧪', label: 'Chimica Casa & Barca' }
+    ],
+    extraPanels: []
   }
 ];
 
-export const VALID_RHYTHM_IDS = new Set(BASILICO_RHYTHMS.map((r) => r.id));
+export const VALID_PHASE_IDS = new Set(BASILICO_PHASES.map((p) => p.id));
 
 export const BASILICO_ROOMS = [
   {
     id: 'room-1-negozi',
+    phaseId: 'phase-2',
     number: 1,
     icon: '🏪',
     shortTitle: 'Negozi & Offerte',
@@ -43,6 +86,7 @@ export const BASILICO_ROOMS = [
   },
   {
     id: 'room-2-crea',
+    phaseId: 'phase-1',
     number: 2,
     icon: '🔬',
     shortTitle: 'Scienza & CREA',
@@ -51,6 +95,7 @@ export const BASILICO_ROOMS = [
   },
   {
     id: 'room-3-ricette',
+    phaseId: 'phase-4',
     number: 3,
     icon: '🍽️',
     shortTitle: 'Ricette & Fornelli',
@@ -59,6 +104,7 @@ export const BASILICO_ROOMS = [
   },
   {
     id: 'room-4-cucina',
+    phaseId: 'phase-3',
     number: 4,
     icon: '🍳',
     shortTitle: 'Officina Cucina',
@@ -67,6 +113,7 @@ export const BASILICO_ROOMS = [
   },
   {
     id: 'room-5-dispensa',
+    phaseId: 'phase-3',
     number: 5,
     icon: '🥫',
     shortTitle: 'Dispensa & Scontrini',
@@ -75,6 +122,7 @@ export const BASILICO_ROOMS = [
   },
   {
     id: 'room-6-pianificatore',
+    phaseId: 'phase-2',
     number: 6,
     icon: '🛒',
     shortTitle: 'Pianificatore & Spesa',
@@ -83,6 +131,7 @@ export const BASILICO_ROOMS = [
   },
   {
     id: 'room-7-chimica',
+    phaseId: 'phase-4',
     number: 7,
     icon: '🧪',
     shortTitle: 'Chimica Casa',
@@ -91,36 +140,41 @@ export const BASILICO_ROOMS = [
   }
 ];
 
+export function getPhaseForRoom(roomId) {
+  const room = BASILICO_ROOMS.find((r) => r.id === roomId);
+  return room ? room.phaseId : 'phase-2';
+}
+
 /**
- * Top-level bar of the 3 Daily Rhythms + always-available quick jump to any of the 7 Rooms.
+ * Single linear navigation bar for the 4 Causal Cycle Phases + Panoramica + Quick Room Jump.
  */
-export function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onSelectRoom }) {
+export function CausalPhaseNavigation({ activePhase, onSelectPhase, activeRoom, onSelectRoom }) {
   return (
     <nav
-      aria-label="I 3 Ritmi Quotidiani di Basilico"
+      aria-label="Ciclo Causale Domestico di Basilico"
       className="bg-[#FAF9F6] text-[#141A17] border-b border-[#E5E2DA]"
-      data-testid="rhythm-navigation"
+      data-testid="causal-phase-navigation"
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center gap-2">
-        <div className="w-full sm:w-auto sm:flex-1 flex flex-wrap items-center gap-1.5" role="tablist">
-          {BASILICO_RHYTHMS.map((r) => {
-            const isActive = activeRhythm === r.id;
+        <div className="w-full lg:w-auto lg:flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar" role="tablist">
+          {BASILICO_PHASES.map((phase) => {
+            const isActive = activePhase === phase.id;
             return (
               <button
-                key={r.id}
+                key={phase.id}
                 type="button"
                 role="tab"
                 aria-selected={isActive}
-                onClick={() => onSelectRhythm(r.id)}
-                title={r.subtitle}
-                className={`min-h-[38px] sm:min-h-0 flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold whitespace-nowrap taste-btn cursor-pointer ${
+                onClick={() => onSelectPhase(phase.id)}
+                title={phase.subtitle}
+                className={`min-h-[38px] sm:min-h-0 flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold whitespace-nowrap taste-btn cursor-pointer shrink-0 ${
                   isActive
                     ? 'bg-[#141A17] text-white shadow-xs'
                     : 'text-[#4A524C] hover:text-[#141A17] hover:bg-[#EFECE6]'
                 }`}
               >
-                <span aria-hidden="true">{r.icon}</span>
-                <span>{r.shortTitle}</span>
+                <span aria-hidden="true">{phase.icon}</span>
+                <span>{phase.shortTitle}</span>
               </button>
             );
           })}
@@ -133,12 +187,12 @@ export function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onS
             </label>
             <select
               id="quick-room-select"
-              value={activeRhythm === 'atlante' && activeRoom ? activeRoom : ''}
+              value={activePhase !== 'overview' && activeRoom ? activeRoom : ''}
               onChange={(e) => {
                 if (e.target.value) onSelectRoom(e.target.value);
               }}
               className="w-full sm:w-auto sm:max-w-[190px] min-h-[38px] sm:min-h-0 text-xs font-semibold bg-[#F3F1EC] text-[#141A17] border border-[#DFDCD2] rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#1B5E3A] cursor-pointer"
-              title="Accesso rapido alle 7 Stanze dell'Atlante"
+              title="Accesso rapido alle 7 Stanze"
             >
               <option value="">🗂️ Vai alla Stanza…</option>
               {BASILICO_ROOMS.map((room) => (
@@ -154,15 +208,16 @@ export function RhythmNavigation({ activeRhythm, onSelectRhythm, activeRoom, onS
   );
 }
 
-export function RoomNavigation({ activeRoom, onSelectRoom }) {
+export function RoomNavigation({ activeRoom, onSelectRoom, rooms = BASILICO_ROOMS }) {
   return (
     <nav
       aria-label="Navigazione 7 Stanze dell'Atlante di Basilico"
       className="bg-white text-[#141A17] border-b border-[#E5E2DA] sm:sticky sm:top-16 z-20 relative"
+      data-testid="room-navigation"
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative">
         <div className="flex items-center gap-1.5 overflow-x-auto py-2 pr-8 lg:pr-0 no-scrollbar">
-          {BASILICO_ROOMS.map((room) => {
+          {rooms.map((room) => {
             const isActive = activeRoom === room.id;
             return (
               <button

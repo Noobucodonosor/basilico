@@ -76,11 +76,11 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     } catch (_) {}
   });
 
-  it('1. RoomNavigation exposes the 3 Rhythms and the 7 Rooms (Officina Cucina + Stanza 7 Chimica Casa)', () => {
-    const { BASILICO_RHYTHMS, BASILICO_ROOMS } = bundled.RoomNav;
+  it('1. RoomNavigation exposes the 4 Causal Phases (+ Panoramica) and the 7 Rooms', () => {
+    const { BASILICO_PHASES, BASILICO_ROOMS } = bundled.RoomNav;
     assert.deepEqual(
-      BASILICO_RHYTHMS.map((r) => r.id),
-      ['oggi', 'regia', 'atlante']
+      BASILICO_PHASES.map((p) => p.id),
+      ['overview', 'phase-1', 'phase-2', 'phase-3', 'phase-4']
     );
     assert.equal(BASILICO_ROOMS.length, 7);
     const room4 = BASILICO_ROOMS.find((r) => r.id === 'room-4-cucina');
@@ -92,36 +92,38 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     assert.equal(room7.fullTitle, '7. Chimica & Cura della Casa/Barca');
   });
 
-  it('2. Bare "/" opens ⚡ Oggi (Co-pilota) by default with rhythm bar, global Maestro button and quick jump to 7 Rooms', () => {
+  it('2. Bare "/" opens Panoramica del Ciclo Causale (zero "Cosa cucinare stasera" at top) with single 4-Phase bar', () => {
     installFakeWindow('');
     const html = renderToString(React.createElement(bundled.App));
-    assert.match(html, /data-testid="rhythm-navigation"/);
-    assert.match(html, /data-testid="today-copilot-view"/);
+    assert.match(html, /data-testid="causal-phase-navigation"/);
+    assert.match(html, /data-testid="cycle-overview-view"/);
+    assert.match(html, /1\. Sapere &amp; Obiettivi/);
+    assert.match(html, /2\. Mercato &amp; Spesa/);
+    assert.match(html, /3\. Dispensa &amp; Casa/);
+    assert.match(html, /4\. Cucina &amp; Pulizie/);
     assert.match(html, /data-testid="header-open-maestro"/);
     assert.match(html, /Vai alla Stanza/);
-    assert.match(html, /Chimica Casa/);
-    assert.doesNotMatch(html, /data-testid="weekly-regia-view"/);
-    assert.doesNotMatch(html, /Offerte promozionali/);
-  });
-
-  it('3. "?rhythm=regia" renders the 4-step 🧭 Regia Settimanale tunnel', () => {
-    installFakeWindow('?rhythm=regia');
-    const html = renderToString(React.createElement(bundled.App));
-    assert.match(html, /data-testid="weekly-regia-view"/);
-    assert.match(html, /1\. Prezzi &amp; Strumenti/);
-    assert.match(html, /2\. Controllo Frigo/);
-    assert.match(html, /3\. Basi &amp; Barca/);
-    assert.match(html, /4\. Giro Spesa/);
+    assert.doesNotMatch(html, /data-testid="rhythm-navigation"/);
     assert.doesNotMatch(html, /data-testid="today-copilot-view"/);
+    assert.doesNotMatch(html, /Cosa cucinare stasera/);
   });
 
-  it('4. "?rhythm=atlante&section=academy" renders 🎓 Accademia with the Atlante section switcher', () => {
-    installFakeWindow('?rhythm=atlante&section=academy');
+  it('3. "?phase=1" opens Fase 1 Sapere & Obiettivi with CREA, Coach Nutrizionale and Scuola Culinaria sub-tabs', () => {
+    installFakeWindow('?phase=1');
     const html = renderToString(React.createElement(bundled.App));
-    assert.match(html, /data-testid="atlante-section-switcher"/);
-    assert.match(html, /Scuola Culinaria &amp; SOS Fornelli/);
+    assert.match(html, /data-testid="phase-sub-navigation"/);
+    assert.match(html, /Scienza &amp; CREA/);
     assert.match(html, /Coach Nutrizionale/);
-    assert.match(html, /Atlante delle 7 Stanze/);
+    assert.match(html, /Scuola Culinaria &amp; SOS/);
+    assert.doesNotMatch(html, /data-testid="cycle-overview-view"/);
+  });
+
+  it('4. "?phase=2" opens Fase 2 Mercato & Spesa with Negozi & Offerte Rapallo and Pianificatore & Spesa', () => {
+    installFakeWindow('?phase=2');
+    const html = renderToString(React.createElement(bundled.App));
+    assert.match(html, /data-testid="room-navigation"/);
+    assert.match(html, /Offerte promozionali/);
+    assert.match(html, /Pianificatore &amp; Spesa/);
   });
 
   it('5. Deep-link "?room=room-7-chimica" opens Stanza 7 Chimica Casa (HomeChemistryView) inside the Atlante', () => {
