@@ -21,8 +21,14 @@ import express from 'express';
 import { maestroCoachService } from '../services/maestroCoachService.js';
 import { householdEconomicsService } from '../services/householdEconomicsService.js';
 import { pantryService } from '../services/pantryService.js';
+import { createRateLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
+const maestroChatLimiter = createRateLimiter({
+  windowMs: 10 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Limite chat Maestro raggiunto. Riprova tra qualche minuto.'
+});
 
 router.get('/today-copilot', async (req, res, next) => {
   try {
@@ -36,13 +42,15 @@ router.get('/today-copilot', async (req, res, next) => {
   }
 });
 
-router.post('/chat', async (req, res, next) => {
+router.post('/chat', maestroChatLimiter, async (req, res, next) => {
   try {
     const body = req.body || {};
+    // ADR-0017: never accept untrusted contextOverride in production
+    const safeContextOverride = process.env.NODE_ENV === 'production' ? null : (body.contextOverride || null);
     const result = await maestroCoachService.askMaestro({
       message: body.message,
       history: body.history || [],
-      contextOverride: body.contextOverride || null,
+      contextOverride: safeContextOverride,
       rhythmPreset: body.rhythmPreset || null,
       profileId: body.profileId || null
     });

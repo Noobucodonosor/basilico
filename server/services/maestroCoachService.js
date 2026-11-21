@@ -923,24 +923,32 @@ export class MaestroCoachService {
       `JSON_CONTESTO_CERTIFICATO:\n${JSON.stringify(groundingPayload)}`
     ].join('\n');
 
-    const safeHistory = (Array.isArray(history) ? history : []).slice(-6);
+    const safeHistory = (Array.isArray(history) ? history : [])
+      .slice(-12)
+      .map((m) => ({
+        role: m?.role,
+        content: String(m?.content || m?.text || '').slice(0, 1500)
+      }));
 
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 8000);
       try {
         if (geminiKey) {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`;
+          const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
           const contents = [
             ...safeHistory.map((m) => ({
               role: m.role === 'assistant' || m.role === 'model' ? 'model' : 'user',
-              parts: [{ text: String(m.content || m.text || '') }]
+              parts: [{ text: m.content }]
             })),
             { role: 'user', parts: [{ text: message }] }
           ];
           const res = await fetchImpl(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'x-goog-api-key': geminiKey
+            },
             body: JSON.stringify({
               systemInstruction: { parts: [{ text: systemInstruction }] },
               contents,
@@ -999,6 +1007,9 @@ export class MaestroCoachService {
     const message = String(params.message || '').trim();
     if (!message) {
       throwBadRequest('Messaggio per il Maestro obbligatorio (non vuoto)');
+    }
+    if (message.length > 2000) {
+      throwBadRequest('Messaggio per il Maestro troppo lungo (massimo 2000 caratteri)');
     }
 
     const snapshot = await this.buildHouseholdContextSnapshot({
