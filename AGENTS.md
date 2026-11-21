@@ -9,8 +9,8 @@
 
 - **Nome Progetto:** `Basilico` — Sistema Domestico, Nutrizionale (CREA), Gastronomico e Catalogo Offerte di Rapallo (GE)
 - **Repository:** `Noobucodonosor/basilico`
-- **Descrizione Sintetica:** Web application responsive (mobile-first 375px e desktop 1280px) evoluta in **Sistema Operativo Fisico-Economico della Casa ("Le 5 Anime" — [ADR-0001..0018](./docs/adr/README.md))**, organizzata sulle **4 Fasi del Ciclo Causale Domestico (`ADR-0016`)** con **Panoramica d'Ingresso (`CycleOverviewView`)**, **Chat conversazionale Ibrida Grounded col Maestro** (`MaestroDrawer`) e le **7 Stanze dell'Atlante** integrate nelle 4 Fasi:
-  0. **🌿 Panoramica Ciclo & Basilico Maestro** (Stato reale di Rapallo, scorte in casa, prossimo passo logico e Chat Maestro ibrida read-only sullo *Household Context Graph* + motore deterministico locale offline);
+- **Descrizione Sintetica:** Web application responsive (mobile-first 390px e desktop 1280px) evoluta in **Sistema Operativo Fisico-Economico della Casa ("Le 5 Anime" — [ADR-0001..0020](./docs/adr/README.md))**, strutturata sulla **Shell Consumer Editoriale (`ADR-0019`: `Oggi | Offerte | Ricette | Lista + Altro`)** con **Home `Oggi` (`CycleOverviewView` + `DishDetailDrawer`)**, **Chat conversazionale Ibrida Grounded (`MaestroDrawer`)** e tutte le **7 Stanze dell'Atlante** accessibili in primo piano o dal menu `Altro`:
+  0. **Oggi & Basilico Maestro** (Home editoriale "Cosa cucini stasera?" con le 3 proposte reali a confronto ristorante + Chat Maestro ibrida read-only sullo *Household Context Graph* e motore deterministico offline);
   1. **Negozi & Offerte Rapallo** (14+ insegne e botteghe reali di Rapallo, 5 Domini Chiusi, prezzi `€/kg` sgocciolato, storico *"È un vero sconto?"*, Lente Qualità);
   2. **Scienza & CREA** (832 alimenti ufficiali × 26.622 valori in 7 sezioni complete, fisiologia del pasto cotto su 24+ nutrienti con ritenzione USDA, biodisponibilità Calcio/Ferro, RS3 e classifica live *Nutrienti per Euro Edibili*);
   3. **Ricette, Ristoranti & Fornelli** (Scuola base single, ristoranti verificati dell'intera Provincia di Genova + stellati, BOM, Arbitraggio live, analisi 80/20, Accademia delle 12 Competenze, *SOS Fornelli* e Quaderno Lab 1-Tap);
@@ -40,10 +40,10 @@
 | [`server/services/cacheManager.js`](./server/services/cacheManager.js) | Gestore cache su disco atomica (`.tmp` + rename) con TTL 6h, grace period 7d e quarantena file corrotti. |
 | [`server/services/offerService.js`](./server/services/offerService.js) | Motore di ricerca/filtro con normalizzazione accenti italiani, filtri categoria/catena e paginazione. |
 | `server/services/{homeChemistryService,cookwarePhysicsEngine,culinaryAcademyService,nutritionPhysiologyService,householdEconomicsService,maestroCoachService}.js` | **I 5 Motori Scientifici Deterministici & Maestro Ibrido Grounded ([ADR-0015](./docs/adr/0015-five-souls-causal-engine-three-rhythms-and-grounded-maestro.md)):** chimica casa/barca, fisica pentole/lame, accademia culinaria/SOS, fisiologia pasto cotto USDA, economia `VaR_48h`/`€/h` e co-pilota Pareto/chat. |
-| [`src/App.jsx`](./src/App.jsx) | Shell applicativa React 19 sui **3 Ritmi** (`⚡ Oggi`, `🧭 Regia Settimanale`, `🎓 Accademia & Atlante` a 7 Stanze), sincronizzazione stato/URL e `MaestroDrawer`. |
+| [`src/App.jsx`](./src/App.jsx) | Shell consumer React 19 su **4 voci (`Oggi`, `Offerte`, `Ricette`, `Lista`) + menu `Altro`** (`ADR-0019`), sincronizzazione URL e `MaestroDrawer`. |
 | [`src/components/FlyerModal.jsx`](./src/components/FlyerModal.jsx) | Visualizzatore volantini nativo `<dialog>` con carosello CSS Scroll Snap e controlli touch/tastiera. |
 | [`specs/`](./specs/README.md) | **Living Specs** (contratti umani di 1 pagina: `00-oggi-e-maestro.spec.md` + le 7 Stanze `01-negozi.spec.md` .. `07-chimica-casa.spec.md`). |
-| [`evals/run_evals.mjs`](./evals/run_evals.mjs) | **Domain & Common-Sense Evals Suite** (`npm run eval`) con scorecard quantitativa per i 3 Ritmi, il Maestro e le 7 Stanze. |
+| [`evals/run_evals.mjs`](./evals/run_evals.mjs) | **Domain & Common-Sense Evals Suite** (`npm run eval`) con scorecard quantitativa per la Home Oggi, il Maestro e le 7 Stanze. |
 | [`server/routes/agentation.js`](./server/routes/agentation.js) | Bridge REST per la toolbar visuale **Agentation** (`data/cache/agentation_inbox.json` & `.md`). |
 | [`scripts/board.mjs`](./scripts/board.mjs) | **Mission Control CLI** (`npm run board` / `npm run inbox`) sincronizzata con GitHub (`#28`..`#52`) e contabilità token. |
 | [`scripts/tokenLedger.mjs`](./scripts/tokenLedger.mjs) | **Token Accounting CLI** (`npm run task:start` / `task:status` / `task:close`): delta reale token da `transcript.jsonl` -> GitHub & [`TOKEN_LEDGER.md`](./docs/adr/TOKEN_LEDGER.md). |
@@ -53,12 +53,12 @@
 
 ## 3. Metodologia di Lavoro (ADR + Living Specs + Evals + Governance Token su GitHub)
 
-1. **Regola "1 Issue GitHub = 1 Agente Singolo + Contabilità Token" ([ADR-0016](./docs/adr/0016-causal-cycle-ontology-and-github-token-governance.md)):**
+1. **Regola "1 Issue GitHub = 1 Agente Singolo + Contabilità Token" ([ADR-0016](./docs/adr/0016-causal-cycle-ontology-and-github-token-governance.md) §2.2):**
    - **NON usare `/swarm` né sub-agenti multipli** salvo richiesta esplicita del Regista. Lavora sempre **su una sola GitHub Issue alla volta**, dopo approvazione esplicita del piano.
    - Avvia sempre il contatore prima di iniziare (`npm run task:start -- <issue> --tier S|M|L --task TASK-...`) e chiudi a fine commit (`npm run task:close -- <issue> --commit <sha> --summary "..."`), pubblicando i token reali consumati sulla Issue e in [`docs/adr/TOKEN_LEDGER.md`](./docs/adr/TOKEN_LEDGER.md).
 2. **Ogni decisione architetturale o di sicurezza** è documentata in un file `docs/adr/NNNN-titolo.md`.
-2. **Living Specs (`specs/`):** Ogni Ritmo e ciascuna delle 7 Stanze possiede un contratto umano di 1 pagina (`specs/00-oggi-e-maestro.spec.md` e `specs/01-negozi.spec.md` .. `07-chimica-casa.spec.md`) collegato alle Issues su GitHub (`#28`..`#33` e `#39`..`#44`, con label `status:spec-review`, `status:agent-ready`, `status:taste-check`). Prima di modificare un Ritmo o una Stanza, leggi sempre la sua spec (inclusa la sezione `## 4. Note & Cambiamenti Richiesti dal Regista`).
-3. **Visual Point-to-Agent Inbox (`Agentation`):** Quando l'utente annota elementi nel browser tramite `<Agentation />` (`localhost`), le annotazioni strutturate (selettore DOM, React component stack, URL stanza, commento) vengono salvate automaticamente in `data/cache/agentation_inbox.json` e `data/cache/agentation_inbox.md`. Quando l'utente chiede *"smaltisci inbox"*, leggi `data/cache/agentation_inbox.json`, applica le modifiche, verifica con `npm run eval` + `npm test`, e marca gli ID risolti (`POST /api/agentation/resolve` o helper).
+3. **Living Specs (`specs/`):** La Home (`00-oggi-e-maestro.spec.md`) e ciascuna delle 7 Stanze (`01-negozi.spec.md` .. `07-chimica-casa.spec.md`) possiedono un contratto umano di 1 pagina collegato alle Issues su GitHub (`#28`..`#33` e `#39`..`#44`). Prima di modificare Home o una Stanza, leggi sempre la sua spec.
+4. **Visual Point-to-Agent Inbox (`Agentation`):** Quando l'utente annota elementi nel browser (`npm run dev` su `http://localhost:5173`) tramite `<Agentation />`, le annotazioni vengono salvate automaticamente in `data/cache/agentation_inbox.json` e `data/cache/agentation_inbox.md`. Quando l'utente chiede *"smaltisci inbox"*, leggi `data/cache/agentation_inbox.json`, applica le modifiche, verifica con `npm run eval` + `npm test`, e marca gli ID risolti.
 4. **Ogni task operativo** ha un codice univoco (`TASK-<MODULO>-XX`) censito sia nell'ADR di origine, sia in `docs/adr/README.md`, sia come **GitHub Issue**.
 5. **Priorità Standard:**
    - `P0-critical`: Sicurezza (path traversal, input clamping, secret protection), integrità del dataset seed/cache, bug bloccanti sui test E2E.
@@ -100,7 +100,7 @@ npm run build
 # Esecuzione completa della suite di test (Unit, Integration, API, E2E)
 npm test
 
-# Scorecard automatica di dominio e buon senso sui 3 Ritmi, Maestro e 7 Stanze (Eval-Driven Development)
+# Scorecard automatica di dominio e buon senso sulla Home Oggi, Maestro e 7 Stanze (Eval-Driven Development)
 npm run eval
 
 # Mission Control CLI (stato Stanze/Roadmap GitHub + Eval Score + Token Attivi + Inbox)

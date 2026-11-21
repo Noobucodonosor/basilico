@@ -45,8 +45,8 @@ jobs:
           PREVIEW_OUT_DIR: docs/preview
           PREVIEW_BADGE: "LIVE DEMO · CLOUD RUN"
           PREVIEW_TITLE: "Basilico — Rapallo"
-          PREVIEW_DESC: "Offerte e volantini dei supermercati di Rapallo in tempo reale con cache SQLite, resilienza offline e sfogliatore mobile-first."
-          PREVIEW_TAGS: "React 19,Vite,Node.js,SQLite,Docker"
+          PREVIEW_DESC: "Offerte e volantini dei supermercati di Rapallo in tempo reale con cache JSON atomica, resilienza offline e sfogliatore mobile-first."
+          PREVIEW_TAGS: "React 19,Vite,Node.js,Express,Docker"
           PREVIEW_REPO: "github.com/Noobucodonosor/basilico"
           PREVIEW_LIVE_URL: "https://basilico-txfxsxuuma-ew.a.run.app"
           PREVIEW_THEME: "green"

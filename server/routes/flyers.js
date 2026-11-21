@@ -59,10 +59,7 @@ export async function getFlyersHandler(req, res, next) {
     });
   } catch (err) {
     console.error('[flyersRoute] Error retrieving flyers:', err);
-    return res.status(500).json({
-      error: 'Failed to retrieve flyers',
-      message: err.message
-    });
+    return next(err);
   }
 }
 

@@ -1326,7 +1326,7 @@ export class IngestionService {
 
     for (const f of seedFlyers) {
       const validToMs = f?.validTo ? Date.parse(f.validTo) : NaN;
-      if (!Number.isFinite(validToMs) || validToMs >= nowMs) {
+      if (Number.isFinite(validToMs) && validToMs >= nowMs) {
         activeSeedFlyers += 1;
       } else {
         expiredSeedFlyers += 1;

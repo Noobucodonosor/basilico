@@ -40,10 +40,7 @@ export async function getStatusHandler(req, res, next) {
     });
   } catch (err) {
     console.error('[statusRoute] Error fetching status:', err);
-    return res.status(500).json({
-      error: 'Failed to fetch status',
-      message: err.message
-    });
+    return next(err);
   }
 }
 
@@ -65,11 +62,7 @@ export async function postSyncHandler(req, res, next) {
     return res.status(200).json(result);
   } catch (err) {
     console.error('[syncRoute] Error triggering sync:', err);
-    return res.status(500).json({
-      status: 'error',
-      message: err.message,
-      errors: [{ message: err.message }]
-    });
+    return next(err);
   }
 }
 
@@ -83,10 +76,7 @@ export async function getSyncProgressHandler(req, res, next) {
     res.setHeader('content-type', 'application/json; charset=utf-8');
     return res.status(200).json(progress);
   } catch (err) {
-    return res.status(500).json({
-      error: 'Failed to fetch sync progress',
-      message: err.message
-    });
+    return next(err);
   }
 }
 

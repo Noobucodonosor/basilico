@@ -44,8 +44,8 @@ export function handleGetStores(queryParams = {}, storeData = null) {
 
   let stores = storesList.map((s) => ({
     ...s,
-    flyerCount: typeof s.flyerCount === 'number' && s.flyerCount >= 0 ? s.flyerCount : (s.brand === 'Doro' ? 1 : 2),
-    activeOfferCount: typeof s.activeOfferCount === 'number' && s.activeOfferCount >= 0 ? s.activeOfferCount : (s.brand === 'Doro' ? 8 : 15)
+    flyerCount: typeof s.flyerCount === 'number' && s.flyerCount >= 0 ? s.flyerCount : 0,
+    activeOfferCount: typeof s.activeOfferCount === 'number' && s.activeOfferCount >= 0 ? s.activeOfferCount : 0
   }));
 
   if (queryParams.hasOffers === 'true' || queryParams.hasOffers === true) {
@@ -157,10 +157,7 @@ export async function getStoresHandler(req, res, next) {
     });
   } catch (err) {
     console.error('[storesRoute] Error retrieving stores:', err);
-    return res.status(500).json({
-      error: 'Failed to retrieve stores',
-      message: err.message
-    });
+    return next(err);
   }
 }
 

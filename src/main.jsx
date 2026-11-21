@@ -6,11 +6,18 @@ import './index.css';
 window.addEventListener('error', (event) => {
   console.error('[Global Error Caught]:', event.error);
   const root = document.getElementById('root');
-  if (root && root.innerHTML.includes('Caricamento')) {
-    root.innerHTML = `<div style="padding: 24px; color: #dc2626; font-family: sans-serif; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; margin: 20px;">
-      <h2 style="font-weight: bold; margin-bottom: 8px;">Errore durante il caricamento dell'applicazione</h2>
-      <pre style="white-space: pre-wrap; font-size: 13px;">${event.error?.stack || event.message}</pre>
-    </div>`;
+  if (root && root.textContent && root.textContent.includes('Caricamento')) {
+    const box = document.createElement('div');
+    box.style.cssText =
+      'padding: 24px; color: #dc2626; font-family: sans-serif; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; margin: 20px;';
+    const heading = document.createElement('h2');
+    heading.style.cssText = 'font-weight: bold; margin-bottom: 8px;';
+    heading.textContent = "Errore durante il caricamento dell'applicazione";
+    const pre = document.createElement('pre');
+    pre.style.cssText = 'white-space: pre-wrap; font-size: 13px;';
+    pre.textContent = String(event.error?.stack || event.message || 'Errore sconosciuto');
+    box.append(heading, pre);
+    root.replaceChildren(box);
   }
 });
 

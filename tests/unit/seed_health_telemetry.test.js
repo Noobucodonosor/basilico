@@ -65,3 +65,46 @@ test('TASK-SEC-04: getStatus responds in < 500ms without blocking while inFlight
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 });
+
+test('TASK-GOV-02: getSeedHealth treats missing/invalid validTo as expired and routers delegate 500 to errorHandler without raw err.message', async () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-seed-missing-date-'));
+  const tmpSeedDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-seed-fixtures-'));
+  try {
+    fs.writeFileSync(
+      path.join(tmpSeedDir, 'rapallo_flyers.json'),
+      JSON.stringify([
+        { id: 'f-valid', validTo: '2099-01-01T00:00:00.000Z' },
+        { id: 'f-missing' },
+        { id: 'f-invalid', validTo: 'not-a-date' }
+      ]),
+      'utf8'
+    );
+    const cache = new CacheManager({ cacheDir: tmpDir, backend: 'json' });
+    const service = new IngestionService({ cacheManager: cache, seedDir: tmpSeedDir });
+    const health = await service.getSeedHealth(Date.parse('2026-11-21T12:00:00.000Z'));
+    assert.equal(health.totalSeedFlyers, 3);
+    assert.equal(health.activeSeedFlyers, 1);
+    assert.equal(health.expiredSeedFlyers, 2);
+
+    const express = (await import('express')).default;
+    const { errorHandler } = await import('../../server/index.js');
+    const app = express();
+    app.get('/boom', (_req, _res, next) => next(new Error('SECRET_INTERNAL_STACK')));
+    app.use(errorHandler);
+    const srv = app.listen(0, '127.0.0.1');
+    await new Promise((r) => srv.once('listening', r));
+    try {
+      const { port } = srv.address();
+      const res = await fetch(`http://127.0.0.1:${port}/boom`);
+      assert.equal(res.status, 500);
+      const body = await res.json();
+      assert.equal(body.error, 'Internal Server Error');
+      assert.ok(!JSON.stringify(body).includes('SECRET_INTERNAL_STACK'));
+    } finally {
+      srv.close();
+    }
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+    fs.rmSync(tmpSeedDir, { recursive: true, force: true });
+  }
+});

@@ -12,7 +12,7 @@ const router = express.Router();
  * GET /api/recipes
  * Query dishes with real-time Dual Cost, Arbitrage, Profile-Adapted Variants, and Tigullio Restaurants.
  */
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const result = await recipeAndArbitrageService.queryDishes({
       sourceType: req.query.sourceType,
@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
     });
     res.json(result);
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
  * By default returns ONLY venues with verified priced public menus (`dishCount > 0`),
  * unless `?includeWithoutMenu=true` is passed. Supports `?zona=...` and `?citta=...`.
  */
-router.get('/restaurants', (req, res) => {
+router.get('/restaurants', (req, res, next) => {
   try {
     const includeWithoutMenu =
       req.query.includeWithoutMenu === 'true' || req.query.includeWithoutMenu === true;
@@ -63,7 +63,7 @@ router.get('/restaurants', (req, res) => {
       totalCensusedCount: allCensused.length
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -71,7 +71,7 @@ router.get('/restaurants', (req, res) => {
  * GET /api/recipes/8020
  * Computes the submodular 80/20 Max-Coverage ingredient basket.
  */
-router.get('/8020', async (req, res) => {
+router.get('/8020', async (req, res, next) => {
   try {
     const result = await recipeAndArbitrageService.computeMaxCoverage8020({
       topK: req.query.topK,
@@ -79,7 +79,7 @@ router.get('/8020', async (req, res) => {
     });
     res.json(result);
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -87,12 +87,12 @@ router.get('/8020', async (req, res) => {
  * GET /api/recipes/lab-notes
  * Lists all Lab Notebook entries (or filtered by dishId).
  */
-router.get('/lab-notes', (req, res) => {
+router.get('/lab-notes', (req, res, next) => {
   try {
     const entries = recipeAndArbitrageService.getLabNotesForDish(req.query.dishId || null);
     res.json({ entries, total: entries.length });
   } catch (err) {
-    res.status(err.status || 500).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -100,7 +100,7 @@ router.get('/lab-notes', (req, res) => {
  * POST /api/recipes/deconstruct
  * On-demand deconstruction of a custom restaurant menu dish into a scientific BOM + CREA + Arbitrage sheet.
  */
-router.post('/deconstruct', async (req, res) => {
+router.post('/deconstruct', async (req, res, next) => {
   try {
     const dish = await recipeAndArbitrageService.deconstructCustomMenuDish({
       ...(req.body || {}),
@@ -108,7 +108,7 @@ router.post('/deconstruct', async (req, res) => {
     });
     res.status(201).json({ dish });
   } catch (err) {
-    res.status(err.status || 400).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -117,7 +117,7 @@ router.post('/deconstruct', async (req, res) => {
  * Returns the Harvard "Science & Cooking" step-by-step interactive session translated for the user's stove,
  * plus embedded Kitchen Reset protocols.
  */
-router.get('/:id/cooking-session', async (req, res) => {
+router.get('/:id/cooking-session', async (req, res, next) => {
   try {
     const session = await recipeAndArbitrageService.getScientificCookingSession(req.params.id, {
       heatSource: req.query.heatSource,
@@ -126,7 +126,7 @@ router.get('/:id/cooking-session', async (req, res) => {
     });
     res.json(session);
   } catch (err) {
-    res.status(err.status || 404).json({ error: err.message });
+    next(err);
   }
 });
 
@@ -134,12 +134,12 @@ router.get('/:id/cooking-session', async (req, res) => {
  * POST /api/recipes/:id/lab-notes
  * Saves a Lab Notebook entry for a dish (`rating`, `actualCookedWeightGrams`, `saltAndHydrationNotes`).
  */
-router.post('/:id/lab-notes', (req, res) => {
+router.post('/:id/lab-notes', (req, res, next) => {
   try {
     const entry = recipeAndArbitrageService.saveLabNote(req.params.id, req.body || {});
     res.status(201).json({ entry });
   } catch (err) {
-    res.status(err.status || 400).json({ error: err.message });
+    next(err);
   }
 });
 
