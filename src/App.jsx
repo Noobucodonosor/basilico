@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Header from './components/Header.jsx';
 import RoomNavigation, {
   BASILICO_ROOMS,
-  RhythmNavigation,
-  VALID_RHYTHM_IDS
+  BASILICO_PHASES,
+  VALID_PHASE_IDS,
+  CausalPhaseNavigation,
+  getPhaseForRoom
 } from './components/RoomNavigation.jsx';
 import StoreSwitcher from './components/StoreSwitcher.jsx';
 import SearchBar from './components/SearchBar.jsx';
@@ -19,8 +21,7 @@ import PantryAndReceiptsView from './components/pantry/PantryAndReceiptsView.jsx
 import KitchenCareView from './components/kitchen/KitchenCareView.jsx';
 import RecipesAndRestaurantsView from './components/recipes/RecipesAndRestaurantsView.jsx';
 import PlannerAndShoppingView from './components/planner/PlannerAndShoppingView.jsx';
-import TodayCopilotView from './components/today/TodayCopilotView.jsx';
-import WeeklyRegiaView from './components/today/WeeklyRegiaView.jsx';
+import CycleOverviewView from './components/cycle/CycleOverviewView.jsx';
 import MaestroDrawer from './components/maestro/MaestroDrawer.jsx';
 import HomeChemistryView from './components/home/HomeChemistryView.jsx';
 import CulinaryAcademyPanel from './components/academy/CulinaryAcademyPanel.jsx';
@@ -64,57 +65,89 @@ const DOMAIN_ALLOWED_CATEGORIES = {
 };
 
 const VALID_ROOM_IDS = new Set(BASILICO_ROOMS.map((r) => r.id));
-const VALID_ATLANTE_SECTIONS = new Set(['rooms', 'academy', 'nutrition']);
+const VALID_PHASE1_PANELS = new Set(['crea', 'academy', 'nutrition']);
 const VALID_ACADEMY_SECTIONS = new Set(['skills', 'sos', 'ratios', 'improvise']);
-
-const ATLANTE_SECTIONS = [
-  { id: 'academy', icon: '👨‍🍳', label: 'Scuola Culinaria & SOS Fornelli' },
-  { id: 'nutrition', icon: '🥗', label: 'Coach Nutrizionale' },
-  { id: 'rooms', icon: '🗂️', label: 'Atlante delle 7 Stanze' }
-];
 
 function normalizeRoomId(roomId) {
   return roomId && VALID_ROOM_IDS.has(roomId) ? roomId : 'room-1-negozi';
 }
 
+function getDefaultRoomForPhase(phaseId) {
+  const phase = BASILICO_PHASES.find((p) => p.id === phaseId);
+  return phase?.rooms?.[0]?.id || 'room-1-negozi';
+}
+
 /**
- * Resolves the initial 3-Rhythms app mode from the URL (ADR-0015):
- *  - `?room=room-X-...`  -> Atlante (deep-links to the 7 Rooms always preserved)
- *  - `?rhythm=oggi|regia|atlante`
- *  - bare `/`            -> ⚡ Oggi (Co-pilota), the default entry chosen by the Regista
+ * Resolves the initial 4-Phase Causal Cycle state from the URL (ADR-0016 / TASK-CICLO-01):
+ *  - `?room=room-X-...`    -> matching phase + exact room (deep-link preserved)
+ *  - `?phase=1|2|3|4`      -> phase-1..phase-4 + its default room
+ *  - legacy `?rhythm=...`  -> mapped cleanly to the corresponding phase
+ *  - bare `/`              -> 'overview' (Panoramica sobria del ciclo reale)
  */
-function resolveInitialAppMode(params) {
-  if (params.get('room')) return 'atlante';
-  const rhythm = params.get('rhythm');
-  if (rhythm && VALID_RHYTHM_IDS.has(rhythm)) return rhythm;
-  return 'oggi';
+function resolveInitialCycleState(params) {
+  const roomParam = params.get('room');
+  if (roomParam && VALID_ROOM_IDS.has(roomParam)) {
+    return {
+      phase: getPhaseForRoom(roomParam),
+      room: roomParam,
+      phase1Panel: 'crea'
+    };
+  }
+
+  const phaseParam = params.get('phase');
+  if (phaseParam) {
+    const candidate = phaseParam.startsWith('phase-') ? phaseParam : `phase-${phaseParam}`;
+    if (VALID_PHASE_IDS.has(candidate) && candidate !== 'overview') {
+      return {
+        phase: candidate,
+        room: getDefaultRoomForPhase(candidate),
+        phase1Panel: 'crea'
+      };
+    }
+  }
+
+  const legacyRhythm = params.get('rhythm');
+  if (legacyRhythm === 'regia') {
+    return { phase: 'phase-2', room: 'room-6-pianificatore', phase1Panel: 'crea' };
+  }
+  if (legacyRhythm === 'oggi') {
+    return { phase: 'phase-4', room: 'room-3-ricette', phase1Panel: 'crea' };
+  }
+  if (legacyRhythm === 'atlante') {
+    const sec = params.get('section');
+    return {
+      phase: 'phase-1',
+      room: 'room-2-crea',
+      phase1Panel: VALID_PHASE1_PANELS.has(sec) ? sec : 'crea'
+    };
+  }
+
+  return {
+    phase: 'overview',
+    room: 'room-1-negozi',
+    phase1Panel: 'crea'
+  };
 }
 
 export function App() {
   // 1. Initial State from URL
   const initialParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
-  const initialRoom = normalizeRoomId(initialParams.get('room'));
+  const initialCycle = resolveInitialCycleState(initialParams);
   const initialStore = initialParams.get('store') || null;
   const initialDomain = initialParams.get('domain') || null;
   const initialQuery = initialParams.get('q') || '';
   const initialCategory = initialParams.get('category') || null;
   const initialSort = initialParams.get('sortBy') || 'discountDesc';
-  const initialAppMode = resolveInitialAppMode(initialParams);
-  const initialSectionParam = initialParams.get('section');
-  const initialAtlanteSection =
-    initialParams.get('room') || !VALID_ATLANTE_SECTIONS.has(initialSectionParam)
-      ? 'rooms'
-      : initialSectionParam;
 
-  // ADR-0015: 3 Daily Rhythms (`oggi` | `regia` | `atlante`) + Atlante sub-sections
-  const [appMode, setAppMode] = useState(initialAppMode);
-  const [atlanteSection, setAtlanteSection] = useState(initialAtlanteSection);
+  // ADR-0016: Single 4-Phase Causal Cycle (`overview` | `phase-1`..`phase-4`)
+  const [activePhase, setActivePhase] = useState(initialCycle.phase);
+  const [phase1Panel, setPhase1Panel] = useState(initialCycle.phase1Panel);
   const [academySection, setAcademySection] = useState('skills');
   const [rhythmPreset, setRhythmPreset] = useState('feriale');
   const [isMaestroOpen, setIsMaestroOpen] = useState(false);
   const [maestroPrompt, setMaestroPrompt] = useState('');
 
-  const [activeRoom, setActiveRoomState] = useState(initialRoom);
+  const [activeRoom, setActiveRoomState] = useState(initialCycle.room);
   const [selectedStoreId, setSelectedStoreId] = useState(initialStore);
   const [selectedDomain, setSelectedDomain] = useState(initialDomain);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
@@ -133,6 +166,10 @@ export function App() {
 
   const setActiveRoom = useCallback((nextRoom) => {
     const normalized = normalizeRoomId(nextRoom);
+    setActivePhase(getPhaseForRoom(normalized));
+    if (normalized === 'room-2-crea') {
+      setPhase1Panel('crea');
+    }
     setActiveRoomState((prev) => {
       if (prev === 'room-2-crea' && normalized !== 'room-2-crea') {
         setSelectedCreaFoodId(null);
@@ -146,7 +183,7 @@ export function App() {
 
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
-  // ---- ADR-0015 Navigation handlers across the 3 Rhythms, Atlante & 7 Rooms ----
+  // ---- ADR-0016 Navigation handlers across the 4 Causal Cycle Phases & 7 Rooms ----
   const scrollToTop = useCallback(() => {
     if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
       try {
@@ -155,11 +192,18 @@ export function App() {
     }
   }, []);
 
-  const handleSelectRhythm = useCallback(
-    (nextRhythm) => {
-      const mode = VALID_RHYTHM_IDS.has(nextRhythm) ? nextRhythm : 'oggi';
-      setAppMode(mode);
-      if (mode !== 'atlante') setIsMobileSearchOpen(false);
+  const handleSelectPhase = useCallback(
+    (nextPhase) => {
+      const phaseId = VALID_PHASE_IDS.has(nextPhase) ? nextPhase : 'overview';
+      setActivePhase(phaseId);
+      if (phaseId === 'overview') {
+        setIsMobileSearchOpen(false);
+      } else {
+        const targetRoom = getDefaultRoomForPhase(phaseId);
+        setActiveRoomState(targetRoom);
+        if (phaseId === 'phase-1') setPhase1Panel('crea');
+        if (targetRoom !== 'room-1-negozi') setIsMobileSearchOpen(false);
+      }
       scrollToTop();
     },
     [scrollToTop]
@@ -167,8 +211,6 @@ export function App() {
 
   const handleNavigateRoom = useCallback(
     (roomId) => {
-      setAppMode('atlante');
-      setAtlanteSection('rooms');
       setActiveRoom(roomId);
       scrollToTop();
     },
@@ -178,16 +220,18 @@ export function App() {
   const handleOpenAcademy = useCallback(
     (section = 'skills') => {
       setAcademySection(VALID_ACADEMY_SECTIONS.has(section) ? section : 'skills');
-      setAppMode('atlante');
-      setAtlanteSection('academy');
+      setActivePhase('phase-1');
+      setActiveRoomState('room-2-crea');
+      setPhase1Panel('academy');
       scrollToTop();
     },
     [scrollToTop]
   );
 
   const handleOpenNutritionCoach = useCallback(() => {
-    setAppMode('atlante');
-    setAtlanteSection('nutrition');
+    setActivePhase('phase-1');
+    setActiveRoomState('room-2-crea');
+    setPhase1Panel('nutrition');
     scrollToTop();
   }, [scrollToTop]);
 
@@ -211,7 +255,7 @@ export function App() {
       .catch(() => {});
   }, []);
 
-  const isRoomsView = appMode === 'atlante' && atlanteSection === 'rooms';
+  const isRoomsView = activePhase !== 'overview' && !(activePhase === 'phase-1' && phase1Panel !== 'crea');
   const [activeFlyer, setActiveFlyer] = useState(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -331,14 +375,14 @@ export function App() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams();
-    if (appMode === 'regia') {
-      params.set('rhythm', 'regia');
-    } else if (appMode === 'atlante' && atlanteSection !== 'rooms') {
-      params.set('rhythm', 'atlante');
-      params.set('section', atlanteSection);
-    } else if (appMode === 'atlante') {
-      // Deep-link to any of the 7 Rooms (`?room=room-X-...`) is always explicit now that `/` opens ⚡ Oggi
-      if (activeRoom) params.set('room', activeRoom);
+    if (activePhase !== 'overview') {
+      const phaseNum = activePhase.replace('phase-', '');
+      params.set('phase', phaseNum);
+      if (activePhase === 'phase-1' && phase1Panel !== 'crea') {
+        params.set('section', phase1Panel);
+      } else if (activeRoom) {
+        params.set('room', activeRoom);
+      }
       if (activeRoom === 'room-1-negozi') {
         if (selectedStoreId) params.set('store', selectedStoreId);
         if (selectedDomain) params.set('domain', selectedDomain);
@@ -350,7 +394,7 @@ export function App() {
 
     const newRelativePath = params.toString() ? `?${params.toString()}` : window.location.pathname;
     window.history.replaceState(null, '', newRelativePath);
-  }, [appMode, atlanteSection, activeRoom, selectedStoreId, selectedDomain, searchQuery, selectedCategory, sortBy]);
+  }, [activePhase, phase1Panel, activeRoom, selectedStoreId, selectedDomain, searchQuery, selectedCategory, sortBy]);
 
   // 4. Resolve Active Store display name
   const activeStore = useMemo(() => {
@@ -516,7 +560,7 @@ export function App() {
       {/* Responsive Header */}
       <Header
         status={status}
-        activeRoom={isRoomsView ? activeRoom : `rhythm-${appMode}`}
+        activeRoom={isRoomsView ? activeRoom : activePhase}
         activeStoreName={activeStoreName}
         isMobileSearchOpen={isMobileSearchOpen}
         onToggleMobileSearch={() => setIsMobileSearchOpen((prev) => !prev)}
@@ -541,70 +585,71 @@ export function App() {
         </div>
       )}
 
-      {/* ADR-0015: 3 Daily Rhythms Bar (⚡ Oggi · 🧭 Regia Settimanale · 🎓 Accademia & Atlante) + quick jump to 7 Rooms */}
-      <RhythmNavigation
-        activeRhythm={appMode}
-        onSelectRhythm={handleSelectRhythm}
-        activeRoom={isRoomsView ? activeRoom : ''}
+      {/* ADR-0016: Single linear 4-Phase Causal Cycle Bar + quick jump to 7 Rooms */}
+      <CausalPhaseNavigation
+        activePhase={activePhase}
+        onSelectPhase={handleSelectPhase}
+        activeRoom={activePhase !== 'overview' ? activeRoom : ''}
         onSelectRoom={handleNavigateRoom}
       />
 
-      {appMode === 'oggi' ? (
+      {activePhase === 'overview' ? (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <TodayCopilotView
-            activeProfileId={activeProfileId}
-            rhythmPreset={rhythmPreset}
-            onChangeRhythmPreset={setRhythmPreset}
-            onSwitchAppMode={handleSelectRhythm}
+          <CycleOverviewView
+            status={status}
+            activeProfile={activeProfile}
+            shoppingCount={shoppingCount}
+            onSelectPhase={handleSelectPhase}
             onNavigateRoom={handleNavigateRoom}
             onOpenMaestro={handleOpenMaestro}
-            onAddToShoppingList={handleAddToShoppingList}
-            onOpenAcademy={handleOpenAcademy}
-          />
-        </main>
-      ) : appMode === 'regia' ? (
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <WeeklyRegiaView
-            activeProfileId={activeProfileId}
-            onNavigateRoom={handleNavigateRoom}
-            onOpenMaestro={handleOpenMaestro}
-            onAddToShoppingList={handleAddToShoppingList}
           />
         </main>
       ) : (
         <>
-          {/* 🎓 Accademia & Atlante — section selector */}
-          <section
-            aria-label="Sezioni Accademia & Atlante"
-            className="bg-white border-b border-[#E5E2DA]"
-            data-testid="atlante-section-switcher"
-          >
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-              {ATLANTE_SECTIONS.map((sec) => {
-                const isActive = atlanteSection === sec.id;
-                return (
-                  <button
-                    key={sec.id}
-                    type="button"
-                    onClick={() => {
-                      setAtlanteSection(sec.id);
-                      if (sec.id === 'academy') setAcademySection('skills');
-                    }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap taste-btn cursor-pointer shrink-0 ${
-                      isActive
-                        ? 'bg-[#141A17] text-white border-[#141A17]'
-                        : 'bg-[#F3F1EC] text-[#4A524C] border-[#E5E2DA] hover:text-[#141A17] hover:bg-[#E7E4DC]'
-                    }`}
-                  >
-                    <span aria-hidden="true">{sec.icon}</span>
-                    <span>{sec.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
+          {/* Phase-scoped sub-navigation (only rooms/panels belonging to the active phase) */}
+          {activePhase === 'phase-1' ? (
+            <section
+              aria-label="Sezioni Fase 1: Sapere & Obiettivi"
+              className="bg-white border-b border-[#E5E2DA]"
+              data-testid="phase-sub-navigation"
+            >
+              <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                {[
+                  { id: 'crea', icon: '🔬', label: 'Scienza & CREA' },
+                  { id: 'nutrition', icon: '🥗', label: 'Coach Nutrizionale' },
+                  { id: 'academy', icon: '👨‍🍳', label: 'Scuola Culinaria & SOS' }
+                ].map((sec) => {
+                  const isActive = phase1Panel === sec.id;
+                  return (
+                    <button
+                      key={sec.id}
+                      type="button"
+                      onClick={() => {
+                        setPhase1Panel(sec.id);
+                        if (sec.id === 'academy') setAcademySection('skills');
+                      }}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap taste-btn cursor-pointer shrink-0 ${
+                        isActive
+                          ? 'bg-[#1B5E3A] text-white shadow-xs'
+                          : 'text-[#4A524C] hover:text-[#141A17] hover:bg-[#F3F1EC]'
+                      }`}
+                    >
+                      <span aria-hidden="true">{sec.icon}</span>
+                      <span>{sec.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ) : (
+            <RoomNavigation
+              activeRoom={activeRoom}
+              onSelectRoom={setActiveRoom}
+              rooms={BASILICO_ROOMS.filter((r) => r.phaseId === activePhase)}
+            />
+          )}
 
-          {atlanteSection === 'academy' ? (
+          {activePhase === 'phase-1' && phase1Panel === 'academy' ? (
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
               <CulinaryAcademyPanel
                 key={`academy-${academySection}`}
@@ -614,7 +659,7 @@ export function App() {
                 initialSection={academySection}
               />
             </main>
-          ) : atlanteSection === 'nutrition' ? (
+          ) : activePhase === 'phase-1' && phase1Panel === 'nutrition' ? (
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
               <NutritionCoachPanel
                 activeProfileId={activeProfileId}
@@ -624,8 +669,6 @@ export function App() {
             </main>
           ) : (
             <>
-      {/* 7 Rooms Atlas Navigation Bar (ADR-0007..0012 + ADR-0015) */}
-      <RoomNavigation activeRoom={activeRoom} onSelectRoom={setActiveRoom} />
 
       {activeRoom === 'room-1-negozi' ? (
         <>
