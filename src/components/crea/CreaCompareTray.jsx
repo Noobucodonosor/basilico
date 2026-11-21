@@ -21,14 +21,14 @@ export function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspec
   return (
     <section
       aria-label="Vassoio di confronto nutrizionale Side-by-Side"
-      className="bg-white rounded-2xl border-2 border-indigo-200 p-4 shadow-md space-y-3"
+      className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 space-y-3"
     >
       <div className="flex items-center justify-between gap-2">
         <div>
-          <h3 className="text-sm font-extrabold text-indigo-950">
+          <h3 className="text-sm font-extrabold text-[#141A17]">
             ⚖️ Confronto Side-by-Side ({items.length}/4 alimenti selezionati)
           </h3>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#575E58]">
             Confronto normalizzato per 100 g di parte edibile secondo le tabelle ufficiali CREA.
           </p>
         </div>
@@ -44,15 +44,15 @@ export function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspec
       <div className="overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
-              <th className="py-2 px-3 text-left font-bold text-slate-700">Parametro (per 100g edibili)</th>
+            <tr className="border-b border-[#E5E2DA] bg-[#FAF9F6]">
+              <th className="py-2 px-3 text-left font-bold text-[#4A524C]">Parametro (per 100g edibili)</th>
               {items.map((item) => (
-                <th key={item.id} className="py-2 px-3 text-right font-bold text-slate-900 min-w-[140px]">
+                <th key={item.id} className="py-2 px-3 text-right font-bold text-[#141A17] min-w-[140px]">
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       type="button"
                       onClick={() => onInspectFood && onInspectFood(item.id)}
-                      className="hover:underline text-indigo-700 truncate max-w-[130px] cursor-pointer"
+                      className="hover:underline text-[#1B5E3A] truncate max-w-[130px] cursor-pointer"
                       title={item.name}
                     >
                       {item.name}
@@ -60,26 +60,26 @@ export function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspec
                     <button
                       type="button"
                       onClick={() => onRemoveItem(item.id)}
-                      className="text-slate-400 hover:text-rose-600 cursor-pointer"
+                      className="text-[#575E58] hover:text-rose-600 cursor-pointer"
                       aria-label={`Rimuovi ${item.name}`}
                     >
                       ✕
                     </button>
                   </div>
-                  <div className="text-[10px] font-normal text-slate-500">
+                  <div className="text-[10px] font-normal text-[#575E58]">
                     Edibile: {item.ediblePartPct}% • Resa Y={item.yieldFactor?.multiplier ?? 1}x
                   </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-[#F0EDE6]">
             {COMPARE_METRICS.map((m) => {
               const vals = items.map((it) => it.keyMetrics?.[m.key] ?? -1);
               const maxVal = Math.max(...vals);
               return (
-                <tr key={m.key} className="hover:bg-slate-50/60">
-                  <td className="py-1.5 px-3 font-medium text-slate-700">{m.label}</td>
+                <tr key={m.key} className="hover:bg-[#FAF9F6]">
+                  <td className="py-1.5 px-3 font-medium text-[#4A524C]">{m.label}</td>
                   {items.map((it) => {
                     const v = it.keyMetrics?.[m.key];
                     const isBest =
@@ -93,7 +93,7 @@ export function CreaCompareTray({ items = [], onRemoveItem, onClearAll, onInspec
                       <td
                         key={it.id}
                         className={`py-1.5 px-3 text-right font-semibold ${
-                          isBest ? 'text-emerald-700 bg-emerald-50/60 font-extrabold' : 'text-slate-800'
+                          isBest ? 'text-[#1B5E3A] bg-[#F3F1EC] font-extrabold' : 'text-[#141A17]'
                         }`}
                       >
                         {v !== null && v !== undefined ? `${v} ${m.unit}` : 'n.d.'}

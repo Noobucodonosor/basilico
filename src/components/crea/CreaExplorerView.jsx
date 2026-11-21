@@ -148,16 +148,16 @@ export function CreaExplorerView({
   return (
     <div className="space-y-5">
       {/* Top Banner & Mode Switcher */}
-      <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <section className="bg-white rounded-2xl border border-[#E5E2DA] p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🔬</span>
-            <h2 className="text-xl font-extrabold text-slate-900">
-              Stanza 2 — Scienza & Database Ufficiale CREA (100% Integrale)
+            <span className="text-2xl" aria-hidden="true">🔬</span>
+            <h2 className="text-xl font-extrabold text-[#141A17]">
+              Scienza &amp; Alimenti Ufficiali CREA
             </h2>
           </div>
-          <p className="text-xs text-slate-600 mt-1">
-            Tutti gli <strong>{totalCatalogSize} alimenti ufficiali CREA</strong> × <strong>26.622 valori</strong> nelle <strong>7 sezioni complete</strong> (zero tagli <code>.slice</code>), ricalcolo 100g edibili/lordi/LARN, resa fisica Crudo↔Cotto e ponte <strong>Nutrienti per Euro Edibili</strong> sulle offerte di Rapallo.
+          <p className="text-xs text-[#4A524C] mt-1">
+            Tutti gli <strong>{totalCatalogSize} alimenti ufficiali CREA</strong> × <strong>26.622 valori</strong> nelle <strong>7 sezioni complete</strong>, ricalcolo 100g edibili/lordi/LARN, resa fisica Crudo↔Cotto e ponte <strong>Nutrienti per Euro Edibili</strong> sulle offerte di Rapallo.
           </p>
         </div>
 
@@ -165,21 +165,21 @@ export function CreaExplorerView({
           <button
             type="button"
             onClick={() => setSubTab('database')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-colors cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold taste-btn cursor-pointer ${
               subTab === 'database'
-                ? 'bg-emerald-700 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-[#1B5E3A] text-white shadow-xs'
+                : 'bg-[#F3F1EC] text-[#4A524C] hover:bg-[#E7E4DC] hover:text-[#141A17]'
             }`}
           >
-            📚 Esploratore & Classifiche ({totalFoods}/{totalCatalogSize})
+            📚 Esploratore &amp; Classifiche ({totalFoods}/{totalCatalogSize})
           </button>
           <button
             type="button"
             onClick={() => setSubTab('nutrients_per_euro')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-colors cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold taste-btn cursor-pointer ${
               subTab === 'nutrients_per_euro'
-                ? 'bg-indigo-700 text-white shadow-xs'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'bg-[#141A17] text-white shadow-xs'
+                : 'bg-[#F3F1EC] text-[#4A524C] hover:bg-[#E7E4DC] hover:text-[#141A17]'
             }`}
           >
             💶 Classifica Live &ldquo;Nutrienti per 1 €&rdquo; a Rapallo
@@ -217,12 +217,12 @@ export function CreaExplorerView({
               ))}
             </div>
 
-            <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-lg cursor-pointer">
+            <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4A524C] bg-white border border-[#E5E2DA] px-3 py-1.5 rounded-lg cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeExcluded}
                 onChange={(e) => setIncludeExcluded(e.target.checked)}
-                className="rounded border-slate-300 text-emerald-600"
+                className="rounded border-[#DFDCD2] accent-[#1B5E3A]"
               />
               <span>Mostra anche alimenti esclusi dal profilo (studio accademico)</span>
             </label>
@@ -390,8 +390,8 @@ export function CreaExplorerView({
                               onClick={() => toggleCompareItem(f)}
                               className={`px-2 py-1 rounded text-[10px] font-bold border cursor-pointer ${
                                 isCompared
-                                  ? 'bg-indigo-600 text-white border-indigo-600'
-                                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                                  ? 'bg-[#141A17] text-white border-[#141A17]'
+                                  : 'bg-[#F3F1EC] text-[#141A17] border-[#DFDCD2] hover:bg-[#E7E4DC]'
                               }`}
                             >
                               {isCompared ? '✓ In confronto' : '+ Confronta'}
@@ -399,7 +399,7 @@ export function CreaExplorerView({
                             <button
                               type="button"
                               onClick={() => setActiveModalFoodId(f.id)}
-                              className="px-2 py-1 rounded text-[10px] font-bold bg-emerald-700 text-white hover:bg-emerald-800 cursor-pointer"
+                              className="px-2 py-1 rounded text-[10px] font-bold bg-[#1B5E3A] text-white hover:bg-[#14472C] cursor-pointer"
                             >
                               7 Sezioni →
                             </button>
@@ -444,21 +444,21 @@ export function CreaExplorerView({
       ) : (
         /* Live "Nutrients per Edible Euro" Ranking on Rapallo Offers */
         <section className="space-y-4">
-          <div className="bg-indigo-950 text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-[#141A17] text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-base font-extrabold">
                 💶 Classifica Live &ldquo;Nutrienti per 1 € Edibile&rdquo; nei Supermercati di Rapallo
               </h3>
-              <p className="text-xs text-indigo-200 mt-0.5">
+              <p className="text-xs text-[#D7D4CC] mt-0.5">
                 Incrocio in tempo reale tra i prezzi al kg sgocciolato delle offerte attive a Rapallo, la % di parte edibile e la densità nutrizionale CREA.
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <label className="text-xs font-bold text-indigo-200">Ordina per:</label>
+              <label className="text-xs font-bold text-[#D7D4CC]">Ordina per:</label>
               <select
                 value={npeMetric}
                 onChange={(e) => setNpeMetric(e.target.value)}
-                className="text-xs font-extrabold bg-white text-slate-900 rounded-lg px-3 py-2 cursor-pointer"
+                className="text-xs font-extrabold bg-white text-[#141A17] rounded-lg px-3 py-2 cursor-pointer"
               >
                 {NPE_METRICS.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -473,13 +473,13 @@ export function CreaExplorerView({
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-slate-900 text-white text-[11px]">
+                  <tr className="bg-[#141A17] text-white text-[11px]">
                     <th className="py-2.5 px-3 font-bold">#</th>
                     <th className="py-2.5 px-3 font-bold">Offerta Supermercato Rapallo</th>
                     <th className="py-2.5 px-3 font-bold">Match Scientifico CREA (Head-Noun)</th>
                     <th className="py-2.5 px-3 font-bold text-right">Prezzo Cassa</th>
                     <th className="py-2.5 px-3 font-bold text-right">€/kg Edibile Netto</th>
-                    <th className="py-2.5 px-3 font-bold text-right bg-indigo-900">Resa per 1 € ({activeMetricUnit})</th>
+                    <th className="py-2.5 px-3 font-bold text-right bg-[#1B5E3A]">Resa per 1 € ({activeMetricUnit})</th>
                     <th className="py-2.5 px-3 font-bold text-right">Proteine/€</th>
                     <th className="py-2.5 px-3 font-bold text-right">kcal/€</th>
                     <th className="py-2.5 px-3 font-bold text-right">Azioni</th>
@@ -500,8 +500,8 @@ export function CreaExplorerView({
                     </tr>
                   ) : (
                     npeRankings.map((item, idx) => (
-                      <tr key={`${item.offerId}-${idx}`} className="hover:bg-indigo-50/40">
-                        <td className="py-2.5 px-3 font-extrabold text-slate-500">#{idx + 1}</td>
+                      <tr key={`${item.offerId}-${idx}`} className="hover:bg-[#FAF9F6]">
+                        <td className="py-2.5 px-3 font-extrabold text-[#575E58]">#{idx + 1}</td>
                         <td className="py-2.5 px-3">
                           <div className="font-bold text-slate-900">{item.offerTitle}</div>
                           <div className="text-[10px] text-slate-500">
@@ -529,7 +529,7 @@ export function CreaExplorerView({
                             {item.priceBasisLabel || (item.isEstimatedPackSize ? '~ Formato standard stimato' : '✓ Peso dichiarato')}
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 text-right font-extrabold text-indigo-800 bg-indigo-50/60">
+                        <td className="py-2.5 px-3 text-right font-extrabold text-[#1B5E3A] bg-[#F3F1EC]">
                           {item.nutrientsPerEuro[npeMetric]} {activeMetricUnit}
                         </td>
                         <td className="py-2.5 px-3 text-right font-bold text-emerald-700">
@@ -558,8 +558,8 @@ export function CreaExplorerView({
                               }}
                               className={`px-2 py-1 rounded text-[10px] font-bold border cursor-pointer ${
                                 addedShoppingKeys[`npe-${item.offerId}`]
-                                  ? 'bg-indigo-700 text-white border-indigo-700'
-                                  : 'bg-indigo-50 text-indigo-900 border-indigo-300 hover:bg-indigo-100'
+                                  ? 'bg-[#141A17] text-white border-[#141A17]'
+                                  : 'bg-[#F3F1EC] text-[#141A17] border-[#DFDCD2] hover:bg-[#E7E4DC]'
                               }`}
                             >
                               {addedShoppingKeys[`npe-${item.offerId}`] ? '✓ Lista' : '+ Lista'}
@@ -568,7 +568,7 @@ export function CreaExplorerView({
                           <button
                             type="button"
                             onClick={() => setActiveModalFoodId(item.creaFoodId)}
-                            className="px-2 py-1 rounded text-[10px] font-bold bg-emerald-700 text-white hover:bg-emerald-800 cursor-pointer"
+                            className="px-2 py-1 rounded text-[10px] font-bold bg-[#1B5E3A] text-white hover:bg-[#14472C] cursor-pointer"
                           >
                             Scheda CREA
                           </button>

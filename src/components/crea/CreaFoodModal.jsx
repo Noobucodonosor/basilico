@@ -71,33 +71,33 @@ export function CreaFoodModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-[#141A17]/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="crea-modal-title"
     >
-      <div className="bg-white rounded-2xl border border-slate-200 max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#E5E2DA] max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-start justify-between gap-4">
+        <div className="p-4 sm:p-5 bg-[#141A17] text-white flex items-start justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-emerald-600 rounded">
-                CREA ID #{sheet?.id || foodId}
+              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-[#1B5E3A] rounded">
+                CREA #{sheet?.id || foodId}
               </span>
               {sheet?.category && (
-                <span className="px-2 py-0.5 text-[10px] font-semibold bg-slate-800 text-emerald-300 rounded border border-slate-700">
+                <span className="px-2 py-0.5 text-[10px] font-semibold bg-[#242D28] text-[#FAF9F6] rounded border border-[#38433D]">
                   {sheet.category}
                 </span>
               )}
-              <span className="text-[11px] text-slate-300">
+              <span className="text-[11px] text-[#D7D4CC]">
                 Parte edibile: <strong>{sheet?.ediblePartPct ?? 100}%</strong> • Porzione LARN: <strong>{sheet?.defaultPortionG ?? 100} g</strong>
               </span>
             </div>
             <h2 id="crea-modal-title" className="text-lg sm:text-xl font-extrabold mt-1">
-              {sheet?.name || 'Caricamento scheda accademica CREA...'}
+              {sheet?.name || 'Caricamento scheda CREA...'}
             </h2>
             {(sheet?.scientificName || sheet?.nameEn) && (
-              <p className="text-xs text-slate-300 italic mt-0.5">
+              <p className="text-xs text-[#D7D4CC] italic mt-0.5">
                 {sheet.scientificName ? `${sheet.scientificName} ` : ''}
                 {sheet.nameEn ? `(${sheet.nameEn})` : ''}
               </p>
@@ -323,24 +323,24 @@ export function CreaFoodModal({
                                 <td className="py-1.5 px-3 font-medium text-slate-800">
                                   {r.component}
                                   {r.isRelativeFraction && (
-                                    <span className="ml-1.5 text-[10px] text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded">
+                                    <span className="ml-1.5 text-[10px] text-[#1B5E3A] bg-[#F3F1EC] px-1.5 py-0.5 rounded border border-[#DFDCD2]">
                                       frazione invariante
                                     </span>
                                   )}
                                 </td>
-                                <td className="py-1.5 px-3 text-right font-bold text-emerald-800">
+                                <td className="py-1.5 px-3 text-right font-bold text-[#1B5E3A]">
                                   {r.displayValue}
                                 </td>
-                                <td className="py-1.5 px-3 text-right text-slate-500">
+                                <td className="py-1.5 px-3 text-right text-[#575E58]">
                                   {r.value100gRaw ?? 'n.d.'}
                                 </td>
                                 <td className="py-1.5 px-3 text-right">
                                   {r.vnrPct !== null ? (
-                                    <span className="inline-block px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-900 font-bold text-[10px]">
+                                    <span className="inline-block px-1.5 py-0.5 rounded bg-[#F3F1EC] text-[#1B5E3A] font-bold text-[10px] border border-[#DFDCD2]">
                                       {r.vnrPct}% VNR
                                     </span>
                                   ) : (
-                                    <span className="text-slate-300">—</span>
+                                    <span className="text-[#9AA09B]">—</span>
                                   )}
                                 </td>
                                 <td className="py-1.5 px-3 text-center text-[10px] text-slate-400" title={r.bibliographicRef || ''}>
