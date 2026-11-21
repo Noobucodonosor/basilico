@@ -112,3 +112,21 @@ test('ADR-0014: /api/agentation persists, lists, resolves and deletes visual ann
     assert.ok(fs.existsSync(AGENTATION_JSON_PATH));
   }
 });
+
+test('TASK-SEC-02: /api/agentation is NOT mounted when NODE_ENV === production', async () => {
+  const prevNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  let server;
+  try {
+    const app = createApp({});
+    server = app.listen(0);
+    await new Promise((resolve) => server.once('listening', resolve));
+    const { port } = server.address();
+    const res = await fetch(`http://127.0.0.1:${port}/api/agentation`);
+    assert.equal(res.status, 404);
+  } finally {
+    if (server) server.close();
+    if (prevNodeEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = prevNodeEnv;
+  }
+});
