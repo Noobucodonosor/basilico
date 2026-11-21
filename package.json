@@ -18,6 +18,7 @@
     "test:e2e": "node --test tests/e2e/*.test.js",
     "test:m1": "node --test tests/unit/cache-manager.test.js tests/integration/ingestion-service.test.js",
     "eval": "node evals/run_evals.mjs",
+    "seed:refresh": "node scripts/refreshSeed.mjs",
     "board": "node scripts/board.mjs",
     "inbox": "node scripts/board.mjs --inbox",
     "task:start": "node scripts/tokenLedger.mjs start",
