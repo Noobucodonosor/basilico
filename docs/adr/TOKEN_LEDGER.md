@@ -30,3 +30,4 @@ Questo file traccia in modo trasparente e riproducibile i **token reali consumat
 | [#70](https://github.com/Noobucodonosor/basilico/issues/70) | `TASK-PWA-01` | `budget:M` | 20 | 191.623 | 1.394.674 | 25.045 | 47.9% | 0 | `ccf8be9` | 2026-11-21 |
 | [#72](https://github.com/Noobucodonosor/basilico/issues/72) | `TASK-QA-02` | `budget:S` | 9 | 25.213 | 777.450 | 1917 | 16.8% | 0 | `ee518f5` | 2026-11-21 |
 | [#74](https://github.com/Noobucodonosor/basilico/issues/74) | `TASK-UX-02` | `budget:M` | 13 | 37.607 | 920.303 | 10.575 | 9.4% | 0 | `243ee9b` | 2026-11-21 |
+| [#76](https://github.com/Noobucodonosor/basilico/issues/76) | `TASK-SEC-04` | `budget:S` | 2 | 5525 | 72.629 | 783 | 3.7% | 0 | `c0cc109` | 2026-11-21 |
