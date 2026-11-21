@@ -112,7 +112,7 @@ describe('Tier 5 White-Box Adversarial Stress Test Suite (Challenger 2)', () => 
         undefined,
         {},
         { id: 9901, retailerName: 'Ipercoop Liguria' }, // numeric id and Coop pattern
-        { id: '9902', retailerName: 'Basko Porto', start_date: '2026-11-01', end_date: '2026-11-30' },
+        { id: '9902', retailerName: 'Basko Porto', start_date: '2026-11-01', end_date: new Date(Date.now() + 14 * 86400_000).toISOString().slice(0, 10) },
         { id: '9903', retailerName: 'Unknown Supermarket', pageCount: 6 },
         {
           id: '9904',

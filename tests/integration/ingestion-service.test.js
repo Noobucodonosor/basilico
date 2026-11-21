@@ -11,6 +11,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 
+const daysFromNow = (days) => new Date(Date.now() + days * 86400_000).toISOString();
+
 describe('IngestionService Integration Tests', () => {
   let tempDir;
   let cache;
@@ -78,8 +80,8 @@ describe('IngestionService Integration Tests', () => {
           id: '99901',
           retailerName: 'Carrefour Market',
           title: 'Offerte Freschi Rapallo',
-          start_date: '2026-11-01T00:00:00.000Z',
-          end_date: '2026-11-20T23:59:59.000Z',
+          start_date: daysFromNow(-7),
+          end_date: daysFromNow(7),
           pageCount: 8,
           imageAssets: {
             cover: 'https://it-it-media.shopfully.cloud/images/volantini/big_99901.jpg',
@@ -275,7 +277,8 @@ describe('IngestionService Integration Tests', () => {
 
     it('deepSync() strictly filters out non-Rapallo flyers, preserves real end_date, and never invents x1.25 originalPrice', async () => {
       const mockService = new IngestionService({ cacheManager: cache });
-      const futureDate = '2026-11-18T23:59:00.000Z';
+      const pastStart = daysFromNow(-7);
+      const futureDate = daysFromNow(14);
 
       mockService.fetchWithTimeout = async (url) => {
         if (url.includes('/rapallo/gulliver')) {
@@ -285,7 +288,7 @@ describe('IngestionService Integration Tests', () => {
               pageProps: {
                 apiResources: {
                   flyersByRetailer: [
-                    { id: '9001', title: 'Iper Pavese e Piemontese', start_date: '2026-11-01', end_date: futureDate }
+                    { id: '9001', title: 'Iper Pavese e Piemontese', start_date: pastStart.slice(0, 10), end_date: futureDate }
                   ],
                   flyerGibsData: {
                     flyerGibs: [
@@ -307,9 +310,9 @@ describe('IngestionService Integration Tests', () => {
                   {
                     id: '8001',
                     title: 'Speciale Rapallo',
-                    start_date: '2026-11-01T00:00:00.000Z',
+                    start_date: pastStart,
                     end_date: futureDate,
-                    settings: { time_zone: { publish_at_iso: '2026-11-01T00:00:00.000Z', unpublish_at_iso: futureDate } }
+                    settings: { time_zone: { publish_at_iso: pastStart, unpublish_at_iso: futureDate } }
                   }
                 ],
                 flyerGibsData: {
@@ -362,7 +365,8 @@ describe('IngestionService Integration Tests', () => {
 
     it('deepSync() rejects silent out-of-province flyers via storesData.stores (e.g. CZ, LT/RM) while canonicalizing external redirect hrefs for GE flyers (TASK-DATA-03)', async () => {
       const mockService = new IngestionService({ cacheManager: cache });
-      const futureDate = '2026-11-25T23:59:00.000Z';
+      const pastStart = daysFromNow(-7);
+      const futureDate = daysFromNow(14);
 
       mockService.fetchWithTimeout = async (url) => {
         if (url === 'https://www.promoqui.it/rapallo/coop') {
@@ -375,14 +379,14 @@ describe('IngestionService Integration Tests', () => {
                       id: '1689209',
                       title: 'Al costo',
                       href: '/volantino/coop/1689209',
-                      start_date: '2026-11-01T00:00:00.000Z',
+                      start_date: pastStart,
                       end_date: futureDate
                     },
                     {
                       id: '1740566',
                       title: 'Grandi marche',
                       href: '/volantino/coop/1740566',
-                      start_date: '2026-11-01T00:00:00.000Z',
+                      start_date: pastStart,
                       end_date: futureDate
                     }
                   ]
