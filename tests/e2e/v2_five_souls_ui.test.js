@@ -62,8 +62,7 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     ({ renderToString } = await import('react-dom/server'));
 
     bundled.App = (await bundleComponent('src/App.jsx')).App;
-    bundled.TodayCopilotView = (await bundleComponent('src/components/today/TodayCopilotView.jsx')).default;
-    bundled.WeeklyRegiaView = (await bundleComponent('src/components/today/WeeklyRegiaView.jsx')).default;
+    bundled.CycleOverviewView = (await bundleComponent('src/components/cycle/CycleOverviewView.jsx')).default;
     bundled.MaestroDrawer = (await bundleComponent('src/components/maestro/MaestroDrawer.jsx')).default;
     bundled.HomeChemistryView = (await bundleComponent('src/components/home/HomeChemistryView.jsx')).default;
     bundled.RoomNav = await bundleComponent('src/components/RoomNavigation.jsx');
@@ -170,26 +169,23 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     }
   });
 
-  it('8. TodayCopilotView & WeeklyRegiaView render standalone with rhythm presets and the 4 Regia steps', () => {
-    const todayHtml = renderToString(
-      React.createElement(bundled.TodayCopilotView, { activeProfileId: 'dany', rhythmPreset: 'sera_stanca' })
+  it('8. CycleOverviewView renders standalone with all 4 Causal Cycle Phases and zero obsolete Oggi/Regia wrappers', () => {
+    const overviewHtml = renderToString(
+      React.createElement(bundled.CycleOverviewView, {
+        status: { offerCount: 243, storeCount: 14, dataSource: 'seed' },
+        activeProfile: { id: 'dany', name: 'Dany' },
+        shoppingCount: 0,
+        onSelectPhase() {},
+        onNavigateRoom() {},
+        onOpenMaestro() {}
+      })
     );
-    assert.match(todayHtml, /Cosa cucinare stasera/);
-    assert.match(todayHtml, /Sera Stanca/);
-    assert.match(todayHtml, /Feriale/);
-    assert.match(todayHtml, /Weekend/);
-    assert.match(todayHtml, /SOS Fornelli/);
-    assert.match(todayHtml, /SOS Macchia/);
-    assert.match(todayHtml, /Le tre proposte per cena/);
-    assert.match(todayHtml, /\/assets\/img\/photo-m61660576\.jpg/);
-    assert.match(todayHtml, /\/assets\/img\/photo-m61663250-960\.jpg/);
-    assert.doesNotMatch(todayHtml, /Scelte di Pareto|Zero Punteggi Magici|CO-PILOTA OGGI|lipidico_emulsionato/i);
-
-    const regiaHtml = renderToString(
-      React.createElement(bundled.WeeklyRegiaView, { activeProfileId: 'dany' })
-    );
-    for (const step of ['1\\. Prezzi &amp; Strumenti', '2\\. Controllo Frigo', '3\\. Basi &amp; Barca', '4\\. Giro Spesa']) {
-      assert.match(regiaHtml, new RegExp(step));
-    }
+    assert.match(overviewHtml, /data-testid="cycle-overview-view"/);
+    assert.match(overviewHtml, /243 offerte attive/);
+    assert.match(overviewHtml, /1\. Sapere &amp; Obiettivi/);
+    assert.match(overviewHtml, /2\. Mercato &amp; Spesa/);
+    assert.match(overviewHtml, /3\. Dispensa &amp; Casa/);
+    assert.match(overviewHtml, /4\. Cucina &amp; Pulizie/);
+    assert.doesNotMatch(overviewHtml, /Cosa cucinare stasera/);
   });
 });
