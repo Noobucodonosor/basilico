@@ -62,21 +62,21 @@ export function AisleChecklistModal({
             <button
               type="button"
               onClick={handleCopyWhatsapp}
-              className="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+              className="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-[#1B5E3A] hover:bg-[#14472C] text-white cursor-pointer"
             >
               📲 Copia WhatsApp / Telegram
             </button>
             <button
               type="button"
               onClick={onCompleteAndLoadPantry}
-              className="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 hover:bg-amber-600 text-slate-950 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-[#9A5B25] hover:bg-[#7F4A1D] text-white cursor-pointer"
             >
               ✅ Spunta tutto e carica in Dispensa
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#242D28] hover:bg-[#323D37] text-[#FAF9F6] cursor-pointer"
             >
               ✕ Chiudi
             </button>
@@ -84,14 +84,14 @@ export function AisleChecklistModal({
         </div>
 
         {copiedMsg && (
-          <div className="bg-emerald-600 text-white text-xs font-bold px-5 py-2 text-center">
+          <div className="bg-[#1B5E3A] text-white text-xs font-bold px-5 py-2 text-center">
             {copiedMsg}
           </div>
         )}
 
         <div className="p-5 space-y-5">
           {/* Subtotals Bar */}
-          <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] text-xs">
             <div>
               <div className="text-[10px] text-slate-500 font-bold uppercase">Subtotale Alimentari</div>
               <div className="text-base font-extrabold text-emerald-800">
@@ -183,7 +183,7 @@ export function AisleChecklistModal({
                           type="checkbox"
                           checked={Boolean(item.checked)}
                           onChange={() => onToggleItem && onToggleItem(item.id)}
-                          className="mt-1 w-4 h-4 rounded text-emerald-600"
+                          className="mt-1 w-4 h-4 rounded accent-[#1B5E3A]"
                         />
                         <div>
                           <div className="text-sm font-extrabold">{item.name}</div>
