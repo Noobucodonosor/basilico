@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useDialogA11y } from '../../hooks/useDialogA11y.js';
 
 const FIVE_SOULS_CHIPS = [
   {
@@ -145,16 +146,17 @@ export function MaestroDrawer({
     [activeProfileId, messages, rhythmPreset, sending]
   );
 
-  // Hydrate context summary when drawer opens and handle optional initialPrompt
+  // Hydrate context summary ONLY when drawer opens or profile/rhythm changes (never per chat turn)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
+    let active = true;
 
     fetch(
       `/api/maestro/today-copilot?profileId=${encodeURIComponent(activeProfileId)}&rhythmPreset=${encodeURIComponent(rhythmPreset)}`
     )
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data) {
+        if (active && data) {
           setContextSummary({
             profileId: data.activeProfile?.id || activeProfileId,
             profileName: data.activeProfile?.name || activeProfileId,
@@ -167,27 +169,29 @@ export function MaestroDrawer({
       })
       .catch(() => {});
 
-    const cleanInit = String(initialPrompt || '').trim();
-    if (cleanInit && cleanInit !== lastHandledInitialPromptRef.current) {
-      lastHandledInitialPromptRef.current = cleanInit;
-      sendPrompt(cleanInit);
-    }
-  }, [isOpen, initialPrompt, activeProfileId, rhythmPreset, sendPrompt]);
+    return () => {
+      active = false;
+    };
+  }, [isOpen, activeProfileId, rhythmPreset]);
+
+  // Trigger optional initialPrompt once per drawer opening
+  const sendPromptRef = useRef(sendPrompt);
+  sendPromptRef.current = sendPrompt;
 
   useEffect(() => {
     if (!isOpen) {
       lastHandledInitialPromptRef.current = '';
+      return;
     }
-  }, [isOpen]);
+    const cleanInit = String(initialPrompt || '').trim();
+    if (cleanInit && cleanInit !== lastHandledInitialPromptRef.current) {
+      lastHandledInitialPromptRef.current = cleanInit;
+      sendPromptRef.current(cleanInit);
+    }
+  }, [isOpen, initialPrompt]);
 
-  useEffect(() => {
-    if (!isOpen) return undefined;
-    const onKeyDown = (e) => {
-      if (e.key === 'Escape') onClose?.();
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, onClose]);
+  const asideRef = useRef(null);
+  useDialogA11y({ isOpen, containerRef: asideRef, onClose });
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -207,7 +211,11 @@ export function MaestroDrawer({
     >
       <div className="fixed inset-0" onClick={() => onClose?.()} aria-hidden="true" />
 
-      <aside className="relative z-10 w-full sm:max-w-lg bg-[#FAF9F6] h-full shadow-2xl flex flex-col border-l border-[#E5E2DA]">
+      <aside
+        ref={asideRef}
+        tabIndex={-1}
+        className="relative z-10 w-full sm:max-w-lg bg-[#FAF9F6] h-full shadow-2xl flex flex-col border-l border-[#E5E2DA] focus:outline-none"
+      >
         {/* Top Header + Active Engine Mode Badge + Grounded Context Strip */}
         <header className="bg-[#141A17] text-white p-4 space-y-2.5 shrink-0">
           <div className="flex items-start justify-between gap-3">

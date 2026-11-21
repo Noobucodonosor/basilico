@@ -1,16 +1,11 @@
 /**
- * Basilico 2.0 — E2E Rendering & Shell Contracts for the 3 Rhythms, 7 Rooms & Maestro Drawer
- * Location: tests/e2e/v2_five_souls_ui.test.js (ADR-0015 / TASK-V2-05 / TASK-V2-06)
- *
- * Bundles the real React 19 components with esbuild and renders them server-side (react-dom/server),
- * verifying the actual markup of: ⚡ Oggi (default entry), 🧭 Regia Settimanale, 🎓 Accademia & Atlante,
- * Stanza 7 Chimica Casa (deep-link `?room=room-7-chimica`) and the open MaestroDrawer.
+ * Basilico — E2E Rendering & Shell Contracts for Consumer Editorial Shell, Home "Oggi" & Dish Drawer
+ * Location: tests/e2e/v2_five_souls_ui.test.js
  */
 
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
@@ -37,7 +32,6 @@ async function bundleComponent(relPath) {
     external: ['react', 'react-dom', 'react/jsx-runtime', 'agentation'],
     nodePaths: [path.join(ROOT, 'node_modules')]
   });
-  // Symlink node_modules next to the bundle so bare `react` imports resolve from the project
   return import(pathToFileURL(outfile).href);
 }
 
@@ -55,7 +49,7 @@ function removeFakeWindow() {
   delete globalThis.window;
 }
 
-describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer (ADR-0015)', () => {
+describe('E2E: Basilico Consumer Editorial Shell, Home Oggi, Dish Drawer & Maestro', () => {
   before(async () => {
     tmpDir = fs.mkdtempSync(path.join(ROOT, 'node_modules', '.basilico-ssr-'));
     React = await import('react');
@@ -63,6 +57,7 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
 
     bundled.App = (await bundleComponent('src/App.jsx')).App;
     bundled.CycleOverviewView = (await bundleComponent('src/components/cycle/CycleOverviewView.jsx')).default;
+    bundled.DishDetailDrawer = (await bundleComponent('src/components/cycle/DishDetailDrawer.jsx')).default;
     bundled.MaestroDrawer = (await bundleComponent('src/components/maestro/MaestroDrawer.jsx')).default;
     bundled.HomeChemistryView = (await bundleComponent('src/components/home/HomeChemistryView.jsx')).default;
     bundled.RoomNav = await bundleComponent('src/components/RoomNavigation.jsx');
@@ -75,7 +70,7 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     } catch (_) {}
   });
 
-  it('1. RoomNavigation exposes the 4 Causal Phases (+ Panoramica) and the 7 Rooms', () => {
+  it('1. RoomNavigation preserves causal phase and 7 rooms taxonomy exports', () => {
     const { BASILICO_PHASES, BASILICO_ROOMS } = bundled.RoomNav;
     assert.deepEqual(
       BASILICO_PHASES.map((p) => p.id),
@@ -86,50 +81,56 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     assert.match(room4.fullTitle, /Officina Cucina/);
     const room7 = BASILICO_ROOMS.find((r) => r.id === 'room-7-chimica');
     assert.equal(room7.number, 7);
-    assert.equal(room7.icon, '🧪');
     assert.equal(room7.shortTitle, 'Chimica Casa');
     assert.equal(room7.fullTitle, '7. Chimica & Cura della Casa/Barca');
   });
 
-  it('2. Bare "/" opens Panoramica del Ciclo Causale (zero "Cosa cucinare stasera" at top) with single 4-Phase bar', () => {
+  it('2. Bare "/" renders single minimal consumer header (Oggi, Offerte, Ricette, Lista, Chiedi, Altro) and editorial Home', () => {
     installFakeWindow('');
     const html = renderToString(React.createElement(bundled.App));
-    assert.match(html, /data-testid="causal-phase-navigation"/);
+    assert.match(html, /data-testid="consumer-header"/);
     assert.match(html, /data-testid="cycle-overview-view"/);
-    assert.match(html, /1\. Sapere &amp; Obiettivi/);
-    assert.match(html, /2\. Mercato &amp; Spesa/);
-    assert.match(html, /3\. Dispensa &amp; Casa/);
-    assert.match(html, /4\. Cucina &amp; Pulizie/);
+    assert.match(html, /Cosa cucini stasera\?/);
+    assert.match(html, /Stasera in tavola/);
+    assert.match(html, /Oggi/);
+    assert.match(html, /Offerte/);
+    assert.match(html, /Ricette/);
+    assert.match(html, /Lista/);
     assert.match(html, /data-testid="header-open-maestro"/);
-    assert.match(html, /Vai alla Stanza/);
-    assert.doesNotMatch(html, /data-testid="rhythm-navigation"/);
+    assert.match(html, /data-testid="header-alt-menu-btn"/);
+    // Double/triple navigation clutter removed from shell
+    assert.doesNotMatch(html, /data-testid="causal-phase-navigation"/);
+    assert.doesNotMatch(html, /data-testid="phase-sub-navigation"/);
+    assert.doesNotMatch(html, /data-testid="room-navigation"/);
     assert.doesNotMatch(html, /data-testid="today-copilot-view"/);
-    assert.doesNotMatch(html, /Cosa cucinare stasera/);
   });
 
-  it('3. "?phase=1" opens Fase 1 Sapere & Obiettivi with CREA, Coach Nutrizionale and Scuola Culinaria sub-tabs', () => {
+  it('3. "?phase=1" opens CREA tool and "?phase=1&section=nutrition" preserves Nutrition Coach on reload', () => {
     installFakeWindow('?phase=1');
     const html = renderToString(React.createElement(bundled.App));
-    assert.match(html, /data-testid="phase-sub-navigation"/);
-    assert.match(html, /Scienza &amp; CREA/);
-    assert.match(html, /Coach Nutrizionale/);
-    assert.match(html, /Scuola Culinaria &amp; SOS/);
+    assert.match(html, /data-testid="tool-breadcrumb-bar"/);
+    assert.match(html, /Torna a Oggi/);
+    assert.match(html, /Database Nutrizionale CREA/);
     assert.doesNotMatch(html, /data-testid="cycle-overview-view"/);
+    assert.doesNotMatch(html, /data-testid="phase-sub-navigation"/);
+
+    installFakeWindow('?phase=1&section=nutrition');
+    const nutritionHtml = renderToString(React.createElement(bundled.App));
+    assert.match(nutritionHtml, /Coach Nutrizionale/);
   });
 
-  it('4. "?phase=2" opens Fase 2 Mercato & Spesa with Negozi & Offerte Rapallo and Pianificatore & Spesa', () => {
+  it('4. "?phase=2" opens Offerte Rapallo cleanly without secondary stacked nav bars', () => {
     installFakeWindow('?phase=2');
     const html = renderToString(React.createElement(bundled.App));
-    assert.match(html, /data-testid="room-navigation"/);
     assert.match(html, /Offerte promozionali/);
-    assert.match(html, /Pianificatore &amp; Spesa/);
+    assert.doesNotMatch(html, /data-testid="room-navigation"/);
   });
 
-  it('5. Deep-link "?room=room-7-chimica" opens Stanza 7 Chimica Casa (HomeChemistryView) inside the Atlante', () => {
+  it('5. Deep-link "?room=room-7-chimica" opens Stanza 7 Chimica Casa cleanly with breadcrumb', () => {
     installFakeWindow('?room=room-7-chimica');
     const html = renderToString(React.createElement(bundled.App));
-    assert.match(html, /Navigazione 7 Stanze/);
-    // profiles are not ready during SSR -> room shell renders sync placeholder; verify standalone view separately
+    assert.match(html, /data-testid="tool-breadcrumb-bar"/);
+    assert.match(html, /Chimica e Cura della Casa/);
     assert.match(html, /Sincronizzazione profilo attivo|room-7-home-chemistry/);
 
     const roomHtml = renderToString(
@@ -138,7 +139,7 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     assert.match(roomHtml, /data-testid="room-7-home-chemistry"/);
   });
 
-  it('6. Legacy deep-link "?room=room-1-negozi" still opens Stanza 1 Negozi & Offerte', () => {
+  it('6. Legacy deep-link "?room=room-1-negozi" still opens Offerte Rapallo', () => {
     installFakeWindow('?room=room-1-negozi');
     const html = renderToString(React.createElement(bundled.App));
     assert.match(html, /Offerte promozionali/);
@@ -169,23 +170,48 @@ describe('E2E: Basilico 2.0 — 3 Rhythms Shell, 7 Rooms Atlas & Maestro Drawer 
     }
   });
 
-  it('8. CycleOverviewView renders standalone with all 4 Causal Cycle Phases and zero obsolete Oggi/Regia wrappers', () => {
+  it('8. CycleOverviewView & DishDetailDrawer render editorial copy, 3-data cards, and collapsed details accordions', () => {
     const overviewHtml = renderToString(
       React.createElement(bundled.CycleOverviewView, {
-        status: { offerCount: 243, storeCount: 14, dataSource: 'seed' },
-        activeProfile: { id: 'dany', name: 'Dany' },
-        shoppingCount: 0,
-        onSelectPhase() {},
+        activeProfileId: 'ospiti',
+        onChangeProfile() {},
         onNavigateRoom() {},
-        onOpenMaestro() {}
+        onAddToShoppingList() {}
       })
     );
     assert.match(overviewHtml, /data-testid="cycle-overview-view"/);
-    assert.match(overviewHtml, /243 offerte attive/);
-    assert.match(overviewHtml, /1\. Sapere &amp; Obiettivi/);
-    assert.match(overviewHtml, /2\. Mercato &amp; Spesa/);
-    assert.match(overviewHtml, /3\. Dispensa &amp; Casa/);
-    assert.match(overviewHtml, /4\. Cucina &amp; Pulizie/);
-    assert.doesNotMatch(overviewHtml, /Cosa cucinare stasera/);
+    assert.match(overviewHtml, /Cosa cucini stasera\?/);
+    assert.match(overviewHtml, /Vedi le 3 proposte/);
+    assert.match(overviewHtml, /Esplora le offerte di oggi/);
+    assert.match(overviewHtml, /Stasera in tavola/);
+    assert.match(overviewHtml, /Tutti i piatti/);
+    assert.match(overviewHtml, /Senza latticini/);
+
+    const drawerHtml = renderToString(
+      React.createElement(bundled.DishDetailDrawer, {
+        dish: {
+          dishId: 'test-dish-1',
+          cleanTitle: 'Trofie al Pesto Ligure',
+          badge: 'Pronto subito',
+          totalHandsOnMinutes: 18,
+          purePortionCostEur: 3.4,
+          menuPriceEuro: 15,
+          fiveSoulsChain: {
+            strumenti: 'Pentola capiente in acciaio inox.',
+            casa: 'Risciacquo rapido.'
+          }
+        },
+        activeProfileId: 'ospiti',
+        onClose() {},
+        onAddToShoppingList() {}
+      })
+    );
+    assert.match(drawerHtml, /data-testid="dish-detail-drawer"/);
+    assert.match(drawerHtml, /Trofie al Pesto Ligure/);
+    assert.match(drawerHtml, /€ 3,40/);
+    assert.match(drawerHtml, /Aggiungi ingredienti alla lista/);
+    assert.match(drawerHtml, /Preparazione passo dopo passo/);
+    assert.match(drawerHtml, /Valori nutrizionali \(CREA\)/);
+    assert.match(drawerHtml, /Pentola e cottura/);
   });
 });

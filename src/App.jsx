@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Header from './components/Header.jsx';
-import RoomNavigation, {
+import {
   BASILICO_ROOMS,
   BASILICO_PHASES,
   VALID_PHASE_IDS,
-  CausalPhaseNavigation,
   getPhaseForRoom
 } from './components/RoomNavigation.jsx';
 import OfflineNotice from './components/OfflineNotice.jsx';
@@ -85,10 +84,11 @@ function resolveInitialCycleState(params) {
   if (phaseParam) {
     const candidate = phaseParam.startsWith('phase-') ? phaseParam : `phase-${phaseParam}`;
     if (VALID_PHASE_IDS.has(candidate) && candidate !== 'overview') {
+      const sec = params.get('section');
       return {
         phase: candidate,
         room: getDefaultRoomForPhase(candidate),
-        phase1Panel: 'crea'
+        phase1Panel: candidate === 'phase-1' && VALID_PHASE1_PANELS.has(sec) ? sec : 'crea'
       };
     }
   }
@@ -142,8 +142,19 @@ export function App() {
   const [sortBy, setSortBy] = useState(initialSort);
   const [hideIncompatible, setHideIncompatible] = useState(false);
 
+  const initialProfileParam = initialParams.get('profile');
+  let storedProfileId = null;
+  try {
+    storedProfileId =
+      typeof window !== 'undefined' && window.localStorage
+        ? window.localStorage.getItem('basilico_profile_id')
+        : null;
+  } catch (_) {}
+
   const [profiles, setProfiles] = useState([]);
-  const [activeProfileId, setActiveProfileId] = useState('dany');
+  const [activeProfileId, setActiveProfileId] = useState(
+    initialProfileParam || storedProfileId || 'ospiti'
+  );
   const [profilesReady, setProfilesReady] = useState(false);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
   const [counterDefaultStoreId, setCounterDefaultStoreId] = useState('');
@@ -303,15 +314,15 @@ export function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload || {})
       });
-      if (res.ok) {
-        const data = await res.json();
-        const count = data?.subtotals?.totalItemsCount ?? 0;
-        setShoppingCount(count);
-        setShoppingToast(`🛒 Aggiunto alla Lista Spesa (${count} art.): ${payload?.name || 'Articolo'}`);
-        setTimeout(() => setShoppingToast(''), 2600);
-      }
+      if (!res.ok) return false;
+      const data = await res.json();
+      const count = data?.subtotals?.totalItemsCount ?? 0;
+      setShoppingCount(count);
+      setShoppingToast(`Aggiunto alla lista (${count} art.): ${payload?.name || 'Articolo'}`);
+      setTimeout(() => setShoppingToast(''), 2600);
+      return true;
     } catch (_) {
-      // Non-fatal
+      return false;
     }
   }, []);
 
@@ -331,14 +342,13 @@ export function App() {
     refreshCounterObservations();
   }, [activeRoom, refreshShoppingCount, refreshCounterObservations]);
 
-  // Load user profiles and local shops
+  // Load user profiles and local shops (preserve consumer default 'ospiti' unless explicitly chosen)
   useEffect(() => {
     fetch('/api/profiles')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data && Array.isArray(data.profiles)) {
           setProfiles(data.profiles);
-          if (data.activeProfileId) setActiveProfileId(data.activeProfileId);
         }
       })
       .catch(() => {})
@@ -356,6 +366,11 @@ export function App() {
 
   const handleChangeProfile = useCallback(async (newProfileId) => {
     setActiveProfileId(newProfileId);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem('basilico_profile_id', newProfileId);
+      }
+    } catch (_) {}
     try {
       await fetch('/api/profiles/active', {
         method: 'POST',
@@ -566,26 +581,40 @@ export function App() {
     }
   }, []);
 
+  const activeToolTitle =
+    activePhase === 'phase-1' && phase1Panel === 'nutrition'
+      ? 'Coach Nutrizionale'
+      : activePhase === 'phase-1' && phase1Panel === 'academy'
+        ? 'Scuola Culinaria e SOS'
+        : activeRoom === 'room-2-crea'
+          ? 'Database Nutrizionale CREA'
+          : activeRoom === 'room-4-cucina'
+            ? 'Officina Pentole e Cottura'
+            : activeRoom === 'room-5-dispensa'
+              ? 'Dispensa e Scontrini'
+              : activeRoom === 'room-7-chimica'
+                ? 'Chimica e Cura della Casa'
+                : null;
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#141A17] font-sans selection:bg-emerald-100 selection:text-[#14492D]">
-      {/* Offline / Stale Cache Warning Banner */}
+      {/* Real Offline Warning Banner only */}
       <OfflineNotice
         isOnline={status.isOnline}
         dataSource={status.dataSource}
         lastSyncTimestamp={status.lastSyncTimestamp}
-        isBannerDismissed={isBannerDismissed}
+        isBannerDismissed={isBannerDismissed || status.isOnline !== false}
         onDismiss={() => setIsBannerDismissed(true)}
         onRetry={handleRefresh}
       />
 
-      {/* Responsive Header */}
+      {/* Minimal Consumer Header (Oggi, Offerte, Ricette, Lista, Chiedi, Altro) */}
       <Header
         status={status}
+        activePhase={activePhase}
         activeRoom={isRoomsView ? activeRoom : activePhase}
-        activeStoreName={activeStoreName}
         isMobileSearchOpen={isMobileSearchOpen}
         onToggleMobileSearch={() => setIsMobileSearchOpen((prev) => !prev)}
-        onRefresh={handleRefresh}
         onDeepSync={handleDeepSync}
         isRefreshing={isRefreshing}
         profiles={profiles}
@@ -599,79 +628,41 @@ export function App() {
         onOpenShoppingList={() => handleNavigateRoom('room-6-pianificatore')}
         onOpenMaestro={handleOpenMaestro}
         onGoHome={() => handleSelectPhase('overview')}
-        showCounterPrice={activePhase === 'phase-2' || activePhase === 'phase-3'}
+        onNavigateRoom={handleNavigateRoom}
+        onOpenAcademy={handleOpenAcademy}
+        onOpenNutritionCoach={handleOpenNutritionCoach}
       />
 
       {shoppingToast && (
-        <div className="bg-[#1B5E3A] text-white text-xs font-bold py-2 px-4 text-center shadow-xs">
+        <div className="bg-[#1B5E3A] text-white text-xs font-medium py-2 px-4 text-center">
           {shoppingToast}
         </div>
       )}
 
-      {/* ADR-0016: Single linear 4-Phase Causal Cycle Bar + quick jump to 7 Rooms */}
-      <CausalPhaseNavigation
-        activePhase={activePhase}
-        onSelectPhase={handleSelectPhase}
-        activeRoom={activePhase !== 'overview' ? activeRoom : ''}
-        onSelectRoom={handleNavigateRoom}
-      />
-
       {activePhase === 'overview' ? (
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
           <CycleOverviewView
-            status={status}
-            activeProfile={activeProfile}
-            shoppingCount={shoppingCount}
-            onSelectPhase={handleSelectPhase}
+            activeProfileId={activeProfileId}
+            onChangeProfile={handleChangeProfile}
             onNavigateRoom={handleNavigateRoom}
-            onOpenMaestro={handleOpenMaestro}
-            onTriggerSync={handleDeepSync}
-            onCookWithIngredient={handleCookWithIngredient}
+            onAddToShoppingList={handleAddToShoppingList}
           />
         </main>
       ) : (
         <>
-          {/* Phase-scoped sub-navigation (only rooms/panels belonging to the active phase) */}
-          {activePhase === 'phase-1' ? (
-            <section
-              aria-label="Sezioni Fase 1: Sapere & Obiettivi"
-              className="bg-white border-b border-[#E5E2DA]"
-              data-testid="phase-sub-navigation"
-            >
-              <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                {[
-                  { id: 'crea', icon: '🔬', label: 'Scienza & CREA' },
-                  { id: 'nutrition', icon: '🥗', label: 'Coach Nutrizionale' },
-                  { id: 'academy', icon: '👨‍🍳', label: 'Scuola Culinaria & SOS' }
-                ].map((sec) => {
-                  const isActive = phase1Panel === sec.id;
-                  return (
-                    <button
-                      key={sec.id}
-                      type="button"
-                      onClick={() => {
-                        setPhase1Panel(sec.id);
-                        if (sec.id === 'academy') setAcademySection('skills');
-                      }}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap taste-btn cursor-pointer shrink-0 ${
-                        isActive
-                          ? 'bg-[#1B5E3A] text-white shadow-xs'
-                          : 'text-[#4A524C] hover:text-[#141A17] hover:bg-[#F3F1EC]'
-                      }`}
-                    >
-                      <span aria-hidden="true">{sec.icon}</span>
-                      <span>{sec.label}</span>
-                    </button>
-                  );
-                })}
+          {activeToolTitle && (
+            <div className="bg-white border-b border-[#E5E2DA]" data-testid="tool-breadcrumb-bar">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleSelectPhase('overview')}
+                  className="text-xs font-medium text-[#575E58] hover:text-[#141A17] cursor-pointer"
+                >
+                  ← Torna a Oggi
+                </button>
+                <span className="text-xs font-medium text-[#141A17]">{activeToolTitle}</span>
               </div>
-            </section>
-          ) : (
-            <RoomNavigation
-              activeRoom={activeRoom}
-              onSelectRoom={setActiveRoom}
-              rooms={BASILICO_ROOMS.filter((r) => r.phaseId === activePhase)}
-            />
+            </div>
           )}
 
           {activePhase === 'phase-1' && phase1Panel === 'academy' ? (
@@ -972,19 +963,13 @@ export function App() {
           </React.Suspense>
         )}
 
-      {/* Footer */}
-      <footer className="border-t border-[#E5E2DA] bg-white py-6 mt-12 text-center text-xs text-[#575E58]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1.5">
+      {/* Editorial Footer */}
+      <footer className="border-t border-[#E5E2DA] bg-[#FAF9F6] py-8 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#575E58]">
           <p className="font-medium text-[#141A17]">
-            🌿 Basilico — Cucina, Nutrizione, Cura della Casa &amp; Offerte Rapallo (16035 GE)
+            Basilico · Cucina di casa e offerte reali di Rapallo
           </p>
-          <p className="text-[#575E58]">
-            Basko • Coop • Gulliver • Carrefour Market &amp; Express • Ekom • Penny • Eurospin • Despar • DPiù • Tigotà • PiùMe • Unieuro • Arcaplanet + Botteghe Locali
-          </p>
-          <p className="text-[11px] text-[#575E58]">
-            Sorgente dati: <span className="font-semibold text-[#141A17]">{(status.dataSource || 'live').toUpperCase()}</span> • Supermercati attivi: {stores.length}
-          </p>
-          <p className="text-[11px] text-[#575E58]">
+          <p>
             Fotografie via Wikimedia Commons (CC0): Brooke Cagle, Markus Spiske, Leonie Wise
           </p>
         </div>
