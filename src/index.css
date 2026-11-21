@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-ground: #FAF9F6;
+  --surface: #FFFFFF;
+  --surface-muted: #F3F1EC;
+  --ink: #141A17;
+  --ink-muted: #575E58;
+  --hairline: #E5E2DA;
+  --basil: #1B5E3A;
+  --basil-hover: #14492D;
+  --ochre: #9A5B25;
+}
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: hidden;
+    background-color: var(--bg-ground);
+    color: var(--ink);
+  }
+}
+
+/* Modern Web Guidance: Native Dialog & Backdrop scroll containment */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background-color: rgba(20, 26, 23, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+/* Scroll Snap & Touch Carousel for Flyer Viewer (F14) and Subgrid (F13) */
+.scroll-snap-x-mandatory,
+.snap-x-mandatory {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-align-center,
+.snap-align-center {
+  scroll-snap-align: center;
+}
+
+.snap-stop-always {
+  scroll-snap-stop: always;
+}
+
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+.grid-rows-subgrid {
+  grid-template-rows: subgrid;
+}
+
+@layer utilities {
+  .font-editorial {
+    font-family: "New York", "Iowan Old Style", "Apple Garamond", "Palatino Linotype", Georgia, serif;
+  }
+
+  /* Scroll Snap & Touch Carousel for Flyer Viewer (F14) */
+  .scroll-snap-x-mandatory,
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scroll-snap-align-center,
+  .snap-align-center {
+    scroll-snap-align: center;
+  }
+
+  .snap-stop-always {
+    scroll-snap-stop: always;
+  }
+
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
+
+  /* Dynamic Viewport Units for Mobile Browsers (F10) */
+  .h-dvh {
+    height: 100dvh;
+  }
+  .max-h-dvh {
+    max-height: 100dvh;
+  }
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+
+  /* CSS Subgrid alignment (F13 & Modern Web Guidance) */
+  .grid-rows-subgrid {
+    grid-template-rows: subgrid;
+  }
+
+  /* Hide scrollbars for clean touch carousels and pill rows */
+  .scrollbar-none::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none,
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Quiet Motion Layer (tasteskill Rule 5) */
+@keyframes tasteEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-enter] {
+  animation: tasteEnter 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.taste-card {
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.taste-card:hover {
+  transform: translateY(-2px);
+  border-color: #D5D0C5;
+  box-shadow: 0 8px 24px rgba(20, 26, 23, 0.06);
+}
+
+.taste-photo-frame {
+  overflow: hidden;
+}
+
+.taste-photo-frame img {
+  transition: transform 280ms ease-out;
+}
+
+.taste-photo-frame:hover img {
+  transform: scale(1.025);
+}
+
+.taste-btn {
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 90ms ease;
+}
+
+.taste-btn:hover {
+  transform: translateY(-1px);
+}
+
+.taste-btn:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-enter] {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .taste-card,
+  .taste-photo-frame img,
+  .taste-btn {
+    transition: none;
+    transform: none;
+  }
+
+  .taste-card:hover,
+  .taste-photo-frame:hover img,
+  .taste-btn:hover,
+  .taste-btn:active {
+    transform: none;
+  }
+}

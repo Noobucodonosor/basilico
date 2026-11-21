@@ -1,0 +1,12 @@
+node_modules
+data/cache
+.git
+.github
+tests
+evals
+specs
+docs
+scripts
+.gemini
+*.log
+.DS_Store

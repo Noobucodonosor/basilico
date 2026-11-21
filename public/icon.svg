@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Basilico">
+  <rect width="512" height="512" rx="112" fill="#1B5E3A" />
+  <rect x="24" y="24" width="464" height="464" rx="92" fill="none" stroke="#FAF9F6" stroke-opacity="0.18" stroke-width="6" />
+  <path
+    d="M158 344C146 250 202 152 338 124C348 258 266 346 158 344Z"
+    fill="#FAF9F6"
+  />
+  <path
+    d="M152 356C202 304 252 248 310 170"
+    fill="none"
+    stroke="#1B5E3A"
+    stroke-width="14"
+    stroke-linecap="round"
+  />
+  <path
+    d="M206 300C224 274 246 254 272 246"
+    fill="none"
+    stroke="#1B5E3A"
+    stroke-width="10"
+    stroke-linecap="round"
+  />
+</svg>

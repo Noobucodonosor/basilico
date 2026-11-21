@@ -1,0 +1,41 @@
+{
+  "name": "basilico",
+  "version": "1.0.0",
+  "description": "Basilico - Rapallo Supermarket Promotional Offers and Flyers",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test tests/**/*.test.js",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:integration": "node --test tests/integration/*.test.js",
+    "test:e2e": "node --test tests/e2e/*.test.js",
+    "test:m1": "node --test tests/unit/cache-manager.test.js tests/integration/ingestion-service.test.js",
+    "eval": "node evals/run_evals.mjs",
+    "seed:refresh": "node scripts/refreshSeed.mjs",
+    "board": "node scripts/board.mjs",
+    "inbox": "node scripts/board.mjs --inbox",
+    "task:start": "node scripts/tokenLedger.mjs start",
+    "task:status": "node scripts/tokenLedger.mjs status",
+    "task:close": "node scripts/tokenLedger.mjs close"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "agentation": "^3.1.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.7"
+  }
+}
