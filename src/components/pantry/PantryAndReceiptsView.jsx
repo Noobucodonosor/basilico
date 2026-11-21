@@ -22,7 +22,7 @@ const ZONE_META = {
   }
 };
 
-export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
+export function PantryAndReceiptsView({ stores = [], onPantryUpdated, onCookWithIngredient }) {
   const [pantryData, setPantryData] = useState({
     items: [],
     byZone: { dry_pantry: [], fridge_freezer: [], boat_cooler: [] },
@@ -340,6 +340,16 @@ export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
                         </div>
 
                         <div className="flex items-center gap-1">
+                          {onCookWithIngredient && item.title && (
+                            <button
+                              type="button"
+                              onClick={() => onCookWithIngredient(item.title)}
+                              className="px-2 py-1 bg-[#1B5E3A] text-white hover:bg-[#14492D] rounded text-[10px] font-semibold cursor-pointer"
+                              title={`Trova ricette con ${item.title}`}
+                            >
+                              🍳 Cucina
+                            </button>
+                          )}
                           {zoneKey !== 'boat_cooler' && (
                             <button
                               type="button"

@@ -45,7 +45,8 @@ export function CreaExplorerView({
   onCloseInitialFood,
   onCloseFoodModal,
   onNavigateToOfferStore,
-  onAddToShoppingList
+  onAddToShoppingList,
+  onSearchMarketOffer
 }) {
   const [subTab, setSubTab] = useState('database'); // 'database' | 'nutrients_per_euro'
   const [addedShoppingKeys, setAddedShoppingKeys] = useState({});
@@ -594,6 +595,7 @@ export function CreaExplorerView({
           onCloseFoodModal?.();
         }}
         onSelectOfferStore={onNavigateToOfferStore}
+        onSearchMarketOffer={onSearchMarketOffer}
       />
     </div>
   );

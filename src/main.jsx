@@ -14,6 +14,21 @@ window.addEventListener('error', (event) => {
   }
 });
 
+if (
+  typeof import.meta !== 'undefined' &&
+  import.meta.env &&
+  import.meta.env.PROD &&
+  typeof window !== 'undefined' &&
+  typeof navigator !== 'undefined' &&
+  'serviceWorker' in navigator
+) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {
+      // Non-blocking fallback when SW registration is unavailable
+    });
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
