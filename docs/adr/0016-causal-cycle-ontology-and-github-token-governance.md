@@ -1,6 +1,6 @@
 # ADR-0016: Ontologia a 4 Fasi del Ciclo Causale Domestico, Rimozione Doppia Barra Oggi/Regia & Governance Token su GitHub
 
-- **Stato:** Accettato (`Accepted`)
+- **Stato:** Accettato (`Accepted` — *§2.1 UI parzialmente superata da [ADR-0019](./0019-consumer-editorial-shell-and-progressive-disclosure.md), §2.2 Governance Token pienamente vigente*)
 - **Priorità:** **P0 — Critica (Ontologia di Prodotto, Coerenza UI Integrale & Controllo Costi/Token)**
 - **Data:** 2026-11-18
 - **Autori:** Direttore di Prodotto (@Noobucodonosor)
@@ -60,9 +60,9 @@ flowchart LR
 - [x] **TASK-GOV-01** (`#46`): **Infrastruttura Contabilità Token Reali (`transcript.jsonl`), `ADR-0016` Ontologia a 4 Fasi e Roadmap GitHub** (`budget:S`)
   - *File coinvolti*: `scripts/tokenLedger.mjs`, `scripts/board.mjs`, `evals/run_evals.mjs`, `server/services/offerService.js`, `package.json`, `docs/adr/0016-*.md`, `docs/adr/0015-*.md`, `docs/adr/TOKEN_LEDGER.md`, `docs/adr/README.md`, `AGENTS.md`, `tests/unit/token_ledger.test.js`, `tests/integration/challenger_m2_stress.test.js`
   - *Verification Step*: `node --test tests/unit/token_ledger.test.js && npm run eval && npm test`
-- [ ] **TASK-CICLO-01** (`#47`): **Nuova Navigazione Unica sulle 4 Fasi del Ciclo Causale e Panoramica d'Ingresso (rimozione doppia barra Oggi/Regia)** (`budget:M`)
-- [ ] **TASK-CICLO-02** (`#48`): **Fase 1 "Sapere & Obiettivi": Restyling editoriale di Scienza & CREA e integrazione coerente con Obiettivi Nutrizionali e Scuola Culinaria** (`budget:M`)
-- [ ] **TASK-CICLO-03** (`#49`): **Fase 2 "Mercato & Spesa": Restyling editoriale profondo di Negozi & Offerte Rapallo e Pianificatore/Lista Spesa (con assorbimento tappe `€/h`)** (`budget:L`)
-- [ ] **TASK-CICLO-04** (`#50`): **Fase 3 "Dispensa & Dotazione Casa": Restyling editoriale di Dispensa & Scontrini (con storico prezzi reale) e Officina Strumenti** (`budget:M`)
-- [ ] **TASK-CICLO-05** (`#51`): **Fase 4 "Azione: Cucina & Pulizie": Restyling editoriale di Ricette, Ristoranti GE & Fornelli (con proposte da dispensa reale) e Chimica Casa** (`budget:L`)
-- [ ] **TASK-CICLO-06** (`#52`): **Pulizia codice superato (`Oggi/Regia` standalone), riallineamento Living Specs, Domain Evals e chiusura Milestone** (`budget:S`)
+- [x] **TASK-CICLO-01** (`#47`): **Nuova Navigazione Unica sulle 4 Fasi del Ciclo Causale e Panoramica d'Ingresso (rimozione doppia barra Oggi/Regia)** (`budget:M`) *(PR #62)*
+- [x] **TASK-CICLO-02** (`#48`): **Fase 1 "Sapere & Obiettivi": Restyling editoriale di Scienza & CREA e integrazione coerente con Obiettivi Nutrizionali e Scuola Culinaria** (`budget:M`) *(PR #63)*
+- [x] **TASK-CICLO-03** (`#49`): **Fase 2 "Mercato & Spesa": Restyling editoriale profondo di Negozi & Offerte Rapallo e Pianificatore/Lista Spesa (con assorbimento tappe `€/h`)** (`budget:L`) *(PR #64)*
+- [x] **TASK-CICLO-04** (`#50`): **Fase 3 "Dispensa & Dotazione Casa": Restyling editoriale di Dispensa & Scontrini (con storico prezzi reale) e Officina Strumenti** (`budget:M`) *(PR #65)*
+- [x] **TASK-CICLO-05** (`#51`): **Fase 4 "Azione: Cucina & Pulizie": Restyling editoriale di Ricette, Ristoranti GE & Fornelli (con proposte da dispensa reale) e Chimica Casa** (`budget:L`) *(PR #66)*
+- [x] **TASK-CICLO-06** (`#52`): **Pulizia codice superato (`Oggi/Regia` standalone), riallineamento Living Specs, Domain Evals e chiusura Milestone** (`budget:S`) *(PR #67)*

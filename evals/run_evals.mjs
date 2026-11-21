@@ -765,6 +765,7 @@ export async function runAllDomainEvals(options = {}) {
       }
       const v2UiFiles = [
         'src/components/cycle/CycleOverviewView.jsx',
+        'src/components/cycle/DishDetailDrawer.jsx',
         'src/components/market/RapalloMarketView.jsx',
         'src/components/OfferCard.jsx',
         'src/components/CategoryFilters.jsx',

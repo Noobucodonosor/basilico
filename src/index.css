@@ -65,6 +65,10 @@ dialog::backdrop {
 }
 
 @layer utilities {
+  .font-editorial {
+    font-family: "New York", "Iowan Old Style", "Apple Garamond", "Palatino Linotype", Georgia, serif;
+  }
+
   /* Scroll Snap & Touch Carousel for Flyer Viewer (F14) */
   .scroll-snap-x-mandatory,
   .snap-x-mandatory {
