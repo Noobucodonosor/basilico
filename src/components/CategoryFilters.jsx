@@ -86,17 +86,17 @@ export function CategoryFilters({
               key={cat}
               type="button"
               onClick={() => handleSelect(cat)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium shrink-0 taste-btn cursor-pointer ${
                 isSelected
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+                  ? 'bg-[#1B5E3A] text-white shadow-xs'
+                  : 'bg-white text-[#4A524C] border border-[#E5E2DA] hover:bg-[#FAF9F6] hover:border-[#DFDCD2]'
               }`}
             >
               <span>{cat}</span>
               {typeof count === 'number' && (
                 <span
                   className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                    isSelected ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-100 text-slate-500'
+                    isSelected ? 'bg-[#14472C] text-[#FAF9F6]' : 'bg-[#F3F1EC] text-[#575E58]'
                   }`}
                 >
                   {count}

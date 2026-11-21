@@ -13,7 +13,7 @@ const DOMAIN_BADGE_MAP = {
   food_human: { label: 'Alimentari', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
   home_cleaning: { label: 'Chimica & Casa', color: 'bg-sky-50 text-sky-800 border-sky-200' },
   kitchen_cookware: { label: 'Pentole & Cucina', color: 'bg-amber-50 text-amber-800 border-amber-200' },
-  personal_care: { label: 'Igiene Persona', color: 'bg-purple-50 text-purple-800 border-purple-200' },
+  personal_care: { label: 'Igiene Persona', color: 'bg-[#F3F1EC] text-[#4A524C] border-[#DFDCD2]' },
   pet_care: { label: 'Pet Care', color: 'bg-orange-50 text-orange-800 border-orange-200' },
   bazar_seasonal: { label: 'Giocattoli & Bazar', color: 'bg-pink-50 text-pink-800 border-pink-200' }
 };
@@ -136,7 +136,7 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
           <button
             type="button"
             onClick={() => onOpenCreaFood && onOpenCreaFood(offer.creaMatch.creaFoodId)}
-            className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-1.5 py-0.5 rounded w-fit cursor-pointer"
+            className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-[#1B5E3A] bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#DFDCD2] px-1.5 py-0.5 rounded w-fit cursor-pointer"
             title={`Scheda CREA: ${offer.creaMatch.creaFoodName}`}
           >
             <span>🔬 {offer.creaMatch.nutrientsPerEuro?.proteinGPerEuro || 0}g prot/€</span>

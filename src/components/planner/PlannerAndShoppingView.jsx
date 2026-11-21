@@ -32,9 +32,24 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
   const [manualItemDomain, setManualItemDomain] = useState('food_human');
   const [manualItemPrice, setManualItemPrice] = useState('2.50');
   const [statusToast, setStatusToast] = useState('');
+  const [transportMode, setTransportMode] = useState('car');
+  const [storeYieldData, setStoreYieldData] = useState(null);
 
   const generateAbortRef = useRef(null);
   const budgetDebounceRef = useRef(null);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch(`/api/maestro/economics/store-yield?transportMode=${encodeURIComponent(transportMode)}`, {
+      signal: ctrl.signal
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && !ctrl.signal.aborted) setStoreYieldData(data);
+      })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [transportMode]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -325,7 +340,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
       </section>
 
       {statusToast && (
-        <div className="p-3.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold text-center shadow-xs">
+        <div className="p-3.5 rounded-xl bg-[#1B5E3A] text-white text-xs font-extrabold text-center shadow-xs">
           {statusToast}
         </div>
       )}
@@ -425,12 +440,12 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
               <div className="text-[11px] text-slate-500">Il resto rientra tracciato in Dispensa</div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-              <div className="text-[11px] font-bold text-slate-500 uppercase">Equivalente Menu Ristoranti</div>
-              <div className="text-xl font-extrabold text-indigo-800 mt-1">
+            <div className="bg-white rounded-2xl border border-[#E5E2DA] p-4 shadow-xs">
+              <div className="text-[11px] font-bold text-[#575E58] uppercase">Equivalente Menu Ristoranti</div>
+              <div className="text-xl font-extrabold text-[#141A17] mt-1">
                 €{Number(plan.ledger.totalMenuEquivalentEur || 0).toFixed(2)}
               </div>
-              <div className="text-[11px] text-emerald-700 font-bold">
+              <div className="text-[11px] text-[#1B5E3A] font-bold">
                 Risparmio Arbitraggio: €{Number(plan.ledger.totalArbitrageSavingsEur || 0).toFixed(2)}
               </div>
             </div>
@@ -486,7 +501,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
                         <button
                           type="button"
                           onClick={() => handleSwapMeal(day.dayIndex, 'breakfast')}
-                          className="text-[10px] font-bold text-indigo-700 hover:underline cursor-pointer"
+                          className="text-[10px] font-bold text-[#1B5E3A] hover:underline cursor-pointer"
                         >
                           🔄 Cambia
                         </button>
@@ -516,7 +531,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
                             <button
                               type="button"
                               onClick={() => handleSwapMeal(day.dayIndex, 'lunch')}
-                              className="text-[10px] font-bold text-indigo-700 hover:underline cursor-pointer"
+                              className="text-[10px] font-bold text-[#1B5E3A] hover:underline cursor-pointer"
                             >
                               🔄 Cambia piatto
                             </button>
@@ -544,7 +559,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
                             <button
                               type="button"
                               onClick={() => handleSwapMeal(day.dayIndex, 'dinner')}
-                              className="text-[10px] font-bold text-indigo-700 hover:underline cursor-pointer"
+                              className="text-[10px] font-bold text-[#1B5E3A] hover:underline cursor-pointer"
                             >
                               🔄 Cambia piatto
                             </button>
@@ -595,7 +610,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
                     Fabbisogno ricette: <strong>{wp.totalRequiredGrams}g</strong> • Da Dispensa:{' '}
                     <strong>{wp.fromPantryGrams}g</strong> • Acquistati: <strong>{wp.totalPurchasedGrams}g</strong> •
                     Residuo che rientra in Dispensa:{' '}
-                    <strong className="text-indigo-700">{wp.residualReturnedToPantryGrams}g</strong>
+                    <strong className="text-[#1B5E3A]">{wp.residualReturnedToPantryGrams}g</strong>
                   </div>
                   <div className="text-[10px] text-slate-500">
                     Usato in:{' '}
@@ -613,22 +628,22 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
             </div>
           </section>
 
-          {/* Multi-Store Simulator in Rapallo (1 vs 2 vs 3 Stores) */}
+          {/* Multi-Store Simulator in Rapallo (1 vs 2 vs 3 Stores) + €/h Stop Convenience */}
           {shoppingList?.storeSimulations && (
-            <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <section className="bg-white rounded-2xl border border-[#E5E2DA] p-5 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-900">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-[#F3F1EC] text-[#9A5B25] border border-[#DFDCD2]">
                     Logistica Reale Rapallo (16035 GE)
                   </span>
-                  <h2 className="text-base font-extrabold text-slate-900 mt-1">
+                  <h2 className="text-base font-extrabold text-[#141A17] mt-1">
                     🏪 4. Simulatore Strategia di Spesa: 1 Solo Negozio vs 2 Negozi vs 3 Negozi a Rapallo
                   </h2>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAisleModalOpen(true)}
-                  className="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-[#141A17] hover:bg-[#1B5E3A] text-white taste-btn cursor-pointer"
                 >
                   🛒 Apri Checklist In Corsia & Piano B
                 </button>
@@ -639,38 +654,95 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
                   <div
                     key={sim.strategyId}
                     className={`p-4 rounded-xl border space-y-2 ${
-                      idx === 1 ? 'bg-emerald-50/60 border-emerald-400 shadow-xs' : 'bg-slate-50 border-slate-200'
+                      idx === 1 ? 'bg-[#F3F1EC] border-[#1B5E3A]/40' : 'bg-[#FAF9F6] border-[#E5E2DA]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-extrabold text-slate-900">{sim.title}</span>
-                      <span className="text-xs font-bold text-slate-600">🚶 ~{sim.estimatedTotalMinutes} min</span>
+                      <span className="text-xs font-extrabold text-[#141A17]">{sim.title}</span>
+                      <span className="text-xs font-bold text-[#575E58]">🚶 ~{sim.estimatedTotalMinutes} min</span>
                     </div>
-                    <div className="text-lg font-extrabold text-emerald-800">
+                    <div className="text-lg font-extrabold text-[#1B5E3A]">
                       €{Number(sim.estimatedTotalEur || 0).toFixed(2)}
                       {sim.savingsVsSingleEur > 0 && (
-                        <span className="ml-2 text-xs font-bold text-emerald-600">
+                        <span className="ml-2 text-xs font-bold text-[#1B5E3A]">
                           (Risparmi €{Number(sim.savingsVsSingleEur || 0).toFixed(2)})
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-slate-700">
+                    <div className="text-[11px] text-[#4A524C]">
                       <strong>Tappe:</strong> {sim.storesVisited.join(' + ')}
                     </div>
-                    <div className="text-[10px] text-amber-900 font-semibold">
+                    <div className="text-[10px] text-[#9A5B25] font-semibold">
                       💳 Carte: {sim.loyaltyCardsNeeded.join(' • ')}
                     </div>
-                    <p className="text-[11px] text-slate-500">{sim.recommendation}</p>
+                    <p className="text-[11px] text-[#575E58]">{sim.recommendation}</p>
                   </div>
                 ))}
+              </div>
+
+              {/* Convenienza oraria netta (€/h) tra 1, 2 o 3 tappe a Rapallo */}
+              <div className="pt-3 border-t border-[#E5E2DA] space-y-3" data-testid="shopping-store-yield-panel">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-xs font-extrabold text-[#141A17]">
+                      ⏱️ Conviene davvero aggiungere una seconda o terza tappa? (Rendimento €/ora)
+                    </h3>
+                    <p className="text-[11px] text-[#575E58]">
+                      Confronta il risparmio sullo scontrino con il tempo speso tra traffico e parcheggio a Rapallo.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {['car', 'scooter', 'foot'].map((tm) => (
+                      <button
+                        key={tm}
+                        type="button"
+                        onClick={() => setTransportMode(tm)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border cursor-pointer ${
+                          transportMode === tm
+                            ? 'bg-[#141A17] text-white border-[#141A17]'
+                            : 'bg-[#F3F1EC] text-[#141A17] border-[#DFDCD2] hover:bg-[#E7E4DC]'
+                        }`}
+                      >
+                        {tm === 'car' ? '🚗 Auto' : tm === 'scooter' ? '🛵 Scooter' : '🚶 A piedi'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {storeYieldData?.optimalSummary && (
+                  <div className="p-3 rounded-xl bg-[#F3F1EC] border border-[#1B5E3A]/30 text-xs font-bold text-[#141A17]">
+                    ✅ {storeYieldData.optimalSummary}
+                  </div>
+                )}
+
+                {Array.isArray(storeYieldData?.incrementalYields) && storeYieldData.incrementalYields.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {storeYieldData.incrementalYields.map((yld) => (
+                      <div
+                        key={yld.stepLabel}
+                        className={`p-3 rounded-xl border text-xs space-y-1 ${
+                          yld.verdict === 'recommended'
+                            ? 'bg-[#F3F1EC] border-[#1B5E3A]/30'
+                            : 'bg-[#FAF9F6] border-[#E5E2DA]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between font-extrabold text-[#141A17]">
+                          <span>{yld.stepLabel}</span>
+                          <span className="text-[#1B5E3A]">Vale €{Number(yld.impliedHourlyYieldEur || 0).toFixed(2)}/ora</span>
+                        </div>
+                        <p className="text-[11px] text-[#575E58]">{yld.explanation}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Quick Add Extra Item (Food or Home Cleaning / Tigotà) */}
               <form
                 onSubmit={handleAddManualItem}
-                className="pt-3 border-t border-slate-200 flex flex-wrap items-center gap-2"
+                className="pt-3 border-t border-[#E5E2DA] flex flex-wrap items-center gap-2"
               >
-                <span className="text-xs font-bold text-slate-700">
+                <span className="text-xs font-bold text-[#4A524C]">
                   + Aggiungi articolo extra alla Lista Spesa:
                 </span>
                 <input
@@ -678,12 +750,12 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
                   placeholder="Es. Detersivo Piatti Neutro / Carta Forno / Caffè..."
                   value={manualItemName}
                   onChange={(e) => setManualItemName(e.target.value)}
-                  className="flex-1 min-w-[200px] text-xs border border-slate-300 rounded-lg px-3 py-1.5"
+                  className="flex-1 min-w-[200px] text-xs border border-[#DFDCD2] rounded-lg px-3 py-1.5"
                 />
                 <select
                   value={manualItemDomain}
                   onChange={(e) => setManualItemDomain(e.target.value)}
-                  className="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 font-semibold"
+                  className="text-xs border border-[#DFDCD2] rounded-lg px-2.5 py-1.5 font-semibold"
                 >
                   <option value="food_human">🥩 Alimentari (Subtotale Cibo)</option>
                   <option value="home_cleaning">🧼 Chimica Casa / Tigotà (Subtotale Casa)</option>
@@ -697,11 +769,11 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
                   step="0.01"
                   value={manualItemPrice}
                   onChange={(e) => setManualItemPrice(e.target.value)}
-                  className="w-20 text-xs border border-slate-300 rounded-lg px-2 py-1.5"
+                  className="w-20 text-xs border border-[#DFDCD2] rounded-lg px-2 py-1.5"
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-lg cursor-pointer"
+                  className="px-3 py-1.5 bg-[#1B5E3A] hover:bg-[#14472C] text-white text-xs font-extrabold rounded-lg cursor-pointer"
                 >
                   + Aggiungi
                 </button>
