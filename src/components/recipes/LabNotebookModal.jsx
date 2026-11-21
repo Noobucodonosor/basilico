@@ -43,9 +43,9 @@ export function LabNotebookModal({ isOpen, dish, heatSource, onClose, onSaved })
       aria-label="Quaderno di Laboratorio Gastronomico"
     >
       <div className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden">
-        <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
+        <div className="bg-[#141A17] text-white px-5 py-4 flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-600 text-white">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-[#1B5E3A] text-white">
               Quaderno di Laboratorio
             </span>
             <h3 className="text-base font-extrabold mt-1">📓 Registra Sessione Sperimentale</h3>
@@ -128,7 +128,7 @@ export function LabNotebookModal({ isOpen, dish, heatSource, onClose, onSaved })
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer"
+              className="px-4 py-2 text-xs font-extrabold bg-[#1B5E3A] hover:bg-[#14472C] text-white rounded-lg cursor-pointer"
             >
               {saving ? 'Salvataggio...' : '💾 Salva nel Quaderno Lab'}
             </button>

@@ -46,6 +46,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
   const [allRestaurantsCache, setAllRestaurantsCache] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paretoData, setParetoData] = useState(null);
+  const [pantrySuggestions, setPantrySuggestions] = useState([]);
   const [labEntries, setLabEntries] = useState([]);
   const [activeCookingDishId, setActiveCookingDishId] = useState(null);
   const [expandedBomDishId, setExpandedBomDishId] = useState(null);
@@ -60,6 +61,21 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
   useEffect(() => {
     setVisibleLimit(80);
   }, [sourceType, zona, restaurantId, mealContext, searchQuery, deduplicateTwins, excludeIncompatible, activeProfileId]);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch(`/api/maestro/today-copilot?profileId=${encodeURIComponent(activeProfileId || 'dany')}`, {
+      signal: ctrl.signal
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!ctrl.signal.aborted && Array.isArray(data?.tonightParetoOptions)) {
+          setPantrySuggestions(data.tonightParetoOptions.slice(0, 3));
+        }
+      })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [activeProfileId]);
 
   const fetchCatalog = useCallback(() => {
     setLoading(true);
@@ -259,6 +275,49 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
 
       {activeViewTab === 'catalog' && (
         <section className="space-y-4">
+          {/* Proposte Rapide dalla Dispensa Reale */}
+          {pantrySuggestions.length > 0 && (
+            <div
+              aria-label="Proposte rapide dalla dispensa reale"
+              className="bg-white rounded-2xl border border-[#E5E2DA] p-4 space-y-3"
+              data-testid="recipes-pantry-suggestions"
+            >
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1B5E3A]">
+                  Dalla tua dispensa reale
+                </span>
+                <h3 className="text-sm font-extrabold text-[#141A17]">
+                  🍳 Cosa puoi cucinare subito con le scorte in casa
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {pantrySuggestions.map((opt) => (
+                  <div
+                    key={opt.slotId || opt.dishId || opt.title}
+                    className="p-3 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] flex flex-col justify-between gap-2 text-xs"
+                  >
+                    <div>
+                      <div className="font-extrabold text-[#141A17]">{opt.title}</div>
+                      <div className="text-[11px] text-[#575E58] mt-0.5">
+                        ⏱️ {opt.totalHandsOnMinutes} min · €{Number(opt.purePortionCostEur || 0).toFixed(2)}/porz.
+                        {opt.vaRSavedEuro > 0 ? ` · Salva €${Number(opt.vaRSavedEuro).toFixed(2)} in scadenza` : ''}
+                      </div>
+                    </div>
+                    {opt.dishId && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveCookingDishId(opt.dishId)}
+                        className="px-3 py-1.5 rounded-lg bg-[#1B5E3A] hover:bg-[#14472C] text-white text-[11px] font-bold w-fit cursor-pointer"
+                      >
+                        👨‍🍳 Avvia Fornelli →
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Source Type Pills + Twin Deduplication Toggle */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -293,16 +352,16 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                   type="checkbox"
                   checked={deduplicateTwins}
                   onChange={(e) => setDeduplicateTwins(e.target.checked)}
-                  className="rounded border-slate-300 text-emerald-600"
+                  className="rounded border-[#DFDCD2] accent-[#1B5E3A]"
                 />
                 <span>🔗 Raggruppa omonimi (fascia prezzo)</span>
               </label>
-              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer">
+              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4A524C] bg-white border border-[#E5E2DA] px-3 py-1.5 rounded-xl cursor-pointer">
                 <input
                   type="checkbox"
                   checked={excludeIncompatible}
                   onChange={(e) => setExcludeIncompatible(e.target.checked)}
-                  className="rounded border-slate-300 text-emerald-600"
+                  className="rounded border-[#DFDCD2] accent-[#1B5E3A]"
                 />
                 <span>🛡️ Nascondi piatti a identità latticini (solo compatibili)</span>
               </label>
@@ -458,7 +517,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                   <button
                     type="button"
                     onClick={() => setActiveViewTab('deconstruct')}
-                    className="px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-extrabold bg-[#1B5E3A] hover:bg-[#14472C] text-white cursor-pointer"
                   >
                     🧪 De-costruisci un piatto di questo locale
                   </button>
@@ -502,7 +561,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                           )}
                           {dish.restaurantPriceRangeEur && (
                             <span
-                              className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200"
+                              className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#F3F1EC] text-[#141A17] border border-[#DFDCD2]"
                               title={dish.comparableRestaurants.map((c) => `${c.restaurantName} (${c.city}): €${c.menuPriceEuro}`).join(' • ')}
                             >
                               📊 In {dish.restaurantPriceRangeEur.count} ristoranti (€{dish.restaurantPriceRangeEur.minEur}–€{dish.restaurantPriceRangeEur.maxEur})
@@ -533,10 +592,10 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                           </div>
                         </div>
                         <div>
-                          <div className="text-[10px] text-indigo-700 font-bold">Arbitraggio Casa</div>
+                          <div className="text-[10px] text-[#1B5E3A] font-bold">Arbitraggio Casa</div>
                           <div
                             className={`text-sm font-extrabold ${
-                              dish.costAndArbitrage.arbitrageSavingsEur >= 0 ? 'text-indigo-800' : 'text-amber-700'
+                              dish.costAndArbitrage.arbitrageSavingsEur >= 0 ? 'text-[#1B5E3A]' : 'text-[#9A5B25]'
                             }`}
                           >
                             {dish.costAndArbitrage.arbitrageSavingsEur >= 0
@@ -625,7 +684,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                       <button
                         type="button"
                         onClick={() => setActiveCookingDishId(dish.id)}
-                        className="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-[#1B5E3A] hover:bg-[#14472C] text-white shadow-xs cursor-pointer"
                       >
                         👨‍🍳 Avvia Modalità Fornelli (<em className="italic">Science &amp; Cooking</em>)
                       </button>
@@ -656,7 +715,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
       {activeViewTab === 'pareto_8020' && (
         <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-900">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-[#F3F1EC] text-[#141A17] border border-[#DFDCD2]">
               Algoritmo Submodulare 80/20 Max-Coverage
             </span>
             <h2 className="text-lg font-extrabold text-slate-900 mt-1">
@@ -696,7 +755,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
                       )}
                     </div>
                     {item.nearlyUnlockedDishesCount > 0 && (
-                      <div className="text-[11px] text-indigo-700 font-medium">
+                      <div className="text-[11px] text-[#1B5E3A] font-medium">
                         ↳ Porta altri {item.nearlyUnlockedDishesCount} piatti a 1 solo ingrediente dallo sblocco
                       </div>
                     )}
@@ -767,7 +826,7 @@ export function RecipesAndRestaurantsView({ activeProfileId, onOpenCreaFood, onP
             <div className="sm:col-span-2">
               <button
                 type="submit"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold rounded-xl cursor-pointer"
+                className="px-4 py-2 bg-[#1B5E3A] hover:bg-[#14472C] text-white text-xs font-extrabold rounded-xl cursor-pointer"
               >
                 🔬 Genera Scheda Scientifica BOM & Calcola Arbitraggio
               </button>
