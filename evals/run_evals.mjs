@@ -63,6 +63,9 @@ export async function runAllDomainEvals(options = {}) {
   const quiet = Boolean(options.quiet);
   const startedAt = Date.now();
   const suites = [];
+  const evalTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-evals-'));
+
+  try {
 
   const recordSuite = (roomNumber, roomTitle, specFile, issueNumber, checks) => {
     const passed = checks.filter((c) => c.passed).length;
@@ -530,7 +533,7 @@ export async function runAllDomainEvals(options = {}) {
   // =========================================================================
   {
     const checks = [];
-    const tmpKitchenPath = path.join(os.tmpdir(), `basilico-eval-kitchen-${process.pid}.json`);
+    const tmpKitchenPath = path.join(evalTmpDir, 'kitchen_inventory.json');
     try {
       const isolatedKitchen = new KitchenInventoryService({ storagePath: tmpKitchenPath });
       const archetypes = isolatedKitchen.getArchetypes();
@@ -638,7 +641,7 @@ export async function runAllDomainEvals(options = {}) {
   // =========================================================================
   {
     const checks = [];
-    const tmpReceiptsPath = path.join(os.tmpdir(), `basilico-eval-receipts-${process.pid}.json`);
+    const tmpReceiptsPath = path.join(evalTmpDir, 'user_receipts.json');
     try {
       const isolatedReceiptSvc = new ReceiptService({ storagePath: tmpReceiptsPath });
       const sampleSlip = [
@@ -702,8 +705,8 @@ export async function runAllDomainEvals(options = {}) {
     }
 
     // ADR-0015 / TASK-V2-04: Household Economics VaR_48h & Today Pareto Prescription
-    const tmpEconPantryPath = path.join(os.tmpdir(), `basilico-eval-econ-pantry-${process.pid}-${Date.now()}.json`);
-    const tmpEconPath = path.join(os.tmpdir(), `basilico-eval-econ-${process.pid}-${Date.now()}.json`);
+    const tmpEconPantryPath = path.join(evalTmpDir, 'econ_pantry.json');
+    const tmpEconPath = path.join(evalTmpDir, 'household_economics.json');
     try {
       const econPantry = new PantryService({ storagePath: tmpEconPantryPath });
       econPantry.addItem({
@@ -716,7 +719,23 @@ export async function runAllDomainEvals(options = {}) {
       const varReport = econPantry.getValueAtRisk48h();
       const varAccurate = varReport.totalAtRiskEuro >= 7.20 && (varReport.atRiskItems || []).some((i) => /calamari/i.test(i.title || ''));
 
-      const maestroEvalSvc = new MaestroCoachService({ pantryService: econPantry });
+      const isolatedEconKitchen = new KitchenInventoryService({
+        storagePath: path.join(evalTmpDir, 'maestro_kitchen.json')
+      });
+      const isolatedEconShop = new ShoppingListService({
+        storagePath: path.join(evalTmpDir, 'maestro_shopping_list.json')
+      });
+      const isolatedEconSvc = new HouseholdEconomicsService({
+        storagePath: tmpEconPath,
+        kitchenInventoryService: isolatedEconKitchen,
+        shoppingListService: isolatedEconShop
+      });
+      const maestroEvalSvc = new MaestroCoachService({
+        pantryService: econPantry,
+        kitchenInventoryService: isolatedEconKitchen,
+        shoppingListService: isolatedEconShop,
+        householdEconomicsService: isolatedEconSvc
+      });
       const copilotBrief = await maestroEvalSvc.getTodayCopilot({
         profileId: 'dany',
         rhythmPreset: 'feriale'
@@ -746,6 +765,9 @@ export async function runAllDomainEvals(options = {}) {
       }
       const v2UiFiles = [
         'src/components/cycle/CycleOverviewView.jsx',
+        'src/components/market/RapalloMarketView.jsx',
+        'src/components/OfferCard.jsx',
+        'src/components/CategoryFilters.jsx',
         'src/components/crea/CreaExplorerView.jsx',
         'src/components/crea/CreaFoodModal.jsx',
         'src/components/crea/CreaCompareTray.jsx',
@@ -813,8 +835,8 @@ export async function runAllDomainEvals(options = {}) {
     let missingBreakfasts = 0;
     let samplePlan = null;
 
-    const tmpPlanPath = path.join(os.tmpdir(), `basilico-eval-plan-${process.pid}-${Date.now()}.json`);
-    const tmpShopPath = path.join(os.tmpdir(), `basilico-eval-shop-${process.pid}-${Date.now()}.json`);
+    const tmpPlanPath = path.join(evalTmpDir, 'weekly_plan.json');
+    const tmpShopPath = path.join(evalTmpDir, 'shopping_list.json');
     try {
       const isolatedPlanner = new MealPlannerService({ storagePath: tmpPlanPath });
 
@@ -1009,6 +1031,11 @@ export async function runAllDomainEvals(options = {}) {
     });
 
     recordSuite(7, 'Chimica & Cura della Casa/Barca', 'specs/07-chimica-casa.spec.md', 39, checks);
+  }
+  } finally {
+    try {
+      fs.rmSync(evalTmpDir, { recursive: true, force: true });
+    } catch (_) {}
   }
 
   // =========================================================================
