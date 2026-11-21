@@ -15,3 +15,4 @@ Questo file traccia in modo trasparente e riproducibile i **token reali consumat
 | Issue | Task ID | Taglia | Steps | Input Nuovi | Cache Read | Output | % Budget Input | Sub-agenti Extra | Commit | Data |
 | :--- | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | :--- | :--- |
 | [#46](https://github.com/Noobucodonosor/basilico/issues/46) | `TASK-GOV-01` | `budget:S` | 40 | 997.751 | 14.762.355 | 50.276 | 665.2% | 0 | `1790468` | 2026-11-18 |
+| [#53](https://github.com/Noobucodonosor/basilico/issues/53) | `TASK-QA-01` | `budget:S` | 6 | 25.306 | 470.912 | 9051 | 16.9% | 0 | `24e6f55` | 2026-11-21 |
