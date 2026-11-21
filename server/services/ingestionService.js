@@ -1344,13 +1344,19 @@ export class IngestionService {
   }
 
   /**
-   * Health and status query
+   * Health and status query (non-blocking during in-flight cold-start sync)
    */
   async getStatus() {
-    await this.init();
-    const stores = this._unwrapData(this.cacheManager.get('stores')) || [];
-    const flyers = this._unwrapData(this.cacheManager.get('flyers')) || [];
-    const offers = this._unwrapData(this.cacheManager.get('offers')) || [];
+    let stores = this._unwrapData(this.cacheManager.get('stores')) || [];
+    let flyers = this._unwrapData(this.cacheManager.get('flyers')) || [];
+    let offers = this._unwrapData(this.cacheManager.get('offers')) || [];
+    if (stores.length === 0 || flyers.length === 0 || offers.length === 0) {
+      const seed = await this.loadSeedData();
+      if (stores.length === 0) stores = seed.stores;
+      if (flyers.length === 0) flyers = seed.flyers;
+      if (offers.length === 0) offers = seed.offers;
+    }
+
     const isCacheExpired = this.cacheManager.isExpired('flyers');
     const storesEnvelope = typeof this.cacheManager.getEnvelope === 'function'
       ? this.cacheManager.getEnvelope('stores')
@@ -1366,6 +1372,7 @@ export class IngestionService {
     return {
       isOnline: (effectiveSource === 'live' || isFreshLiveCache) && !isFallbackOrFailed,
       dataSource: effectiveSource,
+      syncInProgress: Boolean(this.inFlightSync),
       lastSyncTimestamp: storesEnvelope?.metadata?.cachedAt || this.lastResult?.completedAt || new Date().toISOString(),
       lastResult: this.lastResult,
       storeCount: Array.isArray(stores) && stores.length > 0 ? stores.length : 14,

@@ -221,6 +221,10 @@ export function createApp(options = {}) {
   const app = express();
   const distDir = options.distDir || DEFAULT_DIST_DIR;
 
+  if (process.env.NODE_ENV === 'production' || process.env.TRUST_PROXY === '1') {
+    app.set('trust proxy', 1);
+  }
+
   // 1. Core Parsers & Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

@@ -1,13 +1,11 @@
 /**
  * Lightweight zero-dependency sliding-window rate limiter per client IP.
- * ADR-0017 / TASK-SEC-03
+ * ADR-0017 / TASK-SEC-03 & TASK-SEC-04
  */
 
+const MAX_TRACKED_IPS = 5000;
+
 function extractClientIp(req) {
-  const xff = req.headers?.['x-forwarded-for'];
-  if (typeof xff === 'string' && xff.trim()) {
-    return xff.split(',')[0].trim();
-  }
   return req.ip || req.socket?.remoteAddress || 'unknown';
 }
 
@@ -15,7 +13,8 @@ export function createRateLimiter({
   windowMs = 60_000,
   maxRequests = 20,
   message = 'Troppe richieste. Riprova tra poco.',
-  skipInTest = true
+  skipInTest = true,
+  maxTrackedIps = MAX_TRACKED_IPS
 } = {}) {
   const hits = new Map();
 
@@ -41,14 +40,21 @@ export function createRateLimiter({
     }
 
     timestamps.push(now);
+    // Refresh insertion order so active keys are not evicted ahead of stale ones
+    hits.delete(key);
     hits.set(key, timestamps);
 
-    // Opportunistic cleanup to keep memory bounded
-    if (hits.size > 1000) {
+    // Opportunistic cleanup + bounded FIFO cap to protect instance memory
+    if (hits.size > maxTrackedIps) {
       for (const [k, arr] of hits.entries()) {
         if (arr.every((ts) => ts <= cutoff)) {
           hits.delete(k);
         }
+      }
+      while (hits.size > maxTrackedIps) {
+        const oldestKey = hits.keys().next().value;
+        if (oldestKey === undefined) break;
+        hits.delete(oldestKey);
       }
     }
 
