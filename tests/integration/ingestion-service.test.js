@@ -98,6 +98,40 @@ describe('IngestionService Integration Tests', () => {
       assert.equal(normalized[0].pageCount, 2);
       assert.equal(normalized[0].isCurrent, true);
     });
+
+    it('ADR-0006: quick sync normalization never invents +14d validTo or 12 fake page URLs when omitted upstream', async () => {
+      const stores = await service.getStores();
+      const normalizedFlyers = service.normalizeLiveFlyers(
+        [
+          {
+            id: '77701',
+            retailerName: 'Basko',
+            title: 'Speciale Basko Rapallo'
+          }
+        ],
+        stores
+      );
+      assert.equal(normalizedFlyers.length, 1);
+      assert.equal(normalizedFlyers[0].validTo, null);
+      assert.equal(normalizedFlyers[0].pageCount, 1);
+      assert.equal(normalizedFlyers[0].pages.length, 1);
+      assert.ok(!normalizedFlyers[0].pages[0].imageUrl.includes('page_77701_'));
+
+      const normalizedOffers = service.normalizeLiveOffers(
+        [
+          {
+            id: 'off-777',
+            retailerName: 'Basko',
+            title: 'Pasta Rummo 500g',
+            promoPrice: 1.19
+          }
+        ],
+        stores,
+        normalizedFlyers
+      );
+      assert.equal(normalizedOffers.length, 1);
+      assert.equal(normalizedOffers[0].validTo, null);
+    });
   });
 
   describe('Tier 3: Multi-Tier Fallback Cascade', () => {

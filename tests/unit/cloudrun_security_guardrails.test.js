@@ -128,3 +128,42 @@ test('TASK-SEC-04: X-Forwarded-For left-hand spoofing cannot bypass rateLimiter 
     server.close();
   }
 });
+
+test('ADR-0020: built-in profiles are immutable in production, import cap rejects >20 profiles, and pantry cap enforces limit', async () => {
+  const { UserProfileService } = await import('../../server/services/userProfileService.js');
+  const { PantryService } = await import('../../server/services/pantryService.js');
+  const fs = await import('node:fs');
+  const os = await import('node:os');
+  const path = await import('node:path');
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-adr20-'));
+  const prevEnv = process.env.NODE_ENV;
+  try {
+    process.env.NODE_ENV = 'production';
+    const profileSvc = new UserProfileService({ storagePath: path.join(tmpDir, 'profiles.json') });
+
+    assert.throws(
+      () => profileSvc.upsertProfile({ id: 'ospiti', filterMode: 'hard_ban', excludedCategories: ['Latticini e Formaggi'] }),
+      (err) => err.status === 403
+    );
+
+    const tooMany = Array.from({ length: 21 }, (_, idx) => ({ id: `guest-${idx}`, name: `Guest ${idx}` }));
+    assert.throws(
+      () => profileSvc.importProfilesJson({ profiles: tooMany }),
+      (err) => err.status === 413
+    );
+
+    const pantrySvc = new PantryService({ storagePath: path.join(tmpDir, 'pantry.json') });
+    const seedState = pantrySvc._load();
+    seedState.items = Array.from({ length: 500 }, (_, i) => ({ id: `seed-${i}`, title: `Item ${i}`, zone: 'dry_pantry', status: 'closed' }));
+    pantrySvc._save();
+    assert.throws(
+      () => pantrySvc.addItem({ title: 'Overflow Item' }),
+      (err) => err.status === 413
+    );
+  } finally {
+    if (prevEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = prevEnv;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});

@@ -467,6 +467,11 @@ export class ShoppingListService {
       return this.getShoppingListState();
     }
 
+    if (state.items.length >= 500) {
+      const err = new Error('Limite massimo di 500 articoli in lista spesa raggiunto');
+      err.status = 413;
+      throw err;
+    }
     state.items.unshift(item);
     this._save();
     return this.getShoppingListState();

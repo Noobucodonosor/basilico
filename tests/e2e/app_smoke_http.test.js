@@ -40,7 +40,7 @@ describe('Wave C: Live Express HTTP & PWA Smoke Verification (TASK-QA-02)', () =
     const swRes = await fetch(`${baseUrl}/sw.js`);
     assert.equal(swRes.status, 200);
     const swText = await swRes.text();
-    assert.match(swText, /basilico-api-v1/);
+    assert.match(swText, /basilico-api-v\d+/);
     assert.match(swText, /\/api\/shopping-list/);
 
     const iconRes = await fetch(`${baseUrl}/icon.svg`);

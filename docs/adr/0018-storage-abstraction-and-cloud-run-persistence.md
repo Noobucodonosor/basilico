@@ -35,4 +35,4 @@
 
 ## 4. Task Operativi Collegati
 
-- [ ] **TASK-DATA-04** (`#60`): Telemetria `seedHealth` in `ingestionService.getStatus()` e `GET /api/status` + test dedicati.
+- [x] **TASK-DATA-04** (`#60`): Telemetria `seedHealth` in `ingestionService.getStatus()` e `GET /api/status` + test dedicati. *(PR #61)*
