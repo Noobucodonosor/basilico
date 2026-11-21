@@ -18,7 +18,7 @@ const ZONE_META = {
     id: 'boat_cooler',
     title: '⛵ Dotazione Barca & Borsa Termica',
     subtitle: 'Cambusa pronta per uscita in mare: conserve nobili, piatti one-pot, zero-forno',
-    badgeClass: 'bg-indigo-100 text-indigo-900 border-indigo-200'
+    badgeClass: 'bg-[#F3F1EC] text-[#141A17] border-[#DFDCD2]'
   }
 };
 
@@ -29,6 +29,7 @@ export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
     openedPriorityAlerts: []
   });
   const [receipts, setReceipts] = useState([]);
+  const [inflationData, setInflationData] = useState(null);
   const [activeZoneFilter, setActiveZoneFilter] = useState('ALL');
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
@@ -51,11 +52,32 @@ export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
         if (data && Array.isArray(data.receipts)) setReceipts(data.receipts);
       })
       .catch(() => {});
+
+    fetch('/api/maestro/economics/inflation')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setInflationData(data);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     fetchPantryAndReceipts();
   }, [fetchPantryAndReceipts]);
+
+  const handleQuickSwipe = async (itemId, remainingFraction) => {
+    try {
+      const res = await fetch(`/api/maestro/pantry-swipe/${encodeURIComponent(itemId)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ remainingFraction })
+      });
+      if (res.ok) {
+        fetchPantryAndReceipts();
+        if (onPantryUpdated) onPantryUpdated();
+      }
+    } catch (_) {}
+  };
 
   const handleAction = async (itemId, payload) => {
     try {
@@ -294,8 +316,24 @@ export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
                           </button>
                           <button
                             type="button"
+                            onClick={() => handleQuickSwipe(item.id, 1.0)}
+                            className="px-2 py-1 bg-[#F3F1EC] border border-[#DFDCD2] hover:bg-[#E7E4DC] text-[#141A17] rounded text-[10px] font-semibold cursor-pointer"
+                            title="Controllo rapido: scorta piena (100%)"
+                          >
+                            100%
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleQuickSwipe(item.id, 0.5)}
+                            className="px-2 py-1 bg-[#F3F1EC] border border-[#DFDCD2] hover:bg-[#E7E4DC] text-[#9A5B25] rounded text-[10px] font-semibold cursor-pointer"
+                            title="Controllo rapido: a metà (50%)"
+                          >
+                            50%
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => handleAction(item.id, { gramsUsed: 100 })}
-                            className="px-2 py-1 bg-white border border-slate-300 hover:bg-slate-100 rounded text-[10px] font-semibold cursor-pointer"
+                            className="px-2 py-1 bg-white border border-[#DFDCD2] hover:bg-[#FAF9F6] rounded text-[10px] font-semibold cursor-pointer"
                           >
                             -100{item.unit}
                           </button>
@@ -306,7 +344,7 @@ export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
                             <button
                               type="button"
                               onClick={() => handleAction(item.id, { targetZone: 'boat_cooler' })}
-                              className="px-2 py-1 bg-indigo-50 text-indigo-800 border border-indigo-200 rounded text-[10px] font-semibold cursor-pointer"
+                              className="px-2 py-1 bg-[#F3F1EC] text-[#1B5E3A] border border-[#DFDCD2] hover:bg-[#E7E4DC] rounded text-[10px] font-semibold cursor-pointer"
                               title="Sposta nella Borsa Termica Barca"
                             >
                               → ⛵ Barca
@@ -330,8 +368,39 @@ export function PantryAndReceiptsView({ stores = [], onPantryUpdated }) {
         })}
       </div>
 
+      {/* Andamento Prezzi Scontrini ("Il Tuo ISTAT a Rapallo") */}
+      {inflationData && (
+        <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 space-y-3" data-testid="pantry-price-inflation">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-extrabold text-[#141A17]">
+                📈 Andamento Prezzi sugli Scontrini Reali (Rapallo)
+              </h3>
+              <p className="text-xs text-[#575E58]">
+                {inflationData.honestSummary || 'Confronto prezzi reali registrati sugli scontrini senza stime inventate.'}
+              </p>
+            </div>
+            {inflationData.laspeyresIndexPct !== null && inflationData.laspeyresIndexPct !== undefined && (
+              <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-[#F3F1EC] text-[#1B5E3A] border border-[#DFDCD2]">
+                Indice paniere: {inflationData.laspeyresIndexPct > 0 ? '+' : ''}{Number(inflationData.laspeyresIndexPct).toFixed(1)}%
+              </span>
+            )}
+          </div>
+          {Array.isArray(inflationData.shrinkflationWatchdog) && inflationData.shrinkflationWatchdog.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              {inflationData.shrinkflationWatchdog.slice(0, 4).map((sw, idx) => (
+                <div key={idx} className="p-2.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] flex items-center justify-between gap-2">
+                  <span className="font-bold text-[#141A17] truncate">{sw.name || sw.item}</span>
+                  <span className="text-[#9A5B25] font-bold shrink-0">{sw.note || sw.status}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Verified Receipts Ledger */}
-      <section className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+      <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-extrabold text-slate-900">
