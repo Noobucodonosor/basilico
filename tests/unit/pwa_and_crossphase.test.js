@@ -40,6 +40,9 @@ describe('Wave B: PWA Manifest, Service Worker & 1-Tap Cross-Phase Flows (TASK-P
     for (const bypassed of ['/api/maestro', '/api/agentation', '/api/sync']) {
       assert.ok(swSource.includes(bypassed), `SW must bypass cache for ${bypassed}`);
     }
+    assert.match(swSource, /trimCache\(/, 'SW must apply bounded FIFO eviction');
+    assert.match(swSource, /MAX_API_ENTRIES\s*=\s*50/);
+    assert.match(swSource, /MAX_STATIC_ENTRIES\s*=\s*80/);
   });
 
   it('links manifest in index.html and restricts service worker registration to production in src/main.jsx', () => {

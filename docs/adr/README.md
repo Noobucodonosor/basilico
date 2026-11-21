@@ -27,6 +27,7 @@ Questa cartella raccoglie gli **Architecture Decision Records (ADR)** e il **Bac
 | **[ADR-0017](./0017-public-cloud-run-security-and-llm-guardrails.md)** | **Sicurezza Pubblica Cloud Run & Guardrail LLM:** Blocco `contextOverride` in prod, `x-goog-api-key`, limiti chat, rate limiter zero-deps & Security Headers | Accettato | **P0 — Critica** | Direttore di Prodotto (@Noobucodonosor) |
 | **[ADR-0018](./0018-storage-abstraction-and-cloud-run-persistence.md)** | **Strategia Persistenza Cloud Run & Continuità Catalogo Offline:** Modello Dual-Mode Casa vs Demo Effimera & Telemetria `seedHealth` (`ADR-0006` compliant) | Accettato | **P1 — Alta** | Direttore di Prodotto (@Noobucodonosor) |
 | **[ADR-0019](./0019-consumer-editorial-shell-and-progressive-disclosure.md)** | **Shell Consumer Editoriale (`Oggi / Offerte / Ricette / Lista + Altro`) & Divulgazione Progressiva:** Header unico, profilo neutro `Standard`, 3 card `3 dati + 1 azione` e `DishDetailDrawer` | Accettato | **P1 — Alta** | Direttore di Prodotto (@Noobucodonosor) |
+| **[ADR-0020](./0020-public-demo-mutation-hardening-and-storage-bounds.md)** | **Hardening Endpoint Mutanti & Storage Bounds Cloud Run:** Write rate limiter, batch I/O `importProfilesJson`, immutabilità profili built-in in prod e cap `MAX_ITEMS` | Accettato | **P1 — Alta** | Direttore di Prodotto (@Noobucodonosor) |
 
 ---
 

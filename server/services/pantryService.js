@@ -822,6 +822,11 @@ export class PantryService {
     };
 
     const state = this._load();
+    if (state.items.length >= 500) {
+      const err = new Error('Limite massimo di 500 articoli in dispensa raggiunto');
+      err.status = 413;
+      throw err;
+    }
     state.items.unshift(newItem);
     this._save();
     return this._enrichUrgency(newItem);

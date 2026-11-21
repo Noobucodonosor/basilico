@@ -216,11 +216,12 @@ export class IngestionService {
       const chainId = matched?.chainId || matched?.store?.chainId || 'other';
 
       const validFrom = raw.start_date || now.toISOString();
-      const validTo = raw.end_date || new Date(now.getTime() + 14 * 86400000).toISOString();
+      const validTo = raw.end_date || null;
       const coverImageUrl = raw.imageAssets?.cover || raw.imageAssets?.big ||
         `https://it-it-media.shopfully.cloud/images/volantini/big_${raw.id}.jpg`;
 
-      const isCurrent = new Date(validTo).getTime() >= now.getTime();
+      const validToMs = validTo ? Date.parse(validTo) : NaN;
+      const isCurrent = Number.isFinite(validToMs) ? validToMs >= now.getTime() : true;
       const rawPages = raw.imageAssets?.pages;
       let pages = [];
 
@@ -233,14 +234,12 @@ export class IngestionService {
             offerIds: []
           }));
       } else {
-        const pageCount = raw.pageCount || 12;
-        for (let p = 1; p <= pageCount; p++) {
-          pages.push({
-            pageNumber: p,
-            imageUrl: p === 1 ? coverImageUrl : coverImageUrl.replace(`big_${raw.id}`, `page_${raw.id}_${p}`),
-            offerIds: []
-          });
-        }
+        // ADR-0006: never synthesize unverified multi-page URLs when pages array is absent
+        pages.push({
+          pageNumber: 1,
+          imageUrl: coverImageUrl,
+          offerIds: []
+        });
       }
 
       flyers.push({
@@ -275,7 +274,6 @@ export class IngestionService {
 
     const now = new Date();
     const defaultValidFrom = now.toISOString();
-    const defaultValidTo = new Date(now.getTime() + 14 * 86400000).toISOString();
     const storeList = Array.isArray(stores) ? stores : [];
     const flyerList = Array.isArray(flyers) ? flyers : [];
     const storeById = new Map(storeList.map((s) => [s.id, s]));
@@ -351,7 +349,7 @@ export class IngestionService {
       seenIds.add(offerId);
 
       const validFrom = raw.validFrom || raw.validityStart || linkedFlyer?.validFrom || defaultValidFrom;
-      const validTo = raw.validTo || raw.validityEnd || linkedFlyer?.validTo || defaultValidTo;
+      const validTo = raw.validTo || raw.validityEnd || linkedFlyer?.validTo || null;
 
       const domain = classifyProductDomain({
         title,

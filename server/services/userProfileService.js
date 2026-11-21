@@ -233,11 +233,21 @@ export class UserProfileService {
     return this.getProfilesState();
   }
 
-  upsertProfile(profilePayload = {}) {
-    const state = this._load();
+  _mergeProfileIntoState(state, profilePayload = {}, { rejectBuiltinInProd = false } = {}) {
     const id = String(profilePayload.id || `profile-${Date.now()}`).trim().toLowerCase();
-    const name = String(profilePayload.name || id).trim();
+    const isBuiltin = id === 'dany' || id === 'barca' || id === 'ospiti';
 
+    if (process.env.NODE_ENV === 'production' && isBuiltin) {
+      if (rejectBuiltinInProd) {
+        const err = new Error('Profili di sistema protetti in modalità demo pubblica');
+        err.status = 403;
+        throw err;
+      }
+      const existingBuiltin = state.profiles.find((p) => p.id === id);
+      if (existingBuiltin) return existingBuiltin;
+    }
+
+    const name = String(profilePayload.name || id).trim();
     const updated = {
       id,
       name,
@@ -257,8 +267,19 @@ export class UserProfileService {
     if (idx >= 0) {
       state.profiles[idx] = { ...state.profiles[idx], ...updated };
     } else {
+      if (state.profiles.length >= 25) {
+        const err = new Error('Limite massimo di 25 profili raggiunto');
+        err.status = 413;
+        throw err;
+      }
       state.profiles.push(updated);
     }
+    return updated;
+  }
+
+  upsertProfile(profilePayload = {}) {
+    const state = this._load();
+    const updated = this._mergeProfileIntoState(state, profilePayload, { rejectBuiltinInProd: true });
     this._bumpVersion();
     this._save();
     return updated;
@@ -278,7 +299,15 @@ export class UserProfileService {
       err.status = 400;
       throw err;
     }
-    const sanitized = payload.profiles.map((p) => this.upsertProfile(p));
+    if (payload.profiles.length > 20) {
+      const err = new Error('Massimo 20 profili consentiti per singola importazione');
+      err.status = 413;
+      throw err;
+    }
+    const state = this._load();
+    const sanitized = payload.profiles.map((p) =>
+      this._mergeProfileIntoState(state, p, { rejectBuiltinInProd: false })
+    );
     if (payload.activeProfileId && sanitized.some((p) => p.id === payload.activeProfileId)) {
       this._state.activeProfileId = payload.activeProfileId;
     }

@@ -137,10 +137,10 @@ describe('Tier 5 White-Box Adversarial Stress Test Suite (Challenger 2)', () => 
       assert.equal(flyers[1].chainId, 'basko');
       assert.equal(flyers[1].validFrom, '2026-11-01');
 
-      // Check unknown store fallback
+      // Check unknown store fallback (ADR-0006: never synthesize fake pages when imageAssets.pages is absent)
       assert.equal(flyers[2].id, '9903');
-      assert.equal(flyers[2].pageCount, 6);
-      assert.equal(flyers[2].pages.length, 6);
+      assert.equal(flyers[2].pageCount, 1);
+      assert.equal(flyers[2].pages.length, 1);
 
       // Check explicit pages array
       assert.equal(flyers[3].id, '9904');

@@ -469,6 +469,11 @@ export class PriceHistoryService {
     };
 
     const list = this._load();
+    if (list.length >= 500) {
+      const err = new Error('Limite massimo di 500 osservazioni prezzi raggiunto');
+      err.status = 413;
+      throw err;
+    }
     list.unshift(obs);
     this._mutationVersion++;
     bumpEnrichmentEpoch();

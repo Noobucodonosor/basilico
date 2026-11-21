@@ -10,6 +10,7 @@ import express from 'express';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createRateLimiter } from './middleware/rateLimiter.js';
 
 // Route modules (M2 + ADR-0007..0012)
 import storesRouter from './routes/stores.js';
@@ -296,18 +297,28 @@ export function createApp(options = {}) {
 
   // 2. Mount REST API Routes on /api prefix
   // Contract 9.5: /api/stores, /api/offers, /api/flyers, /api/status, /api/sync
+  const writeRateLimiter = createRateLimiter({
+    windowMs: 60_000,
+    maxRequests: 60,
+    message: 'Troppe operazioni di scrittura in un minuto. Riprova tra poco.'
+  });
+  const guardMutations = (req, res, next) => {
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
+    return writeRateLimiter(req, res, next);
+  };
+
   if (storesRouter) app.use('/api/stores', storesRouter);
   if (offersRouter) app.use('/api/offers', offersRouter);
   if (flyersRouter) app.use('/api/flyers', flyersRouter);
-  if (pricesRouter) app.use('/api/prices', pricesRouter);
-  if (profilesRouter) app.use('/api/profiles', profilesRouter);
+  if (pricesRouter) app.use('/api/prices', guardMutations, pricesRouter);
+  if (profilesRouter) app.use('/api/profiles', guardMutations, profilesRouter);
   if (creaRouter) app.use('/api/crea', creaRouter);
-  if (pantryRouter) app.use('/api/pantry', pantryRouter);
-  if (receiptsRouter) app.use('/api/receipts', receiptsRouter);
-  if (kitchenRouter) app.use('/api/kitchen', kitchenRouter);
-  if (recipesRouter) app.use('/api/recipes', recipesRouter);
-  if (plannerRouter) app.use('/api/planner', plannerRouter);
-  if (shoppingListRouter) app.use('/api/shopping-list', shoppingListRouter);
+  if (pantryRouter) app.use('/api/pantry', guardMutations, pantryRouter);
+  if (receiptsRouter) app.use('/api/receipts', guardMutations, receiptsRouter);
+  if (kitchenRouter) app.use('/api/kitchen', guardMutations, kitchenRouter);
+  if (recipesRouter) app.use('/api/recipes', guardMutations, recipesRouter);
+  if (plannerRouter) app.use('/api/planner', guardMutations, plannerRouter);
+  if (shoppingListRouter) app.use('/api/shopping-list', guardMutations, shoppingListRouter);
   if (agentationRouter && process.env.NODE_ENV !== 'production') {
     app.use('/api/agentation', agentationRouter);
   }

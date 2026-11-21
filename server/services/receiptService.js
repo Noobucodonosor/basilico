@@ -481,6 +481,11 @@ export class ReceiptService {
     };
 
     const existingIdx = all.findIndex((r) => r.id === receiptId);
+    if (existingIdx < 0 && all.length >= 500) {
+      const err = new Error('Limite massimo di 500 scontrini archiviati raggiunto');
+      err.status = 413;
+      throw err;
+    }
     if (existingIdx >= 0) {
       all[existingIdx] = savedReceipt;
     } else {

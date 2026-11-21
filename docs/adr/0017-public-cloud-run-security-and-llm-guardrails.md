@@ -50,4 +50,4 @@ Con il deploy pubblico di Basilico su Google Cloud Run (`NODE_ENV=production`), 
 
 ## 4. Task Operativi Collegati
 
-- [ ] **TASK-SEC-03** (`#56`): Implementazione guardrail LLM (`contextOverride` prod-block, `x-goog-api-key`, limiti `message`/`history`), rate limiter su `/api/maestro/chat` e `/api/sync`, header HTTP di sicurezza e test dedicati.
+- [x] **TASK-SEC-03** (`#56`): Implementazione guardrail LLM (`contextOverride` prod-block, `x-goog-api-key`, limiti `message`/`history`), rate limiter su `/api/maestro/chat` e `/api/sync`, header HTTP di sicurezza e test dedicati. *(PR #57)*

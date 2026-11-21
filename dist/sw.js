@@ -1,5 +1,7 @@
-const STATIC_CACHE = 'basilico-static-v1';
-const API_CACHE = 'basilico-api-v1';
+const STATIC_CACHE = 'basilico-static-v2';
+const API_CACHE = 'basilico-api-v2';
+const MAX_API_ENTRIES = 50;
+const MAX_STATIC_ENTRIES = 80;
 const PRECACHE_URLS = ['/', '/manifest.webmanifest', '/icon.svg'];
 
 const BYPASS_API_PREFIXES = ['/api/maestro', '/api/agentation', '/api/sync'];
@@ -14,6 +16,17 @@ const OFFLINE_API_PREFIXES = [
 
 function matchesPrefix(pathname, prefixes) {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
+async function trimCache(cacheName, maxEntries) {
+  try {
+    const cache = await caches.open(cacheName);
+    const keys = await cache.keys();
+    while (keys.length > maxEntries) {
+      const oldest = keys.shift();
+      if (oldest) await cache.delete(oldest);
+    }
+  } catch (_) {}
 }
 
 self.addEventListener('install', (event) => {
@@ -37,10 +50,14 @@ self.addEventListener('activate', (event) => {
 
 async function networkFirst(request, cacheName, fallbackUrl) {
   const cache = await caches.open(cacheName);
+  const maxEntries = cacheName === API_CACHE ? MAX_API_ENTRIES : MAX_STATIC_ENTRIES;
   try {
     const response = await fetch(request);
     if (response && response.ok && response.type === 'basic') {
-      cache.put(request, response.clone()).catch(() => undefined);
+      cache
+        .put(request, response.clone())
+        .then(() => trimCache(cacheName, maxEntries))
+        .catch(() => undefined);
     }
     return response;
   } catch (err) {
@@ -56,11 +73,15 @@ async function networkFirst(request, cacheName, fallbackUrl) {
 
 async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);
+  const maxEntries = cacheName === API_CACHE ? MAX_API_ENTRIES : MAX_STATIC_ENTRIES;
   const cached = await cache.match(request);
   const networkPromise = fetch(request)
     .then((response) => {
       if (response && response.ok && response.type === 'basic') {
-        cache.put(request, response.clone()).catch(() => undefined);
+        cache
+          .put(request, response.clone())
+          .then(() => trimCache(cacheName, maxEntries))
+          .catch(() => undefined);
       }
       return response;
     })
