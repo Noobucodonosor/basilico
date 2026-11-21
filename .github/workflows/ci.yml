@@ -1,0 +1,47 @@
+name: Basilico CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Build, Test & Domain Evals
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production frontend bundle
+        run: npm run build
+
+      - name: Run full test suite
+        run: npm test
+
+      - name: Run Domain & Common-Sense Evals
+        run: npm run eval
+
+      - name: Check no tracked .env or database files and no >50MB blobs
+        run: |
+          if git ls-files | grep -E '(^\.env$|\.(db|sqlite|sqlite3)$)'; then
+            echo "ERROR: Sensitive .env or database file tracked in git!"
+            exit 1
+          fi
+          large_files=$(git ls-files -z | xargs -0 stat -c '%s %n' | awk '$1 > 52428800 {print}')
+          if [ -n "$large_files" ]; then
+            echo "ERROR: Tracked files >50MB found:"
+            echo "$large_files"
+            exit 1
+          fi
