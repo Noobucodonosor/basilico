@@ -106,3 +106,25 @@ test('ADR-0017: production mode ignores contextOverride on /api/maestro/chat and
     else process.env.NODE_ENV = prevEnv;
   }
 });
+
+test('TASK-SEC-04: X-Forwarded-For left-hand spoofing cannot bypass rateLimiter when trust proxy = 1', async () => {
+  const app = express();
+  app.set('trust proxy', 1);
+  app.use(createRateLimiter({ windowMs: 60_000, maxRequests: 2, skipInTest: false, maxTrackedIps: 3 }));
+  app.get('/ping', (req, res) => res.json({ ip: req.ip }));
+
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise((r) => server.once('listening', r));
+  try {
+    const { port } = server.address();
+    const url = `http://127.0.0.1:${port}/ping`;
+    const r1 = await fetch(url, { headers: { 'X-Forwarded-For': '10.0.0.1, 198.51.100.7' } });
+    const r2 = await fetch(url, { headers: { 'X-Forwarded-For': '10.0.0.2, 198.51.100.7' } });
+    const r3 = await fetch(url, { headers: { 'X-Forwarded-For': '10.0.0.3, 198.51.100.7' } });
+    assert.equal(r1.status, 200);
+    assert.equal(r2.status, 200);
+    assert.equal(r3.status, 429);
+  } finally {
+    server.close();
+  }
+});

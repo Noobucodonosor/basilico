@@ -42,3 +42,26 @@ test('ADR-0018: GET /api/status exposes seedHealth telemetry', async () => {
     server.close();
   }
 });
+
+test('TASK-SEC-04: getStatus responds in < 500ms without blocking while inFlightSync is pending', async () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'basilico-nonblock-status-'));
+  let releaseSync;
+  try {
+    const cache = new CacheManager({ cacheDir: tmpDir, backend: 'json' });
+    const service = new IngestionService({ cacheManager: cache });
+    service.inFlightSync = new Promise((resolve) => {
+      releaseSync = resolve;
+    });
+
+    const started = Date.now();
+    const status = await service.getStatus();
+    const elapsedMs = Date.now() - started;
+
+    assert.ok(elapsedMs < 500, `Expected non-blocking getStatus < 500ms, got ${elapsedMs}ms`);
+    assert.equal(status.syncInProgress, true);
+    assert.ok(status.offerCount > 0, 'Cold cache should fall back cleanly to seed counts while syncing');
+  } finally {
+    if (releaseSync) releaseSync({ status: 'done' });
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
