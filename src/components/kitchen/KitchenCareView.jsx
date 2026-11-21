@@ -242,9 +242,9 @@ export function KitchenCareView({
             <button
               type="button"
               onClick={() => onNavigateRoom('room-7-chimica')}
-              className="px-3.5 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-extrabold rounded-xl cursor-pointer"
+              className="px-3.5 py-2 bg-[#141A17] hover:bg-[#1B5E3A] text-white text-xs font-extrabold rounded-xl taste-btn cursor-pointer"
             >
-              🧪 Stanza 7: Chimica Casa &amp; Barca →
+              🧪 Chimica Casa &amp; Barca (Fase 4) →
             </button>
           )}
           {onOpenMaestro && (
@@ -253,7 +253,7 @@ export function KitchenCareView({
               onClick={() =>
                 onOpenMaestro('Quale padella della mia dotazione devo usare per una rosolatura perfetta senza rovinare i rivestimenti?')
               }
-              className="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold rounded-xl cursor-pointer"
+              className="px-3 py-2 bg-[#1B5E3A] hover:bg-[#14472C] text-white text-xs font-extrabold rounded-xl taste-btn cursor-pointer"
             >
               💬 Chiedi al Maestro
             </button>
@@ -336,11 +336,11 @@ export function KitchenCareView({
       )}
 
       {/* 2. NEW: Simulatore Termofisico, Batching Anti-Bollitura & Blocchi P0 */}
-      <section className="bg-white rounded-2xl border-2 border-indigo-200 p-4 sm:p-5 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+      <section className="bg-white rounded-2xl border border-[#E5E2DA] p-4 sm:p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E5E2DA] pb-3">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-700 text-white">
-              cookwarePhysicsEngine · ADR-0006
+            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-[#141A17] text-white">
+              Fisica delle Pentole · Dati Reali
             </span>
             <h3 className="text-sm font-extrabold text-slate-900 mt-1">
               🔬 Simulatore Termofisico Live: Inerzia, Turni in Padella (&gt;140°C) &amp; Blocchi Sicurezza P0
@@ -490,8 +490,8 @@ export function KitchenCareView({
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-1">
-                <div className="font-extrabold text-indigo-950">
+              <div className="p-3.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] space-y-1">
+                <div className="font-extrabold text-[#141A17]">
                   📐 Profilo Termofisico ({physicsEval.batching.profile.materialLabel})
                 </div>
                 <div>
@@ -813,9 +813,9 @@ export function KitchenCareView({
             <button
               type="button"
               onClick={() => onNavigateRoom('room-7-chimica')}
-              className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-900 text-xs font-extrabold shrink-0 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#DFDCD2] text-[#141A17] text-xs font-extrabold shrink-0 cursor-pointer"
             >
-              🧪 Apri Kit 7 Pilastri in Stanza 7 →
+              🧪 Apri Kit 7 Pilastri in Fase 4 →
             </button>
           )}
         </div>
