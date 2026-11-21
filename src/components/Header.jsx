@@ -18,7 +18,9 @@ export function Header({
   onOpenCounterPriceModal,
   shoppingCount = 0,
   onOpenShoppingList,
-  onOpenMaestro
+  onOpenMaestro,
+  onGoHome,
+  showCounterPrice = true
 }) {
   const online = status ? (status.isOnline !== false && status.dataSource !== 'seed') : isOnline;
   const source = status?.dataSource || dataSource || 'live';
@@ -28,8 +30,13 @@ export function Header({
     <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E2DA] transition-all">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex flex-wrap sm:flex-nowrap items-center justify-between py-2 sm:py-0 sm:h-16 gap-y-2 gap-x-2 sm:gap-3">
-          {/* Logo & Rapallo Badge (Row 1 Left on mobile, never clipped at 375px) */}
-          <div className="order-1 flex items-center gap-2 min-w-0 shrink-0">
+          {/* Logo & Rapallo Badge (clickable to return to Panoramica) */}
+          <button
+            type="button"
+            onClick={() => onGoHome && onGoHome()}
+            className="order-1 flex items-center gap-2 min-w-0 shrink-0 text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B5E3A] rounded-lg"
+            title="Torna alla Panoramica del Ciclo"
+          >
             <span className="text-xl sm:text-2xl select-none" aria-hidden="true">🌿</span>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -45,7 +52,7 @@ export function Header({
                 {activeStoreName || 'Tutti i Supermercati'}
               </span>
             </div>
-          </div>
+          </button>
 
           {/* Profile Selector & Mobile Counter Price (Row 2 full-width on <640px, inline on >=640px) */}
           {(profiles.length > 0 || onOpenCounterPriceModal) && (
@@ -71,7 +78,7 @@ export function Header({
                 </div>
               )}
 
-              {onOpenCounterPriceModal && (
+              {onOpenCounterPriceModal && showCounterPrice && (
                 <button
                   type="button"
                   onClick={onOpenCounterPriceModal}
@@ -119,33 +126,26 @@ export function Header({
               </button>
             )}
 
-            {/* Live Status Indicator */}
-            <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-[#FAF9F6] text-[#575E58] border-[#E5E2DA]"
-              title={`Sorgente: ${source}`}
-            >
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  online ? 'bg-[#1B5E3A]' : 'bg-[#9A5B25]'
-                }`}
-              />
-              <span className="hidden lg:inline">
-                {online ? 'Online' : source === 'cache' ? 'Copia Cache' : 'Offline'}
-              </span>
-            </div>
-
-            {/* Quick Refresh / Sync Button */}
-            {onRefresh && (
+            {/* Live Status + Quick Refresh combined control */}
+            {onRefresh ? (
               <button
                 type="button"
                 onClick={onRefresh}
                 disabled={isRefreshing}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-[#F3F1EC] hover:bg-[#E7E4DC] text-[#141A17] border border-[#DFDCD2] rounded-lg taste-btn disabled:opacity-50 cursor-pointer"
-                title="Aggiornamento rapido stato online e cache (1-2 secondi)"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold bg-[#FAF9F6] hover:bg-[#F3F1EC] text-[#141A17] border border-[#DFDCD2] rounded-lg taste-btn disabled:opacity-50 cursor-pointer"
+                title={`Sorgente: ${source} — Aggiorna offerte`}
                 aria-label="Aggiorna offerte"
               >
+                <span
+                  className={`w-2 h-2 rounded-full shrink-0 ${
+                    online ? 'bg-[#1B5E3A]' : 'bg-[#9A5B25]'
+                  }`}
+                />
+                <span className="hidden lg:inline text-[#575E58]">
+                  {online ? 'Online' : source === 'cache' ? 'Cache' : 'Offline'}
+                </span>
                 <svg
-                  className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-[#1B5E3A]' : ''}`}
+                  className={`w-3.5 h-3.5 text-[#575E58] ${isRefreshing ? 'animate-spin text-[#1B5E3A]' : ''}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -157,8 +157,21 @@ export function Header({
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                <span className="hidden md:inline">Aggiorna</span>
               </button>
+            ) : (
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-[#FAF9F6] text-[#575E58] border-[#E5E2DA]"
+                title={`Sorgente: ${source}`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    online ? 'bg-[#1B5E3A]' : 'bg-[#9A5B25]'
+                  }`}
+                />
+                <span className="hidden lg:inline">
+                  {online ? 'Online' : source === 'cache' ? 'Copia Cache' : 'Offline'}
+                </span>
+              </div>
             )}
 
             {/* Sync 14 Rapallo Stores Button */}
