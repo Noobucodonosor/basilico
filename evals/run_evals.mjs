@@ -745,8 +745,17 @@ export async function runAllDomainEvals(options = {}) {
         }
       }
       const v2UiFiles = [
-        'src/components/today/TodayCopilotView.jsx',
-        'src/components/today/WeeklyRegiaView.jsx',
+        'src/components/cycle/CycleOverviewView.jsx',
+        'src/components/crea/CreaExplorerView.jsx',
+        'src/components/crea/CreaFoodModal.jsx',
+        'src/components/crea/CreaCompareTray.jsx',
+        'src/components/planner/PlannerAndShoppingView.jsx',
+        'src/components/planner/AisleChecklistModal.jsx',
+        'src/components/pantry/PantryAndReceiptsView.jsx',
+        'src/components/kitchen/KitchenCareView.jsx',
+        'src/components/recipes/RecipesAndRestaurantsView.jsx',
+        'src/components/recipes/CookingModeModal.jsx',
+        'src/components/recipes/LabNotebookModal.jsx',
         'src/components/maestro/MaestroDrawer.jsx',
         'src/components/home/HomeChemistryView.jsx',
         'src/components/academy/CulinaryAcademyPanel.jsx',
