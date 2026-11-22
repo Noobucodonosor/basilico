@@ -27,28 +27,45 @@ function parseOcrTextToOfferFields(text) {
   const clean = String(text || '');
   let packWeightGrams = null;
 
-  // Match multipack first e.g. "2 x 100 g" or "3x80g"
-  const multi = clean.match(/(\d+)\s*[xX×]\s*(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l)\b/i);
-  if (multi) {
-    const count = Number(multi[1]);
-    const unitVal = Number(multi[2].replace(',', '.'));
-    const unit = multi[3].toLowerCase();
-    const mult = unit === 'kg' || unit === 'l' ? 1000 : 1;
+  // 1. Multipack: "2 x 150 g", "3x80g", or "G 100X3"
+  const multiAfter = clean.match(/\b(\d+)\s*[xX×]\s*(\d+(?:[.,]\d+)?)\s*(kg|gr|g|ml|cl|l)\b/i);
+  const multiBefore = clean.match(/\b(kg|gr|g|ml|cl|l)\s*(\d+(?:[.,]\d+)?)\s*[xX×]\s*(\d+)\b/i);
+  if (multiAfter) {
+    const count = Number(multiAfter[1]);
+    const unitVal = Number(multiAfter[2].replace(',', '.'));
+    const unit = multiAfter[3].toLowerCase();
+    const mult = unit === 'kg' || unit === 'l' ? 1000 : (unit === 'cl' ? 10 : 1);
+    if (count > 0 && unitVal > 0) packWeightGrams = Math.round(count * unitVal * mult);
+  } else if (multiBefore) {
+    const unit = multiBefore[1].toLowerCase();
+    const unitVal = Number(multiBefore[2].replace(',', '.'));
+    const count = Number(multiBefore[3]);
+    const mult = unit === 'kg' || unit === 'l' ? 1000 : (unit === 'cl' ? 10 : 1);
     if (count > 0 && unitVal > 0) packWeightGrams = Math.round(count * unitVal * mult);
   } else {
-    const single = clean.match(/\b(\d+(?:[.,]\d+)?)\s*(kg|g|ml|cl|l)\b/i);
-    if (single) {
-      const val = Number(single[1].replace(',', '.'));
-      const unit = single[2].toLowerCase();
+    // 2. Single weight: "800 g", "1,5 kg" OR "KG 2", "G 500"
+    const singleAfter = clean.match(/\b(\d+(?:[.,]\d+)?)\s*(kg|gr|g|ml|cl|l)\b/i);
+    const singleBefore = clean.match(/\b(kg|gr|g|ml|cl|l)\s*(\d+(?:[.,]\d+)?)\b/i);
+    if (singleAfter) {
+      const val = Number(singleAfter[1].replace(',', '.'));
+      const unit = singleAfter[2].toLowerCase();
+      const mult = unit === 'kg' || unit === 'l' ? 1000 : (unit === 'cl' ? 10 : 1);
+      if (val > 0) packWeightGrams = Math.round(val * mult);
+    } else if (singleBefore) {
+      const unit = singleBefore[1].toLowerCase();
+      const val = Number(singleBefore[2].replace(',', '.'));
       const mult = unit === 'kg' || unit === 'l' ? 1000 : (unit === 'cl' ? 10 : 1);
       if (val > 0) packWeightGrams = Math.round(val * mult);
     }
   }
 
   let unitPriceEurPerKg = null;
-  const perKgMatch = clean.match(/(\d+[.,]\d{2})\s*€?\s*(?:al|\/)\s*(?:kg|l)\b/i);
-  if (perKgMatch) {
-    unitPriceEurPerKg = Number(perKgMatch[1].replace(',', '.'));
+  const perKgAfter = clean.match(/(\d+[.,]\d{2})\s*€?\s*(?:al|\/)\s*(?:kg|l)\b/i);
+  const perKgBefore = clean.match(/(?:al|€\s*\/)\s*(?:kg|l)\s*€?\s*(\d+[.,]\d{2})/i);
+  if (perKgAfter) {
+    unitPriceEurPerKg = Number(perKgAfter[1].replace(',', '.'));
+  } else if (perKgBefore) {
+    unitPriceEurPerKg = Number(perKgBefore[1].replace(',', '.'));
   }
 
   const isMemberOnly = /sconto\s*soci|solo\s*soci|carta\s*fedelt[aà]/i.test(clean);
@@ -142,7 +159,7 @@ async function main() {
   if (engine === 'apple_vision') ensureVisionBinary();
 
   let updated = 0;
-  const concurrency = engine === 'apple_vision' ? 8 : 3;
+  const concurrency = engine === 'apple_vision' ? 12 : 3;
   for (let i = 0; i < targets.length; i += concurrency) {
     const batch = targets.slice(i, i + concurrency);
     await Promise.all(

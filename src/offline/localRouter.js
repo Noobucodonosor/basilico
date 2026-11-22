@@ -157,6 +157,7 @@ const CREA_KEYWORD_OVERRIDES = [
   { re: /\bmozzarella\b/, id: '162030' },
   { re: /\bpecorino\b/, id: '162080' },
   { re: /\bpollo\b/, id: '106400' },
+  { re: /\btacchino\b/, id: '106856' },
   { re: /\buova\b/, id: '181100' },
   { re: /\bbanan/, id: '007510' },
   { re: /\bmel[ae]\b/, id: '007130' },

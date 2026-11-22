@@ -20,6 +20,9 @@ const DOMAIN_BADGE_MAP = {
 
 export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) {
   const [addedToList, setAddedToList] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [cutoutScale, setCutoutScale] = useState(2);
+  const [enhanceSharpen, setEnhanceSharpen] = useState(true);
   const promoVal = Number(offer.promoPrice ?? offer.price ?? offer.discountPrice ?? 0);
   const origVal = offer.originalPrice != null ? Number(offer.originalPrice) : null;
   const hasDiscount = Boolean(origVal && origVal > promoVal);
@@ -46,7 +49,23 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
       }`}
     >
       {/* Track 1: Media (Image + Discount Badge + Domain/Profile Badges) */}
-      <div className="relative aspect-square w-full bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center p-2">
+      <div
+        onClick={() => {
+          setCutoutScale(2);
+          setZoomOpen(true);
+        }}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setCutoutScale(2);
+            setZoomOpen(true);
+          }
+        }}
+        title="Clicca per ingrandire questo ritaglio in HD (fino a 400%)"
+        className="relative aspect-square w-full bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center p-2 cursor-zoom-in"
+      >
         <img
           src={imageUrl}
           alt={offer.title}
@@ -219,6 +238,94 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
           </button>
         </div>
       </div>
+
+      {zoomOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs flex flex-col items-center justify-between p-4"
+          onClick={() => setZoomOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Ingrandimento ritaglio ${offer.title}`}
+        >
+          <svg className="sr-only" aria-hidden="true">
+            <defs>
+              <filter id={`cibo-sharpen-${offer.id}`}>
+                <feConvolveMatrix
+                  order="3"
+                  kernelMatrix="0 -0.65 0 -0.65 3.6 -0.65 0 -0.65 0"
+                  preserveAlpha="true"
+                />
+              </filter>
+            </defs>
+          </svg>
+
+          <div
+            className="w-full max-w-4xl flex flex-wrap items-center justify-between gap-2 bg-slate-900/90 text-white px-4 py-2.5 rounded-xl border border-white/15"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="min-w-0">
+              <p className="text-sm font-bold truncate">{offer.title}</p>
+              <p className="text-[11px] text-slate-300 truncate">
+                {offer.storeFullName || offer.storeName} · {promoFormatted} · {offer.quantityLabel || ''}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setCutoutScale(s)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer ${
+                    cutoutScale === s ? 'bg-emerald-600 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/20'
+                  }`}
+                >
+                  {s * 100}%
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setEnhanceSharpen((prev) => !prev)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold border cursor-pointer ${
+                  enhanceSharpen
+                    ? 'bg-amber-500/20 text-amber-200 border-amber-400/50'
+                    : 'bg-white/10 text-slate-300 border-white/15'
+                }`}
+                title="Filtro convoluzione SVG Unsharp Mask + micro-contrasto per testi piccoli"
+              >
+                {enhanceSharpen ? '✨ Nitidezza HD: ON' : 'Nitidezza HD: OFF'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoomOpen(false)}
+                className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer"
+              >
+                ✕ Chiudi
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="flex-1 w-full overflow-auto flex items-center justify-center p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={imageUrl}
+              alt={offer.title}
+              onClick={() => setCutoutScale((prev) => (prev >= 4 ? 1 : prev + 1))}
+              style={{
+                width: `${cutoutScale * 360}px`,
+                maxWidth: 'none',
+                filter: enhanceSharpen
+                  ? `url(#cibo-sharpen-${offer.id}) contrast(1.08) saturate(1.05)`
+                  : 'none'
+              }}
+              className="bg-white rounded-xl p-3 shadow-2xl cursor-zoom-in transition-all duration-150 select-none"
+              title="Clicca sull'immagine per aumentare lo zoom (100% -> 400%)"
+            />
+          </div>
+        </div>
+      )}
     </article>
   );
 }
