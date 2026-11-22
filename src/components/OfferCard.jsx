@@ -76,7 +76,7 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
           }}
         />
 
-        {hasDiscount && discountText && (
+        {discountText && (
           <span className="absolute top-2 right-2 bg-rose-600 text-white text-xs font-extrabold px-2 py-0.5 rounded-full shadow-xs">
             {discountText}
           </span>
@@ -157,15 +157,22 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
         )}
       </div>
 
-      {/* Track 3: Pricing (Promo Price + Strikethrough + Normalized Edible €/kg Price) */}
+      {/* Track 3: Pricing (Promo Price directly compared against Normal Full Price + Savings + €/kg) */}
       <div className="flex flex-col justify-end">
-        <div className="flex items-baseline gap-2">
-          <span className="text-xl font-extrabold text-emerald-700 tracking-tight">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="text-xl font-extrabold text-emerald-700 tracking-tight tabular-nums">
             {promoFormatted}
           </span>
-          {hasDiscount && originalFormatted && (
-            <span className="text-xs text-slate-400 line-through">
-              {originalFormatted}
+          {hasDiscount && originalFormatted ? (
+            <span className="text-xs font-medium text-slate-600 tabular-nums">
+              anziché <span className="line-through text-rose-700 font-bold">{originalFormatted}</span>
+              <span className="ml-1 text-[11px] font-bold text-rose-700">
+                (−€ {(origVal - promoVal).toFixed(2).replace('.', ',')})
+              </span>
+            </span>
+          ) : (
+            <span className="text-[10px] text-slate-400">
+              prezzo pieno non indicato
             </span>
           )}
         </div>
@@ -266,7 +273,10 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
             <div className="min-w-0">
               <p className="text-sm font-bold truncate">{offer.title}</p>
               <p className="text-[11px] text-slate-300 truncate">
-                {offer.storeFullName || offer.storeName} · {promoFormatted} · {offer.quantityLabel || ''}
+                {offer.storeFullName || offer.storeName} · {promoFormatted}
+                {originalFormatted ? ` (era ${originalFormatted})` : ''}
+                {discountText ? ` · ${discountText}` : ''}
+                {offer.quantityLabel ? ` · ${offer.quantityLabel}` : ''}
               </p>
             </div>
 

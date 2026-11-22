@@ -140,8 +140,49 @@ export function parseOcrTextToOfferFields(text, offer = {}) {
     }
   }
 
+  // 8. Normal (original) price & discount percentage from image ("1,99 -> 1,19", "$4,49 -> €3,96", "-40%", "SCONTO 35%")
+  let discountPercentage = null;
+  const minusPct = clean.match(/(?:^|[\s(])-\s*(\d{1,2})\s*%/m);
+  const scontoPct = clean.match(/\bsconto(?:\s+soci|\s+del)?\s*(\d{1,2})\s*[%*~°]?/i);
+  const rawPct = minusPct ? Number(minusPct[1]) : (scontoPct ? Number(scontoPct[1]) : 0);
+  if (rawPct >= 5 && rawPct <= 75) {
+    discountPercentage = rawPct;
+  }
+
+  let originalPrice = null;
+  if (promoPrice > 0) {
+    // Strip lines containing "al kg" / "al lt" so unit price is never mistaken for original price
+    const nonUnitLines = clean
+      .split('\n')
+      .filter((ln) => !/(?:al|\/)\s*(?:kg|lt|l)\b/i.test(ln))
+      .join(' ');
+    const decimals = [...nonUnitLines.matchAll(/(?:^|[^\d])(\d{1,3}[.,]\d{2})(?!\d)/g)]
+      .map((m) => Number(m[1].replace(',', '.')))
+      .filter((v) =>
+        Number.isFinite(v) &&
+        v > promoPrice * 1.04 &&
+        v <= promoPrice * 3.2 &&
+        (!unitPriceEurPerKg || Math.abs(v - unitPriceEurPerKg) > 0.03)
+      );
+    if (decimals.length > 0) {
+      // Pick the closest plausible full price above promoPrice (or matching discountPercentage if present)
+      if (discountPercentage) {
+        const expected = promoPrice / (1 - discountPercentage / 100);
+        decimals.sort((a, b) => Math.abs(a - expected) - Math.abs(b - expected));
+      } else {
+        decimals.sort((a, b) => a - b);
+      }
+      originalPrice = Number(decimals[0].toFixed(2));
+      if (!discountPercentage) {
+        discountPercentage = Math.round(((originalPrice - promoPrice) / originalPrice) * 100);
+      }
+    } else if (discountPercentage) {
+      originalPrice = Number((promoPrice / (1 - discountPercentage / 100)).toFixed(2));
+    }
+  }
+
   const isMemberOnly = /sconto\s*soci|solo\s*soci|carta\s*fedelt[aà]|solo\s*con\s*prima|solo\s*titolari/i.test(clean);
-  return { packWeightGrams, unitPriceEurPerKg, unitSymbol, quantityLabel, isMemberOnly, rawText: clean };
+  return { packWeightGrams, unitPriceEurPerKg, unitSymbol, quantityLabel, discountPercentage, originalPrice, isMemberOnly, rawText: clean };
 }
 
 let compiledVisionBin = null;
@@ -212,7 +253,7 @@ async function main() {
         return queryTerms.some((t) => String(o.title || '').toLowerCase().includes(t));
       }
       if (force) return true;
-      return (!o.packWeightGrams && !o.quantityLabel) || o.ocrEnriched !== true;
+      return !o.originalPrice || (!o.packWeightGrams && !o.quantityLabel) || o.ocrEnriched !== true;
     })
     .slice(0, limit);
 
@@ -239,6 +280,13 @@ async function main() {
           }
           if (extracted.quantityLabel) {
             offer.quantityLabel = extracted.quantityLabel;
+          }
+          if (typeof extracted.originalPrice === 'number' && extracted.originalPrice > 0 && !offer.originalPrice) {
+            offer.originalPrice = extracted.originalPrice;
+          }
+          if (typeof extracted.discountPercentage === 'number' && extracted.discountPercentage > 0 && !(offer.discountPercentage > 0)) {
+            offer.discountPercentage = extracted.discountPercentage;
+            offer.discountLabel = `-${extracted.discountPercentage}%`;
           }
           if (extracted.isMemberOnly === true) {
             offer.isMemberOnly = true;
