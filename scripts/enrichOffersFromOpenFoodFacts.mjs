@@ -39,7 +39,7 @@ const STOPWORDS = new Set([
   'con', 'per', 'alla', 'alle', 'allo', 'del', 'della', 'delle', 'dello', 'dei',
   'degli', 'nel', 'nella', 'senza', 'alta', 'qualita', 'gusto', 'linea', 'vari',
   'assortiti', 'assortite', 'classico', 'classica', 'extra', 'puro', 'pura',
-  'fresco', 'fresca', 'nuovo', 'nuova', 'pack', 'formato', 'tris', 'bipacco'
+  'fresco', 'fresca', 'nuovo', 'nuova', 'pack', 'formato', 'tris', 'bipacco', 'bio'
 ]);
 
 const MILK_ALLERGEN_RX = /\b(latte|lattosio|siero di latte|proteine del latte|burro|panna|casein\w*|formaggi\w*|ricotta|mascarpone|mozzarella|parmigiano|grana)\b/i;
@@ -100,9 +100,9 @@ export function isVerifiedOffMatch(offerBrand, productPart, offProduct) {
   if (offerProdTokens.length === 0 || offProdTokens.size === 0) return false;
 
   const matchedCount = offerProdTokens.filter((t) => offProdTokens.has(t)).length;
-  const minRequired = offerProdTokens.length <= 2
-    ? offerProdTokens.length
-    : Math.ceil(offerProdTokens.length * 0.65);
+  const minRequired = offerProdTokens.length <= 1
+    ? 1
+    : Math.ceil(offerProdTokens.length * 0.5);
   if (matchedCount < minRequired) return false;
 
   // Completeness gate: require at least one concrete label signal
@@ -151,7 +151,12 @@ function buildOffPayload(offProduct) {
 }
 
 async function queryOffProduct(offerBrand, productPart) {
-  const q = `${offerBrand} ${productPart}`.trim();
+  const variants = [productPart];
+  const splitO = productPart.split(/\s+o\s+/i);
+  if (splitO.length > 1 && splitO[0].trim().length >= 4) {
+    variants.push(splitO[0].trim());
+  }
+
   const fields = [
     'code',
     'product_name',
@@ -164,21 +169,25 @@ async function queryOffProduct(offerBrand, productPart) {
     'ingredients_text_it',
     'ingredients_text'
   ].join(',');
-  const urls = [
-    `https://search.openfoodfacts.org/search?q=${encodeURIComponent(q)}&countries_tags=en:italy&page_size=5&fields=${fields}`,
-    `https://search.openfoodfacts.org/search?q=${encodeURIComponent(productPart)}&brands_tags=${encodeURIComponent(offerBrand.toLowerCase())}&countries_tags=en:italy&page_size=5&fields=${fields}`
-  ];
-  for (const url of urls) {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Basilico-Rapallo-BatchEnrich/1.0' },
-      signal: AbortSignal.timeout(9000)
-    });
-    if (!res.ok) continue;
-    const data = await res.json();
-    const hits = Array.isArray(data.hits) ? data.hits : [];
-    for (const hit of hits) {
-      if (isVerifiedOffMatch(offerBrand, productPart, hit)) {
-        return buildOffPayload(hit);
+
+  for (const variant of variants) {
+    const q = `${offerBrand} ${variant}`.trim();
+    const urls = [
+      `https://search.openfoodfacts.org/search?q=${encodeURIComponent(q)}&countries_tags=en:italy&page_size=5&fields=${fields}`,
+      `https://search.openfoodfacts.org/search?q=${encodeURIComponent(variant)}&brands_tags=${encodeURIComponent(offerBrand.toLowerCase())}&countries_tags=en:italy&page_size=5&fields=${fields}`
+    ];
+    for (const url of urls) {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'Basilico-Rapallo-BatchEnrich/1.0' },
+        signal: AbortSignal.timeout(9000)
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const hits = Array.isArray(data.hits) ? data.hits : [];
+      for (const hit of hits) {
+        if (isVerifiedOffMatch(offerBrand, variant, hit)) {
+          return buildOffPayload(hit);
+        }
       }
     }
   }
