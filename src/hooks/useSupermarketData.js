@@ -69,8 +69,12 @@ export function useSupermarketData(filterOptions = {}) {
     if (filterOptions.domain) queryParams.set('domain', filterOptions.domain);
     if (filterOptions.profileId) queryParams.set('profileId', filterOptions.profileId);
     if (filterOptions.hideIncompatible) queryParams.set('hideIncompatible', 'true');
+    if (filterOptions.excludeMemberOnly) queryParams.set('excludeMemberOnly', 'true');
     if (filterOptions.q && filterOptions.q.trim()) queryParams.set('q', filterOptions.q.trim());
     if (filterOptions.category) queryParams.set('category', filterOptions.category);
+    if (Array.isArray(filterOptions.excludedCategories) && filterOptions.excludedCategories.length > 0) {
+      queryParams.set('excludeCategories', filterOptions.excludedCategories.join(','));
+    }
     if (filterOptions.minDiscount) queryParams.set('minDiscount', filterOptions.minDiscount);
     if (filterOptions.sortBy) queryParams.set('sortBy', filterOptions.sortBy);
     queryParams.set('page', String(pageToLoad));
@@ -81,8 +85,10 @@ export function useSupermarketData(filterOptions = {}) {
     filterOptions.domain,
     filterOptions.profileId,
     filterOptions.hideIncompatible,
+    filterOptions.excludeMemberOnly,
     filterOptions.q,
     filterOptions.category,
+    filterOptions.excludedCategories,
     filterOptions.minDiscount,
     filterOptions.sortBy,
     pageSize

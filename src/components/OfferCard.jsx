@@ -101,6 +101,29 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
         <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900" title={offer.title}>
           {offer.title}
         </h3>
+        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
+          <span className="truncate" title={offer.storeAddress || offer.storeFullName || offer.storeName}>
+            📍 {offer.storeFullName || offer.storeName}
+            {offer.storeAddress ? ` · ${offer.storeAddress}` : ''}
+          </span>
+          {offer.isMemberOnly || offer.loyaltyCard?.requiredForPromo ? (
+            <span
+              className="inline-flex items-center px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold shrink-0"
+              title={`Richiede ${offer.loyaltyCard?.name || 'carta fedeltà'}`}
+            >
+              🪪 Solo soci ({offer.loyaltyCard?.name || 'Carta'})
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-medium shrink-0">
+              Aperta a tutti
+            </span>
+          )}
+        </div>
+        {offer.storageHint && (
+          <p className="mt-1 text-[10px] text-slate-600 leading-snug" title={offer.storageHint}>
+            {offer.storageHint}
+          </p>
+        )}
         {qualityBadges.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-1">
             {qualityBadges.map((b, idx) => (
@@ -127,19 +150,23 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
             </span>
           )}
         </div>
-        {normalizedPriceText && (
+        {(offer.quantityLabel || normalizedPriceText) && (
           <span className="text-[11px] text-slate-600 font-semibold">
-            ⚖️ {normalizedPriceText}
+            ⚖️ {offer.quantityLabel || normalizedPriceText}
+            {offer.quantityLabel && normalizedPriceText ? ` · ${normalizedPriceText}` : ''}
           </span>
         )}
         {offer.creaMatch && (
           <button
             type="button"
             onClick={() => onOpenCreaFood && onOpenCreaFood(offer.creaMatch.creaFoodId)}
-            className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-[#1B5E3A] bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#DFDCD2] px-1.5 py-0.5 rounded w-fit cursor-pointer"
+            className="mt-1 inline-flex flex-wrap items-center gap-1 text-[10px] font-bold text-[#1B5E3A] bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#DFDCD2] px-1.5 py-0.5 rounded w-fit cursor-pointer text-left"
             title={`Scheda CREA: ${offer.creaMatch.creaFoodName}`}
           >
-            <span>🔬 {offer.creaMatch.nutrientsPerEuro?.proteinGPerEuro || 0}g prot/€</span>
+            <span>
+              🔬 {offer.creaMatch.kcal100 ?? 0} kcal · {offer.creaMatch.prot100 ?? 0}g prot ·{' '}
+              {offer.creaMatch.carbs100 ?? 0}g carb · {offer.creaMatch.fat100 ?? 0}g grassi /100g
+            </span>
             <span>• CREA ↗</span>
           </button>
         )}

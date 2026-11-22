@@ -22,7 +22,8 @@ export function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
     }))
   ];
 
-  const activeIndex = tabs.findIndex((t) => t.id === selectedStoreId);
+  const activeStores = selectedStoreId ? String(selectedStoreId).split(',').filter(Boolean) : [];
+  const activeIndex = activeStores.length === 1 ? tabs.findIndex((t) => t.id === activeStores[0]) : 0;
   const currentTab = activeIndex >= 0 ? tabs[activeIndex] : tabs[0];
 
   const handleKeyDown = (e) => {
@@ -57,7 +58,7 @@ export function StoreSwitcher({ stores = [], selectedStoreId, onSelectStore }) {
           className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1 scroll-smooth"
         >
           {tabs.map((tab) => {
-            const isSelected = (tab.id === null && selectedStoreId === null) || tab.id === selectedStoreId;
+            const isSelected = tab.id === null ? activeStores.length === 0 : activeStores.includes(tab.id);
             return (
               <button
                 key={tab.id || 'all'}

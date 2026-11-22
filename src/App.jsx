@@ -135,10 +135,51 @@ export function App() {
   const [maestroPrompt, setMaestroPrompt] = useState('');
 
   const [activeRoom, setActiveRoomState] = useState(initialCycle.room);
-  const [selectedStoreId, setSelectedStoreId] = useState(initialStore);
-  const [selectedDomain, setSelectedDomain] = useState(initialDomain);
+  const [selectedStoreIds, setSelectedStoreIds] = useState(() =>
+    String(initialStore || '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
+  const selectedStoreId = selectedStoreIds.length > 0 ? selectedStoreIds.join(',') : null;
+  const setSelectedStoreId = useCallback((val) => {
+    if (!val) {
+      setSelectedStoreIds([]);
+      return;
+    }
+    setSelectedStoreIds((prev) => (prev.includes(val) ? prev.filter((s) => s !== val) : [...prev, val]));
+  }, []);
+  const [selectedDomains, setSelectedDomains] = useState(() =>
+    String(initialDomain || '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
+  const selectedDomain = selectedDomains.length > 0 ? selectedDomains.join(',') : null;
+  const setSelectedDomain = useCallback((val) => {
+    if (!val) {
+      setSelectedDomains([]);
+      return;
+    }
+    setSelectedDomains((prev) => (prev.includes(val) ? prev.filter((d) => d !== val) : [...prev, val]));
+  }, []);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedCategories, setSelectedCategories] = useState(() =>
+    String(initialCategory || '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
+  const selectedCategory = selectedCategories.length > 0 ? selectedCategories.join(',') : null;
+  const setSelectedCategory = useCallback((val) => {
+    if (!val) {
+      setSelectedCategories([]);
+      return;
+    }
+    setSelectedCategories((prev) => (prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val]));
+  }, []);
+  const [excludedCategories, setExcludedCategories] = useState([]);
+  const [excludeMemberOnly, setExcludeMemberOnly] = useState(false);
   const [sortBy, setSortBy] = useState(initialSort);
   const [hideIncompatible, setHideIncompatible] = useState(false);
 
@@ -402,8 +443,10 @@ export function App() {
     domain: selectedDomain,
     profileId: activeProfileId,
     hideIncompatible,
+    excludeMemberOnly,
     q: searchQuery,
     category: selectedCategory,
+    excludedCategories,
     sortBy: sortBy
   });
 
@@ -434,8 +477,9 @@ export function App() {
 
   // 4. Resolve Active Store display name
   const activeStore = useMemo(() => {
-    return stores.find((s) => s.id === selectedStoreId) || null;
-  }, [stores, selectedStoreId]);
+    if (selectedStoreIds.length !== 1) return null;
+    return stores.find((s) => s.id === selectedStoreIds[0]) || null;
+  }, [stores, selectedStoreIds]);
 
   const activeStoreName = activeStore ? activeStore.name : 'Tutti i Supermercati';
 
@@ -443,15 +487,16 @@ export function App() {
     return profiles.find((p) => p.id === activeProfileId) || null;
   }, [profiles, activeProfileId]);
 
-  // All active flyers for selected store (supports multi-flyer stores: 1st, 2nd, 3rd flyer)
+  // All active flyers for selected store(s) (supports multi-flyer & sticky multi-store selection)
   const currentStoreFlyers = useMemo(() => {
-    if (!selectedStoreId) return [];
+    if (selectedStoreIds.length === 0) return [];
+    const set = new Set(selectedStoreIds);
     return flyers.filter(
       (f) =>
-        f.storeId === selectedStoreId ||
-        (Array.isArray(f.storeIds) && f.storeIds.includes(selectedStoreId))
+        set.has(f.storeId) ||
+        (Array.isArray(f.storeIds) && f.storeIds.some((id) => set.has(id)))
     );
-  }, [flyers, selectedStoreId]);
+  }, [flyers, selectedStoreIds]);
 
   const handleOpenOfferFlyer = useCallback(
     (item) => {
@@ -491,24 +536,24 @@ export function App() {
     setHideIncompatible(false);
   }, []);
 
-  const handleSelectDomain = useCallback((nextDomain) => {
-    setSelectedDomain(nextDomain);
-    if (nextDomain && selectedCategory) {
-      const allowed = DOMAIN_ALLOWED_CATEGORIES[nextDomain] || [];
-      if (!allowed.includes(selectedCategory)) {
-        setSelectedCategory(null);
-      }
-    }
-  }, [selectedCategory]);
+  const handleSelectDomain = useCallback((domainId) => {
+    setSelectedDomain(domainId);
+  }, [setSelectedDomain]);
 
   const visibleCategoriesForDomain = useMemo(() => {
-    if (!selectedDomain) return undefined;
-    return DOMAIN_ALLOWED_CATEGORIES[selectedDomain] || undefined;
-  }, [selectedDomain]);
+    if (selectedDomains.length === 0) return undefined;
+    const merged = new Set();
+    for (const d of selectedDomains) {
+      for (const c of DOMAIN_ALLOWED_CATEGORIES[d] || []) {
+        merged.add(c);
+      }
+    }
+    return merged.size > 0 ? [...merged] : undefined;
+  }, [selectedDomains]);
 
   const handleToggleCategory = useCallback((cat) => {
-    setSelectedCategory((prev) => (prev === cat ? null : cat));
-  }, []);
+    setSelectedCategory(cat);
+  }, [setSelectedCategory]);
 
   const runSyncWithModal = useCallback(async (deep = false) => {
     setIsRefreshing(true);
@@ -698,6 +743,8 @@ export function App() {
           activeProfile={activeProfile}
           hideIncompatible={hideIncompatible}
           onChangeHideIncompatible={setHideIncompatible}
+          excludeMemberOnly={excludeMemberOnly}
+          onChangeExcludeMemberOnly={setExcludeMemberOnly}
           selectedDomain={selectedDomain}
           onSelectDomain={handleSelectDomain}
           facets={facets}
@@ -713,8 +760,16 @@ export function App() {
           visibleCategoriesForDomain={visibleCategoriesForDomain}
           selectedCategory={selectedCategory}
           onToggleCategory={handleToggleCategory}
-          activeFilterCount={activeFilterCount}
-          onClearFilters={handleClearFilters}
+          excludedCategories={excludedCategories}
+          onToggleExcludeCategory={(cat) =>
+            setExcludedCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]))
+          }
+          activeFilterCount={activeFilterCount + excludedCategories.length + (excludeMemberOnly ? 1 : 0)}
+          onClearFilters={() => {
+            setExcludedCategories([]);
+            setExcludeMemberOnly(false);
+            handleClearFilters();
+          }}
           loading={loading}
           offers={offers}
           hasMoreOffers={hasMoreOffers}
