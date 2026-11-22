@@ -18,6 +18,7 @@ export function CycleOverviewView({
   const [proposalsError, setProposalsError] = useState(false);
   const [reloadToken, setReloadToken] = useState(0);
   const [selectedDish, setSelectedDish] = useState(null);
+  const [featuredOffers, setFeaturedOffers] = useState([]);
 
   const retryProposals = useCallback(() => {
     setReloadToken((n) => n + 1);
@@ -52,43 +53,65 @@ export function CycleOverviewView({
     return () => ctrl.abort();
   }, [activeProfileId, reloadToken]);
 
+  useEffect(() => {
+    const ctrl = new AbortController();
+    const profileParam = encodeURIComponent(activeProfileId || 'ospiti');
+    fetch(`/api/offers?limit=4&sortBy=discountDesc&hideIncompatible=true&profileId=${profileParam}`, {
+      signal: ctrl.signal
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!ctrl.signal.aborted && Array.isArray(data?.offers)) {
+          setFeaturedOffers(data.offers.slice(0, 4));
+        }
+      })
+      .catch(() => {});
+
+    return () => ctrl.abort();
+  }, [activeProfileId]);
+
   const proposals = Array.isArray(copilot?.tonightParetoCards)
     ? copilot.tonightParetoCards.slice(0, 3)
     : [];
 
-  const humanSummary =
-    copilot?.humanSummary ||
-    'Tre piatti cucinabili con il tuo set, incrociati con i valori nutrizionali CREA e le offerte attive a Rapallo.';
+  const isDairyFree = activeProfileId === 'dany' || activeProfileId === 'barca';
 
   return (
-    <div className="space-y-8 sm:space-y-10" data-testid="cycle-overview-view">
-      {/* Section 1: Compact Editorial Hero so 3 proposals fit Above-the-Fold at 1440x900 */}
+    <div className="space-y-14 sm:space-y-16" data-testid="cycle-overview-view">
+      {/* Section 1: Editorial Hero */}
       <section
         data-enter=""
-        className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center pt-1 sm:pt-3 pb-6 sm:pb-8 border-b border-[#E5E2DA]"
+        className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pt-4 sm:pt-8 pb-10 sm:pb-14 border-b border-[#E5E2DA]"
       >
-        <div className="lg:col-span-7 space-y-3.5">
+        <div className="lg:col-span-7 space-y-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1B5E3A]">
             Rapallo · Cucina di casa
           </p>
-          <h1 className="font-editorial text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#141A17] tracking-tight leading-[1.08]">
+          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-[54px] font-normal text-[#141A17] tracking-tight leading-[1.08]">
             Cosa cucini stasera?
           </h1>
-          <p className="text-sm sm:text-base text-[#575E58] max-w-xl leading-relaxed">
-            {humanSummary}
+          <p className="text-base sm:text-lg text-[#575E58] max-w-xl leading-relaxed">
+            Tre piatti scelti sulle offerte reali dei supermercati di Rapallo, con il costo esatto a porzione.
           </p>
-          <div className="pt-1">
+          <div className="flex flex-wrap items-center gap-5 pt-2">
             <a
               href="#proposte-stasera"
-              className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#1B5E3A] hover:bg-[#14492D] text-white text-sm font-medium taste-btn"
+              className="inline-flex items-center px-6 py-3 rounded-full bg-[#1B5E3A] hover:bg-[#14492D] text-white text-sm font-medium taste-btn"
             >
-              Scegli tra le 3 proposte
+              Vedi le 3 proposte
             </a>
+            <button
+              type="button"
+              onClick={() => onNavigateRoom?.('room-1-negozi')}
+              className="text-sm font-medium text-[#141A17] hover:text-[#1B5E3A] underline underline-offset-4 decoration-[#D5D0C5] hover:decoration-[#1B5E3A] cursor-pointer"
+            >
+              Esplora le offerte di oggi →
+            </button>
           </div>
         </div>
 
         <div className="lg:col-span-5">
-          <div className="rounded-2xl overflow-hidden aspect-[16/10] max-h-56 w-full bg-[#F3F1EC] border border-[#E5E2DA] taste-photo-frame">
+          <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-[#F3F1EC] border border-[#E5E2DA] taste-photo-frame">
             <img
               src="/assets/img/photo-m61660576-960.jpg"
               alt="Ingredienti freschi della cucina mediterranea"
@@ -110,6 +133,33 @@ export function CycleOverviewView({
               Confronto diretto tra cucina di casa e prezzo al ristorante in Liguria.
             </p>
           </div>
+
+          {onChangeProfile && (
+            <div
+              className="inline-flex p-1 rounded-full bg-[#F3F1EC] border border-[#E5E2DA] self-start sm:self-auto"
+              role="group"
+              aria-label="Filtro preferenze cena"
+            >
+              <button
+                type="button"
+                onClick={() => onChangeProfile('ospiti')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                  !isDairyFree ? 'bg-white text-[#141A17] shadow-xs' : 'text-[#575E58] hover:text-[#141A17]'
+                }`}
+              >
+                Tutti i piatti
+              </button>
+              <button
+                type="button"
+                onClick={() => onChangeProfile('dany')}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                  isDairyFree ? 'bg-white text-[#141A17] shadow-xs' : 'text-[#575E58] hover:text-[#141A17]'
+                }`}
+              >
+                Senza latticini
+              </button>
+            </div>
+          )}
         </div>
 
         {loadingProposals && proposals.length === 0 ? (
@@ -188,6 +238,47 @@ export function CycleOverviewView({
           </div>
         )}
       </section>
+
+      {/* Section 3: Selected Today Offers (below the fold, max 4 quiet cards) */}
+      {featuredOffers.length > 0 && (
+        <section className="space-y-5 pt-4 border-t border-[#E5E2DA]">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="font-editorial text-2xl sm:text-3xl font-normal text-[#141A17] tracking-tight">
+              Occasioni selezionate oggi
+            </h2>
+            <button
+              type="button"
+              onClick={() => onNavigateRoom?.('room-1-negozi')}
+              className="text-sm font-medium text-[#141A17] hover:text-[#1B5E3A] underline underline-offset-4 decoration-[#D5D0C5] hover:decoration-[#1B5E3A] cursor-pointer shrink-0"
+            >
+              Tutte le offerte →
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featuredOffers.map((offer) => (
+              <button
+                key={offer.id}
+                type="button"
+                onClick={() => onNavigateRoom?.('room-1-negozi')}
+                className="text-left bg-white border border-[#E5E2DA] rounded-2xl p-5 flex flex-col justify-between gap-4 taste-card cursor-pointer"
+              >
+                <div className="space-y-1.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#575E58] truncate">
+                    {offer.storeName}
+                  </p>
+                  <p className="text-sm font-medium text-[#141A17] leading-snug line-clamp-2">
+                    {offer.title}
+                  </p>
+                </div>
+                <p className="text-lg font-semibold text-[#1B5E3A] tabular-nums">
+                  {formatEuro(offer.promoPrice ?? offer.price)}
+                </p>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Editorial Dish Detail Drawer */}
       <DishDetailDrawer

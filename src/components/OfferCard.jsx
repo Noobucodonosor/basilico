@@ -9,39 +9,29 @@ export function formatValidityBadge(isoString) {
   return `Valido fino al ${day} ${months[date.getUTCMonth()]}`;
 }
 
-function formatShortStore(offer) {
-  const rawStore = String(offer.storeFullName || offer.storeName || '')
-    .replace(/\s*-\s*Rapallo.*$/i, '')
-    .replace(/^Supermercati\s+/i, '')
-    .replace(/\s+Discount$/i, '')
-    .trim();
-  const rawAddr = String(offer.storeAddress || '')
-    .replace(/,?\s*16035\b/g, '')
-    .replace(/,?\s*Rapallo.*$/i, '')
-    .replace(/\bCorso\b/gi, 'C.so')
-    .replace(/\bFratelli\b/gi, 'F.lli')
-    .replace(/\bCristoforo\b/gi, 'C.')
-    .replace(/\bGoffredo\b/gi, 'G.')
-    .replace(/\bGiuseppe\b/gi, 'G.')
-    .trim();
-  if (rawStore && rawAddr) return `${rawStore} · ${rawAddr}`;
-  return rawStore || rawAddr || 'Rapallo';
-}
+const DOMAIN_BADGE_MAP = {
+  food_human: { label: 'Alimentari', color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+  home_cleaning: { label: 'Chimica & Casa', color: 'bg-sky-50 text-sky-800 border-sky-200' },
+  kitchen_cookware: { label: 'Pentole & Cucina', color: 'bg-amber-50 text-amber-800 border-amber-200' },
+  personal_care: { label: 'Igiene Persona', color: 'bg-[#F3F1EC] text-[#4A524C] border-[#DFDCD2]' },
+  pet_care: { label: 'Pet Care', color: 'bg-orange-50 text-orange-800 border-orange-200' },
+  bazar_seasonal: { label: 'Giocattoli & Bazar', color: 'bg-pink-50 text-pink-800 border-pink-200' }
+};
 
 export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingList }) {
   const [addedToList, setAddedToList] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [cutoutScale, setCutoutScale] = useState(1);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [cutoutScale, setCutoutScale] = useState(2);
   const [enhanceSharpen, setEnhanceSharpen] = useState(true);
 
   useEffect(() => {
-    if (!detailOpen) return undefined;
+    if (!zoomOpen) return undefined;
     const onKey = (e) => {
-      if (e.key === 'Escape') setDetailOpen(false);
+      if (e.key === 'Escape') setZoomOpen(false);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [detailOpen]);
+  }, [zoomOpen]);
 
   const promoVal = Number(offer.promoPrice ?? offer.price ?? offer.discountPrice ?? 0);
   const origVal = offer.originalPrice != null ? Number(offer.originalPrice) : null;
@@ -54,16 +44,18 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
   const originalFormatted = hasDiscount ? `€ ${origVal.toFixed(2).replace('.', ',')}` : null;
   const savingsFormatted = hasDiscount ? `€ ${(origVal - promoVal).toFixed(2).replace('.', ',')}` : null;
   const imageUrl = offer.imageUrl || '/images/placeholder_deal.svg';
+  const brand = offer.brand || offer.storeName || (offer.chainId ? offer.chainId.toUpperCase() : 'Offerta');
   const validityText = formatValidityBadge(offer.validTo || offer.validityEnd);
 
-  // Single unit/quantity line — never concatenate normalizedPriceText if quantityLabel already exists
-  const unitLine = offer.quantityLabel || offer.formattedNormalizedPrice || offer.unitPrice || null;
+  const normalizedPriceText = offer.formattedNormalizedPrice || offer.unitPrice || null;
+  const unitLine = offer.quantityLabel || normalizedPriceText || null;
+  const domainMeta = DOMAIN_BADGE_MAP[offer.domain] || null;
+  const qualityBadges = Array.isArray(offer.qualityBadges) ? offer.qualityBadges.slice(0, 2) : [];
+  const realDiscount = offer.realDiscountCheck || null;
   const isMemberOnly = Boolean(offer.isMemberOnly || offer.loyaltyCard?.requiredForPromo);
   const isFlaggedByProfile = offer.profileCompatibility && offer.profileCompatibility.isCompatible === false;
-  const shortStore = formatShortStore(offer);
 
-  const handleQuickAdd = async (e) => {
-    e?.stopPropagation?.();
+  const handleQuickAdd = async () => {
     if (!onAddToShoppingList) return;
     await onAddToShoppingList({
       name: offer.title,
@@ -75,7 +67,7 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
         offer.packWeightGrams ||
         offer.referencePackEstimate?.estimatedPackGrams ||
         300,
-      preferredChain: offer.storeName || shortStore,
+      preferredChain: offer.storeName || brand,
       storeId: offer.storeId || null,
       onPromo: true,
       creaId: offer.creaMatch?.creaFoodId || null
@@ -83,113 +75,200 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
     setAddedToList(true);
   };
 
-  const openModal = () => {
-    setCutoutScale(1);
-    setDetailOpen(true);
-  };
-
   return (
-    <>
-      <article
-        onClick={openModal}
-        className={`bg-white rounded-2xl border p-4 flex flex-col justify-between gap-3 transition-shadow hover:shadow-md cursor-pointer min-w-0 overflow-hidden ${
-          isFlaggedByProfile ? 'border-amber-300 bg-amber-50/20 opacity-85' : 'border-[#E5E2DA]'
-        }`}
+    <article
+      className={`bg-white rounded-xl border shadow-xs hover:shadow-md transition-shadow p-3.5 grid grid-rows-subgrid row-span-4 gap-2 relative group ${
+        isFlaggedByProfile ? 'border-amber-300 bg-amber-50/20 opacity-85' : 'border-slate-200'
+      }`}
+    >
+      {/* Track 1: Media (Image + Discount Badge + Domain/Profile Badges) */}
+      <div
+        onClick={() => {
+          setCutoutScale(2);
+          setZoomOpen(true);
+        }}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setCutoutScale(2);
+            setZoomOpen(true);
+          }
+        }}
+        title="Clicca per ingrandire questo ritaglio in HD (fino a 400%)"
+        className="relative aspect-square w-full bg-slate-50 rounded-lg overflow-hidden flex items-center justify-center p-2 cursor-zoom-in"
       >
-        {/* Top: Clean Image + Exception-Only Badges */}
-        <div className="space-y-2.5 min-w-0">
-          <div className="relative aspect-square w-full bg-[#FAF9F6] rounded-xl overflow-hidden flex items-center justify-center p-2.5">
-            <img
-              src={imageUrl}
-              alt={offer.title}
-              loading="lazy"
-              className="max-h-full max-w-full object-contain transition-transform duration-200 hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.src = '/images/placeholder_deal.svg';
-              }}
-            />
+        <img
+          src={imageUrl}
+          alt={offer.title}
+          loading="lazy"
+          className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
+          onError={(e) => {
+            e.currentTarget.src = '/images/placeholder_deal.svg';
+          }}
+        />
 
-            {discountText && (
-              <span className="absolute top-2.5 right-2.5 bg-rose-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs">
-                {discountText}
-              </span>
-            )}
+        {discountText && (
+          <span className="absolute top-2 right-2 bg-rose-600 text-white text-xs font-extrabold px-2 py-0.5 rounded-full shadow-xs">
+            {discountText}
+          </span>
+        )}
 
-            {isMemberOnly && (
-              <span className="absolute top-2.5 left-2.5 bg-amber-100 text-amber-950 border border-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                Solo soci
-              </span>
-            )}
-          </div>
+        {domainMeta && offer.domain !== 'food_human' && (
+          <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full border ${domainMeta.color}`}>
+            {domainMeta.label}
+          </span>
+        )}
 
-          {/* Store + Title */}
-          <div className="space-y-1 min-w-0">
-            <p className="text-[11px] font-medium text-[#575E58] truncate" title={offer.storeAddress || shortStore}>
-              {shortStore}
-            </p>
-            <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-[#141A17]" title={offer.title}>
-              {offer.title}
-            </h3>
-          </div>
+        <span className="absolute bottom-2 left-2 bg-slate-900/70 text-white text-[10px] font-semibold px-2 py-0.5 rounded-sm">
+          {brand}
+        </span>
+
+        {realDiscount && (realDiscount.status === 'verified_best' || realDiscount.status === 'verified_good') && (
+          <span
+            className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm shadow-xs"
+            title={realDiscount.explanation}
+          >
+            ✓ {realDiscount.badge}
+          </span>
+        )}
+      </div>
+
+      {/* Track 2: Header (Title + Category + Store Address + Loyalty + Storage + Quality Lens) */}
+      <div className="flex flex-col min-w-0">
+        <div className="flex items-center justify-between gap-1 mb-0.5">
+          <span className="text-[11px] font-medium text-emerald-700 line-clamp-1">
+            {offer.category}
+          </span>
+          {isFlaggedByProfile && (
+            <span
+              className="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded shrink-0"
+              title={(offer.profileCompatibility.reasons || []).join(' • ')}
+            >
+              ⚠️ Escluso profilo
+            </span>
+          )}
         </div>
-
-        {/* Bottom: Primary Price + Single €/kg Line + 1 Primary Action */}
-        <div className="space-y-2.5 pt-2 border-t border-[#F0EDE6] min-w-0">
-          <div className="space-y-0.5 min-w-0">
-            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <span className="text-xl font-bold text-[#1B5E3A] tracking-tight tabular-nums">
-                {promoFormatted}
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-slate-900" title={offer.title}>
+          {offer.title}
+        </h3>
+        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600 min-w-0">
+          <span className="truncate max-w-full" title={offer.storeAddress || offer.storeFullName || offer.storeName}>
+            📍 {offer.storeFullName || offer.storeName}
+            {offer.storeAddress ? ` · ${offer.storeAddress}` : ''}
+          </span>
+          {isMemberOnly ? (
+            <span
+              className="inline-flex items-center px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold shrink-0"
+              title={`Richiede ${offer.loyaltyCard?.name || 'carta fedeltà'}`}
+            >
+              🪪 Solo soci ({offer.loyaltyCard?.name || 'Carta'})
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-medium shrink-0">
+              Aperta a tutti
+            </span>
+          )}
+        </div>
+        {offer.storageHint && (
+          <p className="mt-1 text-[10px] text-slate-600 leading-snug" title={offer.storageHint}>
+            {offer.storageHint}
+          </p>
+        )}
+        {qualityBadges.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {qualityBadges.map((b, idx) => (
+              <span
+                key={idx}
+                className="text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.2 rounded"
+              >
+                {b.label || b}
               </span>
-              {hasDiscount && originalFormatted && (
-                <span className="text-xs text-[#575E58] tabular-nums">
-                  anziché <span className="line-through font-semibold text-rose-700">{originalFormatted}</span>
-                </span>
-              )}
-            </div>
-            {unitLine && (
-              <p className="text-[11px] text-[#575E58] truncate tabular-nums" title={unitLine}>
-                {unitLine}
-              </p>
-            )}
+            ))}
           </div>
+        )}
+      </div>
 
-          <div className="flex items-center justify-between gap-2">
+      {/* Track 3: Pricing (Promo vs Full Price + Savings + Pack/€/kg + Complete CREA Macros) */}
+      <div className="flex flex-col justify-end min-w-0">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="text-xl font-extrabold text-emerald-700 tracking-tight tabular-nums">
+            {promoFormatted}
+          </span>
+          {hasDiscount && originalFormatted ? (
+            <span className="text-xs font-medium text-slate-600 tabular-nums">
+              anziché <span className="line-through text-rose-700 font-bold">{originalFormatted}</span>
+              <span className="ml-1 text-[11px] font-bold text-rose-700">
+                (−{savingsFormatted})
+              </span>
+            </span>
+          ) : (
+            <span className="text-[10px] text-slate-400">
+              prezzo pieno non indicato
+            </span>
+          )}
+        </div>
+        {unitLine && (
+          <span className="text-[11px] text-slate-600 font-semibold tabular-nums">
+            ⚖️ {unitLine}
+          </span>
+        )}
+        {offer.creaMatch && (
+          <button
+            type="button"
+            onClick={() => onOpenCreaFood && onOpenCreaFood(offer.creaMatch.creaFoodId)}
+            className="mt-1 inline-flex flex-wrap items-center gap-1 text-[10px] font-bold text-[#1B5E3A] bg-[#F3F1EC] hover:bg-[#E7E4DC] border border-[#DFDCD2] px-1.5 py-0.5 rounded w-fit cursor-pointer text-left"
+            title={`Scheda CREA: ${offer.creaMatch.creaFoodName}`}
+          >
+            <span>
+              🔬 {offer.creaMatch.kcal100 ?? 0} kcal · {offer.creaMatch.prot100 ?? 0}g prot ·{' '}
+              {offer.creaMatch.carbs100 ?? 0}g carb · {offer.creaMatch.fat100 ?? 0}g grassi /100g
+            </span>
+            <span>• CREA ↗</span>
+          </button>
+        )}
+      </div>
+
+      {/* Track 4: Footer (Validity + Quick Add to Shopping List + Flyer Page Action) */}
+      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-1 text-xs">
+        <span className="text-[11px] text-slate-500 whitespace-nowrap truncate" title={validityText || ''}>
+          {validityText || 'Offerta attiva'}
+        </span>
+        <div className="flex items-center gap-1 shrink-0">
+          {onAddToShoppingList && !offer.isNamelessTile && (
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                openModal();
-              }}
-              className="text-xs font-medium text-[#575E58] hover:text-[#141A17] underline underline-offset-2 decoration-[#D5D0C5] cursor-pointer shrink-0"
+              onClick={handleQuickAdd}
+              className={`px-1.5 py-0.5 rounded font-bold text-[10px] border transition-colors cursor-pointer ${
+                addedToList
+                  ? 'bg-emerald-700 text-white border-emerald-700'
+                  : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+              }`}
+              title="Aggiungi con 1 clic alla Lista Spesa Multi-Negozio di Rapallo"
             >
-              Dettagli & zoom
+              {addedToList ? '✓ Lista' : '+ Lista'}
             </button>
-
-            {onAddToShoppingList && !offer.isNamelessTile && (
-              <button
-                type="button"
-                onClick={handleQuickAdd}
-                className={`px-3 py-1.5 rounded-full font-semibold text-xs border transition-colors cursor-pointer shrink-0 ${
-                  addedToList
-                    ? 'bg-[#1B5E3A] text-white border-[#1B5E3A]'
-                    : 'bg-[#FAF9F6] text-[#141A17] border-[#DFDCD2] hover:bg-[#1B5E3A] hover:text-white hover:border-[#1B5E3A]'
-                }`}
-              >
-                {addedToList ? '✓ In lista' : '+ Lista'}
-              </button>
-            )}
-          </div>
+          )}
+          <button
+            type="button"
+            onClick={() => onOpenFlyer && onOpenFlyer(offer)}
+            className="text-emerald-700 font-semibold hover:text-emerald-800 text-[11px] shrink-0 hover:underline cursor-pointer"
+            title={offer.pageNumber ? `Apri volantino a pagina ${offer.pageNumber}` : 'Apri volantino promozionale'}
+          >
+            {offer.pageNumber ? `Pag. ${offer.pageNumber} →` : 'Volantino →'}
+          </button>
         </div>
-      </article>
+      </div>
 
-      {/* Progressive Disclosure: 2-Column Offer Detail & HD Cutout Zoom Modal */}
-      {detailOpen && (
+      {/* HD Cutout Lightbox (100%–400% + SVG Unsharp Mask) */}
+      {zoomOpen && (
         <div
-          className="fixed inset-0 z-[60] bg-[#141A17]/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6"
-          onClick={() => setDetailOpen(false)}
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs flex flex-col items-center justify-between p-4"
+          onClick={() => setZoomOpen(false)}
           role="dialog"
           aria-modal="true"
-          aria-label={`Dettagli offerta ${offer.title}`}
+          aria-label={`Ingrandimento ritaglio ${offer.title}`}
         >
           <svg className="sr-only" aria-hidden="true">
             <defs>
@@ -204,203 +283,88 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
           </svg>
 
           <div
-            className="bg-white rounded-2xl border border-[#E5E2DA] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden grid grid-cols-1 lg:grid-cols-12"
+            className="w-full max-w-4xl flex flex-wrap items-center justify-between gap-2 bg-slate-900/90 text-white px-4 py-2.5 rounded-xl border border-white/15"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Left Column: Zoomable Cutout + Full Flyer Link */}
-            <div className="lg:col-span-7 bg-[#141A17] text-white flex flex-col justify-between min-h-[320px] max-h-[52vh] lg:max-h-[90vh]">
-              <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-white/10">
-                <div className="flex items-center gap-1.5">
-                  {[1, 2, 3, 4].map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => setCutoutScale(s)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
-                        cutoutScale === s ? 'bg-[#1B5E3A] text-white' : 'bg-white/10 text-stone-200 hover:bg-white/20'
-                      }`}
-                    >
-                      {s * 100}%
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setEnhanceSharpen((prev) => !prev)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border cursor-pointer ${
-                      enhanceSharpen
-                        ? 'bg-amber-400/20 text-amber-200 border-amber-300/40'
-                        : 'bg-white/10 text-stone-300 border-white/15'
-                    }`}
-                  >
-                    {enhanceSharpen ? 'Nitidezza HD attiva' : 'Nitidezza standard'}
-                  </button>
-                </div>
-
-                {onOpenFlyer && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDetailOpen(false);
-                      onOpenFlyer(offer);
-                    }}
-                    className="text-xs font-medium text-emerald-300 hover:text-emerald-200 underline underline-offset-2 cursor-pointer"
-                  >
-                    {offer.pageNumber ? `Apri volantino intero (Pag. ${offer.pageNumber}) →` : 'Apri volantino intero →'}
-                  </button>
-                )}
-              </div>
-
-              <div className="flex-1 overflow-auto flex items-center justify-center p-5">
-                <img
-                  src={imageUrl}
-                  alt={offer.title}
-                  onClick={() => setCutoutScale((prev) => (prev >= 4 ? 1 : prev + 1))}
-                  style={{
-                    width: `${cutoutScale * 340}px`,
-                    maxWidth: 'none',
-                    filter: enhanceSharpen
-                      ? `url(#cibo-sharpen-${offer.id}) contrast(1.08) saturate(1.04)`
-                      : 'none'
-                  }}
-                  className="bg-white rounded-xl p-3 shadow-xl cursor-zoom-in transition-all duration-150 select-none"
-                  title="Clicca sull'immagine per ingrandire fino al 400%"
-                />
-              </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold truncate">{offer.title}</p>
+              <p className="text-[11px] text-slate-300 truncate">
+                {offer.storeFullName || offer.storeName} · {promoFormatted}
+                {originalFormatted ? ` (era ${originalFormatted})` : ''}
+                {discountText ? ` · ${discountText}` : ''}
+                {unitLine ? ` · ${unitLine}` : ''}
+              </p>
             </div>
 
-            {/* Right Column: Complete Structured Product Sheet */}
-            <div className="lg:col-span-5 p-5 sm:p-6 overflow-y-auto space-y-5 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#1B5E3A]">
-                      {offer.category}
-                    </p>
-                    <h2 className="text-lg font-bold text-[#141A17] leading-snug">
-                      {offer.title}
-                    </h2>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setDetailOpen(false)}
-                    aria-label="Chiudi dettagli offerta"
-                    className="px-2.5 py-1 rounded-lg bg-[#F3F1EC] hover:bg-[#E5E2DA] text-xs font-semibold text-[#141A17] cursor-pointer shrink-0"
-                  >
-                    ✕ Chiudi
-                  </button>
-                </div>
-
-                {/* Complete Pricing Box */}
-                <div className="rounded-xl bg-[#FAF9F6] border border-[#E5E2DA] p-3.5 space-y-1.5">
-                  <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="text-2xl font-bold text-[#1B5E3A] tabular-nums">{promoFormatted}</span>
-                    {hasDiscount && originalFormatted ? (
-                      <span className="text-xs text-[#575E58] tabular-nums">
-                        anziché <span className="line-through font-semibold text-rose-700">{originalFormatted}</span>{' '}
-                        <span className="font-semibold text-rose-700">
-                          (risparmi {savingsFormatted} · {discountText})
-                        </span>
-                      </span>
-                    ) : (
-                      <span className="text-xs text-[#575E58]">Prezzo precedente non indicato sul volantino</span>
-                    )}
-                  </div>
-                  {unitLine && (
-                    <p className="text-xs font-medium text-[#141A17] tabular-nums">
-                      Formato e peso: {unitLine}
-                    </p>
-                  )}
-                </div>
-
-                {/* Store, Address, Loyalty & Validity */}
-                <div className="space-y-2 text-xs text-[#141A17]">
-                  <div>
-                    <span className="font-semibold">Dove trovarlo: </span>
-                    <span>
-                      {offer.storeFullName || offer.storeName}
-                      {offer.storeAddress ? ` — ${offer.storeAddress}` : ''}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-semibold">Condizioni: </span>
-                    {isMemberOnly ? (
-                      <span className="font-semibold text-amber-900">
-                        Riservata ai titolari {offer.loyaltyCard?.name || 'carta fedeltà'}
-                      </span>
-                    ) : (
-                      <span className="text-[#575E58]">Aperta a tutti (nessuna tessera richiesta)</span>
-                    )}
-                  </div>
-                  {validityText && (
-                    <div>
-                      <span className="font-semibold">Validità: </span>
-                      <span className="text-[#575E58]">{validityText}</span>
-                    </div>
-                  )}
-                  {offer.storageHint && (
-                    <div>
-                      <span className="font-semibold">Conservazione: </span>
-                      <span className="text-[#575E58]">{offer.storageHint.replace(/^[^\w]+/, '')}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* CREA Nutrition Section */}
-                {offer.creaMatch && (
-                  <div className="rounded-xl bg-[#F3F1EC] border border-[#E5E2DA] p-3.5 space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-semibold text-[#141A17]">
-                        Valori medi CREA per 100 g ({offer.creaMatch.creaFoodName})
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-4 gap-2 text-center">
-                      <div className="bg-white rounded-lg p-2 border border-[#E5E2DA]">
-                        <p className="text-xs font-bold text-[#141A17] tabular-nums">{offer.creaMatch.kcal100 ?? 0}</p>
-                        <p className="text-[10px] text-[#575E58]">kcal</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 border border-[#E5E2DA]">
-                        <p className="text-xs font-bold text-[#141A17] tabular-nums">{offer.creaMatch.prot100 ?? 0} g</p>
-                        <p className="text-[10px] text-[#575E58]">Proteine</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 border border-[#E5E2DA]">
-                        <p className="text-xs font-bold text-[#141A17] tabular-nums">{offer.creaMatch.carbs100 ?? 0} g</p>
-                        <p className="text-[10px] text-[#575E58]">Carboidrati</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-2 border border-[#E5E2DA]">
-                        <p className="text-xs font-bold text-[#141A17] tabular-nums">{offer.creaMatch.fat100 ?? 0} g</p>
-                        <p className="text-[10px] text-[#575E58]">Grassi</p>
-                      </div>
-                    </div>
-                    {onOpenCreaFood && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDetailOpen(false);
-                          onOpenCreaFood(offer.creaMatch.creaFoodId);
-                        }}
-                        className="w-full py-2 px-3 rounded-lg bg-white hover:bg-[#FAF9F6] border border-[#DFDCD2] text-xs font-semibold text-[#1B5E3A] cursor-pointer"
-                      >
-                        Scheda scientifica CREA completa ↗
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {onAddToShoppingList && !offer.isNamelessTile && (
+            <div className="flex flex-wrap items-center gap-2">
+              {[1, 2, 3, 4].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setCutoutScale(s)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer ${
+                    cutoutScale === s ? 'bg-emerald-600 text-white' : 'bg-white/10 text-slate-200 hover:bg-white/20'
+                  }`}
+                >
+                  {s * 100}%
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setEnhanceSharpen((prev) => !prev)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold border cursor-pointer ${
+                  enhanceSharpen
+                    ? 'bg-amber-500/20 text-amber-200 border-amber-400/50'
+                    : 'bg-white/10 text-slate-300 border-white/15'
+                }`}
+                title="Filtro convoluzione SVG Unsharp Mask + micro-contrasto per testi piccoli"
+              >
+                {enhanceSharpen ? '✨ Nitidezza HD: ON' : 'Nitidezza HD: OFF'}
+              </button>
+              {onOpenFlyer && (
                 <button
                   type="button"
-                  onClick={handleQuickAdd}
-                  className="w-full py-3 px-4 rounded-full bg-[#1B5E3A] hover:bg-[#14492D] text-white text-sm font-semibold cursor-pointer"
+                  onClick={() => {
+                    setZoomOpen(false);
+                    onOpenFlyer(offer);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-emerald-300 text-xs font-bold cursor-pointer"
                 >
-                  {addedToList ? '✓ Aggiunto alla lista spesa' : '+ Aggiungi alla lista spesa'}
+                  {offer.pageNumber ? `Pag. ${offer.pageNumber} →` : 'Volantino →'}
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => setZoomOpen(false)}
+                className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold cursor-pointer"
+              >
+                ✕ Chiudi
+              </button>
             </div>
+          </div>
+
+          <div
+            className="flex-1 w-full overflow-auto flex items-center justify-center p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={imageUrl}
+              alt={offer.title}
+              onClick={() => setCutoutScale((prev) => (prev >= 4 ? 1 : prev + 1))}
+              style={{
+                width: `${cutoutScale * 360}px`,
+                maxWidth: 'none',
+                filter: enhanceSharpen
+                  ? `url(#cibo-sharpen-${offer.id}) contrast(1.08) saturate(1.05)`
+                  : 'none'
+              }}
+              className="bg-white rounded-xl p-3 shadow-2xl cursor-zoom-in transition-all duration-150 select-none"
+              title="Clicca sull'immagine per aumentare lo zoom (100% -> 400%)"
+            />
           </div>
         </div>
       )}
-    </>
+    </article>
   );
 }
 

@@ -56,7 +56,6 @@ export function RapalloMarketView({
   onOpenCounterModal
 }) {
   const [listsState, setListsState] = useState({ activeListId: 'list-default', lists: [] });
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   useEffect(() => {
     fetch('/api/shopping-list')
@@ -77,6 +76,7 @@ export function RapalloMarketView({
 
   const handleAddWithTargetList = (payload) =>
     onAddToShoppingList?.({ ...payload, listId: listsState.activeListId });
+
   return (
     <>
       <StoreSwitcher
@@ -85,46 +85,147 @@ export function RapalloMarketView({
         onSelectStore={onSelectStore}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 space-y-3">
-        {activeStore && (
-          <section className="bg-white rounded-xl border border-[#E5E2DA] px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-bold text-[#141A17]">{activeStore.name}</h2>
-                {activeStore.loyaltyCard && (
-                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-[#9A5B25] border border-amber-200">
-                    {typeof activeStore.loyaltyCard === 'string'
-                      ? activeStore.loyaltyCard
-                      : activeStore.loyaltyCard?.name || 'Carta Fedeltà'}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4">
+        {activeProfile && (
+          <section className="bg-white border border-[#E5E2DA] text-[#141A17] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <span className="text-xl" aria-hidden="true">🛡️</span>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider bg-[#1B5E3A] text-white px-2 py-0.5 rounded">
+                    Profilo: {activeProfile.name}
                   </span>
-                )}
-              </div>
-              <p className="text-xs text-[#575E58] mt-0.5 truncate max-w-xl">{activeStore.address}</p>
-            </div>
-
-            {currentStoreFlyers.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 shrink-0">
-                {currentStoreFlyers.map((flyerItem, idx) => (
-                  <button
-                    key={flyerItem.id || idx}
-                    type="button"
-                    onClick={() => onOpenFlyer(flyerItem)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-semibold rounded-lg cursor-pointer"
-                  >
-                    <span>
-                      {currentStoreFlyers.length > 1
-                        ? `Volantino ${idx + 1} (${flyerItem.pageCount} pag.)`
-                        : `Sfoglia volantino (${flyerItem.pageCount} pag.)`}
+                  {activeProfile.excludedIngredients?.length > 0 && (
+                    <span className="text-[11px] text-[#575E58]">
+                      Esclusioni attive: {activeProfile.excludedIngredients.slice(0, 5).join(', ')}
+                      {activeProfile.excludedIngredients.length > 5 ? ` (+${activeProfile.excludedIngredients.length - 5})` : ''}
                     </span>
-                  </button>
-                ))}
+                  )}
+                </div>
+                <p className="text-[11px] text-[#575E58] mt-0.5">
+                  {activeProfile.description}
+                </p>
               </div>
-            )}
+            </div>
+            <div className="flex flex-wrap items-center gap-3 self-end sm:self-center shrink-0">
+              {onChangeExcludeMemberOnly && (
+                <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={excludeMemberOnly}
+                    onChange={(e) => onChangeExcludeMemberOnly(e.target.checked)}
+                    className="rounded border-[#DFDCD2] accent-[#1B5E3A] focus:ring-[#1B5E3A]"
+                  />
+                  <span>Escludi solo soci</span>
+                </label>
+              )}
+              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={hideIncompatible}
+                  onChange={(e) => onChangeHideIncompatible(e.target.checked)}
+                  className="rounded border-[#DFDCD2] accent-[#1B5E3A] focus:ring-[#1B5E3A]"
+                />
+                <span>Nascondi prodotti esclusi</span>
+              </label>
+            </div>
           </section>
         )}
 
-        {/* Single Compact Search + Sort + Progressive Disclosure Filters Row */}
-        <section className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+        <section className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" aria-label="Domini merceologici">
+          {DOMAIN_PILLS.map((dom) => {
+            const activeDomains = selectedDomain ? String(selectedDomain).split(',').filter(Boolean) : [];
+            const isSelected = dom.id === null ? activeDomains.length === 0 : activeDomains.includes(dom.id);
+            const count = dom.id ? facets?.domains?.[dom.id] : totalOffers;
+            return (
+              <button
+                key={dom.id || 'all'}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => onSelectDomain(dom.id)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border taste-btn whitespace-nowrap cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#141A17] text-white border-[#141A17] shadow-xs'
+                    : 'bg-white text-[#4A524C] border-[#E5E2DA] hover:border-[#1B5E3A]/40 hover:bg-[#F3F1EC]'
+                }`}
+              >
+                <span aria-hidden="true">{dom.icon}</span>
+                <span>{dom.label}</span>
+                {count !== undefined && (
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${isSelected ? 'bg-[#2B332E] text-white' : 'bg-[#F3F1EC] text-[#575E58]'}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </section>
+
+        {activeStore && (
+          <section className="bg-white rounded-xl border border-[#E5E2DA] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-lg font-bold text-[#141A17]">{activeStore.name}</h2>
+                {activeStore.isRegionalServing && (
+                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-[#F3F1EC] text-[#1B5E3A] border border-[#DFDCD2]">
+                    Servizio Rapallo &amp; Tigullio
+                  </span>
+                )}
+                {activeStore.loyaltyCard && (
+                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-[#9A5B25] border border-amber-200">
+                    💳{' '}
+                    {typeof activeStore.loyaltyCard === 'string'
+                      ? activeStore.loyaltyCard
+                      : activeStore.loyaltyCard?.name || 'Carta Fedeltà'}
+                    {typeof activeStore.loyaltyCard === 'object' && activeStore.loyaltyCard?.requiredForPromo
+                      ? ' (richiesta per promo)'
+                      : ''}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-[#575E58] mt-0.5 truncate max-w-xl">
+                {activeStore.address}
+                {activeStore.logistics?.distanceKmFromHarbor != null
+                  ? ` • 📍 ${activeStore.logistics.distanceKmFromHarbor} km dal Porto`
+                  : ''}
+                {activeStore.logistics?.avgVisitMinutes != null
+                  ? ` • ⏱️ ~${activeStore.logistics.avgVisitMinutes} min visita`
+                  : ''}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-start sm:items-end gap-1.5">
+              {currentStoreFlyers.length > 0 && (
+                <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2">
+                  {currentStoreFlyers.map((flyerItem, idx) => (
+                    <button
+                      key={flyerItem.id || idx}
+                      type="button"
+                      onClick={() => onOpenFlyer(flyerItem)}
+                      className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#1B5E3A] hover:bg-[#14492D] text-white text-xs font-semibold rounded-lg shadow-xs taste-btn whitespace-nowrap cursor-pointer"
+                    >
+                      <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      <span>
+                        {currentStoreFlyers.length > 1
+                          ? `Volantino ${idx + 1}: ${flyerItem.title || 'Sfoglia'} (${flyerItem.pageCount} pag.)`
+                          : `Sfoglia volantino (${flyerItem.pageCount} pag.)`}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {currentStoreFlyers.some((f) => f.upstreamIndexedCap) && (
+                <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium">
+                  ℹ️ Nota trasparenza: PromoQui indicizza max {currentStoreFlyers.find((f) => f.upstreamIndexedCap)?.upstreamIndexedCap} prodotti per volantino (verificato prov. GE)
+                </span>
+              )}
+            </div>
+          </section>
+        )}
+
+        <section className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="flex-1 min-w-0">
             <SearchBar
               value={searchQuery}
@@ -135,137 +236,34 @@ export function RapalloMarketView({
             />
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {!activeProfile && onChangeExcludeMemberOnly && (
+              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-2 cursor-pointer shadow-xs">
+                <input
+                  type="checkbox"
+                  checked={excludeMemberOnly}
+                  onChange={(e) => onChangeExcludeMemberOnly(e.target.checked)}
+                  className="rounded border-[#DFDCD2] accent-[#1B5E3A] focus:ring-[#1B5E3A]"
+                />
+                <span>Escludi solo soci</span>
+              </label>
+            )}
+            <label htmlFor="sort-select" className="text-xs font-semibold text-[#575E58] whitespace-nowrap">
+              Ordina:
+            </label>
             <select
               id="sort-select"
-              aria-label="Ordina offerte"
               value={sortBy}
               onChange={(e) => onChangeSortBy(e.target.value)}
-              className="text-xs font-medium bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-2 text-[#141A17] focus:outline-none focus:ring-2 focus:ring-[#1B5E3A] cursor-pointer"
+              className="flex-1 sm:flex-none text-xs font-medium bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-2 text-[#141A17] focus:outline-none focus:ring-2 focus:ring-[#1B5E3A] cursor-pointer shadow-xs"
             >
-              <option value="discountDesc">Sconto più alto</option>
-              <option value="pricePerKgAsc">Prezzo €/kg più basso</option>
-              <option value="priceAsc">Prezzo più basso</option>
-              <option value="priceDesc">Prezzo più alto</option>
+              <option value="discountDesc">Sconto più alto (% decrescente)</option>
+              <option value="pricePerKgAsc">Prezzo €/kg edibile più basso</option>
+              <option value="priceAsc">Prezzo confezione più basso (€ crescente)</option>
+              <option value="priceDesc">Prezzo confezione più alto (€ decrescente)</option>
             </select>
-
-            <button
-              type="button"
-              onClick={() => setShowAdvancedFilters((prev) => !prev)}
-              aria-expanded={showAdvancedFilters}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold border whitespace-nowrap cursor-pointer ${
-                showAdvancedFilters || excludeMemberOnly || selectedDomain
-                  ? 'bg-[#141A17] text-white border-[#141A17]'
-                  : 'bg-white text-[#141A17] border-[#DFDCD2] hover:bg-[#F3F1EC]'
-              }`}
-            >
-              Opzioni &amp; Liste
-            </button>
           </div>
         </section>
-
-        {/* Progressive Disclosure: Domains, Member Exclusion, Profile Exclusion & Target Shopping List */}
-        {showAdvancedFilters && (
-          <section className="bg-white border border-[#E5E2DA] rounded-xl p-3.5 space-y-3 text-xs">
-            <div className="flex flex-wrap items-center gap-4">
-              {onChangeExcludeMemberOnly && (
-                <label className="inline-flex items-center gap-1.5 font-semibold text-[#141A17] cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={excludeMemberOnly}
-                    onChange={(e) => onChangeExcludeMemberOnly(e.target.checked)}
-                    className="rounded border-[#DFDCD2] accent-[#1B5E3A]"
-                  />
-                  <span>Solo offerte aperte a tutti (escludi tessere soci)</span>
-                </label>
-              )}
-
-              {activeProfile && (
-                <label className="inline-flex items-center gap-1.5 font-semibold text-[#141A17] cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={hideIncompatible}
-                    onChange={(e) => onChangeHideIncompatible(e.target.checked)}
-                    className="rounded border-[#DFDCD2] accent-[#1B5E3A]"
-                  />
-                  <span>Nascondi ingredienti esclusi ({activeProfile.name})</span>
-                </label>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-1.5">
-              {DOMAIN_PILLS.map((dom) => {
-                const activeDomains = selectedDomain ? String(selectedDomain).split(',').filter(Boolean) : [];
-                const isSelected = dom.id === null ? activeDomains.length === 0 : activeDomains.includes(dom.id);
-                const count = dom.id ? facets?.domains?.[dom.id] : totalOffers;
-                return (
-                  <button
-                    key={dom.id || 'all'}
-                    type="button"
-                    aria-pressed={isSelected}
-                    onClick={() => onSelectDomain(dom.id)}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#141A17] text-white border-[#141A17]'
-                        : 'bg-[#FAF9F6] text-[#4A524C] border-[#E5E2DA] hover:bg-[#F3F1EC]'
-                    }`}
-                  >
-                    <span>{dom.label}</span>
-                    {count !== undefined && <span className="opacity-75">({count})</span>}
-                  </button>
-                );
-              })}
-            </div>
-
-            {listsState.lists.length > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#E5E2DA]">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-[#141A17]">Aggiungi articoli a:</span>
-                  <select
-                    aria-label="Scegli lista della spesa attiva"
-                    value={listsState.activeListId}
-                    onChange={async (e) => {
-                      const res = await fetch('/api/shopping-list/lists/active', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ listId: e.target.value })
-                      });
-                      if (res.ok) {
-                        const data = await res.json();
-                        setListsState({ activeListId: data.activeListId, lists: data.lists || [] });
-                      }
-                    }}
-                    className="bg-[#FAF9F6] border border-[#DFDCD2] rounded-lg px-2.5 py-1 text-xs font-medium text-[#141A17] cursor-pointer"
-                  >
-                    {listsState.lists.map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.name} ({(l.items || []).length})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const name = `Spesa ${listsState.lists.length + 1}`;
-                    const res = await fetch('/api/shopping-list/lists', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ name })
-                    });
-                    if (res.ok) {
-                      const data = await res.json();
-                      setListsState({ activeListId: data.activeListId, lists: data.lists || [] });
-                    }
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-[#FAF9F6] border border-[#DFDCD2] hover:bg-[#F3F1EC] font-semibold text-[#1B5E3A] cursor-pointer"
-                >
-                  + Nuova lista
-                </button>
-              </div>
-            )}
-          </section>
-        )}
 
         {(!visibleCategoriesForDomain || visibleCategoriesForDomain.length > 1) ? (
           <section>
@@ -291,6 +289,54 @@ export function RapalloMarketView({
             </button>
           </section>
         ) : null}
+
+        {listsState.lists.length > 0 && (
+          <section className="flex flex-wrap items-center justify-between gap-2 bg-[#F3F1EC] border border-[#E5E2DA] rounded-xl px-3.5 py-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-[#141A17]">Spesa attiva:</span>
+              <select
+                aria-label="Scegli lista della spesa attiva"
+                value={listsState.activeListId}
+                onChange={async (e) => {
+                  const res = await fetch('/api/shopping-list/lists/active', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ listId: e.target.value })
+                  });
+                  if (res.ok) {
+                    const data = await res.json();
+                    setListsState({ activeListId: data.activeListId, lists: data.lists || [] });
+                  }
+                }}
+                className="bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-1 text-xs font-medium text-[#141A17] cursor-pointer"
+              >
+                {listsState.lists.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name} ({(l.items || []).length})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                const name = `Spesa ${listsState.lists.length + 1}`;
+                const res = await fetch('/api/shopping-list/lists', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ name })
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  setListsState({ activeListId: data.activeListId, lists: data.lists || [] });
+                }
+              }}
+              className="px-2.5 py-1 rounded-lg bg-white border border-[#DFDCD2] hover:bg-[#FAF9F6] font-medium text-[#1B5E3A] cursor-pointer"
+            >
+              + Nuova spesa
+            </button>
+          </section>
+        )}
 
         <section aria-label="Offerte promozionali">
           {loading ? (

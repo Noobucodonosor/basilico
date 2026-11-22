@@ -300,15 +300,23 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
 
   return (
     <div className="space-y-6">
-      {/* Clean Consumer Lista & Meal Plan Header */}
-      <section className="bg-[#141A17] text-white rounded-2xl p-5 sm:p-6 shadow-sm">
+      {/* Room 6 Hero Header */}
+      <section className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 text-white rounded-2xl p-5 sm:p-6 shadow-md">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-              Lista della Spesa &amp; Piano Settimanale
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-emerald-400 text-slate-950">
+                Stanza 6 · ADR-0012 · Vertice Bottom-Up
+              </span>
+              <span className="text-xs text-emerald-300 font-semibold">
+                6 Modelli Neo-Dieta • Giorni Barca/Terra • Confezioni Intere Zero-Spreco (K_p = ⌈Q_p / S_p⌉)
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+              🗓️ Pianificatore Settimanale &quot;Neo-Dieta&quot; & Lista Spesa Multi-Negozio a Rapallo
             </h1>
-            <p className="text-xs sm:text-sm text-stone-300 max-w-2xl">
-              Organizza gli acquisti tra i negozi di Rapallo usando prima le scorte già aperte in casa e confezioni intere senza sprechi.
+            <p className="text-xs sm:text-sm text-slate-300 max-w-3xl">
+              Priorità automatica ai freschi aperti in frigo (T_open), concatenazione di confezioni intere tra più pasti, budget onesto (sostituisce intere ricette senza mai cancellare singoli ingredienti) e simulatore 1 vs 2 vs 3 negozi a Rapallo.
             </p>
           </div>
 
@@ -316,16 +324,16 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
             <button
               type="button"
               onClick={() => setIsAisleModalOpen(true)}
-              className="px-4 py-2.5 rounded-full text-xs font-semibold bg-[#1B5E3A] hover:bg-emerald-700 text-white cursor-pointer"
+              className="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-sm cursor-pointer"
             >
-              🛒 Modalità In Corsia ({shoppingList?.subtotals?.totalItemsCount || 0} art.)
+              🛒 Apri Modalità &quot;In Corsia&quot; ({shoppingList?.subtotals?.totalItemsCount || 0} art.)
             </button>
             <button
               type="button"
               onClick={handleCompleteAndLoadPantry}
-              className="px-3.5 py-2.5 rounded-full text-xs font-semibold bg-white/15 hover:bg-white/25 text-white cursor-pointer"
+              className="px-3.5 py-2.5 rounded-xl text-xs font-extrabold bg-amber-400 hover:bg-amber-300 text-slate-950 cursor-pointer"
             >
-              ✓ Carica spuntati in Dispensa
+              ✅ Spunta tutto e carica in Dispensa
             </button>
           </div>
         </div>
@@ -341,7 +349,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-extrabold text-slate-900">
-            1. Scegli lo stile della settimana
+            🧭 1. Scegli il Modello Settimanale &quot;Neo-Dieta&quot; (6 Archetipi Immediati)
           </h2>
           <div className="flex items-center gap-3">
             <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">

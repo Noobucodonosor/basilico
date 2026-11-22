@@ -10,3 +10,4 @@ data/cache/
 test_render.jsx
 .taste-skill/
 public/data/
+dist/data/
