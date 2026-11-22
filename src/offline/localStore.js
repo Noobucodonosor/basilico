@@ -95,29 +95,54 @@ async function idbClearStore(storeName) {
   });
 }
 
+function getBuildDataVersion() {
+  try {
+    // Injected at build time by vite.config.js so stale Service Workers can never mask a new dataset version
+    // eslint-disable-next-line no-undef
+    if (typeof __CIBO_DATA_VERSION__ !== 'undefined' && __CIBO_DATA_VERSION__) {
+      // eslint-disable-next-line no-undef
+      return String(__CIBO_DATA_VERSION__);
+    }
+  } catch (_) {}
+  return null;
+}
+
+async function purgeStaleBrowserCaches() {
+  if (typeof caches === 'undefined') return;
+  try {
+    const keys = await caches.keys();
+    await Promise.all(
+      keys
+        .filter((k) => k.startsWith('cibo-data-') || k.startsWith('basilico-static-') || k.startsWith('basilico-api-'))
+        .map((k) => caches.delete(k))
+    );
+  } catch (_) {}
+}
+
 async function ensureDatasetVersionFresh() {
   if (versionCheckPromise) return versionCheckPromise;
   versionCheckPromise = (async () => {
-    if (typeof fetch !== 'function') return null;
-    try {
-      const res = await fetch(`${getBaseUrl()}data/manifest.json`, { cache: 'no-cache' });
-      if (!res.ok) return null;
-      const manifest = await res.json();
-      const newVer = manifest?.version || null;
-      if (!newVer) return null;
-      activeDataVersion = newVer;
-      const prevVer = typeof localStorage !== 'undefined' ? localStorage.getItem(VERSION_KEY) : null;
-      if (prevVer !== newVer) {
-        memoryDatasets.clear();
-        await idbClearStore(DATASET_STORE);
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem(VERSION_KEY, newVer);
+    let newVer = getBuildDataVersion();
+    if (!newVer && typeof fetch === 'function') {
+      try {
+        const res = await fetch(`${getBaseUrl()}data/manifest.json?t=${Date.now()}`, { cache: 'no-store' });
+        if (res.ok) {
+          const manifest = await res.json();
+          newVer = manifest?.version || null;
         }
-      }
-      return newVer;
-    } catch (_) {
-      return null;
+      } catch (_) {}
     }
+    if (!newVer) return null;
+    activeDataVersion = newVer;
+    const prevVer = typeof localStorage !== 'undefined' ? localStorage.getItem(VERSION_KEY) : null;
+    if (prevVer !== newVer) {
+      memoryDatasets.clear();
+      await Promise.all([idbClearStore(DATASET_STORE), purgeStaleBrowserCaches()]);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(VERSION_KEY, newVer);
+      }
+    }
+    return newVer;
   })();
   return versionCheckPromise;
 }

@@ -1,6 +1,6 @@
-const STATIC_CACHE = 'basilico-static-v4';
+const STATIC_CACHE = 'basilico-static-v5';
 const API_CACHE = 'basilico-api-v2';
-const DATA_CACHE = 'cibo-data-v2';
+const DATA_CACHE = 'cibo-data-v3';
 const MAX_API_ENTRIES = 50;
 const MAX_STATIC_ENTRIES = 80;
 const PRECACHE_URLS = ['./', './manifest.webmanifest', './icon.svg'];

@@ -93,13 +93,17 @@ async function handleFlyers(url) {
 
 function resolveOfferCategory(o) {
   const title = normalizeText(o.title || '');
-  if (/\b(pantalone|maglia|felpa|scarpe|completo letto|lenzuol|trapunt|tovaglia)\b/.test(title)) {
+  const price = Number(o.promoPrice ?? o.price ?? 0);
+  if (/\b(pantalone|maglia|felpa|scarpe|completo letto|lenzuol|trapunt|tovaglia|accappatoi|asciugaman)\b/.test(title)) {
     return 'Tessile, Abbigliamento e Bazar Casa';
   }
-  if (/\b(giocattol|lego|barbie|playmobil|peluche|presepe|albero di natale)\b/.test(title)) {
+  if (/\b(giocattol|lego|barbie|playmobil|peluche|presepe|albero di natale|cry babies|air hockey|clementoni|hasbro|mattel|grinch)\b/.test(title)) {
     return 'Giocattoli, Natale e Tempo Libero';
   }
-  if (/\b(padell|pentol|casseruol|friggitrice|forno|frigorifero|aspirapolvere)\b/.test(title)) {
+  if (
+    /\b(padell|pentol|casseruol|friggitrice|forno|frigorifero|aspirapolvere|lavatric|lavastovigli|asciugatric|microonde|elettrodomestic|electrolux|whirlpool|hotpoint|bosch|samsung|rowenta)\b/.test(title) ||
+    (/\bmiele\b/.test(title) && price >= 80)
+  ) {
     return 'Pentole, Cucina ed Elettrodomestici';
   }
   if (/\b(detersiv|ammorbident|candeggina|svelto|lavatrice|lavastoviglie|spugn)\b/.test(title)) {
@@ -171,18 +175,21 @@ const CREA_KEYWORD_OVERRIDES = [
   { re: /\bavena\b/, id: '003030' }
 ];
 
-function resolveQuantityLabel(o) {
+function resolveQuantityLabel(o, domain) {
   if (o.quantityLabel) return o.quantityLabel;
   if (typeof o.packWeightGrams === 'number' && o.packWeightGrams > 0) {
+    const isLiquid = /\/L\b/i.test(String(o.unitPrice || '')) || /\b(latte|acqua|olio|vino|birra|succo|bevanda|detersivo liquido|ammorbidente)\b/i.test(o.title || '');
     const label = o.packWeightGrams >= 1000
-      ? `${(o.packWeightGrams / 1000).toFixed(2).replace(/\.00$/, '')} kg`
-      : `${o.packWeightGrams} g`;
+      ? `${(o.packWeightGrams / 1000).toFixed(2).replace(/\.00$/, '').replace('.', ',')} ${isLiquid ? 'L' : 'kg'}`
+      : `${o.packWeightGrams} ${isLiquid ? 'ml' : 'g'}`;
     const price = Number(o.promoPrice ?? o.price ?? 0);
-    const perKg = price > 0 ? ` (€ ${((price / o.packWeightGrams) * 1000).toFixed(2).replace('.', ',')}/kg)` : '';
-    return `Confezione: ${label}${perKg}`;
+    const unitTag = o.unitPrice
+      ? ` (${o.unitPrice})`
+      : (price > 0 ? ` (€ ${((price / o.packWeightGrams) * 1000).toFixed(2).replace('.', ',')}/${isLiquid ? 'L' : 'kg'})` : '');
+    return `Confezione: ${label}${unitTag}`;
   }
   const text = `${o.title || ''} ${o.description || ''}`;
-  const packMatch = text.match(/\b(\d+\s*x\s*\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|l)|\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|l|pz|pezzi))\b/i);
+  const packMatch = text.match(/\b(\d+\s*x\s*\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|lt|l)|\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|lt|l|pz|pezzi|uova|rotoli|lavaggi))\b/i);
   if (packMatch) {
     return `Confezione: ${packMatch[1].replace(/\s+/g, ' ').trim()}`;
   }
@@ -198,7 +205,10 @@ function resolveQuantityLabel(o) {
         : `~${gramsOrMl >= 1000 ? `${(gramsOrMl / 1000).toFixed(2)} kg` : `${gramsOrMl} g`} (da €/kg)`;
     }
   }
-  return 'Peso non indicato nel testo volantino';
+  if (domain === 'kitchen_cookware' || domain === 'bazar_seasonal') {
+    return null;
+  }
+  return 'Peso non indicato nel volantino';
 }
 
 function resolveCreaMatch(o, domain, creaById, creaList) {
@@ -267,7 +277,7 @@ async function handleOffers(url) {
       storeAddress: store?.address ? `${store.address}, ${store.city || 'Rapallo'}` : null,
       loyaltyCard,
       isMemberOnly,
-      quantityLabel: resolveQuantityLabel(o),
+      quantityLabel: resolveQuantityLabel(o, domain),
       storageHint: o.storageHint || resolveStorageHint({ ...o, category: cleanCat }, domain),
       creaMatch: o.creaMatch || resolveCreaMatch(o, domain, creaById, creaFoods)
     };

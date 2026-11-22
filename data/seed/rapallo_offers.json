@@ -24,7 +24,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 1280
+    "packWeightGrams": 1000
   },
   {
     "id": "6aeb0b8b-6658-4a68-8f1a-00820ad300e1",
@@ -51,7 +51,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 1480
+    "packWeightGrams": 1000
   },
   {
     "id": "6aeb0b8b-edb8-419d-9a4c-005c0ad30082",
@@ -123,7 +123,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,28/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b8d-4c38-41df-887d-00de0ad30278_20261104121257.png",
     "validFrom": "2026-11-03T23:00:00.000Z",
@@ -131,7 +131,9 @@
     "validityStart": "2026-11-03T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 1,28/kg"
   },
   {
     "id": "6aeb0b8e-bc5c-4e0c-97d3-00be0ad301ea",
@@ -176,7 +178,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,89/kg",
+    "unitPrice": "€ 1,89/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b8f-95b0-478c-be86-00180ad3021d_20261104121258.png",
     "validFrom": "2026-11-03T23:00:00.000Z",
@@ -185,7 +187,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 18900
+    "packWeightGrams": 1000
   },
   {
     "id": "6aeb0b8f-a624-411b-9ce3-00890ad3006b",
@@ -257,7 +259,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 3,98/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b90-f4f4-47a2-81e5-008e0ad30066_20261104121318.png",
     "validFrom": "2026-11-03T23:00:00.000Z",
@@ -265,7 +267,9 @@
     "validityStart": "2026-11-03T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 3,98/kg"
   },
   {
     "id": "6aeb0b91-6c90-43a1-9387-00530ad302d0",
@@ -292,7 +296,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 25600
+    "packWeightGrams": 100
   },
   {
     "id": "6aeb0b91-f58c-4424-91f2-003c0ad302b4",
@@ -310,7 +314,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,48/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb0b91-f58c-4424-91f2-003c0ad302b4_20261104121318.png",
     "validFrom": "2026-11-03T23:00:00.000Z",
@@ -318,7 +322,9 @@
     "validityStart": "2026-11-03T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 1,48/kg"
   },
   {
     "id": "6aeb0b92-d724-4308-a891-00690ad302fa",
@@ -372,7 +378,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 15200
+    "packWeightGrams": 150
   },
   {
     "id": "6aeb0b95-1944-45b6-bf84-00b70ad30066",
@@ -399,7 +405,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 39900
+    "packWeightGrams": 100
   },
   {
     "id": "6aeb0b96-9ff4-4b22-9b2b-00810ad300b4",
@@ -426,7 +432,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 29900
+    "packWeightGrams": 100
   },
   {
     "id": "6aeb0b98-fc38-4670-b779-00560ad3021d",
@@ -453,7 +459,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 19800
+    "packWeightGrams": 200
   },
   {
     "id": "6ae8abfd-c404-4d29-a49c-00970ad30222",
@@ -525,7 +531,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 2,19/kg",
+    "unitPrice": "€ 2,19/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac00-30d8-45cd-ad6d-00880ad300c4_20261102194723.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -534,7 +540,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 21900
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 21,90/kg)"
   },
   {
     "id": "6ae8ac01-623c-4659-a1a9-009c0ad3025b",
@@ -633,7 +640,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,79/kg",
+    "unitPrice": "€ 1,79/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac04-bcc8-42eb-ac97-00740ad30186_20261102194923.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -642,7 +649,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 1730000
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 17,90/kg)"
   },
   {
     "id": "6ae8ac05-8ffc-44f9-ae44-00ba0ad302d7",
@@ -687,7 +695,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,19/kg",
+    "unitPrice": "€ 1,19/L",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac05-b728-44ee-8ef3-00b40ad302dd_20261102194851.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -803,7 +811,8 @@
     "validityStart": "2026-11-01T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 600
   },
   {
     "id": "6ae8ac0b-f3a8-4885-9f27-00760ad30005",
@@ -875,7 +884,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 21,80/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac0e-fb00-4738-bb11-00960ad3008a_20261102194854.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -884,7 +893,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 500
+    "packWeightGrams": 500,
+    "isMemberOnly": true
   },
   {
     "id": "6ae8ac0f-8a64-4b5f-8171-00860ad302dd",
@@ -911,7 +921,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 750
+    "packWeightGrams": 750,
+    "isMemberOnly": true
   },
   {
     "id": "6ae8ac10-6db8-4b73-bccf-00420ad30027",
@@ -991,7 +1002,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 14900
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 14,90/kg)"
   },
   {
     "id": "6ae8ac12-4b8c-4b2b-8647-00500ad30033",
@@ -1045,7 +1057,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 10900
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 10,90/kg)"
   },
   {
     "id": "6ae8ac13-5be8-41bc-afef-00dd0ad300a7",
@@ -1198,7 +1211,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 7,90/L",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac15-e174-4987-9605-00c60ad30164_20261102195119.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -1207,7 +1220,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 500
+    "packWeightGrams": 500,
+    "isMemberOnly": true
   },
   {
     "id": "6ae8ac16-3968-4ba9-9ce3-00270ad300a7",
@@ -1396,7 +1410,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 200
+    "packWeightGrams": 200,
+    "isMemberOnly": true
   },
   {
     "id": "6ae8ac19-8e5c-446b-87c0-00b90ad30112",
@@ -1423,7 +1438,7 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 13090
+    "packWeightGrams": 190
   },
   {
     "id": "6ae8ac19-f26c-4f36-9ade-00c20ad30174",
@@ -1531,7 +1546,7 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 9930
+    "packWeightGrams": 150
   },
   {
     "id": "6ae8ac1c-becc-420a-a7bd-00570ad30196",
@@ -1585,7 +1600,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 6790
+    "packWeightGrams": 6790,
+    "isMemberOnly": true
   },
   {
     "id": "6ae8ac1e-91f8-453d-b6de-006a0ad300f6",
@@ -1639,7 +1655,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 290
+    "packWeightGrams": 290,
+    "isMemberOnly": true
   },
   {
     "id": "6ae8ac22-f408-441a-9e33-00900ad300f8",
@@ -1666,7 +1683,8 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 750
+    "packWeightGrams": 750,
+    "isMemberOnly": true
   },
   {
     "id": "6ae8ac23-0564-4cfe-9dab-001d0ad30222",
@@ -1765,7 +1783,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,00/L",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8ac28-30d8-4e83-b6c3-00760ad30027_20261102195013.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -1773,7 +1791,9 @@
     "validityStart": "2026-11-01T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 4000,
+    "isMemberOnly": true
   },
   {
     "id": "6ae0663a-bd9c-4f18-a152-00b80ad302e6",
@@ -1791,7 +1811,7 @@
     "originalPrice": 8.9,
     "discountPercentage": 45,
     "discountLabel": "-45%",
-    "unitPrice": null,
+    "unitPrice": "€ 6,53/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0663a-bd9c-4f18-a152-00b80ad302e6_20261027100238.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -1818,7 +1838,7 @@
     "originalPrice": 3.98,
     "discountPercentage": 50,
     "discountLabel": "-50%",
-    "unitPrice": null,
+    "unitPrice": "€ 6,63/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0663b-8590-4699-930c-00bb0ad302da_20261027100235.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -1826,7 +1846,7 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": true,
-    "packWeightGrams": 100,
+    "packWeightGrams": 300,
     "ocrEnriched": true
   },
   {
@@ -1845,7 +1865,7 @@
     "originalPrice": 29.99,
     "discountPercentage": 33,
     "discountLabel": "-33%",
-    "unitPrice": null,
+    "unitPrice": "€ 10,00/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0663c-167c-41c0-9edc-9ea90ad302da_20261027100242.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -2123,7 +2143,8 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 3 rotoli"
   },
   {
     "id": "6ae06646-99b8-4edd-a3de-002f0ad302da",
@@ -2365,7 +2386,7 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 17090,
+    "packWeightGrams": 180,
     "ocrEnriched": true
   },
   {
@@ -2419,7 +2440,8 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 4 rotoli"
   },
   {
     "id": "6ae0664b-ec5c-4ec7-a250-00b70ad30235",
@@ -2498,7 +2520,7 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 15000,
+    "packWeightGrams": 200,
     "ocrEnriched": true
   },
   {
@@ -2606,7 +2628,8 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 35 lavaggi"
   },
   {
     "id": "6ae0664f-30c0-48eb-9e4f-00c90ad3017b",
@@ -2624,7 +2647,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 2,99/kg",
+    "unitPrice": "€ 2,99/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0664f-30c0-48eb-9e4f-00c90ad3017b_20261027100251.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -2632,8 +2655,9 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 29900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 29,90/kg)"
   },
   {
     "id": "6ae0664f-3ddc-4cfe-8ba5-005f0ad30212",
@@ -2678,7 +2702,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 0,80/kg",
+    "unitPrice": "€ 0,80/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae0664f-8698-48fb-baa6-47ef0ad300e9_20261027100312.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -2686,7 +2710,9 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 8,00/kg)"
   },
   {
     "id": "6ae0664f-93e8-4d2d-8fa5-00bc0ad3016b",
@@ -2739,7 +2765,7 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 39940,
+    "packWeightGrams": 180,
     "ocrEnriched": true
   },
   {
@@ -2893,7 +2919,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 2,29/kg",
+    "unitPrice": "€ 2,29/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06653-2a28-4fcf-b43c-007e0ad300b0_20261027100247.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -2901,8 +2927,10 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 22900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 22,90/kg)",
+    "isMemberOnly": true
   },
   {
     "id": "6ae06653-6f1c-4942-b938-00c00ad30176",
@@ -2954,7 +2982,8 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6ae06654-48e0-4a1e-a9b9-00d50ad30204",
@@ -2999,7 +3028,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,39/kg",
+    "unitPrice": "€ 1,39/L",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06655-7ac8-4521-a831-00cf0ad30197_20261027100314.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -3007,8 +3036,10 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 13900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 13,90/kg)",
+    "isMemberOnly": true
   },
   {
     "id": "6ae06655-f070-4229-8ec9-00e00ad30114",
@@ -3034,7 +3065,8 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6ae06656-0174-4005-82a6-009c0ad30053",
@@ -3079,7 +3111,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,69/kg",
+    "unitPrice": "€ 1,69/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06656-2c40-4c5c-b5a6-00620ad30042_20261027100254.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -3087,8 +3119,10 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 16900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 16,90/kg)",
+    "isMemberOnly": true
   },
   {
     "id": "6ae06656-3560-45f4-b3ea-00d50ad302c6",
@@ -3106,7 +3140,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 0,60/kg",
+    "unitPrice": "€ 0,60/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae06656-3560-45f4-b3ea-00d50ad302c6_20261027100257.png",
     "validFrom": "2026-10-26T23:00:00.000Z",
@@ -3114,7 +3148,9 @@
     "validityStart": "2026-10-26T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 6,00/kg)"
   },
   {
     "id": "6ae2fe5f-d0e8-4bc5-bd23-00950ad30121",
@@ -3140,7 +3176,8 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 500
   },
   {
     "id": "6ae302bd-3018-412c-a86c-001e0ad3019f",
@@ -3158,7 +3195,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 2,89/kg",
+    "unitPrice": "€ 2,89/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302bd-3018-412c-a86c-001e0ad3019f_20261029092431.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3166,7 +3203,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 28,90/kg)"
   },
   {
     "id": "6ae302be-e788-4f07-a613-00240ad30056",
@@ -3184,7 +3223,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 2,29/kg",
+    "unitPrice": "€ 2,29/L",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302be-e788-4f07-a613-00240ad30056_20261029092433.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3211,7 +3250,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 6,09/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302bf-8ca0-42e4-9d3a-00350ad300c1_20261029092434.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3238,7 +3277,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,78/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c2-8f4c-4962-9588-00a20ad302ee_20261029092437.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3246,7 +3285,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 1,78/kg"
   },
   {
     "id": "6ae302c4-15a0-4b7b-b1c4-402f0ad302ee",
@@ -3264,7 +3305,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 0,98/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c4-15a0-4b7b-b1c4-402f0ad302ee_20261029092442.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3272,7 +3313,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 0,98/kg"
   },
   {
     "id": "6ae302c4-59ec-46c1-b4d0-00ad0ad301f7",
@@ -3317,7 +3360,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 11,90/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c5-4388-4b31-9d31-001e0ad30260_20261029092442.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3325,7 +3368,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 11,90/kg"
   },
   {
     "id": "6ae302c5-abdc-4388-9d8a-00550ad301c2",
@@ -3425,7 +3470,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 22,90/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c7-d8e4-45a6-83fe-00d20ad301c4_20261029092442.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3433,7 +3478,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 22,90/kg"
   },
   {
     "id": "6ae302c8-b7b4-4a6b-84aa-002d0ad3006c",
@@ -3451,7 +3498,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 12,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c8-b7b4-4a6b-84aa-002d0ad3006c_20261029092445.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3459,7 +3506,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 12,90/kg"
   },
   {
     "id": "6ae302c8-c5b4-4493-9f28-00ad0ad300e2",
@@ -3504,7 +3553,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 16,49/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c9-e220-41bc-9a93-00d30ad302bb_20261029092445.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3512,7 +3561,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 16,49/kg"
   },
   {
     "id": "6ae302c9-f030-421a-9244-4a140ad30216",
@@ -3530,7 +3581,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 12,99/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302c9-f030-421a-9244-4a140ad30216_20261029092445.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3538,7 +3589,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 12,99/kg"
   },
   {
     "id": "6ae302ca-8b30-4e97-9642-00720ad3006f",
@@ -3556,7 +3609,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 2,98/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302ca-8b30-4e97-9642-00720ad3006f_20261029092445.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3564,7 +3617,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 2,98/kg"
   },
   {
     "id": "6ae302ca-e230-432d-9d37-007d0ad302f9",
@@ -3582,7 +3637,7 @@
     "originalPrice": 1.99,
     "discountPercentage": 20,
     "discountLabel": "-20%",
-    "unitPrice": "€ 1,59/kg",
+    "unitPrice": "€ 1,59/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302ca-e230-432d-9d37-007d0ad302f9_20261029092445.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3590,9 +3645,10 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 19900,
+    "packWeightGrams": 100,
     "isMemberOnly": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 15,90/kg)"
   },
   {
     "id": "6ae302cb-9b84-49bf-9f2a-00be0ad30230",
@@ -3610,7 +3666,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,98/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302cb-9b84-49bf-9f2a-00be0ad30230_20261029092446.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3618,7 +3674,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 1,98/kg"
   },
   {
     "id": "6ae302cb-b900-4fc8-bfd7-00cf0ad30160",
@@ -3636,7 +3694,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 15,99/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302cb-b900-4fc8-bfd7-00cf0ad30160_20261029092446.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3644,7 +3702,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 15,99/kg"
   },
   {
     "id": "6ae302cd-7380-402e-a0a6-00480ad30257",
@@ -3662,7 +3722,7 @@
     "originalPrice": 2.09,
     "discountPercentage": 30,
     "discountLabel": "-30%",
-    "unitPrice": "€ 1,46/kg",
+    "unitPrice": "€ 1,46/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302cd-7380-402e-a0a6-00480ad30257_20261029092447.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3670,9 +3730,10 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": true,
-    "packWeightGrams": 20900,
+    "packWeightGrams": 100,
     "isMemberOnly": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 14,60/kg)"
   },
   {
     "id": "6ae302cd-d4c8-4bde-97be-009f0ad30082",
@@ -3718,7 +3779,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 2,09/kg",
+    "unitPrice": "€ 2,09/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302ce-be04-4930-a80a-43c10ad30143_20261029092449.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3726,7 +3787,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 20,90/kg)"
   },
   {
     "id": "6ae302ce-ec80-422d-a735-00cb0ad30064",
@@ -3862,7 +3925,7 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 10980,
+    "packWeightGrams": 800,
     "isMemberOnly": true,
     "ocrEnriched": true
   },
@@ -3882,7 +3945,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 0,79/kg",
+    "unitPrice": "€ 0,79/L",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d1-cc04-4bf6-9bf1-00d40ad300b3_20261029092451.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3890,7 +3953,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 7,90/kg)"
   },
   {
     "id": "6ae302d2-07c8-4d09-a527-bdd20ad30213",
@@ -3936,7 +4001,7 @@
     "originalPrice": 1.69,
     "discountPercentage": 20,
     "discountLabel": "-20%",
-    "unitPrice": "€ 1,35/kg",
+    "unitPrice": "€ 1,35/L",
     "category": "Pane e Pasticceria",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d3-f604-4cf5-a4ee-00ae0ad3006c_20261029092453.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3944,8 +4009,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 16900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 13,50/kg)"
   },
   {
     "id": "6ae302d4-2638-4c0e-81ac-00a50ad30113",
@@ -3963,7 +4029,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 9,50/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d4-2638-4c0e-81ac-00a50ad30113_20261029092455.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -3971,7 +4037,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 9,50/kg"
   },
   {
     "id": "6ae302d4-71e8-4e47-a8a5-00db0ad30248",
@@ -4016,7 +4084,7 @@
     "originalPrice": 3.49,
     "discountPercentage": 26,
     "discountLabel": "-26%",
-    "unitPrice": "€ 2,60/kg",
+    "unitPrice": "€ 2,60/L",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d5-d464-4812-b493-00390ad302cb_20261029092456.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -4079,7 +4147,8 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6ae302d7-be5c-4817-b823-00aa0ad30282",
@@ -4097,7 +4166,7 @@
     "originalPrice": 1.89,
     "discountPercentage": 21,
     "discountLabel": "-21%",
-    "unitPrice": "€ 1,50/kg",
+    "unitPrice": "€ 1,50/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d7-be5c-4817-b823-00aa0ad30282_20261029092458.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -4124,7 +4193,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 2,19/kg",
+    "unitPrice": "€ 2,19/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d7-bf3c-4ead-ae17-001d0ad3006f_20261029092458.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -4132,7 +4201,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 21,90/kg)"
   },
   {
     "id": "6ae302d7-d97c-4402-a700-00730ad30248",
@@ -4177,7 +4248,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,39/kg",
+    "unitPrice": "€ 1,39/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302d8-2cac-4738-b652-00d00ad30177_20261029092459.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -4185,7 +4256,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 13,90/kg)"
   },
   {
     "id": "6ae302d9-5ab8-49d8-ae9d-00560ad30138",
@@ -4257,7 +4330,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,59/kg",
+    "unitPrice": "€ 1,59/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302da-180c-4842-b8e8-008c0ad30175_20261029092502.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -4265,7 +4338,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 15,90/kg)"
   },
   {
     "id": "6ae302da-c92c-4cd1-90ce-00c00ad30143",
@@ -4364,7 +4439,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,99/kg",
+    "unitPrice": "€ 1,99/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302db-2ac4-4f8c-b7ef-005e0ad30143_20261029092502.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -4372,7 +4447,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 19,90/kg)"
   },
   {
     "id": "6ae302dc-0ef0-4f39-bc44-44870ad300b6",
@@ -4418,7 +4495,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,89/kg",
+    "unitPrice": "€ 1,89/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae302dc-92e0-4f74-a062-00600ad3012b_20261029092503.png",
     "validFrom": "2026-10-28T23:00:00.000Z",
@@ -4426,7 +4503,9 @@
     "validityStart": "2026-10-28T23:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 18,90/kg)"
   },
   {
     "id": "6aa29e57-0508-47a9-8ed0-00690ad3001e",
@@ -4444,7 +4523,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 9,90/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e57-0508-47a9-8ed0-00690ad3001e_20260910141222.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4452,7 +4531,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 9,90/kg)"
   },
   {
     "id": "6aa29e57-daf8-4136-9983-4ff50ad30043",
@@ -4497,7 +4578,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 12,90/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e58-17cc-4bb5-9dc9-41c20ad30085_20260910141251.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4505,7 +4586,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 12,90/kg)"
   },
   {
     "id": "6aa29e58-8e4c-46fc-b560-00aa0ad30156",
@@ -4531,7 +4614,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 11,90/kg)"
   },
   {
     "id": "6aa29e59-4788-4980-8bbb-00300ad3001e",
@@ -4549,7 +4634,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 1,90/kg",
+    "unitPrice": "€ 1,90/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e59-4788-4980-8bbb-00300ad3001e_20260910141249.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4576,7 +4661,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 14,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e59-7b0c-4459-9877-00920ad30023_20260910141228.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4584,7 +4669,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 14,90/kg)"
   },
   {
     "id": "6aa29e59-8bd8-47a5-bb04-00180ad302bf",
@@ -4602,7 +4689,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 16,90/kg",
+    "unitPrice": "€ 16,90/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e59-8bd8-47a5-bb04-00180ad302bf_20260910141222.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4656,7 +4743,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 26,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5a-66a0-4f4f-bac1-00c50ad302c0_20260910141231.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4664,7 +4751,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 26,90/kg)"
   },
   {
     "id": "6aa29e5a-eca4-4b81-b4ed-00f10ad30007",
@@ -4682,7 +4771,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 9,90/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5a-eca4-4b81-b4ed-00f10ad30007_20260910141244.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4690,7 +4779,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 9,90/kg)"
   },
   {
     "id": "6aa29e5b-1520-4476-b1dc-007c0ad3001e",
@@ -4708,7 +4799,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 10,90/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5b-1520-4476-b1dc-007c0ad3001e_20260910141253.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4716,7 +4807,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 10,90/kg)"
   },
   {
     "id": "6aa29e5b-a1b0-498e-947b-00830ad30146",
@@ -4742,7 +4835,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 27,90/kg)"
   },
   {
     "id": "6aa29e5b-eb48-42c4-b8d8-006e0ad30170",
@@ -4760,7 +4855,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 9,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5b-eb48-42c4-b8d8-006e0ad30170_20260910141254.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4768,7 +4863,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 9,90/kg)"
   },
   {
     "id": "6aa29e5b-ec18-4ff3-9b40-003b0ad301f5",
@@ -4786,7 +4883,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 17,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5b-ec18-4ff3-9b40-003b0ad301f5_20260910141253.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4794,7 +4891,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 17,90/kg)"
   },
   {
     "id": "6aa29e5c-3230-41b6-9b90-85ae0ad30256",
@@ -4839,7 +4938,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 15,90/kg",
     "category": "Cura Casa e Bucato",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5c-3e58-4ddf-a0d9-00650ad30157_20260910141257.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4847,7 +4946,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 15,90/kg)"
   },
   {
     "id": "6aa29e5c-4acc-4f14-9e58-00900ad302ab",
@@ -4892,7 +4993,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 21,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5c-5a44-496f-bddc-4b460ad30157_20260910141251.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4900,7 +5001,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 21,90/kg)"
   },
   {
     "id": "6aa29e5c-7000-44c4-a05a-00460ad30099",
@@ -4945,7 +5048,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 16,90/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5d-6b08-496e-8f4d-00c30ad30043_20260910141258.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -4953,7 +5056,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 16,90/kg)"
   },
   {
     "id": "6aa29e5d-ceb8-4579-801b-002c0ad30170",
@@ -4998,7 +5103,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 7,90/kg",
     "category": "Cura Casa e Bucato",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5d-e7cc-4946-b7c9-4def0ad30212_20260910141256.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -5006,7 +5111,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 7,90/kg)"
   },
   {
     "id": "6aa29e5e-3250-4032-bbd6-004a0ad30099",
@@ -5024,7 +5131,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 12,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e5e-3250-4032-bbd6-004a0ad30099_20260910141254.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -5032,7 +5139,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 12,90/kg)"
   },
   {
     "id": "6aa29e5f-c0e0-4403-88ca-45c90ad30157",
@@ -5131,7 +5240,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 18,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e65-279c-4ba0-ad77-00780ad30157_20260910141300.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -5139,7 +5248,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 18,90/kg"
   },
   {
     "id": "6aa29e65-33e0-493d-82bf-00560ad302ab",
@@ -5165,7 +5276,8 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6aa29e65-7ca4-44f0-b69f-00dc0ad30007",
@@ -5183,7 +5295,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 7,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e65-7ca4-44f0-b69f-00dc0ad30007_20260910141303.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -5191,7 +5303,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 7,90/kg"
   },
   {
     "id": "6aa29e65-b4a8-4210-b89b-42270ad30099",
@@ -5217,7 +5331,7 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 12900,
+    "packWeightGrams": 1000,
     "ocrEnriched": true
   },
   {
@@ -5298,7 +5412,8 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6aa29e68-0444-4bb1-91f8-00460ad30051",
@@ -5377,7 +5492,8 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6aa29e69-54a0-4a7f-9ec2-00560ad30170",
@@ -5482,7 +5598,8 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6aa29e6c-a51c-4eb7-9815-00460ad301b6",
@@ -5508,7 +5625,8 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6aa29e6d-2ac4-45e3-9bb2-47a80ad30170",
@@ -5561,7 +5679,8 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6aa29e6f-4098-4b51-9dcf-00680ad30050",
@@ -5606,7 +5725,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 0,99/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aa29e6f-6730-4f55-b514-00970ad300df_20260910141308.png",
     "validFrom": "2026-09-10T11:40:09.000Z",
@@ -5614,7 +5733,9 @@
     "validityStart": "2026-09-10T11:40:09.000Z",
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 0,99/kg"
   },
   {
     "id": "6aa29e70-2b9c-4666-a7cc-44960ad302ab",
@@ -5802,7 +5923,8 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 730
   },
   {
     "id": "6ae44ffc-d760-4a2c-ac2e-00670ad301ab",
@@ -5820,7 +5942,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 19,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae44ffc-d760-4a2c-ac2e-00670ad301ab_20261030095438.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -5828,8 +5950,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 19000,
-    "ocrEnriched": true
+    "packWeightGrams": 1000,
+    "ocrEnriched": true,
+    "quantityLabel": "Sfuso a peso: € 19,90/kg"
   },
   {
     "id": "6ae44ffd-b0a8-4748-90ba-00370ad30035",
@@ -5855,7 +5978,8 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 750
   },
   {
     "id": "6ae44fff-2c18-4400-93e2-00a60ad302ba",
@@ -5881,7 +6005,8 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 800
   },
   {
     "id": "6ae44fff-e95c-4855-b7c5-00570ad30143",
@@ -5899,7 +6024,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 3,99/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae44fff-e95c-4855-b7c5-00570ad30143_20261030095456.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -5907,7 +6032,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 3,99/kg"
   },
   {
     "id": "6ae45001-16e8-4403-bbf2-00970ad301b1",
@@ -5933,7 +6060,8 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 800
   },
   {
     "id": "6ae45001-81f8-40eb-aa8c-00910ad30279",
@@ -5977,7 +6105,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,89/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45002-dcc8-49b8-aa0a-00970ad30207_20261030095309.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -5985,7 +6113,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 1,89/kg"
   },
   {
     "id": "6ae45002-f5d4-49bc-b6cb-00a10ad301e5",
@@ -6003,7 +6133,7 @@
     "originalPrice": 9.5,
     "discountPercentage": 21,
     "discountLabel": "-21%",
-    "unitPrice": null,
+    "unitPrice": "€ 7,50/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45002-f5d4-49bc-b6cb-00a10ad301e5_20261030095446.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6011,7 +6141,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 7,50/kg"
   },
   {
     "id": "6ae45003-9f74-4a61-acbc-00b10ad301e5",
@@ -6055,7 +6187,7 @@
     "originalPrice": 7.9,
     "discountPercentage": 25,
     "discountLabel": "-25%",
-    "unitPrice": null,
+    "unitPrice": "€ 5,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45003-ccdc-4f49-8e2d-00830ad30005_20261030095416.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6063,7 +6195,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 5,90/kg"
   },
   {
     "id": "6ae45004-1ecc-412c-b394-00d80ad30005",
@@ -6081,7 +6215,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 2,49/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45004-1ecc-412c-b394-00d80ad30005_20261030095443.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6089,7 +6223,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 2,49/kg"
   },
   {
     "id": "6ae45004-ea14-4fc4-a2cc-46c50ad30271",
@@ -6107,7 +6243,7 @@
     "originalPrice": 1.69,
     "discountPercentage": 24,
     "discountLabel": "-24%",
-    "unitPrice": null,
+    "unitPrice": "€ 12,90/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45004-ea14-4fc4-a2cc-46c50ad30271_20261030095418.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6115,7 +6251,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 12,90/kg)"
   },
   {
     "id": "6ae45005-6284-4505-9770-008d0ad3007a",
@@ -6133,7 +6271,7 @@
     "originalPrice": 2.39,
     "discountPercentage": 21,
     "discountLabel": "-21%",
-    "unitPrice": null,
+    "unitPrice": "€ 18,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45005-6284-4505-9770-008d0ad3007a_20261030095349.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6141,7 +6279,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 18,90/kg)"
   },
   {
     "id": "6ae45005-7eb0-455a-9876-00db0ad30262",
@@ -6159,7 +6299,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 2,29/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45005-7eb0-455a-9876-00db0ad30262_20261030095445.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6167,7 +6307,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 2,29/kg"
   },
   {
     "id": "6ae45005-a154-4ef7-b763-003b0ad30218",
@@ -6193,7 +6335,8 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 790
   },
   {
     "id": "6ae45006-8ee8-43e8-9b45-4e130ad30005",
@@ -6211,7 +6354,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,19/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45006-8ee8-43e8-9b45-4e130ad30005_20261030095347.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6219,7 +6362,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 1,19/kg"
   },
   {
     "id": "6ae45007-0ac8-4cd5-96f9-008a0ad30160",
@@ -6245,7 +6390,8 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 710
   },
   {
     "id": "6ae45007-47cc-4828-a194-00530ad30233",
@@ -6263,7 +6409,7 @@
     "originalPrice": 1.19,
     "discountPercentage": 10,
     "discountLabel": "-10%",
-    "unitPrice": null,
+    "unitPrice": "€ 10,70/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45007-47cc-4828-a194-00530ad30233_20261030095500.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6271,7 +6417,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 10,70/kg)"
   },
   {
     "id": "6ae45008-62f8-4699-b425-42930ad30175",
@@ -6343,7 +6491,7 @@
     "originalPrice": 2.69,
     "discountPercentage": 22,
     "discountLabel": "-22%",
-    "unitPrice": null,
+    "unitPrice": "€ 20,90/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45008-dcb4-4284-bc01-00330ad30063_20261030095503.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6351,7 +6499,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 20,90/kg)"
   },
   {
     "id": "6ae45009-36fc-4c89-a719-455d0ad300fe",
@@ -6377,7 +6527,8 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 800
   },
   {
     "id": "6ae45009-77a4-44ec-adcf-00ad0ad301a6",
@@ -6422,7 +6573,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 4,99/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae4500a-23ac-418c-8848-000e0ad300f7_20261030095353.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6430,7 +6581,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 4,99/kg"
   },
   {
     "id": "6ae4500a-697c-41d8-975d-4eeb0ad30271",
@@ -6448,7 +6601,7 @@
     "originalPrice": 3.09,
     "discountPercentage": 19,
     "discountLabel": "-19%",
-    "unitPrice": null,
+    "unitPrice": "€ 24,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae4500a-697c-41d8-975d-4eeb0ad30271_20261030095450.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6456,7 +6609,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 24,90/kg)"
   },
   {
     "id": "6ae4500a-736c-4f44-a777-009d0ad302eb",
@@ -6609,7 +6764,7 @@
     "originalPrice": 1.89,
     "discountPercentage": 21,
     "discountLabel": "-21%",
-    "unitPrice": null,
+    "unitPrice": "€ 14,90/kg",
     "category": "Pane e Pasticceria",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45011-17f0-42ca-b6ba-007c0ad30019_20261030095456.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6617,7 +6772,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 14,90/kg)"
   },
   {
     "id": "6ae45015-bcd4-4166-a02b-00850ad30279",
@@ -6662,7 +6819,7 @@
     "originalPrice": 1.65,
     "discountPercentage": 25,
     "discountLabel": "-25%",
-    "unitPrice": null,
+    "unitPrice": "€ 12,40/kg",
     "category": "Pane e Pasticceria",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45016-0710-4e89-abff-000f0ad302f1_20261030095344.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6670,7 +6827,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 12,40/kg)"
   },
   {
     "id": "6ae45016-4d7c-4118-b47a-004c0ad300c9",
@@ -6688,7 +6847,7 @@
     "originalPrice": 11.5,
     "discountPercentage": 23,
     "discountLabel": "-23%",
-    "unitPrice": null,
+    "unitPrice": "€ 8,90/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45016-4d7c-4118-b47a-004c0ad300c9_20261030095247.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6696,7 +6855,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 8,90/kg"
   },
   {
     "id": "6ae45016-9abc-41e6-b156-007e0ad3025a",
@@ -6849,7 +7010,7 @@
     "originalPrice": 1.69,
     "discountPercentage": 24,
     "discountLabel": "-24%",
-    "unitPrice": null,
+    "unitPrice": "€ 12,90/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45017-0aa0-41e4-be6e-00870ad302f1_20261030095354.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6857,7 +7018,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 12,90/kg)"
   },
   {
     "id": "6ae45017-0e54-467f-ab9c-00c30ad3018a",
@@ -6875,7 +7038,7 @@
     "originalPrice": 4.99,
     "discountPercentage": 20,
     "discountLabel": "-20%",
-    "unitPrice": null,
+    "unitPrice": "€ 39,90/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae45017-0e54-467f-ab9c-00c30ad3018a_20261030095423.png",
     "validFrom": "2026-10-29T23:00:00.000Z",
@@ -6883,7 +7046,9 @@
     "validityStart": "2026-10-29T23:00:00.000Z",
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 39,90/kg)"
   },
   {
     "id": "6ae45017-1ccc-49d8-9b4d-00730ad30035",
@@ -8040,7 +8205,8 @@
     "validityStart": "2026-11-02T11:07:38.000Z",
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 4 rotoli"
   },
   {
     "id": "6ae8c02a-a708-4c3e-a82f-00bb0ad30277",
@@ -8227,7 +8393,8 @@
     "validityStart": "2026-11-02T11:07:38.000Z",
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 44 pz"
   },
   {
     "id": "6ae8c02e-88d8-4670-abe7-00a50ad30263",
@@ -8334,7 +8501,8 @@
     "validityStart": "2026-11-02T11:07:38.000Z",
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 2 pz"
   },
   {
     "id": "6ae8c02f-c734-41b7-9d83-00e30ad30257",
@@ -8540,7 +8708,7 @@
     "originalPrice": 1.99,
     "discountPercentage": 25,
     "discountLabel": "-25%",
-    "unitPrice": "€ 1,49/kg",
+    "unitPrice": "€ 1,49/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bf93-ea3c-46d6-87c8-00170ad301b1_20261102201333.png",
     "validFrom": "2026-11-02T11:05:02.000Z",
@@ -9751,7 +9919,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,20/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8bfb0-a330-49dc-be74-00500ad3005b_20261102201343.png",
     "validFrom": "2026-11-02T11:05:02.000Z",
@@ -9786,7 +9954,8 @@
     "validityStart": "2026-11-02T11:05:02.000Z",
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 6 pz"
   },
   {
     "id": "6ad732f3-fd04-4a83-b796-002e0ad3027b",
@@ -10124,7 +10293,8 @@
     "validityStart": "2026-10-20T07:43:00.000Z",
     "validityEnd": "2026-12-24T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 2 pezzi"
   },
   {
     "id": "6ad732fb-aaac-47ed-9a73-00b60ad30040",
@@ -10410,7 +10580,8 @@
     "validityStart": "2026-10-20T07:43:00.000Z",
     "validityEnd": "2026-12-24T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 6 bustine"
   },
   {
     "id": "6ad73302-6490-4fa0-875e-00760ad30082",
@@ -11060,7 +11231,8 @@
     "validityStart": "2026-10-20T07:43:00.000Z",
     "validityEnd": "2026-12-24T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 34 pezzi"
   },
   {
     "id": "6ad7330c-ea80-4665-8452-002f0ad301b9",
@@ -11266,7 +11438,7 @@
     "originalPrice": 3.33,
     "discountPercentage": 40,
     "discountLabel": "-40%",
-    "unitPrice": null,
+    "unitPrice": "€ 19,90/kg",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d4-a5dc-4a60-bb71-00940ad30093_20261104115743.png",
     "validFrom": "2026-11-04T08:11:57.000Z",
@@ -11293,7 +11465,7 @@
     "originalPrice": 20.56,
     "discountPercentage": 30,
     "discountLabel": "-30%",
-    "unitPrice": null,
+    "unitPrice": "€ 14,39/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d4-eaa8-44dd-96ed-002f0ad300ae_20261104115821.png",
     "validFrom": "2026-11-04T08:11:57.000Z",
@@ -11301,7 +11473,9 @@
     "validityStart": "2026-11-04T08:11:57.000Z",
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 14,39/kg"
   },
   {
     "id": "6aeb08d5-2898-445c-b6c2-002d0ad300f3",
@@ -11319,7 +11493,7 @@
     "originalPrice": 2.09,
     "discountPercentage": 24,
     "discountLabel": "-24%",
-    "unitPrice": "€ 1,59/kg",
+    "unitPrice": "€ 1,59/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d5-2898-445c-b6c2-002d0ad300f3_20261104115901.png",
     "validFrom": "2026-11-04T08:11:57.000Z",
@@ -11327,8 +11501,9 @@
     "validityStart": "2026-11-04T08:11:57.000Z",
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 15900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 15,90/kg)"
   },
   {
     "id": "6aeb08d6-be48-47fa-a5ac-00760ad30082",
@@ -11543,8 +11718,9 @@
     "validityStart": "2026-11-04T08:11:57.000Z",
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 11900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 11,90/kg)"
   },
   {
     "id": "6aeb08d9-5048-4a52-881e-00720ad3010a",
@@ -11562,7 +11738,7 @@
     "originalPrice": 2.39,
     "discountPercentage": 21,
     "discountLabel": "-21%",
-    "unitPrice": "€ 1,89/kg",
+    "unitPrice": "€ 1,89/L",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08d9-5048-4a52-881e-00720ad3010a_20261104115903.png",
     "validFrom": "2026-11-04T08:11:57.000Z",
@@ -11570,8 +11746,9 @@
     "validityStart": "2026-11-04T08:11:57.000Z",
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 18900,
-    "ocrEnriched": true
+    "packWeightGrams": 100,
+    "ocrEnriched": true,
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 18,90/kg)"
   },
   {
     "id": "6aeb08d9-6f84-4a0e-b304-00400ad300d5",
@@ -11705,7 +11882,7 @@
     "validityStart": "2026-11-04T08:11:57.000Z",
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": true,
-    "packWeightGrams": 11900,
+    "packWeightGrams": 100,
     "ocrEnriched": true
   },
   {
@@ -12236,7 +12413,7 @@
     "originalPrice": 7.14,
     "discountPercentage": 37,
     "discountLabel": "-37%",
-    "unitPrice": null,
+    "unitPrice": "€ 5,99/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aeb08e6-4f48-4efa-a395-007d0ad30220_20261104115820.png",
     "validFrom": "2026-11-04T08:11:57.000Z",
@@ -12478,7 +12655,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 5,99/L",
     "category": "Cura Casa e Bucato",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5df-9e8c-4642-b7cb-000e0ad30237_20261103141425.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -12486,7 +12663,8 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1710
   },
   {
     "id": "6ae9b5e1-f65c-4286-b7d9-002e0ad30218",
@@ -12504,7 +12682,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 2,79/L",
     "category": "Colazione e Dolci",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5e1-f65c-4286-b7d9-002e0ad30218_20261103141312.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -12566,7 +12744,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 7970,
+    "packWeightGrams": 375,
     "ocrEnriched": true
   },
   {
@@ -12593,7 +12771,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 10450,
+    "packWeightGrams": 168,
     "ocrEnriched": true
   },
   {
@@ -12620,7 +12798,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": true,
-    "packWeightGrams": 15960,
+    "packWeightGrams": 250,
     "ocrEnriched": true
   },
   {
@@ -12647,7 +12825,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 2230,
+    "packWeightGrams": 400,
     "ocrEnriched": true
   },
   {
@@ -12674,7 +12852,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 5690,
+    "packWeightGrams": 350,
     "ocrEnriched": true
   },
   {
@@ -12701,7 +12879,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 20130,
+    "packWeightGrams": 240,
     "ocrEnriched": true
   },
   {
@@ -12755,7 +12933,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 12450,
+    "packWeightGrams": 200,
     "ocrEnriched": true
   },
   {
@@ -12782,7 +12960,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 5050,
+    "packWeightGrams": 315,
     "ocrEnriched": true
   },
   {
@@ -12801,7 +12979,7 @@
     "originalPrice": 3.19,
     "discountPercentage": 25,
     "discountLabel": "-25%",
-    "unitPrice": null,
+    "unitPrice": "€ 2,39/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f0-a09c-43f0-aedb-00780ad300b1_20261103141448.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -12836,7 +13014,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": true,
-    "packWeightGrams": 36630,
+    "packWeightGrams": 270,
     "ocrEnriched": true
   },
   {
@@ -12882,7 +13060,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,99/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f2-d74c-4df7-9b9b-004f0ad30090_20261103141451.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -12936,7 +13114,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,29/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f3-a68c-4c60-a1fe-00670ad30036_20261103141326.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -12971,7 +13149,8 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000
   },
   {
     "id": "6ae9b5f4-15f0-4531-9997-005b0ad30040",
@@ -13024,7 +13203,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 12380,
+    "packWeightGrams": 282,
     "ocrEnriched": true
   },
   {
@@ -13051,7 +13230,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 12380,
+    "packWeightGrams": 80,
     "ocrEnriched": true
   },
   {
@@ -13070,7 +13249,7 @@
     "originalPrice": 2.59,
     "discountPercentage": 23,
     "discountLabel": "-23%",
-    "unitPrice": null,
+    "unitPrice": "€ 1,99/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f6-6e44-4f75-84a4-006c0ad30040_20261103141330.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -13158,7 +13337,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 15740,
+    "packWeightGrams": 190,
     "ocrEnriched": true
   },
   {
@@ -13185,7 +13364,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 4970,
+    "packWeightGrams": 300,
     "ocrEnriched": true
   },
   {
@@ -13212,7 +13391,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 8300,
+    "packWeightGrams": 300,
     "ocrEnriched": true
   },
   {
@@ -13231,7 +13410,7 @@
     "originalPrice": 4.39,
     "discountPercentage": 32,
     "discountLabel": "-32%",
-    "unitPrice": null,
+    "unitPrice": "€ 2,99/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5f9-4034-4d91-ae2e-002c0ad30292_20261103141331.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -13293,7 +13472,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 8250,
+    "packWeightGrams": 120,
     "ocrEnriched": true
   },
   {
@@ -13320,7 +13499,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 2690,
+    "packWeightGrams": 650,
     "ocrEnriched": true
   },
   {
@@ -13366,7 +13545,7 @@
     "originalPrice": 5.99,
     "discountPercentage": 30,
     "discountLabel": "-30%",
-    "unitPrice": null,
+    "unitPrice": "€ 4,19/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5fa-f078-4cff-95a1-009f0ad302eb_20261103141332.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -13374,7 +13553,8 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1500
   },
   {
     "id": "6ae9b5fb-2038-4b6c-b9a2-00ed0ad300c1",
@@ -13428,7 +13608,7 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 64500
+    "packWeightGrams": 20
   },
   {
     "id": "6ae9b5fb-4f80-408e-a04b-002c0ad302b3",
@@ -13454,7 +13634,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 4980,
+    "packWeightGrams": 400,
     "ocrEnriched": true
   },
   {
@@ -13473,7 +13653,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 9,90/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5fc-6ebc-4da5-8bd7-004e0ad301b0_20261103141333.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -13508,7 +13688,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 15900,
+    "packWeightGrams": 100,
     "ocrEnriched": true
   },
   {
@@ -13535,7 +13715,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": true,
-    "packWeightGrams": 3560,
+    "packWeightGrams": 250,
     "ocrEnriched": true
   },
   {
@@ -13562,7 +13742,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": true,
-    "packWeightGrams": 4980,
+    "packWeightGrams": 400,
     "ocrEnriched": true
   },
   {
@@ -13581,7 +13761,7 @@
     "originalPrice": 1.39,
     "discountPercentage": 22,
     "discountLabel": "-22%",
-    "unitPrice": null,
+    "unitPrice": "€ 1,09/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b5fd-07e4-4308-9316-009d0ad3023e_20261103141333.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -13616,7 +13796,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 5960,
+    "packWeightGrams": 250,
     "ocrEnriched": true
   },
   {
@@ -13643,7 +13823,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 8900,
+    "packWeightGrams": 100,
     "ocrEnriched": true
   },
   {
@@ -13670,7 +13850,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 7560,
+    "packWeightGrams": 250,
     "ocrEnriched": true
   },
   {
@@ -13697,7 +13877,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 4680,
+    "packWeightGrams": 190,
     "ocrEnriched": true
   },
   {
@@ -13724,7 +13904,7 @@
     "validityStart": "2026-11-02T23:00:00.000Z",
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
-    "packWeightGrams": 23170,
+    "packWeightGrams": 60,
     "ocrEnriched": true
   },
   {
@@ -13743,7 +13923,7 @@
     "originalPrice": 1.19,
     "discountPercentage": 25,
     "discountLabel": "-25%",
-    "unitPrice": null,
+    "unitPrice": "€ 0,89/L",
     "category": "Acqua e Bevande",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae9b600-0cf8-4b1a-b0ce-00ad0ad30220_20261103141537.png",
     "validFrom": "2026-11-02T23:00:00.000Z",
@@ -14381,7 +14561,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 1,49/kg",
     "category": "Frutta e Verdura",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a697-a8e0-4d3d-88d0-00730ad30273_20261105161737.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -14389,7 +14569,9 @@
     "validityStart": "2026-11-01T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 1,49/kg"
   },
   {
     "id": "6ae8a699-6a28-41ad-93ce-004f0ad302d2",
@@ -15122,7 +15304,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": null,
+    "unitPrice": "€ 7,99/kg",
     "category": "Latticini e Formaggi",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae8a72f-3558-464f-a138-00d60ad30164_20261105155618.png",
     "validFrom": "2026-11-01T23:00:00.000Z",
@@ -15130,7 +15312,9 @@
     "validityStart": "2026-11-01T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 1000,
+    "quantityLabel": "Sfuso a peso: € 7,99/kg"
   },
   {
     "id": "6ae8a72f-3a48-4147-bd9c-004b0ad30005",
@@ -15665,7 +15849,7 @@
     "validityStart": "2026-10-29T09:21:10.000Z",
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 570,
+    "packWeightGrams": 540,
     "ocrEnriched": true
   },
   {
@@ -15719,7 +15903,7 @@
     "validityStart": "2026-10-29T09:21:10.000Z",
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 125,
+    "packWeightGrams": 100,
     "ocrEnriched": true
   },
   {
@@ -16137,7 +16321,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 0,67/kg",
+    "unitPrice": "€ 0,67/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae32f7d-8834-4c12-b72a-00d10ad3028c_20261029123611.png",
     "validFrom": "2026-10-29T09:21:10.000Z",
@@ -16173,7 +16357,8 @@
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 2,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 4 rotoli"
   },
   {
     "id": "6ae32f7e-6b04-41d4-be3f-00720ad300b5",
@@ -16413,7 +16598,7 @@
     "validityStart": "2026-10-28T08:46:32.000Z",
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 125,
+    "packWeightGrams": 100,
     "ocrEnriched": true
   },
   {
@@ -16466,7 +16651,7 @@
     "validityStart": "2026-10-28T08:46:32.000Z",
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
-    "packWeightGrams": 570,
+    "packWeightGrams": 540,
     "ocrEnriched": true
   },
   {
@@ -16918,7 +17103,8 @@
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 2,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 4 rotoli"
   },
   {
     "id": "6ae1c559-2a70-4cb6-a805-008c0ad300e2",
@@ -17071,7 +17257,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 0,67/kg",
+    "unitPrice": "€ 0,67/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6ae1c55b-0948-4228-8074-00890ad3005b_20261028131213.png",
     "validFrom": "2026-10-28T08:46:32.000Z",
@@ -17160,7 +17346,8 @@
     "validityStart": "2026-11-04T23:00:00.000Z",
     "validityEnd": "2026-11-14T22:59:00.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 100
   },
   {
     "id": "6aec94d8-1100-43f4-b860-00480ad302f0",
@@ -17178,7 +17365,7 @@
     "originalPrice": 3.36,
     "discountPercentage": 41,
     "discountLabel": "-41%",
-    "unitPrice": "€ 0,17/kg",
+    "unitPrice": "€ 0,17/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94d8-1100-43f4-b860-00480ad302f0_20261106163724.png",
     "validFrom": "2026-11-04T23:00:00.000Z",
@@ -17186,7 +17373,8 @@
     "validityStart": "2026-11-04T23:00:00.000Z",
     "validityEnd": "2026-11-14T22:59:00.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "packWeightGrams": 11650
   },
   {
     "id": "6aec94d8-9a0c-4d9e-8d04-00400ad301f5",
@@ -17555,7 +17743,7 @@
     "originalPrice": 2.19,
     "discountPercentage": 42,
     "discountLabel": "-42%",
-    "unitPrice": null,
+    "unitPrice": "€ 11,54/kg",
     "category": "Carne e Pesce",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94dd-3358-46cb-8830-00620ad30170_20261106142839.png",
     "validFrom": "2026-11-04T23:00:00.000Z",
@@ -18473,7 +18661,7 @@
     "originalPrice": null,
     "discountPercentage": null,
     "discountLabel": null,
-    "unitPrice": "€ 8,27/kg",
+    "unitPrice": "€ 8,27/L",
     "category": "Dispensa e Pasta",
     "imageUrl": "https://it-it-media.shopfully.cloud/images/flyergibs/gibCover_6aec94e1-2dd0-4880-b3c0-00ad0ad30174_20261106143938.png",
     "validFrom": "2026-11-04T23:00:00.000Z",
@@ -19826,7 +20014,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 27 lavaggi"
   },
   {
     "id": "6ae05e06-bc68-4ce7-a97a-00430ad30273",
@@ -19852,7 +20041,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 2 rotoli"
   },
   {
     "id": "6ae05e07-78c8-4b26-b2ea-000d0ad302b3",
@@ -19878,7 +20068,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 87 lavaggi"
   },
   {
     "id": "6ae05e09-fe6c-48fa-b6f4-002e0ad30245",
@@ -20327,7 +20518,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": true,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 2 pz"
   },
   {
     "id": "6ae05e53-0dd8-4dca-8ab1-00810ad302e8",
@@ -20753,7 +20945,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 12 pz"
   },
   {
     "id": "6ae05e95-30dc-41ba-9e1e-00720ad301d6",
@@ -20805,7 +20998,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 12 pz"
   },
   {
     "id": "6ae05e99-2588-40e9-9557-00680ad30032",
@@ -20857,7 +21051,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 30 pz"
   },
   {
     "id": "6ae05e9b-6f9c-425a-a0cf-00610ad3021a",
@@ -20883,7 +21078,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 21 pz"
   },
   {
     "id": "6ae05e9c-efd0-4da2-8add-00c70ad300b0",
@@ -20936,7 +21132,8 @@
     "validityStart": "2026-10-25T23:00:00.000Z",
     "validityEnd": "2026-11-15T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 18 pz"
   },
   {
     "id": "6ae05e9e-980c-4104-a17a-00150ad300e9",
@@ -24956,7 +25153,8 @@
     "validityStart": "2026-11-09T07:00:00.000Z",
     "validityEnd": "2026-11-11T22:59:00.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "quantityLabel": "Confezione: 2 pezzi"
   },
   {
     "id": "6ae3442e-ab94-4981-a9dd-fe850ad30114",

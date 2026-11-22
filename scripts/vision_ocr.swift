@@ -14,9 +14,8 @@ guard let nsImage = NSImage(contentsOfFile: imagePath),
     exit(1)
 }
 
-// Upscale small flyer cutouts (2.5x) so small weights like "1 kg" or "110 g" are recognized accurately
-let scale: Int = baseCg.width < 800 ? 3 : 1
-var targetCg = baseCg
+let scale: Int = baseCg.width < 900 ? 3 : 1
+var upscaledCg = baseCg
 if scale > 1 {
     let w = baseCg.width * scale
     let h = baseCg.height * scale
@@ -31,19 +30,19 @@ if scale > 1 {
     ) {
         ctx.interpolationQuality = .high
         ctx.draw(baseCg, in: CGRect(x: 0, y: 0, width: w, height: h))
-        if let upscaled = ctx.makeImage() {
-            targetCg = upscaled
+        if let res = ctx.makeImage() {
+            upscaledCg = res
         }
     }
 }
 
-let request = VNRecognizeTextRequest()
-request.recognitionLevel = .accurate
-request.recognitionLanguages = ["it-IT", "en-US"]
-request.usesLanguageCorrection = false
+let req = VNRecognizeTextRequest()
+req.recognitionLevel = .accurate
+req.recognitionLanguages = ["it-IT", "en-US"]
+req.usesLanguageCorrection = false
 
-let handler = VNImageRequestHandler(cgImage: targetCg, options: [:])
-try handler.perform([request])
+let handler = VNImageRequestHandler(cgImage: upscaledCg, options: [:])
+try handler.perform([req])
 
-let lines = (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }
+let lines = (req.results ?? []).compactMap { $0.topCandidates(1).first?.string }
 print(lines.joined(separator: "\n"))

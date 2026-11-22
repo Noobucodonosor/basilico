@@ -33,13 +33,22 @@ if (
   'serviceWorker' in navigator
 ) {
   window.addEventListener('load', () => {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
     const registerPromise =
       import.meta.env.VITE_STATIC_MODE === 'true'
         ? navigator.serviceWorker.register(`${import.meta.env.BASE_URL || './'}sw.js`)
         : navigator.serviceWorker.register('/sw.js');
-    registerPromise.catch(() => {
-      // Non-blocking fallback when SW registration is unavailable
-    });
+    registerPromise
+      .then((reg) => reg?.update?.())
+      .catch(() => {
+        // Non-blocking fallback when SW registration is unavailable
+      });
   });
 }
 
