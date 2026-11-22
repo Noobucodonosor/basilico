@@ -1,6 +1,6 @@
 {
-  "version": "99cfe5e3585b",
-  "generatedAt": "2026-11-21T22:15:22.950Z",
+  "version": "b7b2e3dd52a4",
+  "generatedAt": "2026-11-22T18:32:12.651Z",
   "fileCount": 14,
   "files": {
     "cleaning_chemistry.json": {
@@ -34,7 +34,7 @@
       "size": 3282
     },
     "rapallo_offers.json": {
-      "size": 870575
+      "size": 922331
     },
     "rapallo_stores.json": {
       "size": 12583

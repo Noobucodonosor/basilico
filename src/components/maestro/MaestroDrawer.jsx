@@ -33,6 +33,13 @@ const FIVE_SOULS_CHIPS = [
   }
 ];
 
+const HUMAN_PROFILE_NAMES = {
+  ospiti: 'Standard',
+  dany: 'Senza latticini',
+  barca: 'Cambusa & Barca',
+  casa_rapallo: 'Casa Rapallo'
+};
+
 function formatRhythmLabel(preset) {
   if (preset === 'sera_stanca') return 'Sera stanca';
   if (preset === 'weekend_relax') return 'Weekend';
@@ -231,38 +238,27 @@ export function MaestroDrawer({
         tabIndex={-1}
         className="relative z-10 w-full sm:max-w-lg bg-[#FAF9F6] h-full shadow-2xl flex flex-col border-l border-[#E5E2DA] focus:outline-none"
       >
-        {/* Top Header + Active Engine Mode Badge + Grounded Context Strip */}
+        {/* Top Header — Clean Human Copy, Single-Line Actions */}
         <header className="bg-[#141A17] text-white p-4 space-y-2.5 shrink-0">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-extrabold">🌿 Basilico Maestro</h2>
-                <span
-                  className={`text-[10px] font-bold tracking-wide px-2.5 py-0.5 rounded-full border ${
-                    isLiveLlm
-                      ? 'bg-[#1B5E3A] text-white border-emerald-400/50'
-                      : 'bg-white/10 text-emerald-200 border-white/20'
-                  }`}
-                >
-                  {isLiveLlm ? 'AI sui dati di casa' : 'Motore locale verificato'}
-                </span>
-              </div>
-              <p className="text-[11px] text-stone-300 mt-1">
-                Conosce la tua dispensa, le tue pentole e le offerte attive a Rapallo.
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h2 className="text-base font-bold truncate">🌿 Basilico Maestro</h2>
+              <p className="text-xs text-stone-300 mt-0.5 leading-snug">
+                Ricette, spesa e consigli pratici sulla tua cucina.
               </p>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0">
               <button
                 type="button"
                 onClick={() => setShowKitchenTools((prev) => !prev)}
-                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium text-emerald-200 cursor-pointer"
+                className="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-semibold text-emerald-200 whitespace-nowrap cursor-pointer"
               >
-                🍳 Set & Tier
+                Cucina &amp; Spesa
               </button>
               <button
                 type="button"
                 onClick={() => onClose?.()}
-                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-stone-100 cursor-pointer"
+                className="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-bold text-white whitespace-nowrap cursor-pointer"
                 aria-label="Chiudi chat Maestro"
               >
                 ✕ Chiudi
@@ -271,13 +267,13 @@ export function MaestroDrawer({
           </div>
 
           {showKitchenTools && kitchenTiers && (
-            <div className="rounded-xl bg-white/10 border border-white/15 p-3 space-y-2.5 text-xs">
-              <div className="flex items-center justify-between gap-2">
+            <div className="rounded-xl bg-white/10 border border-white/15 p-3 space-y-2.5 text-xs max-h-[44vh] overflow-y-auto">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-semibold text-emerald-200">
-                  Set cucina ({kitchenTiers.unlockedRecipesCount}/{kitchenTiers.totalRecipesCount} ricette)
+                  Strumenti ({kitchenTiers.unlockedRecipesCount} piatti pronti)
                 </span>
                 <select
-                  aria-label="Scegli set cucina"
+                  aria-label="Scegli dotazione cucina"
                   value={kitchenTiers.setId}
                   onChange={async (e) => {
                     const res = await fetch('/api/maestro/kitchen-set', {
@@ -287,7 +283,7 @@ export function MaestroDrawer({
                     });
                     if (res.ok) setKitchenTiers(await res.json());
                   }}
-                  className="bg-[#141A17] text-white border border-white/20 rounded-lg px-2 py-1 text-xs cursor-pointer"
+                  className="bg-[#141A17] text-white border border-white/20 rounded-lg px-2 py-1 text-xs cursor-pointer max-w-full"
                 >
                   {(kitchenTiers.presets || []).map((p) => (
                     <option key={p.id} value={p.id}>
@@ -299,18 +295,14 @@ export function MaestroDrawer({
 
               {kitchenTiers.upgradeSuggestions?.[0] && (
                 <p className="text-[11px] text-amber-200 leading-snug">
-                  Upgrade consigliato: <strong>{kitchenTiers.upgradeSuggestions[0].name}</strong> (+
-                  {kitchenTiers.upgradeSuggestions[0].extraRecipesUnlocked} piatti sbloccati
-                  {kitchenTiers.upgradeSuggestions[0].offerMatch
-                    ? ` · in offerta da ${kitchenTiers.upgradeSuggestions[0].offerMatch.storeName}`
-                    : ''}
-                  ).
+                  Consiglio attrezzatura: <strong>{kitchenTiers.upgradeSuggestions[0].name}</strong> (+
+                  {kitchenTiers.upgradeSuggestions[0].extraRecipesUnlocked} piatti cucinabili).
                 </p>
               )}
 
               <div className="space-y-1.5 pt-1 border-t border-white/10">
                 <p className="text-[11px] font-semibold text-emerald-200">
-                  Fresh Start — spunta cosa hai già in casa:
+                  Cosa hai già in casa (escludi dalla spesa):
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {FRESH_START_ITEMS.map((item) => {
@@ -348,8 +340,8 @@ export function MaestroDrawer({
                   onChange={(e) => setPlanDays(Number(e.target.value))}
                   className="bg-[#141A17] text-white border border-white/20 rounded-lg px-2 py-1 text-xs cursor-pointer"
                 >
-                  <option value={7}>7 giorni (1 settimana)</option>
-                  <option value={30}>30 giorni (1 mese)</option>
+                  <option value={7}>7 giorni</option>
+                  <option value={30}>30 giorni</option>
                 </select>
                 <input
                   type="number"
@@ -361,7 +353,7 @@ export function MaestroDrawer({
                   aria-label="Kilocalorie giornaliere"
                   className="w-24 bg-[#141A17] text-white border border-white/20 rounded-lg px-2 py-1 text-xs"
                 />
-                <span className="text-[11px] text-stone-300">kcal/gg</span>
+                <span className="text-[11px] text-stone-300">kcal/giorno</span>
               </div>
 
               <button
@@ -378,6 +370,7 @@ export function MaestroDrawer({
                   });
                   if (res.ok) {
                     const out = await res.json();
+                    setShowKitchenTools(false);
                     const setLabels = {
                       cambusa_minima: 'Cambusa Minima',
                       casa_base: 'Casa Base',
@@ -397,7 +390,7 @@ export function MaestroDrawer({
                       .join('\n');
                     const coveredByFreshStart = Math.max(0, (out.targetTotalKcal || 0) - (out.totalPlannedKcal || 0));
                     const headerNote = coveredByFreshStart > 0
-                      ? `${out.totalPlannedKcal.toLocaleString('it-IT')} kcal da acquistare + ${coveredByFreshStart.toLocaleString('it-IT')} kcal già in casa (Fresh Start)`
+                      ? `${out.totalPlannedKcal.toLocaleString('it-IT')} kcal da acquistare + ${coveredByFreshStart.toLocaleString('it-IT')} kcal già in casa`
                       : `${out.totalPlannedKcal.toLocaleString('it-IT')} kcal totali`;
                     setMessages((prev) => [
                       ...prev,
@@ -405,34 +398,28 @@ export function MaestroDrawer({
                         id: `e2e-${Date.now()}`,
                         role: 'assistant',
                         mode: 'deterministic_scientific_engine',
-                        content: `Processo End-to-End (${out.days} giorni · ${headerNote}):\n${traceLines}\n\n6 Pasti del Giorno (es. Giorno 1):\n${day1Meals}\n\nSpesa Secca (Giorno 1):\n${dryLines || '• Tutto già coperto da Fresh Start!'}\n\nFreschi Settimana 1 (${out.freshTranches?.[0]?.label}):\n${freshLines}`,
+                        content: `Piano generato (${out.days} giorni · ${headerNote}):\n${traceLines}\n\n6 Pasti del Giorno (es. Giorno 1):\n${day1Meals}\n\nSpesa Secca (Giorno 1):\n${dryLines || '• Già coperta dalle scorte in casa!'}\n\nFreschi Settimana 1 (${out.freshTranches?.[0]?.label}):\n${freshLines}`,
                         p0Alerts: [],
                         groundedCitations: []
                       }
                     ]);
                   }
                 }}
-                className="w-full py-1.5 px-3 rounded-lg bg-[#1B5E3A] hover:bg-emerald-700 text-white font-medium text-xs cursor-pointer"
+                className="w-full py-2 px-3 rounded-lg bg-[#1B5E3A] hover:bg-emerald-700 text-white font-semibold text-xs cursor-pointer"
               >
-                Avvia End-to-End (Spesa Vegana + 6 Pasti/giorno)
+                Crea spesa e 6 pasti al giorno
               </button>
             </div>
           )}
 
-          {/* Grounded Household Context Pills */}
-          <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-            <span className="px-2 py-0.5 rounded-md bg-white/10 text-emerald-200 font-semibold">
-              Profilo: {contextSummary?.profileName || activeProfileId}
+          {/* Clean Natural Context Summary */}
+          <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-stone-200">
+            <span className="px-2 py-0.5 rounded-md bg-white/10 font-medium">
+              Preferenze: {HUMAN_PROFILE_NAMES[contextSummary?.profileId || activeProfileId] || contextSummary?.profileName || 'Standard'}
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-white/10 text-amber-300 font-semibold">
-              Freschi in scadenza: €{Number(contextSummary?.valueAtRisk48hEuro || 0).toFixed(2)}
-            </span>
-            <span className="px-2 py-0.5 rounded-md bg-white/10 text-stone-200 font-semibold">
-              Ritmo: {formatRhythmLabel(contextSummary?.rhythmPreset || rhythmPreset)} (€{contextSummary?.hourlyValueEuro ?? 18}/h)
-            </span>
-            {contextSummary?.heatSource && (
-              <span className="px-2 py-0.5 rounded-md bg-white/10 text-stone-200 font-semibold">
-                Piano: {formatHeatSourceLabel(contextSummary.heatSource)}
+            {Number(contextSummary?.valueAtRisk48hEuro || 0) > 0 && (
+              <span className="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-200 font-medium">
+                Da consumare presto: € {Number(contextSummary.valueAtRisk48hEuro).toFixed(2).replace('.', ',')}
               </span>
             )}
           </div>
@@ -534,8 +521,8 @@ export function MaestroDrawer({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Es. Cosa cucino stasera in 15 min? Come tolgo il calcare?"
-            className="flex-1 rounded-xl border border-[#E5E2DA] px-3 py-2 text-xs text-[#141A17] bg-white focus:outline-none focus:ring-2 focus:ring-[#1B5E3A]"
+            placeholder="Chiedi una ricetta o una spesa…"
+            className="flex-1 min-w-0 rounded-xl border border-[#E5E2DA] px-3 py-2 text-xs text-[#141A17] bg-white focus:outline-none focus:ring-2 focus:ring-[#1B5E3A]"
           />
           <button
             type="submit"

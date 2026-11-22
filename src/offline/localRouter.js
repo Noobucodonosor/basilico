@@ -196,7 +196,8 @@ function resolveQuantityLabel(o, domain) {
       : `${o.packWeightGrams} ${isLiquid ? 'ml' : 'g'}`;
     const promoPerUnit = price > 0 ? (price / o.packWeightGrams) * 1000 : null;
     const origPerUnit = hasFullPrice ? (origPrice / o.packWeightGrams) * 1000 : null;
-    const promoTag = o.unitPrice || (promoPerUnit ? `€ ${promoPerUnit.toFixed(2).replace('.', ',')}/${unitSym}` : '');
+    // Always compute €/kg mathematically from price & packWeightGrams so OCR misreads never corrupt unit price
+    const promoTag = promoPerUnit ? `€ ${promoPerUnit.toFixed(2).replace('.', ',')}/${unitSym}` : (o.unitPrice || '');
     const origTag = origPerUnit ? ` (anziché € ${origPerUnit.toFixed(2).replace('.', ',')}/${unitSym})` : '';
     return promoTag ? `${label} · ${promoTag}${origTag}` : `Confezione: ${label}`;
   }
@@ -1033,7 +1034,16 @@ export async function routeStaticApi(input, init = {}) {
     return jsonResponse({ ...state, cookware, academy });
   }
   if (pathname.startsWith('/api/planner')) {
-    const plan = await getUserState('meal_plan', { days: [], models: [{ id: 'mediterraneo', label: 'Mediterraneo Bilanciato' }] });
+    const defaultModels = [
+      { id: 'vegetale_integrale', icon: '🌱', name: 'Base Vegetale CREA', description: 'Legumi, cereali integrali, verdure di stagione e semi oleosi.' },
+      { id: 'mediterraneo', icon: '🌿', name: 'Mediterraneo Ligure', description: 'Equilibrio quotidiano tra ortaggi, olio EVO, pesce azzurro e legumi.' },
+      { id: 'pescetariano_mare', icon: '🐟', name: 'Pescetariano di Mare', description: 'Zero carne, ricco di Omega-3 dal mercato ittico e verdure.' },
+      { id: 'cambusa_barca', icon: '⛵', name: 'Cambusa & Barca', description: 'Alta conservabilità, zero sprechi e preparazioni rapide.' }
+    ];
+    const plan = await getUserState('meal_plan', { days: [], models: defaultModels });
+    if (pathname === '/api/planner/models' && method === 'GET') {
+      return jsonResponse({ models: defaultModels });
+    }
     if (pathname === '/api/planner/generate-month' && method === 'POST') {
       const body = parseBody(init);
       const dailyKcal = Math.max(800, Number(body.dailyKcal || 2000));

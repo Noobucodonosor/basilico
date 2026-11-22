@@ -61,34 +61,34 @@ export function CycleOverviewView({
     'Tre piatti cucinabili con il tuo set, incrociati con i valori nutrizionali CREA e le offerte attive a Rapallo.';
 
   return (
-    <div className="space-y-14 sm:space-y-16" data-testid="cycle-overview-view">
-      {/* Section 1: Editorial Hero */}
+    <div className="space-y-8 sm:space-y-10" data-testid="cycle-overview-view">
+      {/* Section 1: Compact Editorial Hero so 3 proposals fit Above-the-Fold at 1440x900 */}
       <section
         data-enter=""
-        className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center pt-4 sm:pt-8 pb-10 sm:pb-14 border-b border-[#E5E2DA]"
+        className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center pt-1 sm:pt-3 pb-6 sm:pb-8 border-b border-[#E5E2DA]"
       >
-        <div className="lg:col-span-7 space-y-5">
+        <div className="lg:col-span-7 space-y-3.5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1B5E3A]">
             Rapallo · Cucina di casa
           </p>
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-[54px] font-normal text-[#141A17] tracking-tight leading-[1.08]">
+          <h1 className="font-editorial text-3xl sm:text-4xl lg:text-[44px] font-normal text-[#141A17] tracking-tight leading-[1.08]">
             Cosa cucini stasera?
           </h1>
-          <p className="text-base sm:text-lg text-[#575E58] max-w-xl leading-relaxed">
+          <p className="text-sm sm:text-base text-[#575E58] max-w-xl leading-relaxed">
             {humanSummary}
           </p>
-          <div className="pt-2">
+          <div className="pt-1">
             <a
               href="#proposte-stasera"
-              className="inline-flex items-center px-6 py-3 rounded-full bg-[#1B5E3A] hover:bg-[#14492D] text-white text-sm font-medium taste-btn"
+              className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#1B5E3A] hover:bg-[#14492D] text-white text-sm font-medium taste-btn"
             >
-              Vedi le 3 proposte
+              Scegli tra le 3 proposte
             </a>
           </div>
         </div>
 
         <div className="lg:col-span-5">
-          <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-[#F3F1EC] border border-[#E5E2DA] taste-photo-frame">
+          <div className="rounded-2xl overflow-hidden aspect-[16/10] max-h-56 w-full bg-[#F3F1EC] border border-[#E5E2DA] taste-photo-frame">
             <img
               src="/assets/img/photo-m61660576-960.jpg"
               alt="Ingredienti freschi della cucina mediterranea"
