@@ -1684,7 +1684,19 @@
     "isHighlight": false,
     "ocrEnriched": true,
     "packWeightGrams": 750,
-    "isMemberOnly": true
+    "isMemberOnly": true,
+    "openFoodFacts": {
+      "ean": "8008683010189",
+      "productName": "Latte parzialmente scremato",
+      "brands": "Valli genovesi",
+      "novaGroup": 1,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:39.235Z"
+    }
   },
   {
     "id": "6ae8ac23-0564-4cfe-9dab-001d0ad30222",
@@ -1765,7 +1777,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 180
+    "packWeightGrams": 180,
+    "openFoodFacts": {
+      "ean": "8005740100715",
+      "productName": "Orlando Grondona Baci Di Dama",
+      "brands": "Orlando Grondona",
+      "novaGroup": null,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:40.410Z"
+    }
   },
   {
     "id": "6ae8ac28-30d8-4e83-b6c3-00760ad30027",
@@ -1847,7 +1871,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": true,
     "packWeightGrams": 300,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8000430138672",
+      "productName": "Santa Lucia Mozzarella Light Tris",
+      "brands": "Galbani",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:41.761Z"
+    }
   },
   {
     "id": "6ae0663c-167c-41c0-9edc-9ea90ad302da",
@@ -1901,7 +1937,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 400
+    "packWeightGrams": 400,
+    "openFoodFacts": {
+      "ean": "8076809504720",
+      "productName": "Pan Bauletto Bianco",
+      "brands": "Mulino Bianco,  Barilla",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:42.479Z"
+    }
   },
   {
     "id": "6ae0663f-f508-4557-bcc1-00290ad30217",
@@ -1928,7 +1976,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 750
+    "packWeightGrams": 750,
+    "openFoodFacts": {
+      "ean": "80809180",
+      "productName": "deko Nutella",
+      "brands": "Ferrero,  Nutella,  Ferrero Nutella,  Ferrero Nutella Ferrero Nutella,  Ferrero Nutella Ferrero Nutella Ferrero Nutella Ferrero Nutella",
+      "novaGroup": 4,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:42.785Z"
+    }
   },
   {
     "id": "6ae0663f-f988-4329-9d3e-00be0ad30032",
@@ -2009,7 +2069,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 500
+    "packWeightGrams": 500,
+    "openFoodFacts": {
+      "ean": "4008366001408",
+      "productName": "Frosta Paella",
+      "brands": "Frosta",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:44.000Z"
+    }
   },
   {
     "id": "6ae06644-e1fc-4390-989a-008f0ad30263",
@@ -2036,7 +2108,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 150
+    "packWeightGrams": 150,
+    "openFoodFacts": {
+      "ean": "42235637",
+      "productName": "Muller Mix Yogurt Bora Bora 150g",
+      "brands": "Muller",
+      "novaGroup": 4,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:44.312Z"
+    }
   },
   {
     "id": "6ae06645-1ce8-46c4-a2fa-00870ad30273",
@@ -2063,7 +2147,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 320
+    "packWeightGrams": 320,
+    "openFoodFacts": {
+      "ean": "8004030105096",
+      "productName": "Leggero tonno all'olio extra vergine d'oliva",
+      "brands": "Rio Mare",
+      "novaGroup": null,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:44.742Z"
+    }
   },
   {
     "id": "6ae06645-8e58-4985-94ab-00c20ad301a3",
@@ -2090,7 +2186,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "packWeightGrams": 700
+    "packWeightGrams": 700,
+    "openFoodFacts": {
+      "ean": "8001440132391",
+      "productName": "Passata al Vapore",
+      "brands": "Valfrutta, Conserve Italia",
+      "novaGroup": null,
+      "nutriscore": "B",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:45.062Z"
+    }
   },
   {
     "id": "6ae06646-258c-48a1-a6aa-009f0ad3013f",
@@ -2333,7 +2441,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 825,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8714100737712",
+      "productName": "Maionese calve",
+      "brands": "Calvè",
+      "novaGroup": null,
+      "nutriscore": "D",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:47.947Z"
+    }
   },
   {
     "id": "6ae06649-8450-47e7-8bd0-41740ad30182",
@@ -4533,7 +4653,19 @@
     "isHighlight": false,
     "ocrEnriched": true,
     "packWeightGrams": 100,
-    "quantityLabel": "Al banco: 100 g / l'etto (€ 9,90/kg)"
+    "quantityLabel": "Al banco: 100 g / l'etto (€ 9,90/kg)",
+    "openFoodFacts": {
+      "ean": "8022174009155",
+      "productName": "Bocconcini di mozzarella",
+      "brands": "Sanguedolce",
+      "novaGroup": null,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:11.642Z"
+    }
   },
   {
     "id": "6aa29e57-daf8-4136-9983-4ff50ad30043",
@@ -4920,7 +5052,19 @@
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 550,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8006837000918",
+      "productName": "American Sandwich",
+      "brands": "Morato",
+      "novaGroup": 4,
+      "nutriscore": null,
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:17.109Z"
+    }
   },
   {
     "id": "6aa29e5c-3e58-4ddf-a0d9-00650ad30157",
@@ -5222,7 +5366,19 @@
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 280,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8008110260101",
+      "productName": "Cotoletta di pollo",
+      "brands": "Aia",
+      "novaGroup": null,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:20.006Z"
+    }
   },
   {
     "id": "6aa29e65-279c-4ba0-ad77-00780ad30157",
@@ -5386,7 +5542,19 @@
     "validityEnd": "2027-01-03T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 460,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8715700422039",
+      "productName": "Maionese Classica",
+      "brands": "Heinz",
+      "novaGroup": 3,
+      "nutriscore": "D",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:20.760Z"
+    }
   },
   {
     "id": "6aa29e67-4b2c-4b0f-a882-1b4e0ad302e6",
@@ -7156,7 +7324,19 @@
     "validityEnd": "2026-11-09T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 250,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8000430139853",
+      "productName": "Santa Lucia Protein",
+      "brands": "Galbani",
+      "novaGroup": 3,
+      "nutriscore": null,
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:36.759Z"
+    }
   },
   {
     "id": "6ae45017-c7c4-4ceb-a6e1-00600ad3027a",
@@ -7264,7 +7444,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 250,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8000070037328",
+      "productName": "Crema e gusto dolce caffè macinato",
+      "brands": "Lavazza",
+      "novaGroup": null,
+      "nutriscore": "B",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:38.039Z"
+    }
   },
   {
     "id": "6ae8c019-7178-4e1b-b2f5-00800ad3016a",
@@ -7291,7 +7483,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 250,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8000430190090",
+      "productName": "Ricotta fresca",
+      "brands": "Vallelata",
+      "novaGroup": null,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:38.364Z"
+    }
   },
   {
     "id": "6ae8c01a-5634-48e7-a568-005c0ad30223",
@@ -7318,7 +7522,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 1500,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8020141660002",
+      "productName": "Acqua",
+      "brands": "Sant'Anna",
+      "novaGroup": 1,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:38.673Z"
+    }
   },
   {
     "id": "6ae8c01b-da8c-4946-a141-005c0ad30264",
@@ -7507,7 +7723,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 400,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8076809504720",
+      "productName": "Pan Bauletto Bianco",
+      "brands": "Mulino Bianco,  Barilla",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:41.140Z"
+    }
   },
   {
     "id": "6ae8c020-f158-425e-8edd-00e20ad302e7",
@@ -7695,7 +7923,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 900,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "7613034057846",
+      "productName": "Bella Napoli 4Mini Pizze Margherita",
+      "brands": "Buitoni",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:43.638Z"
+    }
   },
   {
     "id": "6ae8c024-62c4-45f2-8fc5-00700ad300bf",
@@ -7856,7 +8096,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 800,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8005110630569",
+      "productName": "Mutti Passata",
+      "brands": "Mutti passata",
+      "novaGroup": 3,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:46.100Z"
+    }
   },
   {
     "id": "6ae8c026-1588-4175-90f0-00490ad302aa",
@@ -7910,7 +8162,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 1500,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8020141660002",
+      "productName": "Acqua",
+      "brands": "Sant'Anna",
+      "novaGroup": 1,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:38.673Z"
+    }
   },
   {
     "id": "6ae8c026-da48-4cbd-b0c5-00ca0ad302e0",
@@ -8099,7 +8363,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 1000,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8001860201011",
+      "productName": "RISO SCOTTI - Arborio",
+      "brands": "Riso Scotti",
+      "novaGroup": null,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:48.528Z"
+    }
   },
   {
     "id": "6ae8c029-e418-4f04-8aac-009c0ad301e3",
@@ -8233,7 +8509,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 330,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8008440000026",
+      "productName": "Birra alcolica Raffo",
+      "brands": "Raffo,  Birra Peroni,  Peroni",
+      "novaGroup": 3,
+      "nutriscore": null,
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:49.254Z"
+    }
   },
   {
     "id": "6ae8c02b-4f04-4483-8c7a-00950ad30224",
@@ -8287,7 +8575,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": true,
     "packWeightGrams": 1500,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "57045399",
+      "productName": "Coca-Cola",
+      "brands": "coca cola",
+      "novaGroup": null,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:50.146Z"
+    }
   },
   {
     "id": "6ae8c02c-167c-4f7a-beab-00f00ad301e5",
@@ -8770,7 +9070,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 140,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8010721981221",
+      "productName": "Parmigiano Reggiano",
+      "brands": "Parmigiano reggiano,  Parmareggio",
+      "novaGroup": 3,
+      "nutriscore": "D",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:54.334Z"
+    }
   },
   {
     "id": "6ae8bf96-7e84-43eb-b487-00db0ad30130",
@@ -9067,7 +9379,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 400,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8001590927335",
+      "productName": "Sottilette classiche",
+      "brands": "Sottilette",
+      "novaGroup": 4,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:58.888Z"
+    }
   },
   {
     "id": "6ae8bf9d-51b8-473b-88b5-00710ad301b1",
@@ -9120,7 +9444,19 @@
     "validityStart": "2026-11-02T11:05:02.000Z",
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": false,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8002580007679",
+      "productName": "Latte zymil",
+      "brands": "Zymil,  Parmalat",
+      "novaGroup": null,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:59.193Z"
+    }
   },
   {
     "id": "6ae8bf9d-77c4-4032-9b86-001a0ad30177",
@@ -9147,7 +9483,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 185,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "7622210390592",
+      "productName": "Sottilette Burger con Cheddar",
+      "brands": "Sottilette",
+      "novaGroup": 4,
+      "nutriscore": null,
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:59.511Z"
+    }
   },
   {
     "id": "6ae8bf9d-c75c-452d-b7e1-001f0ad301b4",
@@ -9955,7 +10303,19 @@
     "validityEnd": "2026-11-15T22:59:59.000Z",
     "isHighlight": false,
     "ocrEnriched": true,
-    "quantityLabel": "Confezione: 6 pz"
+    "quantityLabel": "Confezione: 6 pz",
+    "openFoodFacts": {
+      "ean": "8020458000553",
+      "productName": "Acqua naturale",
+      "brands": "San Benedetto",
+      "novaGroup": 1,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:11.478Z"
+    }
   },
   {
     "id": "6ad732f3-fd04-4a83-b796-002e0ad3027b",
@@ -11692,7 +12052,19 @@
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 240,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8001720445814",
+      "productName": "Bauli Croissant",
+      "brands": "Bauli",
+      "novaGroup": 4,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:37.823Z"
+    }
   },
   {
     "id": "6aeb08d9-28ec-40d6-9735-00d10ad3005d",
@@ -12072,7 +12444,19 @@
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 250,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "20531805",
+      "productName": "Mozzarella di Bufala Campana DOP",
+      "brands": "Italiamo, Lidl",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:43.812Z"
+    }
   },
   {
     "id": "6aeb08df-5284-4b65-8f6b-001e0ad30164",
@@ -12233,7 +12617,19 @@
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 125,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "4017100209239",
+      "productName": "Choco Leibniz",
+      "brands": "Bahlsen, Leibniz, Waitrose",
+      "novaGroup": 4,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:45.407Z"
+    }
   },
   {
     "id": "6aeb08e3-ed70-4e53-b638-00150ad302be",
@@ -12260,7 +12656,19 @@
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 225,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8000500407240",
+      "productName": "Pocket coffee",
+      "brands": "Pocket Coffee,  Ferrero",
+      "novaGroup": null,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:45.741Z"
+    }
   },
   {
     "id": "6aeb08e4-89e4-4040-84e6-00a00ad300b0",
@@ -12287,7 +12695,19 @@
     "validityEnd": "2026-11-16T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 260,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8004030104037",
+      "productName": "Tonno filo d olio",
+      "brands": "Rio Mare",
+      "novaGroup": null,
+      "nutriscore": "D",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:46.174Z"
+    }
   },
   {
     "id": "6aeb08e4-d300-470f-acbd-00550ad30035",
@@ -12826,7 +13246,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 400,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8076809504720",
+      "productName": "Pan Bauletto Bianco",
+      "brands": "Mulino Bianco,  Barilla",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:46:42.479Z"
+    }
   },
   {
     "id": "6ae9b5e9-7158-4041-a9b8-00db0ad301d4",
@@ -12934,7 +13366,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 200,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8909342283053",
+      "productName": "Orzoro Orzo & Caffè",
+      "brands": "Nestle Orzoro",
+      "novaGroup": 4,
+      "nutriscore": null,
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:54.870Z"
+    }
   },
   {
     "id": "6ae9b5f0-687c-4961-95d0-00100ad30090",
@@ -13069,7 +13513,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 355,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "9002490205973",
+      "productName": "Red Bull - Energy Drink",
+      "brands": "Red Bull, حلال",
+      "novaGroup": 4,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:56.510Z"
+    }
   },
   {
     "id": "6ae9b5f2-e89c-4676-81fc-009e0ad301a7",
@@ -13096,7 +13552,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 200,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8000050008904",
+      "productName": "Il Mio Dado funghi porcini",
+      "brands": "Star,   Star S.P.A.",
+      "novaGroup": 4,
+      "nutriscore": "E",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:48:56.827Z"
+    }
   },
   {
     "id": "6ae9b5f3-a68c-4c60-a1fe-00670ad30036",
@@ -13527,7 +13995,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": true,
     "packWeightGrams": 500,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "4009700037169",
+      "productName": "Danone ACTIVIA® Dinkel & Walnuss 3,5% 4 x 115g = 460g",
+      "brands": "Danone, ACTIVIA®",
+      "novaGroup": 4,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:49:02.274Z"
+    }
   },
   {
     "id": "6ae9b5fa-f078-4cff-95a1-009f0ad302eb",
@@ -13797,7 +14277,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 250,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8001405068147",
+      "productName": "Fagolosi",
+      "brands": "GrissinBon",
+      "novaGroup": null,
+      "nutriscore": "D",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:49:05.129Z"
+    }
   },
   {
     "id": "6ae9b5fd-d998-4b41-8fc8-008a0ad30220",
@@ -13824,7 +14316,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 100,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8000430138672",
+      "productName": "Santa Lucia Mozzarella Light Tris",
+      "brands": "Galbani",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:49:05.449Z"
+    }
   },
   {
     "id": "6ae9b5fe-e2ec-4394-8bcb-00660ad30055",
@@ -13959,7 +14463,19 @@
     "validityEnd": "2026-11-16T22:59:00.000Z",
     "isHighlight": false,
     "packWeightGrams": 600,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8032793340126",
+      "productName": "Pomì - passata di pomodoro",
+      "brands": "Pomì",
+      "novaGroup": null,
+      "nutriscore": "A",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:49:07.113Z"
+    }
   },
   {
     "id": "6ae88cd0-2fa0-454e-bb54-4a730ad3001e",
@@ -16116,7 +16632,19 @@
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 400,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8076809504720",
+      "productName": "Pan Bauletto Bianco",
+      "brands": "Mulino Bianco,  Barilla",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:41.140Z"
+    }
   },
   {
     "id": "6ae32f7b-c658-40ec-b122-00230ad302a8",
@@ -16385,7 +16913,19 @@
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 1000,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "80508816",
+      "productName": "Olio extra vergine di oliva  Classico",
+      "brands": "Monini, Lesieur",
+      "novaGroup": 2,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:49:14.184Z"
+    }
   },
   {
     "id": "6ae33cd3-9410-4bf8-95ce-00a80ad30248",
@@ -17158,7 +17698,19 @@
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 400,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8076809504720",
+      "productName": "Pan Bauletto Bianco",
+      "brands": "Mulino Bianco,  Barilla",
+      "novaGroup": 3,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": true,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:47:41.140Z"
+    }
   },
   {
     "id": "6ae1c559-de7c-4eb2-9548-00dd0ad30079",
@@ -17320,7 +17872,19 @@
     "validityEnd": "2026-11-11T22:59:59.000Z",
     "isHighlight": false,
     "packWeightGrams": 1000,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "80508816",
+      "productName": "Olio extra vergine di oliva  Classico",
+      "brands": "Monini, Lesieur",
+      "novaGroup": 2,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:49:14.184Z"
+    }
   },
   {
     "id": "6aec94d7-8bb0-49f7-b74a-009c0ad302d1",
@@ -17752,7 +18316,19 @@
     "validityEnd": "2026-11-14T22:59:00.000Z",
     "isHighlight": true,
     "packWeightGrams": 110,
-    "ocrEnriched": true
+    "ocrEnriched": true,
+    "openFoodFacts": {
+      "ean": "8007141502471",
+      "productName": "Arrosto di tacchino",
+      "brands": "Rovagnati",
+      "novaGroup": 4,
+      "nutriscore": "C",
+      "additives": [],
+      "hasMilkAllergen": false,
+      "hasIngredients": false,
+      "ingredientsPreview": null,
+      "verifiedAt": "2026-11-22T22:49:21.969Z"
+    }
   },
   {
     "id": "6aec94dd-5120-4531-8e7d-00240ad302bb",

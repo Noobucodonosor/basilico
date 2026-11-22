@@ -21,6 +21,7 @@
     "eval": "node evals/run_evals.mjs",
     "seed:refresh": "node scripts/refreshSeed.mjs",
     "seed:enrich-ocr": "node scripts/enrichOffersFromImages.mjs",
+    "seed:enrich-off": "node scripts/enrichOffersFromOpenFoodFacts.mjs",
     "board": "node scripts/board.mjs",
     "inbox": "node scripts/board.mjs --inbox",
     "task:start": "node scripts/tokenLedger.mjs start",

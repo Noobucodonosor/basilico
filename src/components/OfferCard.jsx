@@ -228,6 +228,53 @@ export function OfferCard({ offer, onOpenFlyer, onOpenCreaFood, onAddToShoppingL
             <span>• CREA ↗</span>
           </button>
         )}
+        {offer.openFoodFacts && (
+          <div
+            className="mt-1 flex flex-wrap items-center gap-1 text-[10px]"
+            title={
+              [
+                `Open Food Facts · EAN ${offer.openFoodFacts.ean}`,
+                offer.openFoodFacts.ingredientsPreview
+                  ? `Ingredienti: ${offer.openFoodFacts.ingredientsPreview}`
+                  : null
+              ]
+                .filter(Boolean)
+                .join(' — ')
+            }
+          >
+            {offer.openFoodFacts.novaGroup && (
+              <span
+                className={`px-1.5 py-0.5 rounded font-bold border ${
+                  offer.openFoodFacts.novaGroup <= 2
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    : offer.openFoodFacts.novaGroup === 3
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : 'bg-rose-50 text-rose-800 border-rose-200'
+                }`}
+              >
+                NOVA {offer.openFoodFacts.novaGroup}
+              </span>
+            )}
+            {offer.openFoodFacts.nutriscore && (
+              <span className="px-1.5 py-0.5 rounded font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                Nutri {offer.openFoodFacts.nutriscore}
+              </span>
+            )}
+            {Array.isArray(offer.openFoodFacts.additives) && offer.openFoodFacts.additives.length > 0 && (
+              <span
+                className="px-1.5 py-0.5 rounded font-semibold bg-amber-50 text-amber-900 border border-amber-200"
+                title={`Additivi: ${offer.openFoodFacts.additives.join(', ')}`}
+              >
+                {offer.openFoodFacts.additives.length} additiv{offer.openFoodFacts.additives.length === 1 ? 'o' : 'i'} ({offer.openFoodFacts.additives.slice(0, 2).join(', ')})
+              </span>
+            )}
+            {offer.openFoodFacts.hasMilkAllergen && (
+              <span className="px-1.5 py-0.5 rounded font-bold bg-rose-50 text-rose-800 border border-rose-200">
+                ⚠️ Latte in etichetta
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Track 4: Footer (Validity + Quick Add to Shopping List + Flyer Page Action) */}
