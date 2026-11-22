@@ -176,18 +176,33 @@ const CREA_KEYWORD_OVERRIDES = [
 ];
 
 function resolveQuantityLabel(o, domain) {
-  if (o.quantityLabel) return o.quantityLabel;
+  const price = Number(o.promoPrice ?? o.price ?? 0);
+  const origPrice = o.originalPrice != null ? Number(o.originalPrice) : null;
+  const hasFullPrice = Boolean(origPrice && price > 0 && origPrice > price);
+
   if (typeof o.packWeightGrams === 'number' && o.packWeightGrams > 0) {
     const isLiquid = /\/L\b/i.test(String(o.unitPrice || '')) || /\b(latte|acqua|olio|vino|birra|succo|bevanda|detersivo liquido|ammorbidente)\b/i.test(o.title || '');
+    const unitSym = isLiquid ? 'L' : 'kg';
+    if (o.quantityLabel && /^Sfuso a peso:/i.test(o.quantityLabel)) {
+      const fullKg = hasFullPrice ? ` (anziché € ${origPrice.toFixed(2).replace('.', ',')}/kg)` : '';
+      return `${o.quantityLabel}${fullKg}`;
+    }
+    if (o.quantityLabel && /^Al banco:/i.test(o.quantityLabel)) {
+      const fullKg = hasFullPrice ? ` · anziché € ${(origPrice * 10).toFixed(2).replace('.', ',')}/kg` : '';
+      return `${o.quantityLabel}${fullKg}`;
+    }
     const label = o.packWeightGrams >= 1000
       ? `${(o.packWeightGrams / 1000).toFixed(2).replace(/\.00$/, '').replace('.', ',')} ${isLiquid ? 'L' : 'kg'}`
       : `${o.packWeightGrams} ${isLiquid ? 'ml' : 'g'}`;
-    const price = Number(o.promoPrice ?? o.price ?? 0);
-    const unitTag = o.unitPrice
-      ? ` (${o.unitPrice})`
-      : (price > 0 ? ` (€ ${((price / o.packWeightGrams) * 1000).toFixed(2).replace('.', ',')}/${isLiquid ? 'L' : 'kg'})` : '');
-    return `Confezione: ${label}${unitTag}`;
+    const promoPerUnit = price > 0 ? (price / o.packWeightGrams) * 1000 : null;
+    const origPerUnit = hasFullPrice ? (origPrice / o.packWeightGrams) * 1000 : null;
+    const promoTag = o.unitPrice || (promoPerUnit ? `€ ${promoPerUnit.toFixed(2).replace('.', ',')}/${unitSym}` : '');
+    const origTag = origPerUnit ? ` (anziché € ${origPerUnit.toFixed(2).replace('.', ',')}/${unitSym})` : '';
+    return promoTag ? `${label} · ${promoTag}${origTag}` : `Confezione: ${label}`;
   }
+
+  if (o.quantityLabel) return o.quantityLabel;
+
   const text = `${o.title || ''} ${o.description || ''}`;
   const packMatch = text.match(/\b(\d+\s*x\s*\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|lt|l)|\d+(?:[.,]\d+)?\s*(?:kg|g|ml|cl|lt|l|pz|pezzi|uova|rotoli|lavaggi))\b/i);
   if (packMatch) {
@@ -195,14 +210,16 @@ function resolveQuantityLabel(o, domain) {
   }
   const unitStr = String(o.unitPrice || o.formattedNormalizedPrice || '');
   const unitMatch = unitStr.match(/(\d+(?:[.,]\d+)?)\s*€?\s*\/\s*(kg|l)\b/i) || unitStr.match(/€\s*(\d+(?:[.,]\d+)?)\s*\/\s*(kg|l)\b/i);
-  const price = Number(o.promoPrice ?? o.price ?? 0);
   if (unitMatch && price > 0) {
     const perUnit = Number(unitMatch[1].replace(',', '.'));
+    const unitSym = unitMatch[2].toLowerCase() === 'l' ? 'L' : 'kg';
     if (perUnit > 0) {
       const gramsOrMl = Math.round((price / perUnit) * 1000);
-      return unitMatch[2].toLowerCase() === 'l'
-        ? `~${gramsOrMl >= 1000 ? `${(gramsOrMl / 1000).toFixed(2)} L` : `${gramsOrMl} ml`} (da €/L)`
-        : `~${gramsOrMl >= 1000 ? `${(gramsOrMl / 1000).toFixed(2)} kg` : `${gramsOrMl} g`} (da €/kg)`;
+      const origPerUnit = hasFullPrice ? perUnit * (origPrice / price) : null;
+      const origTag = origPerUnit ? ` (anziché € ${origPerUnit.toFixed(2).replace('.', ',')}/${unitSym})` : '';
+      return unitSym === 'L'
+        ? `~${gramsOrMl >= 1000 ? `${(gramsOrMl / 1000).toFixed(2)} L` : `${gramsOrMl} ml`} · € ${perUnit.toFixed(2).replace('.', ',')}/L${origTag}`
+        : `~${gramsOrMl >= 1000 ? `${(gramsOrMl / 1000).toFixed(2)} kg` : `${gramsOrMl} g`} · € ${perUnit.toFixed(2).replace('.', ',')}/kg${origTag}`;
     }
   }
   if (domain === 'kitchen_cookware' || domain === 'bazar_seasonal') {

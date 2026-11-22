@@ -1,4 +1,4 @@
-const STATIC_CACHE = 'basilico-static-v5';
+const STATIC_CACHE = 'basilico-static-v6';
 const API_CACHE = 'basilico-api-v2';
 const DATA_CACHE = 'cibo-data-v3';
 const MAX_API_ENTRIES = 50;
