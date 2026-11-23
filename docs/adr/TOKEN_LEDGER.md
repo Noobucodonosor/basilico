@@ -33,3 +33,4 @@ Questo file traccia in modo trasparente e riproducibile i **token reali consumat
 | [#76](https://github.com/Noobucodonosor/basilico/issues/76) | `TASK-SEC-04` | `budget:S` | 2 | 5525 | 72.629 | 783 | 3.7% | 0 | `c0cc109` | 2026-11-21 |
 | [#78](https://github.com/Noobucodonosor/basilico/issues/78) | `TASK-SEC-05` | `budget:M` | 19 | 88.192 | 4.763.122 | 45.575 | 22% | 0 | `9fb396b` | 2026-11-21 |
 | [#80](https://github.com/Noobucodonosor/basilico/issues/80) | `TASK-GOV-02` | `budget:S` | 11 | 528.351 | 4.705.044 | 12.765 | 352.2% | 0 | `12e3761` | 2026-11-21 |
+| [#82](https://github.com/Noobucodonosor/basilico/issues/82) | `TASK-OFFLINE-01` | `budget:S` | 34 | 107.677 | 5.109.821 | 21.553 | 71.8% | 0 | `6b07908` | 2026-11-22 |

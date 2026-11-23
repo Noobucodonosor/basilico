@@ -41,14 +41,14 @@ jobs:
         env:
           NODE_PATH: /tmp/pw-runner/node_modules
           PORT: '8765'
-          PREVIEW_TARGET_URL: http://127.0.0.1:8765
+          PREVIEW_TARGET_URL: http://127.0.0.1:8765/?room=room-1-negozi
           PREVIEW_OUT_DIR: docs/preview
-          PREVIEW_BADGE: "LIVE DEMO · CLOUD RUN"
+          PREVIEW_BADGE: "VISTA OFFERTE · CLOUD RUN"
           PREVIEW_TITLE: "Basilico — Rapallo"
-          PREVIEW_DESC: "Offerte e volantini dei supermercati di Rapallo in tempo reale con cache JSON atomica, resilienza offline e sfogliatore mobile-first."
-          PREVIEW_TAGS: "React 19,Vite,Node.js,Express,Docker"
+          PREVIEW_DESC: "Offerte e volantini dei supermercati di Rapallo in tempo reale con confronto €/kg, filtri per insegna e sfogliatore mobile-first."
+          PREVIEW_TAGS: "Vista Offerte,React 19,Vite,PWA Offline-First,Cloud Run"
           PREVIEW_REPO: "github.com/Noobucodonosor/basilico"
-          PREVIEW_LIVE_URL: "https://basilico-txfxsxuuma-ew.a.run.app"
+          PREVIEW_LIVE_URL: "https://basilico-txfxsxuuma-ew.a.run.app/?room=room-1-negozi"
           PREVIEW_THEME: "green"
         run: |
           node server.js >/tmp/basilico.log 2>&1 &

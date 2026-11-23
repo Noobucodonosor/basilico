@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import StoreSwitcher from '../StoreSwitcher.jsx';
 import SearchBar from '../SearchBar.jsx';
 import CategoryFilters from '../CategoryFilters.jsx';
@@ -22,6 +22,8 @@ export function RapalloMarketView({
   activeProfile,
   hideIncompatible,
   onChangeHideIncompatible,
+  excludeMemberOnly = false,
+  onChangeExcludeMemberOnly,
   selectedDomain,
   onSelectDomain,
   facets,
@@ -37,6 +39,8 @@ export function RapalloMarketView({
   visibleCategoriesForDomain,
   selectedCategory,
   onToggleCategory,
+  excludedCategories = [],
+  onToggleExcludeCategory,
   activeFilterCount,
   onClearFilters,
   loading,
@@ -51,6 +55,28 @@ export function RapalloMarketView({
   counterObservations,
   onOpenCounterModal
 }) {
+  const [listsState, setListsState] = useState({ activeListId: 'list-default', lists: [] });
+
+  useEffect(() => {
+    fetch('/api/shopping-list')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data.lists)) {
+          setListsState({ activeListId: data.activeListId, lists: data.lists });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const visibleOffers = offers;
+
+  const handleClearAllFilters = () => {
+    onClearFilters?.();
+  };
+
+  const handleAddWithTargetList = (payload) =>
+    onAddToShoppingList?.({ ...payload, listId: listsState.activeListId });
+
   return (
     <>
       <StoreSwitcher
@@ -59,7 +85,7 @@ export function RapalloMarketView({
         onSelectStore={onSelectStore}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4">
         {activeProfile && (
           <section className="bg-white border border-[#E5E2DA] text-[#141A17] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-start sm:items-center gap-2.5">
@@ -81,7 +107,18 @@ export function RapalloMarketView({
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <div className="flex flex-wrap items-center gap-3 self-end sm:self-center shrink-0">
+              {onChangeExcludeMemberOnly && (
+                <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={excludeMemberOnly}
+                    onChange={(e) => onChangeExcludeMemberOnly(e.target.checked)}
+                    className="rounded border-[#DFDCD2] accent-[#1B5E3A] focus:ring-[#1B5E3A]"
+                  />
+                  <span>Escludi solo soci</span>
+                </label>
+              )}
               <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] cursor-pointer">
                 <input
                   type="checkbox"
@@ -97,13 +134,15 @@ export function RapalloMarketView({
 
         <section className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" aria-label="Domini merceologici">
           {DOMAIN_PILLS.map((dom) => {
-            const isSelected = selectedDomain === dom.id;
+            const activeDomains = selectedDomain ? String(selectedDomain).split(',').filter(Boolean) : [];
+            const isSelected = dom.id === null ? activeDomains.length === 0 : activeDomains.includes(dom.id);
             const count = dom.id ? facets?.domains?.[dom.id] : totalOffers;
             return (
               <button
                 key={dom.id || 'all'}
                 type="button"
-                onClick={() => onSelectDomain(isSelected ? null : dom.id)}
+                aria-pressed={isSelected}
+                onClick={() => onSelectDomain(dom.id)}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border taste-btn whitespace-nowrap cursor-pointer ${
                   isSelected
                     ? 'bg-[#141A17] text-white border-[#141A17] shadow-xs'
@@ -113,7 +152,7 @@ export function RapalloMarketView({
                 <span aria-hidden="true">{dom.icon}</span>
                 <span>{dom.label}</span>
                 {count !== undefined && (
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-[#2B332E] text-white' : 'bg-[#F3F1EC] text-[#575E58]'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${isSelected ? 'bg-[#2B332E] text-white' : 'bg-[#F3F1EC] text-[#575E58]'}`}>
                     {count}
                   </span>
                 )}
@@ -186,10 +225,8 @@ export function RapalloMarketView({
           </section>
         )}
 
-        <section className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-3 ${
-          isMobileSearchOpen ? 'flex' : 'hidden sm:flex'
-        }`}>
-          <div className="flex-1">
+        <section className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="flex-1 min-w-0">
             <SearchBar
               value={searchQuery}
               onChange={onChangeSearchQuery}
@@ -199,7 +236,18 @@ export function RapalloMarketView({
             />
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {!activeProfile && onChangeExcludeMemberOnly && (
+              <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#141A17] bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-2 cursor-pointer shadow-xs">
+                <input
+                  type="checkbox"
+                  checked={excludeMemberOnly}
+                  onChange={(e) => onChangeExcludeMemberOnly(e.target.checked)}
+                  className="rounded border-[#DFDCD2] accent-[#1B5E3A] focus:ring-[#1B5E3A]"
+                />
+                <span>Escludi solo soci</span>
+              </label>
+            )}
             <label htmlFor="sort-select" className="text-xs font-semibold text-[#575E58] whitespace-nowrap">
               Ordina:
             </label>
@@ -207,7 +255,7 @@ export function RapalloMarketView({
               id="sort-select"
               value={sortBy}
               onChange={(e) => onChangeSortBy(e.target.value)}
-              className="text-xs font-medium bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-2 text-[#141A17] focus:outline-none focus:ring-2 focus:ring-[#1B5E3A] cursor-pointer shadow-xs"
+              className="flex-1 sm:flex-none text-xs font-medium bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-2 text-[#141A17] focus:outline-none focus:ring-2 focus:ring-[#1B5E3A] cursor-pointer shadow-xs"
             >
               <option value="discountDesc">Sconto più alto (% decrescente)</option>
               <option value="pricePerKgAsc">Prezzo €/kg edibile più basso</option>
@@ -223,22 +271,72 @@ export function RapalloMarketView({
               categories={visibleCategoriesForDomain}
               selectedCategory={selectedCategory}
               onToggleCategory={onToggleCategory}
+              excludedCategories={excludedCategories}
+              onToggleExcludeCategory={onToggleExcludeCategory}
               categoryCounts={facets?.categories || {}}
               activeFilterCount={activeFilterCount}
-              onClearFilters={onClearFilters}
+              onClearFilters={handleClearAllFilters}
             />
           </section>
         ) : activeFilterCount > 0 ? (
           <section className="flex items-center justify-end">
             <button
               type="button"
-              onClick={onClearFilters}
+              onClick={handleClearAllFilters}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-colors cursor-pointer"
             >
               ✕ Azzera filtri ({activeFilterCount})
             </button>
           </section>
         ) : null}
+
+        {listsState.lists.length > 0 && (
+          <section className="flex flex-wrap items-center justify-between gap-2 bg-[#F3F1EC] border border-[#E5E2DA] rounded-xl px-3.5 py-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-[#141A17]">Spesa attiva:</span>
+              <select
+                aria-label="Scegli lista della spesa attiva"
+                value={listsState.activeListId}
+                onChange={async (e) => {
+                  const res = await fetch('/api/shopping-list/lists/active', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ listId: e.target.value })
+                  });
+                  if (res.ok) {
+                    const data = await res.json();
+                    setListsState({ activeListId: data.activeListId, lists: data.lists || [] });
+                  }
+                }}
+                className="bg-white border border-[#DFDCD2] rounded-lg px-2.5 py-1 text-xs font-medium text-[#141A17] cursor-pointer"
+              >
+                {listsState.lists.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name} ({(l.items || []).length})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                const name = `Spesa ${listsState.lists.length + 1}`;
+                const res = await fetch('/api/shopping-list/lists', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ name })
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  setListsState({ activeListId: data.activeListId, lists: data.lists || [] });
+                }
+              }}
+              className="px-2.5 py-1 rounded-lg bg-white border border-[#DFDCD2] hover:bg-[#FAF9F6] font-medium text-[#1B5E3A] cursor-pointer"
+            >
+              + Nuova spesa
+            </button>
+          </section>
+        )}
 
         <section aria-label="Offerte promozionali">
           {loading ? (
@@ -252,28 +350,28 @@ export function RapalloMarketView({
                 </div>
               ))}
             </div>
-          ) : offers.length === 0 ? (
+          ) : visibleOffers.length === 0 ? (
             <EmptyState
               searchQuery={searchQuery}
               selectedCategory={selectedCategory}
               selectedDomain={selectedDomain}
               selectedStoreName={activeStore ? activeStore.name : null}
               hideIncompatible={hideIncompatible}
-              onClearFilters={onClearFilters}
+              onClearFilters={handleClearAllFilters}
               onApplyQuery={onChangeSearchQuery}
             />
           ) : (
             <OfferGrid
-              offers={offers}
+              offers={visibleOffers}
               totalOffers={totalOffers}
               hasMoreOffers={hasMoreOffers}
               loadingMore={loadingMore}
               onLoadMore={onLoadMore}
               loading={loading}
-              onAddToShoppingList={onAddToShoppingList}
+              onAddToShoppingList={handleAddWithTargetList}
               onOpenCreaFood={onOpenCreaFood}
               onOpenFlyer={onOpenOfferFlyer}
-              onResetFilters={onClearFilters}
+              onResetFilters={handleClearAllFilters}
             />
           )}
         </section>

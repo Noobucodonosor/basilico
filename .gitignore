@@ -9,3 +9,5 @@ data/cache/
 .agents/
 test_render.jsx
 .taste-skill/
+public/data/
+dist/data/

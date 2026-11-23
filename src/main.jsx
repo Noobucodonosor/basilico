@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
+import { installStaticFetchInterceptor } from './services/apiClient.js';
+
+installStaticFetchInterceptor();
 
 window.addEventListener('error', (event) => {
   console.error('[Global Error Caught]:', event.error);
@@ -30,9 +33,22 @@ if (
   'serviceWorker' in navigator
 ) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      // Non-blocking fallback when SW registration is unavailable
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
     });
+    const registerPromise =
+      import.meta.env.VITE_STATIC_MODE === 'true'
+        ? navigator.serviceWorker.register(`${import.meta.env.BASE_URL || './'}sw.js`)
+        : navigator.serviceWorker.register('/sw.js');
+    registerPromise
+      .then((reg) => reg?.update?.())
+      .catch(() => {
+        // Non-blocking fallback when SW registration is unavailable
+      });
   });
 }
 

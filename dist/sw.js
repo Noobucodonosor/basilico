@@ -1,8 +1,9 @@
-const STATIC_CACHE = 'basilico-static-v2';
+const STATIC_CACHE = 'basilico-static-v9';
 const API_CACHE = 'basilico-api-v2';
+const DATA_CACHE = 'cibo-data-v4';
 const MAX_API_ENTRIES = 50;
 const MAX_STATIC_ENTRIES = 80;
-const PRECACHE_URLS = ['/', '/manifest.webmanifest', '/icon.svg'];
+const PRECACHE_URLS = ['./', './manifest.webmanifest', './icon.svg'];
 
 const BYPASS_API_PREFIXES = ['/api/maestro', '/api/agentation', '/api/sync'];
 const OFFLINE_API_PREFIXES = [
@@ -39,7 +40,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  const validCaches = new Set([STATIC_CACHE, API_CACHE]);
+  const validCaches = new Set([STATIC_CACHE, API_CACHE, DATA_CACHE]);
   event.waitUntil(
     caches
       .keys()
@@ -95,6 +96,17 @@ async function staleWhileRevalidate(request, cacheName) {
   return Response.error();
 }
 
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response && response.ok && response.type === 'basic') {
+    cache.put(request, response.clone()).catch(() => undefined);
+  }
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
@@ -103,20 +115,25 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (matchesPrefix(url.pathname, BYPASS_API_PREFIXES)) return;
 
+  if (url.pathname.includes('/data/') && url.pathname.endsWith('.json')) {
+    event.respondWith(networkFirst(request, DATA_CACHE));
+    return;
+  }
+
   if (matchesPrefix(url.pathname, OFFLINE_API_PREFIXES)) {
     event.respondWith(networkFirst(request, API_CACHE));
     return;
   }
 
   if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request, STATIC_CACHE, '/'));
+    event.respondWith(networkFirst(request, STATIC_CACHE, './'));
     return;
   }
 
   const isStaticAsset =
-    url.pathname.startsWith('/assets/') ||
-    url.pathname === '/manifest.webmanifest' ||
-    url.pathname === '/icon.svg' ||
+    url.pathname.includes('/assets/') ||
+    url.pathname.endsWith('/manifest.webmanifest') ||
+    url.pathname.endsWith('/icon.svg') ||
     ['script', 'style', 'image', 'font', 'manifest'].includes(request.destination);
 
   if (isStaticAsset) {
