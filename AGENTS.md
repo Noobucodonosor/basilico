@@ -7,10 +7,11 @@
 
 ## 1. Panoramica del Progetto
 
-- **Nome Progetto:** `Basilico` — Sistema Domestico, Nutrizionale (CREA), Gastronomico e Catalogo Offerte di Rapallo (GE)
-- **Repository:** `Noobucodonosor/basilico`
+- **Nome Progetto:** `C.I.B.O.` (ex `Basilico`) — Sistema Domestico, Nutrizionale (CREA), Gastronomico, Lista della Spesa e Catalogo Offerte
+- **Repository Incubatore (`team104`):** `team104/cibo` *(origine storica: `Noobucodonosor/basilico`)*
+- **Vetrina Noobucodonosor — Modulo Prioritario:** `?room=room-6-pianificatore` (**Pianificatore & Lista Spesa**) è il punto d'ingresso principale esposto dalla vetrina.
 - **Descrizione Sintetica:** Web application responsive (mobile-first 390px e desktop 1280px) evoluta in **Sistema Operativo Fisico-Economico della Casa ("Le 5 Anime" — [ADR-0001..0020](./docs/adr/README.md))**, strutturata sulla **Shell Consumer Editoriale (`ADR-0019`: `Oggi | Offerte | Ricette | Lista + Altro`)** con **Home `Oggi` (`CycleOverviewView` + `DishDetailDrawer`)**, **Chat conversazionale Ibrida Grounded (`MaestroDrawer`)** e tutte le **7 Stanze dell'Atlante** accessibili in primo piano o dal menu `Altro`:
-  0. **Oggi & Basilico Maestro** (Home editoriale "Cosa cucini stasera?" con le 3 proposte reali a confronto ristorante + Chat Maestro ibrida read-only sullo *Household Context Graph* e motore deterministico offline);
+  0. **Oggi & C.I.B.O. Maestro** (Home editoriale "Cosa cucini stasera?" con le 3 proposte reali a confronto ristorante + Chat Maestro ibrida read-only sullo *Household Context Graph* e motore deterministico offline);
   1. **Negozi & Offerte Rapallo** (14+ insegne e botteghe reali di Rapallo, 5 Domini Chiusi, prezzi `€/kg` sgocciolato, storico *"È un vero sconto?"*, Lente Qualità);
   2. **Scienza & CREA** (832 alimenti ufficiali × 26.622 valori in 7 sezioni complete, fisiologia del pasto cotto su 24+ nutrienti con ritenzione USDA, biodisponibilità Calcio/Ferro, RS3 e classifica live *Nutrienti per Euro Edibili*);
   3. **Ricette, Ristoranti & Fornelli** (Scuola base single, ristoranti verificati dell'intera Provincia di Genova + stellati, BOM, Arbitraggio live, analisi 80/20, Accademia delle 12 Competenze, *SOS Fornelli* e Quaderno Lab 1-Tap);
@@ -51,8 +52,12 @@
 
 ---
 
-## 3. Metodologia di Lavoro (ADR + Living Specs + Evals + Governance Token su GitHub)
+## 3. Metodologia di Lavoro (`team104` Incubatore + ADR + Living Specs + Evals)
 
+0. **Regole Incubatore `team104` (3 soci):**
+   - **Worktree & Branch:** usa branch dedicati (`feat/...`, `fix/...`) e **New Worktree Mode** quando lavori con più agenti in parallelo per non sporcare la working directory.
+   - **Sicurezza locale:** usa il preset `Default` o `Auto` in `.antigravity/settings.json` (**vietato `Turbo`**); mai committare `.env` o chiavi.
+   - **Pull Request & Review:** apri sempre una **Draft PR** con l'esito di `npm run build`, `npm run eval` e `npm test` (e screenshot/Artifact per modifiche UI su `?room=room-6-pianificatore`), poi richiedi review via `.github/CODEOWNERS` prima del merge su `main`.
 1. **Regola "1 Issue GitHub = 1 Agente Singolo + Contabilità Token" ([ADR-0016](./docs/adr/0016-causal-cycle-ontology-and-github-token-governance.md) §2.2):**
    - **NON usare `/swarm` né sub-agenti multipli** salvo richiesta esplicita del Regista. Lavora sempre **su una sola GitHub Issue alla volta**, dopo approvazione esplicita del piano.
    - Avvia sempre il contatore prima di iniziare (`npm run task:start -- <issue> --tier S|M|L --task TASK-...`) e chiudi a fine commit (`npm run task:close -- <issue> --commit <sha> --summary "..."`), pubblicando i token reali consumati sulla Issue e in [`docs/adr/TOKEN_LEDGER.md`](./docs/adr/TOKEN_LEDGER.md).

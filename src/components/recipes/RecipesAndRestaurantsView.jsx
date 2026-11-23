@@ -787,7 +787,7 @@ export function RecipesAndRestaurantsView({
               🧪 De-costruisci un Nuovo Piatto o Menu di Ristorante
             </h2>
             <p className="text-xs text-slate-600">
-              Inserisci il nome del piatto letto sulla lavagna o sul menu di un ristorante ligure: Basilico ne genera la Distinta Base (BOM) collegata a CREA e calcola l&apos;arbitraggio rispetto ai negozi di Rapallo.
+              Inserisci il nome del piatto letto sulla lavagna o sul menu di un ristorante ligure: C.I.B.O. ne genera la Distinta Base (BOM) collegata a CREA e calcola l&apos;arbitraggio rispetto ai negozi di Rapallo.
             </p>
           </div>
 

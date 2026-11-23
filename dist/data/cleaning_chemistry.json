@@ -1,0 +1,67 @@
+[
+  {
+    "id": "cln-spugna-cellulosa",
+    "key": "spugna_delicata",
+    "name": "Spugne Delicate Antigraffio in Cellulosa Vegetale 2 pz",
+    "brand": "Scotch-Brite / Tigotà",
+    "chemicalClass": "mechanical_non_abrasive",
+    "phRange": "7.0 (Neutro)",
+    "soilTargets": ["grassi_freschi", "residui_amidacei", "proteine_delicate"],
+    "safeMaterials": ["alluminio_rivestito_ptfe", "acciaio_inox_18_10", "ghisa_stagionata", "acciaio_inossidabile_martensitico", "rame_stagnato_gres", "rame_puro", "vetroceramica_induzione"],
+    "forbiddenMaterials": [],
+    "rapalloStores": ["rapallo-tigota-lamarmora", "rapallo-piume-neri"],
+    "referencePriceEuro": 1.99
+  },
+  {
+    "id": "cln-detersivo-piatti-neutro",
+    "key": "detersivo_piatti",
+    "name": "Detersivo Piatti Concentrato Tensioattivi Anionici/Anfoteri 500 ml",
+    "brand": "Svelto / Nelsen / Tigotà",
+    "chemicalClass": "neutral_surfactant",
+    "phRange": "6.5 - 7.5 (Neutro)",
+    "soilTargets": ["grassi_freschi", "emulsioni_oleose", "odori_pesce"],
+    "safeMaterials": ["alluminio_rivestito_ptfe", "acciaio_inox_18_10", "acciaio_inossidabile_martensitico", "rame_stagnato_gres", "rame_puro", "vetroceramica_induzione"],
+    "forbiddenMaterials": ["marmo_naturale"],
+    "rapalloStores": ["rapallo-tigota-lamarmora", "rapallo-piume-neri", "rapallo-basko-colombo"],
+    "referencePriceEuro": 1.29
+  },
+  {
+    "id": "cln-acido-citrico",
+    "key": "anticalcare_citrico",
+    "name": "Anticalcare Spray / Soluzione Acido Citrico Alimentare",
+    "brand": "Quandoè / Chanteclair / Winni's",
+    "chemicalClass": "weak_organic_acid",
+    "phRange": "2.2 - 3.0 (Acido debole chelante)",
+    "soilTargets": ["aloni_calcare", "opacita_minerale_inox", "odori_pesce_amminici"],
+    "safeMaterials": ["acciaio_inox_18_10", "vetroceramica_induzione"],
+    "forbiddenMaterials": ["marmo_naturale", "ghisa_stagionata", "alluminio_nudo", "rame_puro", "rame_stagnato_gres"],
+    "rapalloStores": ["rapallo-tigota-lamarmora", "rapallo-piume-neri"],
+    "referencePriceEuro": 1.89
+  },
+  {
+    "id": "cln-sgrassatore-alcalino",
+    "key": "sgrassatore_alcalino",
+    "name": "Sgrassatore Universale Alcalino Marsiglia Spray 750 ml",
+    "brand": "Chanteclair / Quandoè",
+    "chemicalClass": "alkaline_degreaser",
+    "phRange": "10.5 - 11.5 (Alcalino saponificante)",
+    "soilTargets": ["grassi_polimerizzati", "schizzi_cottura_fornello", "fondo_esterno_inox"],
+    "safeMaterials": ["acciaio_inox_18_10", "vetroceramica_induzione"],
+    "forbiddenMaterials": ["ghisa_stagionata", "alluminio_nudo", "marmo_naturale", "rame_puro", "rame_stagnato_gres"],
+    "rapalloStores": ["rapallo-tigota-lamarmora", "rapallo-piume-neri"],
+    "referencePriceEuro": 1.99
+  },
+  {
+    "id": "cln-panno-microfibra",
+    "key": "panno_microfibra",
+    "name": "Panni in Microfibra Alta Densità (Poliestere/Poliammide) 4 pz",
+    "brand": "Vileda / Tigotà",
+    "chemicalClass": "capillary_drying",
+    "phRange": "7.0 (Fisico capillare)",
+    "soilTargets": ["asciugatura_senza_aloni", "lucidatura_inox_e_lame", "vetroceramica"],
+    "safeMaterials": ["alluminio_rivestito_ptfe", "acciaio_inox_18_10", "acciaio_inossidabile_martensitico", "vetroceramica_induzione", "marmo_naturale", "rame_stagnato_gres", "rame_puro"],
+    "forbiddenMaterials": [],
+    "rapalloStores": ["rapallo-tigota-lamarmora", "rapallo-piume-neri"],
+    "referencePriceEuro": 2.99
+  }
+]

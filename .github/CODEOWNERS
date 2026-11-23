@@ -1,0 +1,9 @@
+# CODEOWNERS — Incubatore team104 (3 soci)
+# Sostituisci @team104/core con gli handle GitHub dei 3 soci (o crea il team @team104/core su GitHub).
+# Su GitHub Team, attiva "Require a pull request before merging" + "Require review from Code Owners" su `main`.
+
+*                       @team104/core
+/AGENTS.md              @team104/core
+/specs/                 @team104/core
+/.antigravity/          @team104/core
+/.github/               @team104/core

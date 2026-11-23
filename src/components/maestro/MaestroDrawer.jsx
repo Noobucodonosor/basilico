@@ -206,7 +206,7 @@ export function MaestroDrawer({
       className="fixed inset-0 z-50 flex justify-end bg-[#141A17]/50 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
-      aria-label="Chat con Basilico Maestro"
+      aria-label="Chat con C.I.B.O. Maestro"
       data-testid="maestro-drawer"
     >
       <div className="fixed inset-0" onClick={() => onClose?.()} aria-hidden="true" />
@@ -221,7 +221,7 @@ export function MaestroDrawer({
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-extrabold">🌿 Basilico Maestro</h2>
+                <h2 className="text-base font-extrabold">🌿 C.I.B.O. Maestro</h2>
                 <span
                   className={`text-[10px] font-bold tracking-wide px-2.5 py-0.5 rounded-full border ${
                     isLiveLlm

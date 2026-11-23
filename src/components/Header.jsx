@@ -133,11 +133,11 @@ export function Header({
             type="button"
             onClick={() => onGoHome?.()}
             className="inline-flex items-center gap-2.5 text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B5E3A] rounded-lg py-1"
-            aria-label="Basilico — Torna alla Home Oggi"
+            aria-label="C.I.B.O. — Torna alla Home Oggi"
           >
             <LeafMark />
             <span className="font-editorial text-[22px] sm:text-2xl font-medium tracking-tight text-[#141A17]">
-              Basilico
+              C.I.B.O.
             </span>
           </button>
 
@@ -187,7 +187,7 @@ export function Header({
                 onClick={() => onOpenMaestro('')}
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium text-[#141A17] bg-white hover:bg-[#F3F1EC] border border-[#DFDCD2] taste-btn cursor-pointer"
                 title="Chiedi consiglio su cucina, dispensa o spesa"
-                aria-label="Chiedi a Basilico"
+                aria-label="Chiedi a C.I.B.O."
                 data-testid="header-open-maestro"
               >
                 <svg

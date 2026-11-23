@@ -116,7 +116,7 @@ export function SyncStatusModal({ isOpen, progress, onClose }) {
               ? 'Stiamo interrogando uno per uno i 14 punti vendita reali di Rapallo per scaricare i volantini attivi e i singoli prodotti in offerta, filtrando fuori le province non pertinenti.'
               : 'Stiamo verificando la disponibilità online e lo stato della cache dei volantini di Rapallo.'
           ) : (
-            'Tutti i dati sono stati verificati e salvati nella memoria locale di Basilico. Puoi chiudere questa finestra e consultare le offerte.'
+            'Tutti i dati sono stati verificati e salvati nella memoria locale di C.I.B.O. Puoi chiudere questa finestra e consultare le offerte.'
           )}
         </p>
 

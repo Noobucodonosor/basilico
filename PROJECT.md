@@ -1,7 +1,7 @@
-# Project: Basilico — Rapallo Supermarket Promotional Offers
+# Project: C.I.B.O. (ex Basilico) — Cucina, Lista della Spesa e Offerte Reali
 
 ## Architecture
-Basilico is a responsive web application delivering real-time and offline-resilient access to promotional flyers and offers from all major supermarkets in Rapallo (GE), Italy.
+C.I.B.O. (formerly Basilico) is a responsive web application delivering real-time and offline-resilient access to promotional flyers, meal planning, shopping list optimization, and household operations in Rapallo (GE), Italy.
 
 ### System Overview & Data Flow
 1. **Data Ingestion & Storage Layer** (`server/services/ingestion/` & `server/services/cache/`):

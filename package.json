@@ -1,7 +1,7 @@
 {
-  "name": "basilico",
+  "name": "cibo",
   "version": "1.0.0",
-  "description": "Basilico - Rapallo Supermarket Promotional Offers and Flyers",
+  "description": "C.I.B.O. - Cucina, Lista della Spesa e Offerte Reali (ex Basilico)",
   "type": "module",
   "engines": {
     "node": ">=22.5.0"

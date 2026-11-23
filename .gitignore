@@ -6,6 +6,6 @@ __pycache__/
 .DS_Store
 node_modules/
 data/cache/
-.agents/
+.agents/teamwork/
 test_render.jsx
 .taste-skill/

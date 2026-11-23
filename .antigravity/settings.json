@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "preset": "auto",
+    "sandbox": {
+      "enabled": true,
+      "blockSensitivePaths": [
+        "**/.env",
+        "**/.env.*",
+        "~/.ssh/**"
+      ]
+    },
+    "deny": [
+      "command(rm -rf *)",
+      "command(git push --force *)",
+      "command(git reset --hard *)"
+    ]
+  },
+  "worktree": {
+    "preferIsolatedForParallel": true
+  },
+  "mcpServers": {}
+}

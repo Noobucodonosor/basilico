@@ -910,7 +910,7 @@ export function App() {
         (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
           <React.Suspense fallback={null}>
             <DevAgentation
-              appName={`Basilico (${activeRoom})`}
+              appName={`C.I.B.O. (${activeRoom})`}
             onAnnotationAdd={(annotation) => {
               fetch('/api/agentation', {
                 method: 'POST',
@@ -967,7 +967,7 @@ export function App() {
       <footer className="border-t border-[#E5E2DA] bg-[#FAF9F6] py-8 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#575E58]">
           <p className="font-medium text-[#141A17]">
-            Basilico · Cucina di casa e offerte reali di Rapallo
+            C.I.B.O. · Cucina di casa, lista della spesa e offerte reali di Rapallo
           </p>
           <p>
             Fotografie via Wikimedia Commons (CC0): Brooke Cagle, Markus Spiske, Leonie Wise
