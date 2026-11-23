@@ -79,7 +79,7 @@ const BADGE_TONE_CLASSES = {
 };
 
 export function NutritionCoachPanel({
-  activeProfileId = 'dany',
+  activeProfileId = 'casa',
   onNavigateRoom,
   onOpenMaestro
 }) {

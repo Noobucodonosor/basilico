@@ -208,7 +208,7 @@ describe('ADR-0015 / TASK-V2-03: Cooked Meal Physiology, Bioavailability & Adapt
   it('6. Adaptive Coaching ("eat_out" & "emergency_5min"): non-punitive rebalancing, T_open perishable rescue, and Zero-Cheese safety', () => {
     const mockPlan = {
       planId: 'plan-test',
-      profileId: 'dany',
+      profileId: 'casa',
       days: [
         {
           dayIndex: 1,
@@ -251,7 +251,7 @@ describe('ADR-0015 / TASK-V2-03: Cooked Meal Physiology, Bioavailability & Adapt
         nutritionPerServing: { energyKcal: 1180 }
       },
       pantryItems,
-      profileId: 'dany',
+      profileId: 'casa',
       currentDayIndex: 1,
       currentSlot: 'dinner'
     });
@@ -263,11 +263,11 @@ describe('ADR-0015 / TASK-V2-03: Cooked Meal Physiology, Bioavailability & Adapt
     assert.equal(eatOutRes.shiftedDishInfo.movedToDayIndex, 2);
     assert.equal(eatOutRes.shiftedDishInfo.movedToSlot, 'dinner', 'Hot fish dish must NOT be placed on boat_day cold lunch');
 
-    // 2. "Emergenza 5 minuti / Sono stanco" for profile 'dany' (Zero Formaggi): zero-cook, <=5 min, zero cheese!
+    // 2. "Emergenza 5 minuti / Sono stanco" for profile 'casa' (Zero Formaggi): zero-cook, <=5 min, zero cheese!
     const emergencyRes = adaptCoachingPlan({
       eventType: 'emergency_5min',
       pantryItems,
-      profileId: 'dany'
+      profileId: 'casa'
     });
 
     assert.equal(emergencyRes.eventType, 'emergency_5min');
@@ -305,7 +305,7 @@ describe('ADR-0015 / TASK-V2-03: Cooked Meal Physiology, Bioavailability & Adapt
 
     const audit = await auditReceiptsNutritionalCoverage(receipts, {
       windowDays: 21,
-      profileId: 'dany'
+      profileId: 'casa'
     });
 
     assert.equal(audit.auditedPersonalReceiptsCount, 1);
@@ -345,7 +345,7 @@ describe('ADR-0015 / TASK-V2-03: Cooked Meal Physiology, Bioavailability & Adapt
       const evalJson = await evalRes.json();
       assert.equal(evalJson.bioavailability.calcium.zeroCheeseCalciumTier, 'high_bioavailability_verified');
 
-      const guideRes = await fetch(`${baseUrl}/bioavailability-guide?profileId=dany`);
+      const guideRes = await fetch(`${baseUrl}/bioavailability-guide?profileId=casa`);
       assert.equal(guideRes.status, 200);
       const guideJson = await guideRes.json();
       assert.ok(guideJson.pillars.length >= 5);

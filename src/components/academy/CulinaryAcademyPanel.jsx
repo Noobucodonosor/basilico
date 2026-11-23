@@ -67,7 +67,7 @@ const FRIDGE_QUICK_PRESETS = [
 ];
 
 export function CulinaryAcademyPanel({
-  activeProfileId = 'dany',
+  activeProfileId = 'casa',
   onNavigateRoom,
   onOpenMaestro,
   initialSection = 'skills'

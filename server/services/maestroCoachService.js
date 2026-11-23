@@ -402,10 +402,10 @@ export function evaluateMaestroSafetyP0(message = '', snapshot = null) {
     });
   }
 
-  // Active Profile Hard-Ban Check (e.g., Dany Zero Formaggi)
+  // Active Profile Hard-Ban Check (e.g., Casa Zero Formaggi)
   const excluded = snapshot?.profile?.excludedIngredients || [];
   const isZeroDairyProfile =
-    snapshot?.profile?.id === 'dany' ||
+    snapshot?.profile?.id === 'casa' ||
     excluded.some((x) => /formagg|latticin|mascarpone|mozzarella|parmigiano/i.test(String(x)));
   if (
     isZeroDairyProfile &&
@@ -439,8 +439,8 @@ export class MaestroCoachService {
     this._dishPoolCache = new Map();
   }
 
-  async _getEvaluatedDishesCached(profileId = 'dany') {
-    const key = String(profileId || 'dany');
+  async _getEvaluatedDishesCached(profileId = 'casa') {
+    const key = String(profileId || 'casa');
     const now = Date.now();
     const hit = this._dishPoolCache.get(key);
     if (hit && now - hit.ts < 30000) {
@@ -595,7 +595,7 @@ export class MaestroCoachService {
    *  3. `maestro_craft`  — 👨‍🍳 Gesto da Maestro (Tecnica & Arbitraggio)
    */
   async computeTonightParetoFrontier(snapshot, options = {}) {
-    const profileId = snapshot?.profile?.id || options.profileId || 'dany';
+    const profileId = snapshot?.profile?.id || options.profileId || 'casa';
     const rhythmPreset = snapshot?.rhythm?.activeRhythmPreset || options.rhythmPreset || 'feriale';
     const heatSource = snapshot?.kitchen?.heatSource || 'gas';
     const effectiveToolIds = new Set((snapshot?.kitchen?.effectiveTools || []).map((t) => t.id));

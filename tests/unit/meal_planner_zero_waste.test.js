@@ -146,7 +146,7 @@ test('MealPlannerService (M-P1-17) — 21/21 Unique Meals (7 Distinct Breakfasts
       daysCount: 7,
       servings: 1,
       budgetEur: 55,
-      profileId: 'dany',
+      profileId: 'casa',
       dayModes: ['land_day', 'land_day', 'boat_day', 'land_day', 'boat_day', 'land_day', 'land_day']
     });
 
@@ -253,7 +253,7 @@ test('MealPlannerService (M-P1-18 & M-P2-07) — swapMealInPlan Rotation Without
     daysCount: 7,
     servings: 1,
     budgetEur: 45,
-    profileId: 'dany'
+    profileId: 'casa'
   });
 
   // 4 consecutive swaps on Day 1 Lunch must rotate through distinct valid dishes (zero A<->B loop!)

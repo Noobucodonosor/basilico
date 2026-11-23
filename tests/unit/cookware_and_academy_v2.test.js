@@ -248,7 +248,7 @@ describe('TASK-V2-02: Cookware Physics Engine, P0 Guards & Culinary Academy', ()
   });
 
   it('5. Culinary Academy: 12-Skill progression, verbosity adaptation, 30s SOS, Ratios, 8x Umami & Frigo->Tecnica', () => {
-    const initial = academy.getSkillsCurriculum({ profileId: 'dany' });
+    const initial = academy.getSkillsCurriculum({ profileId: 'casa' });
     assert.equal(initial.totalSkills, 12);
     assert.equal(initial.fivePillars.length, 5);
     const leidenfrostSkill = initial.skills.find((s) => s.id === 'skill-03-leidenfrost-inox');
@@ -256,10 +256,10 @@ describe('TASK-V2-02: Cookware Physics Engine, P0 Guards & Culinary Academy', ()
     const noviceLen = leidenfrostSkill.activeGuidanceText.length;
 
     // Practice 3 times perfectly -> advances to `master` with concise dashboard cue
-    academy.recordSkillPractice({ profileId: 'dany', skillId: 'skill-03-leidenfrost-inox', visualOutcome: 'perfect' });
-    academy.recordSkillPractice({ profileId: 'dany', skillId: 'skill-03-leidenfrost-inox', visualOutcome: 'perfect' });
+    academy.recordSkillPractice({ profileId: 'casa', skillId: 'skill-03-leidenfrost-inox', visualOutcome: 'perfect' });
+    academy.recordSkillPractice({ profileId: 'casa', skillId: 'skill-03-leidenfrost-inox', visualOutcome: 'perfect' });
     const afterThree = academy.recordSkillPractice({
-      profileId: 'dany',
+      profileId: 'casa',
       skillId: 'skill-03-leidenfrost-inox',
       visualOutcome: 'perfect'
     });
@@ -307,7 +307,7 @@ describe('TASK-V2-02: Cookware Physics Engine, P0 Guards & Culinary Academy', ()
   });
 
   it('6. Express Router `/api/academy`: serves skills, SOS, ratios, cookware physics & calibration cleanly', async () => {
-    const skillsRes = await fetch(`${baseUrl}/skills?profileId=dany`).then((r) => r.json());
+    const skillsRes = await fetch(`${baseUrl}/skills?profileId=casa`).then((r) => r.json());
     assert.equal(skillsRes.totalSkills, 12);
 
     const sosRes = await fetch(`${baseUrl}/sos?q=${encodeURIComponent('pesce che bolle e tira fuori acqua')}`).then((r) =>

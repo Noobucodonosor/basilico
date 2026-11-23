@@ -9,7 +9,7 @@ Generare un menu settimanale da single **umano, vario e appetibile** (rispettand
 ## 2. Invarianti Inviolabili (Must Never Happen)
 - **Zero Effetto Valanga / Monotonia:** nessun piatto può ripetersi due volte nella stessa settimana (0 duplicati su 21 pasti) e nessuna famiglia gastronomica (`pasta_pesto`, `pasta_pomodoro`, `pansotti_noci`, ecc.) può superare **max 2 presenze a settimana** né comparire in giorni adiacenti.
 - **Coerenza Biologica Oraria & Barca:** a colazione vanno solo vere colazioni; nei giorni `boat_day` il pranzo usa esclusivamente piatti freddi sicuri da borsa termica (`boatSafeCold === true`, mai pasta calda da scolare o fritti); pranzo e cena dello stesso giorno non ripetono la stessa famiglia né abbinano due piatti pesanti/fritti.
-- **Rispetto Rigoroso Profilo Attivo:** con profilo *Dany*, zero piatti con `dairyRole === 'structural_unsubstitutable'` (niente Tiramisù, Caprese o Focaccia al formaggio).
+- **Rispetto Rigoroso Profilo Attivo:** con profilo *Casa*, zero piatti con `dairyRole === 'structural_unsubstitutable'` (niente Tiramisù, Caprese o Focaccia al formaggio).
 - **Simulatore Negozi 100% Reale su Rapallo:** il confronto *1 solo negozio vs 2 negozi vs 3 negozi* usa solo insegne realmente presenti a Rapallo (mai Esselunga/Conad) calcolando prezzi reali + tempo extra di spostamento, e il *Piano B in corsia* propone solo alternative dello stesso reparto/ingrediente.
 
 ## 3. Golden Examples

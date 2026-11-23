@@ -36,12 +36,12 @@ describe('API Tests: Official CREA Scientific Endpoints (/api/crea)', () => {
     assert.equal(data.foods.length, 25);
   });
 
-  it('2. GET /api/crea/foods?profileId=dany filters out cheese/dairy items unless includeExcluded=true', async () => {
-    const resFiltered = await fetch(`${baseUrl}/api/crea/foods?q=mozzarella&profileId=dany`);
+  it('2. GET /api/crea/foods?profileId=casa filters out cheese/dairy items unless includeExcluded=true', async () => {
+    const resFiltered = await fetch(`${baseUrl}/api/crea/foods?q=mozzarella&profileId=casa`);
     const dataFiltered = await resFiltered.json();
     assert.equal(dataFiltered.totalFoods, 0);
 
-    const resAcademic = await fetch(`${baseUrl}/api/crea/foods?q=mozzarella&profileId=dany&includeExcluded=true`);
+    const resAcademic = await fetch(`${baseUrl}/api/crea/foods?q=mozzarella&profileId=casa&includeExcluded=true`);
     const dataAcademic = await resAcademic.json();
     assert.ok(dataAcademic.totalFoods > 0);
   });
@@ -57,7 +57,7 @@ describe('API Tests: Official CREA Scientific Endpoints (/api/crea)', () => {
   });
 
   it('4. GET /api/crea/nutrients-per-euro ranks Rapallo food offers by proteinGPerEuro', async () => {
-    const res = await fetch(`${baseUrl}/api/crea/nutrients-per-euro?metric=proteinGPerEuro&profileId=dany`);
+    const res = await fetch(`${baseUrl}/api/crea/nutrients-per-euro?metric=proteinGPerEuro&profileId=casa`);
     assert.equal(res.status, 200);
     const body = await res.json();
     assert.equal(body.metric, 'proteinGPerEuro');

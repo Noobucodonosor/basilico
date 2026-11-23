@@ -51,9 +51,9 @@ test('RecipeAndArbitrageService — Profile-Adapted Variant & Dual Cost Arbitrag
   const dishWithCheese = dishes.find((d) => d.id === 'tigullio-dish-2');
   assert.ok(dishWithCheese, 'Expected tigullio-dish-2 in seed');
 
-  // Evaluate for 'dany' profile (cheese excluded)
-  const evalDany = await svc.evaluateDish(dishWithCheese, { profileId: 'dany', servings: 2 });
-  assert.equal(evalDany.hasProfileSubstitution, true, 'Must trigger dairy-free Ligurian substitution for dany');
+  // Evaluate for 'casa' profile (cheese excluded)
+  const evalDany = await svc.evaluateDish(dishWithCheese, { profileId: 'casa', servings: 2 });
+  assert.equal(evalDany.hasProfileSubstitution, true, 'Must trigger dairy-free Ligurian substitution for casa');
   assert.ok(evalDany.substitutionsApplied.length >= 1);
   assert.equal(evalDany.servings, 2);
   assert.ok(evalDany.costAndArbitrage.purePortionCostEur > 0);
@@ -145,13 +145,13 @@ test('RecipeAndArbitrageService — Strict BOM Matcher, Granular Packs, 3-Tier Z
   const all = svc.getDishesSeed();
   const structuralDairyDish = all.find((d) => /focaccia\s+(?:col|al)\s+formaggio|caprese|tiramisu/i.test(d.title));
   assert.ok(structuralDairyDish, 'Expected structural dairy dish in catalog');
-  const evalStructuralDany = await svc.evaluateDish(structuralDairyDish, { profileId: 'dany', servings: 1 });
-  assert.equal(evalStructuralDany.isExcludedByProfileIdentity, true, 'Structural dairy dish must be flagged as excluded for dany');
+  const evalStructuralDany = await svc.evaluateDish(structuralDairyDish, { profileId: 'casa', servings: 1 });
+  assert.equal(evalStructuralDany.isExcludedByProfileIdentity, true, 'Structural dairy dish must be flagged as excluded for casa');
   assert.equal(evalStructuralDany.hasProfileSubstitution, false, 'Structural dairy dish must NOT receive absurd olive-oil substitution');
 
   const pansottiDish = all.find((d) => /pansot/i.test(d.title));
   if (pansottiDish) {
-    const evalPansotti = await svc.evaluateDish(pansottiDish, { profileId: 'dany', servings: 1 });
+    const evalPansotti = await svc.evaluateDish(pansottiDish, { profileId: 'casa', servings: 1 });
     assert.equal(evalPansotti.isExcludedByProfileIdentity, false);
     assert.equal(evalPansotti.hasProfileSubstitution, true);
   }
@@ -229,7 +229,7 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
 
   const oilTunaDish = dishes.find((d) => d.id === 'base-barca-insalata-mare-ceci');
   const eval669 = await svc.evaluateDish(oilTunaDish, {
-    profileId: 'dany',
+    profileId: 'casa',
     activeOffers: [adversarialOffers.at(-1)]
   });
   const tunaLine = eval669.bom.find((b) => /tonno/i.test(b.name));
@@ -238,7 +238,7 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
   // M-P0-08 & M-P1-13: Sweet ricotta/mascarpone/semifreddo desserts excluded honestly (never savory potato!) & isSubstitutedComposite preserved
   const cassata = dishes.find((d) => d.id === 'tigullio-dish-227');
   const schiumone = dishes.find((d) => d.id === 'tigullio-dish-179');
-  for (const pid of ['dany', 'barca']) {
+  for (const pid of ['casa', 'barca']) {
     const evCassata = await svc.evaluateDish(cassata, { profileId: pid });
     assert.equal(evCassata.isExcludedByProfileIdentity, true);
     assert.equal(evCassata.hasProfileSubstitution, false);
@@ -248,11 +248,11 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
   }
 
   const dishWithParmigiano = dishes.find((d) => d.id === 'tigullio-dish-2');
-  const evParm = await svc.evaluateDish(dishWithParmigiano, { profileId: 'dany' });
+  const evParm = await svc.evaluateDish(dishWithParmigiano, { profileId: 'casa' });
   assert.ok(evParm.bom.some((b) => b.isSubstitutedComposite === true), 'Substituted composite BOM flag must be preserved');
 
   // M-P1-05: 80/20 respects profileId & computes unlockedDishesCount before .slice(0, 30)
-  const paretoDany = await svc.computeMaxCoverage8020({ topK: 15, profileId: 'dany' });
+  const paretoDany = await svc.computeMaxCoverage8020({ topK: 15, profileId: 'casa' });
   assert.ok(
     !paretoDany.paretoBasket.some((i) =>
       /\b(burrata|parmigiano|pecorino|mascarpone|ricotta|mozzarella|gorgonzola|stracchino|crescenza|formaggi\w*)\b/i.test(
@@ -267,7 +267,7 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
     title: 'Trenette Test Rapallo',
     menuPriceEuro: 18,
     ingredientsText: 'pasta di semola, patate, fagiolini, pinoli',
-    profileId: 'dany'
+    profileId: 'casa'
   });
   assert.equal(customDish.bom.length, 4);
   assert.ok(!customDish.bom.some((b) => b.creaId === '120010'));
@@ -285,16 +285,16 @@ test('RecipeAndArbitrageService — Regression Suite M-P0-07..09 & M-P1-05..20 (
   assert.equal(semifreddiSess.cookingArchetype, 'cold_emulsion_or_frozen_dessert');
 
   const frittataDish = dishes.find((d) => d.id === 'base-single-frittata-zucchine-basilico-no-formaggio');
-  const evalFrittata = await svc.evaluateDish(frittataDish, { profileId: 'dany' });
+  const evalFrittata = await svc.evaluateDish(frittataDish, { profileId: 'casa' });
   assert.notEqual(evalFrittata.dishFamily, 'fried_dish', 'Frittata must never be classified as deep-fried');
   assert.equal(evalFrittata.lightDinnerSuitable, true);
 
-  // Structural cheese dishes from Angolo 48 SML must be honestly excluded under Zero-Formaggi (dany)
+  // Structural cheese dishes from Angolo 48 SML must be honestly excluded under Zero-Formaggi (casa)
   const fugassetteDish = dishes.find((d) => d.id === 'tigullio-dish-299');
   const sanSteDish = dishes.find((d) => d.id === 'tigullio-dish-300');
   assert.ok(fugassetteDish && sanSteDish, 'Expected Angolo 48 SML structural cheese dishes in seed');
-  const evalFugassette = await svc.evaluateDish(fugassetteDish, { profileId: 'dany' });
-  const evalSanSte = await svc.evaluateDish(sanSteDish, { profileId: 'dany' });
+  const evalFugassette = await svc.evaluateDish(fugassetteDish, { profileId: 'casa' });
+  const evalSanSte = await svc.evaluateDish(sanSteDish, { profileId: 'casa' });
   assert.equal(evalFugassette.dairyRole, 'structural_unsubstitutable');
   assert.equal(evalFugassette.isExcludedByProfileIdentity, true);
   assert.equal(evalFugassette.dishFamily, 'pizza_focaccia');
@@ -379,9 +379,9 @@ test('RecipeAndArbitrageService — Provincia di Genova Zona/Citta Filters & Rec
   ];
 
   for (const sample of reccoCheeseDishes) {
-    const ev = await svc.evaluateDish(sample, { profileId: 'dany' });
+    const ev = await svc.evaluateDish(sample, { profileId: 'casa' });
     assert.equal(ev.dairyRole, 'structural_unsubstitutable', `${sample.title} must be structural_unsubstitutable`);
-    assert.equal(ev.isExcludedByProfileIdentity, true, `${sample.title} must be excluded for dany`);
+    assert.equal(ev.isExcludedByProfileIdentity, true, `${sample.title} must be excluded for casa`);
     assert.equal(ev.hasProfileSubstitution, false);
   }
 

@@ -302,7 +302,7 @@ export class NutritionPhysiologyService {
         mode: 'zero_friction_preset',
         presetId: preset.id,
         presetName: preset.name,
-        profileId: profile?.id || 'dany',
+        profileId: profile?.id || 'casa',
         zeroCheeseCalciumGuardActive: excludesCheese,
         dailyTargets: { ...preset.dailyTargets },
         sourceRef: 'LARN_V_2024'
@@ -330,7 +330,7 @@ export class NutritionPhysiologyService {
       mode: 'personalized_mifflin_larn',
       presetId: preset.id,
       presetName: preset.name,
-      profileId: profile?.id || 'dany',
+      profileId: profile?.id || 'casa',
       zeroCheeseCalciumGuardActive: excludesCheese,
       anthropometrics: { sex, ageYears, weightKg, heightCm, laf, bmrKcal: bmr, tdeeKcal: tdee },
       dailyTargets: {
@@ -1540,7 +1540,7 @@ export class NutritionPhysiologyService {
 
     return {
       windowDays,
-      profileId: profile?.id || 'dany',
+      profileId: profile?.id || 'casa',
       zeroCheeseCalciumGuardActive: excludesCheese,
       auditedPersonalReceiptsCount: personalReceipts.length,
       excludedGuestReceiptsCount,
@@ -1562,7 +1562,7 @@ export class NutritionPhysiologyService {
     const rules = this.getRules();
     const profile = userProfileService.getProfileById(options.profileId || null);
     return {
-      profileId: profile?.id || 'dany',
+      profileId: profile?.id || 'casa',
       sources: rules.sources,
       pillars: [
         {

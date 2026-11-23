@@ -1,24 +1,35 @@
-# Basilico — Offerte & Volantini Rapallo (GE)
+# Basilico (C.I.B.O.) — Food Intelligence, Nutrizione CREA & Spesa Zero-Sprechi (Rapallo)
 
-[![Anteprima Basilico — Offerte & Volantini Rapallo](./docs/preview/social-preview.png)](https://basilico-txfxsxuuma-ew.a.run.app)
+[![Anteprima Basilico (C.I.B.O.) — Rapallo](./docs/preview/social-preview.png)](https://basilico-txfxsxuuma-ew.a.run.app)
 
-**Demo Live (Cloud Run):** [https://basilico-txfxsxuuma-ew.a.run.app](https://basilico-txfxsxuuma-ew.a.run.app)
+**Demo Live (Cloud Run):** [https://basilico-txfxsxuuma-ew.a.run.app](https://basilico-txfxsxuuma-ew.a.run.app) · **Vista Offerte:** [Apri Negozi](https://basilico-txfxsxuuma-ew.a.run.app/?room=room-1-negozi)
 
-Applicazione web full-stack responsive per consultare in tempo reale (e con resilienza offline) offerte promozionali e volantini dei supermercati di **Rapallo (GE)**, sviluppata con architettura **ADR-Driven**.
+Applicazione web full-stack PWA offline-first che unisce **offerte reali dei supermercati di Rapallo (GE)** e il motore scientifico **C.I.B.O. (*Five Souls Causal Engine*)**, governata da **20 Architecture Decision Records (`ADR-0001..0020`)** e dal principio **Zero Synthetic Numbers (`ADR-0006`)**.
 
-## Funzionalità Principali
-- **Multi-tier Ingestion & Resilienza Offline:** connettore live + cache persistente locale JSON atomica su disco con TTL e stale grace period + dataset seed offline integrato (`data/seed/`) per garantire disponibilità costante anche in assenza di rete.
-- **API REST Express:** ricerca full-text insensibile agli accenti, filtri per i 14 punti vendita reali di Rapallo (Coop, Carrefour, Basko, Gulliver, Ekom, Penny, Eurospin, Despar, DPiù, Tigotà, PiùMe, Unieuro, Arcaplanet), categoria, prezzo e sconto (`/api/stores`, `/api/offers`, `/api/flyers`, `/api/status`).
-- **Interfaccia Responsive Mobile-First & PWA:** React 19 + Vite + Tailwind CSS con layout editoriale (`Oggi | Offerte | Ricette | Lista + Altro`), sfogliatore volantini nativo `<dialog>` e supporto offline `/sw.js`.
-- **Containerizzazione & QA:** `Dockerfile` pronto per il deploy su Cloud Run, suite di test automatici e Domain Evals.
+## I Pilastri del Motore (`C.I.B.O.` / Five Souls)
+- **Offerte & Volantini Reali Rapallo (`ADR-0004`, `0005`):** ingestione multi-tier con cache JSON atomica su disco + seed offline su **14 punti vendita reali**, **25 volantini** e **941 offerte** con ricerca full-text insensibile agli accenti e sfogliatore `<dialog>`.
+- **Nutrizione Scientifica CREA (`ADR-0008`):** database reale di **832 alimenti CREA**, rese di cottura e metrica deterministica *Nutrienti per Euro* (zero numeri sintetici).
+- **Dispensa 3-Zone & Scontrini al Centesimo (`ADR-0009`):** gestione dispensa (*fresco / dispensa / congelatore*) con riconciliazione contabile scontrini e profili alimentari personalizzabili (`casa`, `barca`, `ospiti`).
+- **Ricette, Ristoranti Tigullio & Meal Planner Zero-Sprechi (`ADR-0011`, `0012`):** catalogo di **1.825 ricette**, arbitraggio su **129 ristoranti del Tigullio**, pianificatore pasti a confezione intera e lista della spesa multi-store.
+- **Chimica Domestica & Fisica Pentole (`ADR-0010`):** matrice pulizia domestica (Reg. CE 648/2004, durezza acqua Rapallo) e ROI/fisica dei materiali da cucina.
+- **Grounded Maestro Coach & AI Engineering (`ADR-0014`, `0015`, `0017`, `0020`):** assistente contestuale opzionale (`GEMINI_API_KEY` / `OPENAI_API_KEY`) con fallback 100% deterministico, Living Specs in `specs/`, suite di test automatici e Domain Evals in `evals/`.
 
 ## Stack Tecnologico
-- **Backend:** Node.js, Express, JSON Disk Cache atomica, Docker
-- **Frontend:** React 19, Vite, Tailwind CSS
-- **Architettura & Governance:** Architecture Decision Records in [`docs/adr/README.md`](./docs/adr/README.md) e specifica completa in [`PROJECT.md`](./PROJECT.md)
+- **Backend:** Node.js 22, Express, JSON Disk Cache atomica (astrazione storage `ADR-0018`), Docker / Google Cloud Run
+- **Frontend:** React 19, Vite, Tailwind CSS, PWA offline-first (`/sw.js`)
+- **Governance & Documentazione:** [20 ADR & Master Backlog](./docs/adr/README.md) · [Specifica di Progetto](./docs/PROJECT.md) · [Living Specs](./specs/)
 
-## Avvio Locale
+## Avvio Locale e Test
 ```bash
+cp .env.example .env
 npm install
+npm run build
 npm start
+
+# Test e Domain Evals
+npm run test:unit
+npm run eval
 ```
+
+## Licenza
+Rilasciato sotto licenza [MIT](./LICENSE).

@@ -21,7 +21,7 @@ Il percorso a 4 Fasi + tendina delle 7 Stanze + sub-tab introdotto da `ADR-0016`
    - Tutte le 4 voci dirette restano accessibili con zero emoji e con il minimo controllo secondario `Chiedi` (`MaestroDrawer`).
    - Gli strumenti avanzati di casa (`Dispensa e Scontrini`, `Database CREA`, `Officina Pentole`, `Chimica e Cura della Casa`, `Coach Nutrizionale`, `Scuola Culinaria`), il selettore di preferenze alimentari, il prezzo al banco e il pulsante di sync manuale sono raccolti dentro il menu discreto **`Altro`** e dotati di una barra contestuale unica `← Torna a Oggi` quando aperti.
 2. **Profilo Neutro di Apertura (`ospiti` — `Standard`):**
-   - I nuovi visitatori partono sul profilo neutro `ospiti` (senza esclusioni automatiche sui latticini), salvando eventuali cambi profilo in `localStorage` (`basilico_profile_id`) e lasciando il toggle `Tutti i piatti / Senza latticini` a portata di 1 click in Home (riconoscendo sia `dany` sia `barca` come profili zero-latticini).
+   - I nuovi visitatori partono sul profilo neutro `ospiti` (senza esclusioni automatiche sui latticini), salvando eventuali cambi profilo in `localStorage` (`basilico_profile_id`) e lasciando il toggle `Tutti i piatti / Senza latticini` a portata di 1 click in Home (riconoscendo sia `casa` sia `barca` come profili zero-latticini).
    - Il backend `/api/profiles` mantiene invariato il proprio stato di default per compatibilità retroattiva dei test API.
 3. **Home `Oggi` Editoriale (`3 Dati + 1 Azione`) & Divulgazione Progressiva:**
    - Hero sobrio *"Cosa cucini stasera?"* seguito dalle **3 proposte reali** calcolate sulle offerte attive di Rapallo (`Stasera in tavola`).

@@ -58,7 +58,7 @@ export class CulinaryAcademyService {
     } catch (_) {}
   }
 
-  _getProfileSkillMap(profileId = 'dany') {
+  _getProfileSkillMap(profileId = 'casa') {
     const state = this._loadState();
     if (!state.profiles[profileId]) {
       state.profiles[profileId] = { skills: {} };
@@ -69,7 +69,7 @@ export class CulinaryAcademyService {
   /**
    * Returns the 5 Generative Pillars + 12-Skill Tree enriched with user mastery & adaptive verbosity.
    */
-  getSkillsCurriculum({ profileId = 'dany' } = {}) {
+  getSkillsCurriculum({ profileId = 'casa' } = {}) {
     const seed = this.getAcademySeed();
     const skillMap = this._getProfileSkillMap(profileId);
 
@@ -130,7 +130,7 @@ export class CulinaryAcademyService {
   /**
    * Records a practice session on one of the 12 fundamental skills, advancing didactic mastery.
    */
-  recordSkillPractice({ profileId = 'dany', skillId, dishId = null, visualOutcome = 'perfect' } = {}) {
+  recordSkillPractice({ profileId = 'casa', skillId, dishId = null, visualOutcome = 'perfect' } = {}) {
     const seed = this.getAcademySeed();
     const exists = seed.skillsTree.find((s) => s.id === skillId);
     if (!exists) {
@@ -243,7 +243,7 @@ export class CulinaryAcademyService {
 
   /**
    * Evaluates the 8× Synergistic Umami Lock (`L-Glutamate` + `5'-Ribonucleotides IMP/GMP`)
-   * essential to achieve deep savory mouthfeel on Zero-Cheese profiles (`dany`).
+   * essential to achieve deep savory mouthfeel on Zero-Cheese profiles (`casa`).
    */
   computeZeroCheeseUmamiSynergy({ ingredients = [] } = {}) {
     const cat = this.getAcademySeed().umamiSynergyCatalog;

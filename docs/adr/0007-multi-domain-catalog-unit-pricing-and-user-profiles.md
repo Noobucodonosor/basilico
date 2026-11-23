@@ -26,7 +26,7 @@ Il catalogo attuale di `Basilico` ([ADR-0001](./0001-core-architecture.md) – [
    - **Storico Prezzi & Verità dello Sconto ("È un vero sconto?"):** archiviazione delle osservazioni di prezzo (da volantini, scontrini e prezzi visti al banco) per confrontare il prezzo promo attuale con il prezzo ordinario reale osservato a Rapallo, senza mai inventare prezzi mancanti (`"Prezzo da rilevare"`).
    - **Lente Qualità Scientifica & Barcode OpenFoodFacts:** analisi deterministica delle diciture di qualità (zona FAO tonno, codice allevamento uova `0..3`, estrazione olio EVO, nitriti `E249/E250`, pescato vs allevato) e lookup barcode OpenFoodFacts (Nutri-Score, NOVA `1..4`, additivi).
 3. **Livello 2.4 & 7.1 — Profilo Utente Multiplo con Esclusioni a 4 Livelli & Separazione Dati:**
-   - Supporto multi-profilo (`Dany`, `Barca`, `Ospiti`, `Amici/Tester`) con switch rapido nell'header e calcolo dell'intersezione sicura per più commensali.
+   - Supporto multi-profilo (`Noobucodonosor`, `Barca`, `Ospiti`, `Amici/Tester`) con switch rapido nell'header e calcolo dell'intersezione sicura per più commensali.
    - Regole di esclusione configurabili dall'utente su 4 livelli: (a) Regimi alimentari, (b) Categorie merceologiche/CREA, (c) 14 Allergeni UE, (d) Singoli ingredienti/alimenti (es. *Hard Ban: Zero Formaggi* vs *Soft Filter*), con separazione fisica totale tra **Catalogo Condiviso** e **Dati Personali Utente** e sandbox obbligatoria per tutti i test automatici.
 
 ---

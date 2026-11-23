@@ -40,7 +40,7 @@ const NPE_METRICS = [
 const PAGE_SIZE = 100;
 
 export function CreaExplorerView({
-  activeProfileId = 'dany',
+  activeProfileId = 'casa',
   initialFoodId = null,
   onCloseInitialFood,
   onCloseFoodModal,

@@ -138,7 +138,7 @@ export function PlannerAndShoppingView({ activeProfileId, onShoppingListChange, 
           servings: nextServings,
           budgetEur: nextBudget,
           dayModes: nextModes,
-          profileId: activeProfileId || 'dany'
+          profileId: activeProfileId || 'casa'
         })
       })
         .then((r) => (r.ok ? r.json() : null))

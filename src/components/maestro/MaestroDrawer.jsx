@@ -53,7 +53,7 @@ function formatCitationLabel(cit) {
 export function MaestroDrawer({
   isOpen,
   onClose,
-  activeProfileId = 'dany',
+  activeProfileId = 'casa',
   rhythmPreset = 'feriale',
   initialPrompt = ''
 }) {

@@ -104,7 +104,7 @@ test('API /api/planner & /api/shopping-list — Full Stanza 6 Workflow & Bug Reg
   }
 
   // Calling GET /api/planner/current must NOT wipe or dilute the flyer_offer item!
-  const current1Res = await requestJson(server, 'GET', '/api/planner/current?profileId=dany');
+  const current1Res = await requestJson(server, 'GET', '/api/planner/current?profileId=casa');
   assert.equal(current1Res.status, 200);
   assert.ok(current1Res.body.plan.planId);
   assert.ok(
@@ -113,7 +113,7 @@ test('API /api/planner & /api/shopping-list — Full Stanza 6 Workflow & Bug Reg
   );
 
   // Second GET /api/planner/current returns the exact persisted planId
-  const current2Res = await requestJson(server, 'GET', '/api/planner/current?profileId=dany');
+  const current2Res = await requestJson(server, 'GET', '/api/planner/current?profileId=casa');
   assert.equal(current2Res.status, 200);
   assert.equal(current2Res.body.plan.planId, current1Res.body.plan.planId);
 

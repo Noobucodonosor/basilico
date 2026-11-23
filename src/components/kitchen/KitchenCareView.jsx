@@ -28,7 +28,7 @@ const CALIBRATION_OUTCOMES = [
 ];
 
 export function KitchenCareView({
-  activeProfileId = 'dany',
+  activeProfileId = 'casa',
   onNavigateToStoreDomain,
   onAddToShoppingList,
   onNavigateRoom,

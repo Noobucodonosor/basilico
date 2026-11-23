@@ -387,7 +387,7 @@ export async function runAllDomainEvals(options = {}) {
     });
 
     const danyDishesRes = await recipeAndArbitrageService.queryDishes({
-      profileId: 'dany',
+      profileId: 'casa',
       includeExcluded: true,
       limit: 2500
     });
@@ -407,7 +407,7 @@ export async function runAllDomainEvals(options = {}) {
 
     checks.push({
       id: 'R3-CULINARY-IDENTITY-GUARD',
-      label: 'Piatti dove il formaggio/mascarpone è identità (Recco, Tiramisù, Caprese, Cheesecake, Cacio e pepe) esclusi onestamente per Dany',
+      label: 'Piatti dove il formaggio/mascarpone è identità (Recco, Tiramisù, Caprese, Cheesecake, Cacio e pepe) esclusi onestamente per Casa',
       passed: allExcludedProperly,
       detail:
         unflaggedStructural.length === 0
@@ -424,7 +424,7 @@ export async function runAllDomainEvals(options = {}) {
     }
     const archetypesSeen = new Set();
     for (const d of sampleByFamily.values()) {
-      const session = await recipeAndArbitrageService.getScientificCookingSession(d.id, { profileId: 'dany' });
+      const session = await recipeAndArbitrageService.getScientificCookingSession(d.id, { profileId: 'casa' });
       if (session?.cookingArchetype) archetypesSeen.add(session.cookingArchetype);
     }
     checks.push({
@@ -737,7 +737,7 @@ export async function runAllDomainEvals(options = {}) {
         householdEconomicsService: isolatedEconSvc
       });
       const copilotBrief = await maestroEvalSvc.getTodayCopilot({
-        profileId: 'dany',
+        profileId: 'casa',
         rhythmPreset: 'feriale'
       });
       const has3Pareto = copilotBrief.tonightParetoCards?.length === 3;
@@ -755,7 +755,7 @@ export async function runAllDomainEvals(options = {}) {
       for (const preset of ['sera_stanca', 'feriale', 'weekend_relax']) {
         const brief = preset === 'feriale'
           ? copilotBrief
-          : await maestroEvalSvc.getTodayCopilot({ profileId: 'dany', rhythmPreset: preset });
+          : await maestroEvalSvc.getTodayCopilot({ profileId: 'casa', rhythmPreset: preset });
         for (const card of brief.tonightParetoCards || []) {
           for (const [soulKey, text] of Object.entries(card.fiveSoulsChain || {})) {
             const m = String(text || '').match(snakeSlopRx);
@@ -847,14 +847,14 @@ export async function runAllDomainEvals(options = {}) {
               modelId,
               daysCount: 7,
               servings: 1,
-              profileId: 'dany',
+              profileId: 'casa',
               dayModes: ['land_day', 'land_day', 'boat_day', 'land_day', 'land_day', 'boat_day', 'land_day']
             })
           : mealPlannerService.generateWeeklyPlan({
               modelId,
               daysCount: 7,
               servings: 1,
-              profileId: 'dany',
+              profileId: 'casa',
               dayModes: ['land_day', 'land_day', 'boat_day', 'land_day', 'land_day', 'boat_day', 'land_day']
             }));
         if (!samplePlan) samplePlan = plan;

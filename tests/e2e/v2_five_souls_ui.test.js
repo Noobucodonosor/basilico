@@ -134,7 +134,7 @@ describe('E2E: Basilico Consumer Editorial Shell, Home Oggi, Dish Drawer & Maest
     assert.match(html, /Sincronizzazione profilo attivo|room-7-home-chemistry/);
 
     const roomHtml = renderToString(
-      React.createElement(bundled.HomeChemistryView, { activeProfileId: 'dany' })
+      React.createElement(bundled.HomeChemistryView, { activeProfileId: 'casa' })
     );
     assert.match(roomHtml, /data-testid="room-7-home-chemistry"/);
   });
@@ -157,7 +157,7 @@ describe('E2E: Basilico Consumer Editorial Shell, Home Oggi, Dish Drawer & Maest
       React.createElement(bundled.MaestroDrawer, {
         isOpen: true,
         onClose() {},
-        activeProfileId: 'dany',
+        activeProfileId: 'casa',
         rhythmPreset: 'sera_stanca'
       })
     );

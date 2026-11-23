@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 export function CreaFoodModal({
   foodId,
-  activeProfileId = 'dany',
+  activeProfileId = 'casa',
   isOpen,
   onClose,
   onSelectOfferStore,

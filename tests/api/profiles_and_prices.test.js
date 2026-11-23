@@ -33,21 +33,21 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
     } catch (_) {}
   });
 
-  it('1. should provide default profiles (dany, barca, ospiti) with Dany active by default', () => {
+  it('1. should provide default profiles (casa, barca, ospiti) with Casa active by default', () => {
     const state = profileService.getProfilesState();
-    assert.equal(state.activeProfileId, 'dany');
-    assert.ok(state.profiles.some((p) => p.id === 'dany'));
+    assert.equal(state.activeProfileId, 'casa');
+    assert.ok(state.profiles.some((p) => p.id === 'casa'));
     assert.ok(state.profiles.some((p) => p.id === 'barca'));
     assert.ok(state.profiles.some((p) => p.id === 'ospiti'));
   });
 
-  it('2. should flag cheese/dairy products for Dany ("Zero Formaggi") while allowing fish and vegetables', () => {
+  it('2. should flag cheese/dairy products for Casa ("Zero Formaggi") while allowing fish and vegetables', () => {
     const mozzarella = {
       title: 'Mozzarella Fior di Latte Granarolo 3x100g',
       category: 'Latticini e Formaggi',
       domain: 'food_human'
     };
-    const resMozz = profileService.checkItemCompatibility(mozzarella, 'dany');
+    const resMozz = profileService.checkItemCompatibility(mozzarella, 'casa');
     assert.equal(resMozz.isCompatible, false);
     assert.equal(resMozz.action, 'flag');
     assert.ok(resMozz.matchedExclusions.includes('mozzarella'));
@@ -57,7 +57,7 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
       category: 'Carne e Pesce',
       domain: 'food_human'
     };
-    const resOrata = profileService.checkItemCompatibility(orata, 'dany');
+    const resOrata = profileService.checkItemCompatibility(orata, 'casa');
     assert.equal(resOrata.isCompatible, true);
     assert.equal(resOrata.action, 'allow');
   });
@@ -129,7 +129,7 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
     assert.ok(promoOffer.realDiscountCheck.deltaVsHistoryPct > 20);
   });
 
-  it('8. M-P0-08: unifies complete cheese lexicon across dany & barca without false-matching Rigoni di Asiago jam or Pecorino DOC/IGT wine', () => {
+  it('8. M-P0-08: unifies complete cheese lexicon across casa & barca without false-matching Rigoni di Asiago jam or Pecorino DOC/IGT wine', () => {
     for (const cheeseTitle of [
       'Mascarpone Fresco 250g',
       'Feta DOP Greca 200g',
@@ -141,9 +141,9 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
       'Fiocchi di Latte 200g'
     ]) {
       const item = { title: cheeseTitle, category: 'Latticini e Formaggi', domain: 'food_human' };
-      const resDany = profileService.checkItemCompatibility(item, 'dany');
+      const resDany = profileService.checkItemCompatibility(item, 'casa');
       const resBarca = profileService.checkItemCompatibility(item, 'barca');
-      assert.equal(resDany.isCompatible, false, `Dany must flag ${cheeseTitle}`);
+      assert.equal(resDany.isCompatible, false, `Casa must flag ${cheeseTitle}`);
       assert.equal(resBarca.isCompatible, false, `Barca must hide ${cheeseTitle}`);
       assert.equal(resBarca.action, 'hide');
     }
@@ -154,7 +154,7 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
       category: 'Colazione e Dolci',
       domain: 'food_human'
     };
-    assert.equal(profileService.checkItemCompatibility(jam, 'dany').isCompatible, true);
+    assert.equal(profileService.checkItemCompatibility(jam, 'casa').isCompatible, true);
     assert.equal(profileService.checkItemCompatibility(jam, 'barca').isCompatible, true);
 
     const wine = {
@@ -163,7 +163,7 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
       category: 'Acqua e Bevande',
       domain: 'food_human'
     };
-    assert.equal(profileService.checkItemCompatibility(wine, 'dany').isCompatible, true);
+    assert.equal(profileService.checkItemCompatibility(wine, 'casa').isCompatible, true);
     assert.equal(profileService.checkItemCompatibility(wine, 'barca').isCompatible, true);
   });
 
@@ -175,7 +175,7 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
       category: 'Carne e Pesce',
       domain: 'food_human'
     };
-    const beforeObs = enrichOfferRecord(sharedOffer, 'dany');
+    const beforeObs = enrichOfferRecord(sharedOffer, 'casa');
     assert.equal(beforeObs.profileCompatibility.isCompatible, true);
 
     // Mutate isolated priceService -> bumps global enrichment epoch so sharedOffer re-enriches
@@ -185,7 +185,7 @@ describe('ADR-0007 / TASK-M1-02: User Profiles (4-Level Exclusions) & Price Hist
       unitString: '1 kg',
       storeId: 'rapallo-pescheria-mercato'
     });
-    const afterObs = enrichOfferRecord(sharedOffer, 'dany');
+    const afterObs = enrichOfferRecord(sharedOffer, 'casa');
     assert.notEqual(afterObs, beforeObs, 'recordObservation must invalidate enrichOfferRecord memo');
   });
 });

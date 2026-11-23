@@ -4,7 +4,7 @@
  *
  * Endpoints:
  *  - GET  /api/profiles          : Returns active profile and all available profiles
- *  - POST /api/profiles/active   : Switches the active profile (e.g., 'dany', 'barca', 'ospiti')
+ *  - POST /api/profiles/active   : Switches the active profile (e.g., 'casa', 'barca', 'ospiti')
  *  - POST /api/profiles          : Creates or updates a user profile
  *  - GET  /api/profiles/export   : Exports profiles as portable JSON
  *  - POST /api/profiles/import   : Imports profiles from portable JSON

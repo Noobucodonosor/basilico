@@ -20,7 +20,7 @@ function LeafMark() {
 
 const PROFILE_LABELS = {
   ospiti: 'Standard (Tutti gli ingredienti)',
-  dany: 'Senza latticini',
+  casa: 'Senza latticini',
   barca: 'Cambusa & Barca'
 };
 
@@ -112,12 +112,12 @@ export function Header({
   const orderedProfiles =
     profiles.length > 0
       ? [...profiles].sort((a, b) => {
-          const rank = { ospiti: 0, dany: 1, barca: 2 };
+          const rank = { ospiti: 0, casa: 1, barca: 2 };
           return (rank[a.id] ?? 9) - (rank[b.id] ?? 9);
         })
       : [
           { id: 'ospiti', name: 'Standard' },
-          { id: 'dany', name: 'Senza latticini' },
+          { id: 'casa', name: 'Senza latticini' },
           { id: 'barca', name: 'In Barca' }
         ];
 

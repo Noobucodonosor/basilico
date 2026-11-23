@@ -2,7 +2,7 @@
  * Basilico — Multi-Level User Profile & Dietary Exclusion Service (ADR-0007 / TASK-M1-02)
  * Location: server/services/userProfileService.js
  *
- * Manages customizable dietary profiles (Dany, Barca, Ospiti, custom) with 4-level exclusions:
+ * Manages customizable dietary profiles (Casa, Barca, Ospiti, custom) with 4-level exclusions:
  * 1. dietaryRegime ('omnivore', 'pescatarian', 'vegetarian', 'vegan')
  * 2. excludedCategories (e.g., ['Latticini e Formaggi'])
  * 3. excludedAllergens (EU 1169/2011 14 allergens)
@@ -84,7 +84,7 @@ export const ZERO_FORMAGGI_EXCLUDED_INGREDIENTS = [
 
 export const DEFAULT_USER_PROFILES = [
   {
-    id: 'dany',
+    id: 'casa',
     name: 'Casa — Zero Formaggi',
     description: 'Onnivoro sportivo, rigorosamente zero formaggi (sia freschi che stagionati), focus densità nutrizionale e pesce del Tigullio.',
     isDefault: true,
@@ -151,7 +151,7 @@ export class UserProfileService {
 
   _upgradeBuiltinZeroCheeseProfiles(profiles = []) {
     return profiles.map((p) => {
-      if ((p.id === 'dany' || p.id === 'barca') && Array.isArray(p.excludedIngredients) && p.excludedIngredients.includes('formaggio')) {
+      if ((p.id === 'casa' || p.id === 'barca') && Array.isArray(p.excludedIngredients) && p.excludedIngredients.includes('formaggio')) {
         const mergedIngs = Array.from(new Set([...p.excludedIngredients, ...ZERO_FORMAGGI_EXCLUDED_INGREDIENTS]));
         const mergedCats = Array.from(new Set([...(p.excludedCategories || []), 'Formaggi e latticini']));
         return { ...p, excludedIngredients: mergedIngs, excludedCategories: mergedCats };
@@ -177,7 +177,7 @@ export class UserProfileService {
       // Fallback to defaults
     }
     this._state = {
-      activeProfileId: 'dany',
+      activeProfileId: 'casa',
       profiles: DEFAULT_USER_PROFILES.map((p) => ({
         ...p,
         excludedCategories: [...(p.excludedCategories || [])],
@@ -235,7 +235,7 @@ export class UserProfileService {
 
   _mergeProfileIntoState(state, profilePayload = {}, { rejectBuiltinInProd = false } = {}) {
     const id = String(profilePayload.id || `profile-${Date.now()}`).trim().toLowerCase();
-    const isBuiltin = id === 'dany' || id === 'barca' || id === 'ospiti';
+    const isBuiltin = id === 'casa' || id === 'barca' || id === 'ospiti';
 
     if (process.env.NODE_ENV === 'production' && isBuiltin) {
       if (rejectBuiltinInProd) {

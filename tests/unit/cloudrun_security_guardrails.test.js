@@ -49,7 +49,7 @@ test('ADR-0017: _tryGroundedLlmSynthesis sends GEMINI_API_KEY via x-goog-api-key
       message: 'Cosa cucino stasera?',
       history: [],
       snapshot: {
-        profile: { id: 'dany', label: 'Dany' },
+        profile: { id: 'casa', label: 'Casa' },
         rhythm: { id: 'feriale' },
         pantry: { valueAtRisk48h: 0, fridgeItems: [] },
         kitchen: {},

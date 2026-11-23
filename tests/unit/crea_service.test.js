@@ -159,7 +159,7 @@ describe('ADR-0008 / TASK-M2-01: CREA Scientific Nutrition Engine & Head-Noun Of
     assert.equal(vitCCookedRow.thermalRetentionFactor, 0.6);
 
     // Real Rapallo seed offers must populate >50 live Nutrients/€ entries while rejecting nameless "Al Kg"
-    const allEnriched = offerService.getSeedOffersSync().map((o) => enrichOfferRecord(o, 'dany'));
+    const allEnriched = offerService.getSeedOffersSync().map((o) => enrichOfferRecord(o, 'casa'));
     const alKg = allEnriched.find((o) => o.title === 'Al Kg');
     assert.equal(alKg.isNamelessTile, true);
     assert.equal(alKg.creaMatch, null);
@@ -187,9 +187,9 @@ describe('ADR-0008 / TASK-M2-01: CREA Scientific Nutrition Engine & Head-Noun Of
     assert.ok(per100CookedKcal > 130 && per100CookedKcal < 160, `100g of cooked pasta should be ~142 kcal, got ${per100CookedKcal}`);
   });
 
-  it('8. M-P0-08: filters all official CREA "Formaggi e latticini" cheeses when includeExcluded=false for both dany and barca', () => {
+  it('8. M-P0-08: filters all official CREA "Formaggi e latticini" cheeses when includeExcluded=false for both casa and barca', () => {
     const danyCheeses = creaService.searchAndRankFoods({
-      profileId: 'dany',
+      profileId: 'casa',
       includeExcluded: false,
       category: 'Formaggi e latticini'
     });
@@ -201,7 +201,7 @@ describe('ADR-0008 / TASK-M2-01: CREA Scientific Nutrition Engine & Head-Noun Of
     const cheeseKeywords = /formagg|pecorin|parmigian|grana|mozzarell|ricott|stracchin|gorgonzol|scamorz|provol|caciott|asiago|taleggi|robiol|brie|feta|mascarpon|crescenz|caprin|camembert|cheddar|edam|fontin|caciocavall|primo sale|fiocchi di latte|quark|formaggin|sottilett|roquefort|vezzena/i;
     const leakedDany = danyCheeses.foods.filter((f) => cheeseKeywords.test(f.name));
     const leakedBarca = barcaCheeses.foods.filter((f) => cheeseKeywords.test(f.name));
-    assert.equal(leakedDany.length, 0, `Dany leaked cheeses: ${leakedDany.map((f) => f.name).join(', ')}`);
+    assert.equal(leakedDany.length, 0, `Casa leaked cheeses: ${leakedDany.map((f) => f.name).join(', ')}`);
     assert.equal(leakedBarca.length, 0, `Barca leaked cheeses: ${leakedBarca.map((f) => f.name).join(', ')}`);
   });
 

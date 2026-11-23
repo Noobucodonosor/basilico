@@ -76,7 +76,7 @@ export function RecipesAndRestaurantsView({
 
   useEffect(() => {
     const ctrl = new AbortController();
-    fetch(`/api/maestro/today-copilot?profileId=${encodeURIComponent(activeProfileId || 'dany')}`, {
+    fetch(`/api/maestro/today-copilot?profileId=${encodeURIComponent(activeProfileId || 'casa')}`, {
       signal: ctrl.signal
     })
       .then((r) => (r.ok ? r.json() : null))
@@ -102,7 +102,7 @@ export function RecipesAndRestaurantsView({
       limit: String(visibleLimit),
       deduplicateTwins: String(deduplicateTwins),
       excludeIncompatible: String(excludeIncompatible),
-      profileId: activeProfileId || 'dany'
+      profileId: activeProfileId || 'casa'
     });
     fetch(`/api/recipes?${params.toString()}`)
       .then((r) => (r.ok ? r.json() : null))
@@ -156,7 +156,7 @@ export function RecipesAndRestaurantsView({
   const fetchPareto8020 = useCallback(() => {
     const params = new URLSearchParams({
       topK: '12',
-      profileId: activeProfileId || 'dany'
+      profileId: activeProfileId || 'casa'
     });
     fetch(`/api/recipes/8020?${params.toString()}`)
       .then((r) => (r.ok ? r.json() : null))
@@ -202,7 +202,7 @@ export function RecipesAndRestaurantsView({
         menuPriceEuro: Number(customPrice) || 22,
         ingredientsText: customIngredients || customTitle,
         servings,
-        profileId: activeProfileId || 'dany'
+        profileId: activeProfileId || 'casa'
       })
     });
     if (res.ok) {

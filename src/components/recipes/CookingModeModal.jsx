@@ -46,7 +46,7 @@ export function CookingModeModal({
           dishId: session.dish.id,
           dishTitle: session.dish.title,
           servings: session.dish.servings || initialServings,
-          profileId: activeProfileId || 'dany',
+          profileId: activeProfileId || 'casa',
           bom: session.dish.bom
         })
       });
@@ -64,7 +64,7 @@ export function CookingModeModal({
     setLoading(true);
     const params = new URLSearchParams({
       servings: String(initialServings),
-      profileId: activeProfileId || 'dany'
+      profileId: activeProfileId || 'casa'
     });
     if (selectedHeatSource) {
       params.set('heatSource', selectedHeatSource);

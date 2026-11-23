@@ -91,10 +91,10 @@ describe('API Integration Tests: Basilico 2.0 — 5 Souls Mounted Routers (/api/
     assert.equal(calBody.activeRhythmPreset, 'sera_stanca');
     assert.equal(calBody.effectiveParameters.hourlyValueEuro, 30);
 
-    const res = await fetch(`${baseUrl}/api/maestro/today-copilot?profileId=dany&rhythmPreset=sera_stanca`);
+    const res = await fetch(`${baseUrl}/api/maestro/today-copilot?profileId=casa&rhythmPreset=sera_stanca`);
     assert.equal(res.status, 200);
     const data = await res.json();
-    assert.equal(data.activeProfile.id, 'dany');
+    assert.equal(data.activeProfile.id, 'casa');
     assert.equal(data.tonightParetoCards.length, 3);
     assert.ok(data.valueAtRisk48h.totalAtRiskEuro > 0);
     for (const card of data.tonightParetoCards) {
@@ -115,7 +115,7 @@ describe('API Integration Tests: Basilico 2.0 — 5 Souls Mounted Routers (/api/
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: 'Mescolo candeggina e aceto sullo sporco dell\'acciaio inox e chiudo il percarbonato in uno spruzzino spray?',
-        profileId: 'dany'
+        profileId: 'casa'
       })
     });
     assert.equal(p0Res.status, 200);
@@ -181,7 +181,7 @@ describe('API Integration Tests: Basilico 2.0 — 5 Souls Mounted Routers (/api/
     const sosBody = await sosRes.json();
     assert.ok(sosBody);
 
-    const skillsRes = await fetch(`${baseUrl}/api/academy/skills?profileId=dany`);
+    const skillsRes = await fetch(`${baseUrl}/api/academy/skills?profileId=casa`);
     assert.equal(skillsRes.status, 200);
   });
 
@@ -210,7 +210,7 @@ describe('API Integration Tests: Basilico 2.0 — 5 Souls Mounted Routers (/api/
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         eventType: 'emergency_5min',
-        profileId: 'dany'
+        profileId: 'casa'
       })
     });
     assert.equal(adaptRes.status, 200);

@@ -334,11 +334,11 @@ describe('TASK-V2-04: Household Economics (VaR_48h, w_t, C_full, €/h Rapallo, 
 
   it('6. MaestroCoachService builds Today Copilot Pareto Frontier (3 distinct cards, Zero-Dairy safe, VaR rescue & 5-Souls chain)', async () => {
     const copilot = await maestroSvc.getTodayCopilot({
-      profileId: 'dany',
+      profileId: 'casa',
       rhythmPreset: 'feriale'
     });
 
-    assert.equal(copilot.activeProfile.id, 'dany');
+    assert.equal(copilot.activeProfile.id, 'casa');
     assert.ok(copilot.valueAtRisk48h.totalAtRiskEuro > 0);
     assert.equal(copilot.tonightParetoCards.length, 3, 'Must expose 3 distinct Pareto cards for ⚡ Oggi');
 
@@ -354,7 +354,7 @@ describe('TASK-V2-04: Household Economics (VaR_48h, w_t, C_full, €/h Rapallo, 
     assert.ok(varCard.fiveSoulsChain.casa);
     assert.ok(varCard.fiveSoulsChain.economia);
 
-    // Zero structural dairy dishes (no Focaccia di Recco, Tiramisù, Caprese) for Dany
+    // Zero structural dairy dishes (no Focaccia di Recco, Tiramisù, Caprese) for Casa
     for (const card of copilot.tonightParetoCards) {
       assert.doesNotMatch(card.title, /\b(tiramis[uù]|focaccia\s+di\s+recco|quattro\s+formaggi)\b/i);
     }
@@ -435,7 +435,7 @@ describe('TASK-V2-04: Household Economics (VaR_48h, w_t, C_full, €/h Rapallo, 
     const baseUrl = `http://127.0.0.1:${server.address().port}/api/maestro`;
 
     try {
-      const copilotRes = await fetch(`${baseUrl}/today-copilot?profileId=dany&rhythmPreset=sera_stanca`);
+      const copilotRes = await fetch(`${baseUrl}/today-copilot?profileId=casa&rhythmPreset=sera_stanca`);
       assert.equal(copilotRes.status, 200);
       const copilotBody = await copilotRes.json();
       assert.equal(copilotBody.activeRhythm.hourlyValueEuro, 30);

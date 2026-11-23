@@ -74,7 +74,7 @@ export function CycleOverviewView({
     ? copilot.tonightParetoCards.slice(0, 3)
     : [];
 
-  const isDairyFree = activeProfileId === 'dany' || activeProfileId === 'barca';
+  const isDairyFree = activeProfileId === 'casa' || activeProfileId === 'barca';
 
   return (
     <div className="space-y-14 sm:space-y-16" data-testid="cycle-overview-view">
@@ -151,7 +151,7 @@ export function CycleOverviewView({
               </button>
               <button
                 type="button"
-                onClick={() => onChangeProfile('dany')}
+                onClick={() => onChangeProfile('casa')}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                   isDairyFree ? 'bg-white text-[#141A17] shadow-xs' : 'text-[#575E58] hover:text-[#141A17]'
                 }`}

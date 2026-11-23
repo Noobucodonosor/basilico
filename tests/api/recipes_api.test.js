@@ -158,16 +158,16 @@ test('API /api/recipes — Catalog, 80/20 Solver, Cooking Session, Lab Notes & C
     restaurantName: 'Ristorante Test Rapallo',
     menuPriceEuro: 28,
     ingredientsText: 'pasta di semola, pomodori maturi, olio di oliva extravergine',
-    profileId: 'dany'
+    profileId: 'casa'
   });
   assert.equal(deconstructRes.status, 201);
   assert.equal(deconstructRes.body.dish.bom.length, 3, 'Comma-separated ingredients must split cleanly into 3 CREA BOM rows');
   assert.equal(deconstructRes.body.dish.costAndArbitrage.menuPricePerServingEur, 28);
 
-  // 6. GET /api/recipes/8020?profileId=dany & GET /api/kitchen/reset-protocol?tools=
-  const paretoDanyRes = await requestJson(server, 'GET', '/api/recipes/8020?topK=12&profileId=dany');
+  // 6. GET /api/recipes/8020?profileId=casa & GET /api/kitchen/reset-protocol?tools=
+  const paretoDanyRes = await requestJson(server, 'GET', '/api/recipes/8020?topK=12&profileId=casa');
   assert.equal(paretoDanyRes.status, 200);
-  assert.equal(paretoDanyRes.body.activeProfileId, 'dany');
+  assert.equal(paretoDanyRes.body.activeProfileId, 'casa');
   assert.ok(!paretoDanyRes.body.paretoBasket.some((i) => /burro|parmigiano|mascarpone/i.test(i.name)));
 
   const emptyToolsRes = await requestJson(server, 'GET', '/api/kitchen/reset-protocol?tools=');

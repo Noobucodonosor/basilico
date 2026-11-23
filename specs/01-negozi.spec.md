@@ -16,7 +16,7 @@ Mostrare tutte e sole le offerte realmente attive e verificate per i **14 punti 
 - **Sfogliatore Pagina Esatta:** cliccando `Pag. X →` si apre il volantino esatto direttamente a Pagina `X` (con scheda multi-prodotto leggibile quando il CDN fornisce ritagli singoli `/flyergibs/`).
 
 ## 3. Golden Examples
-- `Granarolo Latte Parzialmente Scremato` $\rightarrow$ `food_human` / `Latticini e Formaggi` (flaggato dal profilo *Dany Zero Formaggi/Latticini*, visibile per *Ospiti*).
+- `Granarolo Latte Parzialmente Scremato` $\rightarrow$ `food_human` / `Latticini e Formaggi` (flaggato dal profilo *Casa Zero Formaggi/Latticini*, visibile per *Ospiti*).
 - `Bassetti Completo Letto Trendy` (€ 26,99) $\rightarrow$ `bazar_seasonal` / `Tessile, Abbigliamento e Bazar Casa`, `pricePerKg: null`, zero badge chimici.
 - `Albero di Natale / Lego / Peluche Orso` $\rightarrow$ `bazar_seasonal` / `Giocattoli, Natale e Tempo Libero` (mai in `Cura Casa e Bucato`).
 - `Tonno Rio Mare 3x80g (sgocc. 156g)` a € 3,90 $\rightarrow$ `25,00 €/kg sgocc. (16,25 €/kg lordo)`.

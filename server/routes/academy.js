@@ -13,7 +13,7 @@ const router = express.Router();
 // 1. 12-Skill Tree & 5 Generative Pillars (`/skills`, `/curriculum`, `/competenze`)
 const handleGetSkills = (req, res, next) => {
   try {
-    const profileId = String(req.query.profileId || 'dany');
+    const profileId = String(req.query.profileId || 'casa');
     const data = culinaryAcademyService.getSkillsCurriculum({ profileId });
     res.status(200).json(data);
   } catch (err) {
@@ -27,7 +27,7 @@ router.get('/competenze', handleGetSkills);
 
 router.post('/skills/practice', (req, res, next) => {
   try {
-    const { profileId = 'dany', skillId, dishId = null, visualOutcome = 'perfect' } = req.body || {};
+    const { profileId = 'casa', skillId, dishId = null, visualOutcome = 'perfect' } = req.body || {};
     if (!skillId) {
       return res.status(400).json({ error: 'Parametro obbligatorio mancante: skillId' });
     }

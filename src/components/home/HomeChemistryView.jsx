@@ -111,7 +111,7 @@ function loadInitialOwnedKit() {
 }
 
 export function HomeChemistryView({
-  activeProfileId = 'dany',
+  activeProfileId = 'casa',
   onAddToShoppingList,
   onNavigateRoom,
   onOpenMaestro

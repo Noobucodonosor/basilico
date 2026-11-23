@@ -4,7 +4,7 @@
  *
  * Implements:
  *  1. Certified catalog loading: 234 dishes (Base Single School + 32 Tigullio Restaurants + Starred Author Studies) & 1,134 BOM lines
- *  2. Automatic Profile-Adapted Variant Engine (e.g. scientific Ligurian dairy-free substitution for 'dany' profile)
+ *  2. Automatic Profile-Adapted Variant Engine (e.g. scientific Ligurian dairy-free substitution for 'casa' profile)
  *  3. Dual Cost & Live Gastronomic Arbitrage (`purePortionCostEur` vs `checkoutCashCostEur` vs `menuPriceEuro`)
  *  4. 80/20 Submodular Max-Coverage Basket Solver (`computeMaxCoverage8020`)
  *  5. Harvard "Science & Cooking" Step Generator & Lab Notebook Persistence (`data/cache/lab_notebook.json`)
